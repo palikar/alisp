@@ -2,13 +2,12 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
+
+#include <SFML/Graphics.hpp>
 
 #include "numler/config.hpp"
-
 #include "numler/common/utils.hpp"
-
-#include "SFML/Graphics.hpp"
-
 
 
 
@@ -17,16 +16,20 @@ int main()
 {
 
 
-	std::vector<double> nums(100);
+	constexpr int points = 1000;
+	std::vector<double> nums(points);
 
 	nu::utils::iota(std::begin(nums), std::end(nums),
-					nu::utils::Inc(0.0, 0.2));
+					nu::utils::IncWithFact(0.0, 1.0/points, 5.));
+	
+	
+	
 
 	for (const auto &v : nums) { std::cout << v << "\n"; };
 
-2
 
-//sf::RenderWindow renderWindow(sf::VideoMode(640, 480), "Hello Cruel World");
+	
+    //sf::RenderWindow renderWindow(sf::VideoMode(640, 480), "Hello Cruel World");
 
 	// while (renderWindow.isOpen()){
 	// 	sf::Event event;
