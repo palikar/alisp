@@ -1,5 +1,6 @@
 add_executable(numler_main_app
 	src/main.cpp
+	src/framework.cpp
 	)
 
 
@@ -21,12 +22,13 @@ target_link_libraries(numler_main_app
 	PRIVATE
 	project_options
 	project_warnings
-	numler_common
+        clara::clara
 	PUBLIC
 	Threads::Threads
 	fmt::fmt
 	spdlog::spdlog
 	imgui
+	numler_common
 	
 	)
 

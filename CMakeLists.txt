@@ -53,13 +53,35 @@ endif()
 
 
 target_compile_options(project_warnings
-    INTERFACE -Wall -Werror -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wpedantic  -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 )
+  INTERFACE
+  -Wall
+  # -Werror
+  -Wextra
+  -Wshadow
+  -Wnon-virtual-dtor
+  -Wold-style-cast
+  -Wcast-align
+  # -Wunused
+  -Woverloaded-virtual
+  -Wpedantic
+  -Wconversion
+  -Wsign-conversion
+  -Wnull-dereference
+  -Wdouble-promotion
+  -Wformat=2
+  )
 
 
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     target_compile_options(project_warnings
-        INTERFACE -Wmisleading-indentation  -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast)
+      INTERFACE
+      -Wmisleading-indentation
+      -Wduplicated-cond
+      -Wduplicated-branches
+      -Wlogical-op
+      -Wuseless-cast
+      )
     target_link_libraries(project_options INTERFACE stdc++fs)
 endif()
 
@@ -102,22 +124,21 @@ if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
 endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
-
 conan_check(REQUIRED)
-conan_cmake_run(CONANFILE
-	conanfile.txt
-	BASIC_SETUP
-	CONAN_COMMAND
-	${CONAN_CMD}
-	CMAKE_TARGETS
-	BUILD
-	missing)
+conan_cmake_run(
+  CONANFILE
+  conanfile.txt
+  BASIC_SETUP
+  CONAN_COMMAND
+  ${CONAN_CMD}
+  CMAKE_TARGETS
+  BUILD
+  missing)
 
-# include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-
-# find_package (SFML REQUIRED system window graphics network audio)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 
 
@@ -133,6 +154,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 ###########################    Libraries     ##########################
 #######################################################################
 #######################################################################
+
+
 
 if(CONAN_CATCH2_ROOT_DEBUG)
 	include(${CONAN_CATCH2_ROOT_DEBUG}/lib/cmake/Catch2/Catch.cmake)
@@ -154,6 +177,13 @@ find_package(OpenGL)
 
 
 
+find_package(clara)
+
+
+
+
+
+
 #######################################################################
 #######################################################################
 
@@ -170,7 +200,7 @@ configure_file (
 	"${PROJECT_SOURCE_DIR}/numler/include/numler/config.hpp.in"
 	"${PROJECT_BINARY_DIR}/numler/include/numler/config.hpp"
 	)
-
+      
 include_directories("${PROJECT_BINARY_DIR}/numler/include")
 
 install (FILES
@@ -259,3 +289,5 @@ message("########################################")
 # spdlog::spdlog
 ####################################################
 # imgui
+####################################################
+
