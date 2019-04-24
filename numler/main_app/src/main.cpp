@@ -44,8 +44,12 @@ public:
 int main(int argc, char* argv[])
 {
     nu::logging::init_logging();
-    
-    App app(argc, argv);
 
-    return app.run();
+    DEBUG("This is the shit man! {}", 42);
+
+    return 0;
+    
+    // App app(argc, argv);
+
+    // return app.run();
 }
