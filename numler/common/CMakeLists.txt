@@ -10,13 +10,13 @@ target_include_directories(numler_common
 
 target_link_libraries(numler_common
     PRIVATE
-	project_options
+    project_options
     project_warnings
-	PUBLIC
-	Threads::Threads
-	fmt::fmt
-	spdlog::spdlog
-	)
+    PUBLIC
+    Threads::Threads
+    fmt::fmt
+    spdlog::spdlog
+    )
 
 
 install(TARGETS numler_main_app

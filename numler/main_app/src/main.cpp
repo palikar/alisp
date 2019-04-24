@@ -5,9 +5,12 @@
 #include <algorithm>
 
 #include <SFML/Graphics.hpp>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 #include "numler/config.hpp"
 #include "numler/common/utils.hpp"
+#include "numler/common/logging.hpp"
 #include "numler/main_app/framework.hpp"
 
 
@@ -27,12 +30,12 @@ public:
     
     void update()
     {
-        
+        // spdlog::info("Updating");
     }
 
     void render()
     {
-        
+        // spdlog::info("Rendering");
     }
     
 };
@@ -40,7 +43,8 @@ public:
 
 int main(int argc, char* argv[])
 {
-
+    nu::logging::init_logging();
+    
     App app(argc, argv);
 
     return app.run();

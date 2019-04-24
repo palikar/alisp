@@ -11,6 +11,10 @@
 #include "numler/common/meta.hpp"
 
 #include <SFML/Graphics.hpp>
+
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
 #include <clara.hpp>
 
 #include <iostream>
@@ -23,9 +27,10 @@ namespace nu{
 
     struct Options
     {
-        int width = 640;
-        int height = 480;
+        unsigned int width = 640;
+        unsigned int height = 480;
         bool gui = true;
+        std::filesystem::path config_file;
     };
 
     template <typename T>
@@ -46,7 +51,8 @@ namespace nu{
             auto cli = Help(showHelp)
                 | Opt(this->opts.width, "int")["-w"]["--width"]("The width of the created window")
                 | Opt(this->opts.height, "int")["-h"]["--height"]("The height of the created window")
-                | Opt(this->opts.gui)["-g"]["--gui"]("Show GUI or not");
+                | Opt(this->opts.gui)["-g"]["--gui"]("Show GUI or not")
+                | Opt(this->opts.config_file, "path")["-c"]["--config"]("File with configuration");
                 
 
             const auto result = cli.parse(Args(argc, argv));
@@ -60,9 +66,8 @@ namespace nu{
                 exit(1);
             }
 
-
             
-            this->window = std::make_unique<sf::RenderWindow>(sf::VideoMode(opts.width, opts.height), "GraphingWorks");
+            this->window = std::make_unique<sf::RenderWindow>(sf::VideoMode(this->opts.width, this->opts.height), "GraphingWorks");
             
         }
         
