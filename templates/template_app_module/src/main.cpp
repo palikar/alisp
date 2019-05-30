@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "numler/config.h"
+#include "numler/config.hpp"
 
 
 int main()
