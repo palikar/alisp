@@ -3,25 +3,27 @@
 DIR=$(dirname "$(readlink -f "$0")")
 
 MODULE_NAME=$1
+project_name=$(grep "project(\w*" CMakeLists.txt -o | grep "(.*" -o | cut -c 2-)
 
-
-if [ -d $DIR/numler/${MODULE_NAME} ]; then
-	echo "The module already exists"
-	exit 1
+if [ -d $DIR/${project_name}/${MODULE_NAME} ]; then
+    echo "The module already exists"
+    exit 1
 fi
 
 
-cp -r $DIR/templates/template_app_module/ $DIR/numler/
+cp -r $DIR/templates/template_app_module/ $DIR/src/
 
-mv $DIR/numler/template_app_module/ $DIR/numler/${MODULE_NAME}
+mv $DIR/src/template_app_module/ $DIR/src/${MODULE_NAME}
+mv $DIR/src/${MODULE_NAME}/include/src/MODULE_NAME $DIR/src/${MODULE_NAME}/include/src/${MODULE_NAME}
 
-mv $DIR/numler/${MODULE_NAME}/include/numler/MODULE_NAME $DIR/numler/${MODULE_NAME}/include/numler/${MODULE_NAME}
+mv $DIR/src/${MODULE_NAME}/include/PROJECT $DIR/src/${MODULE_NAME}/include/${project_name}
 
-find $DIR/numler/${MODULE_NAME} -type f -exec sed -i "s/MODULE_NAME/${MODULE_NAME}/g" {} \;
+find $DIR/src/${MODULE_NAME} -type f -exec sed -i "s/MODULE_NAME/${MODULE_NAME}/g" {} \;
+find $DIR/src/${MODULE_NAME} -type f -exec sed -i "s/PROJECT_NAME/${project_name}/g" {} \;
 
 
 LINE="add_subdirectory(${MODULE_NAME})"
-if [ ! $(grep $LINE $DIR/numler/CMakeLists.txt) ]; then
-	echo ${LINE} >> $DIR/numler/CMakeLists.txt
+if [ ! $(grep $LINE $DIR/src/CMakeLists.txt) ]; then
+    echo ${LINE} >> $DIR/src/CMakeLists.txt
 fi
 

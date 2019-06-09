@@ -12,7 +12,7 @@
 #include <vector>
 #include <iterator>
 
-#include "numler/config.hpp"
+#include "alisp/config.hpp"
 
 
 namespace nu::logging

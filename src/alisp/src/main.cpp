@@ -1,12 +1,9 @@
 #include <iostream>
 
-#include "numler/config.hpp"
-
-#include "numler/alisp/common_lexer.hpp"
-#include "numler/alisp/lexer.hpp"
-
-
-#include "numler/alisp/parser.hpp"
+#include "alisp/config.hpp"
+#include "alisp/alisp/common_lexer.hpp"
+#include "alisp/alisp/lexer.hpp"
+#include "alisp/alisp/parser.hpp"
 
 
 int main()

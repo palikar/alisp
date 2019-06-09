@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "numler/config.hpp"
+#include "PROJECT_NAME/config.hpp"
 
 
 int main()

@@ -12,8 +12,8 @@
 
 
 
-#include "numler/alisp/common_lexer.hpp"
-#include "numler/alisp/lisp_object.hpp"
+#include "alisp/alisp/common_lexer.hpp"
+#include "alisp/alisp/lisp_object.hpp"
 
 
 namespace alisp

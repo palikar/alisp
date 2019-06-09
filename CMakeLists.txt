@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(numler LANGUAGES CXX)
+project(alisp LANGUAGES CXX)
 
 include(cmake/safeguards.cmake)
 
@@ -197,16 +197,16 @@ set(MF_VERSION_PATCH 0)
 set(MF_VERSION ${MF_VERSION_MAJOR}.${MF_VERSION_MINOR}.${MF_VERSION_PATCH})
 
 configure_file (
-	"${PROJECT_SOURCE_DIR}/numler/include/numler/config.hpp.in"
-	"${PROJECT_BINARY_DIR}/numler/include/numler/config.hpp"
-	)
+    "${PROJECT_SOURCE_DIR}/src/include/${PROJECT_NAME}/config.hpp.in"
+    "${PROJECT_BINARY_DIR}/src/include/${PROJECT_NAME}/config.hpp"
+    )
       
-include_directories("${PROJECT_BINARY_DIR}/numler/include")
+include_directories("${PROJECT_BINARY_DIR}/src/include")
 
 install (FILES
-	"${PROJECT_BINARY_DIR}/numler/include/numler/config.hpp"
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/numler/
-	)
+    "${PROJECT_BINARY_DIR}/src/include/${PROJECT_NAME}/config.hpp"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
+    )
 
 
 include (InstallRequiredSystemLibraries)
@@ -241,7 +241,7 @@ endif()
 
 
 add_subdirectory(libs)
-add_subdirectory(numler)
+add_subdirectory(src)
 
 
 message("#########################################")

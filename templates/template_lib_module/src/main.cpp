@@ -1,3 +1,2 @@
-#include "numler/config.h"
-
+#include "PROJECT_NAME/config.hpp"
 

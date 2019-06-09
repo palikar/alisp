@@ -1,4 +1,3 @@
-
 BUILD_RELEASE_DIR?=build_release
 BUILD_DEBUG_DIR?=build_debug
 BUILD_TEST_DIR?=build_test
@@ -64,7 +63,7 @@ clean: clean_debug clean_release clean_test
 
 
 run:
-	./$(BUILD_DEBUG_DIR)/bin/numler_main_app
+	./$(BUILD_DEBUG_DIR)/bin/alisp_main_app
 
 
 all: build_debug build_release build_test
