@@ -7,7 +7,11 @@
 #include <utility>
 #include <locale>
 #include <variant>
-#include "numler/alisp/common.hpp"
+#include <optional>
+#include <functional>
+		
+
+#include "numler/alisp/common_lexer.hpp"
 
 
 namespace alisp
@@ -26,14 +30,21 @@ enum class ObjectType
     PRIMITIVE
 };
 
+
+struct Object;
+struct Cell
+{
+    Object* con;
+    Object* cdr;
+};
+
 struct Object
 {
-
     ObjectType type;
-
-    Object():content()
-    {};
     std::variant<int, float, std::string, std::vector<Object*>> content;
+
+    Object(ObjectType type_):type(type_),content(){};
+    Object():content(){};
 };
 
 
@@ -78,13 +89,13 @@ class Parser
 {
   private:
 
-    std::vector<alisp::Token*> tokens;
+    std::vector<alisp::Token> tokens;
     size_t current_token;
 
   public:
 
-    Parser(std::vector<alisp::Token*> tokens_) :
-        tokens(std::move(tokens_)),
+    Parser(const std::vector<alisp::Token>& tokens_) :
+        tokens(tokens_),
         current_token(0)
     {
         
@@ -96,12 +107,13 @@ class Parser
         ++(this->current_token);
     }
     
-    alisp::Token* currentToken()
+    std::optional<Token> currentToken()
     {
         if (this->current_token >= tokens.size())
-            return nullptr;
-                     
-        return tokens[this->current_token];
+        {
+            return std::nullopt;
+        }
+        return this->tokens[this->current_token];
     }
 
 
@@ -118,36 +130,35 @@ class Parser
     Object* parse()
     {
         
-        const Token* token = currentToken();
-        if (token == nullptr)
+        auto tok = currentToken();
+        if (!tok)
             return nullptr;
+
+        Token& token = tok.value();
         
-        switch (token->getType()) {
+        switch (token.getType()) {
             
           case TokenType::LEFT_BRACKET: {
-              Object *list = new Object();
-              list->type = ObjectType::LIST;
-              // std::cout << "New list!" << "\n";
-
+              Object *list = new Object(ObjectType::LIST);
+              
               list->content = std::vector<Object*>();
               auto& obj_list = std::get<std::vector<Object*>>(list->content);
 
               nextToken();
               while(true)
               {
-                  token = currentToken();
-
-                  if(token == nullptr)
+                  tok = currentToken();
+                  if(!tok)
                   {
-                      std::cout << this->current_token << "\n";
                       std::cout << "Malformed sexp!" << "\n";
                       exit(1);
                   }
+
+                  token = tok.value();
                   
-                  if(token->getType() == TokenType::RIGHT_BRACKET)
+                  if(token.getType() == TokenType::RIGHT_BRACKET)
                   {
                       nextToken();
-                      // std::cout << "end list" << "\n";
                       break;
                   }
                   
@@ -162,41 +173,29 @@ class Parser
           }
               
           case TokenType::STRING : {
-              //std::cout << "new str" << "\n";
-              Object *str = new Object();
-              str->type = ObjectType::STRING;
-              const STRING_TOKEN* cur = static_cast<const STRING_TOKEN*>(token);
-              str->content = cur->getContent();
+              Object *str = new Object(ObjectType::STRING);
+              str->content = token.getContentAs<std::string>();
               nextToken();
               return str;
           }
               
           case TokenType::NUMBER : {
-              // std::cout << "new num" << "\n";
-              Object *num = new Object();
-              num->type = ObjectType::INT;
-              const NUMBER_TOKEN* cur = static_cast<const NUMBER_TOKEN*>(token);
-              num->content = cur->getContent();
+              Object *num = new Object(ObjectType::INT);
+              num->content = token.getContentAs<int>();
               nextToken();
               return num;
           }
 
           case TokenType::REAL_NUMBER : {
-              // std::cout << "new real" << "\n";
-              Object *num = new Object();
-              num->type = ObjectType::REAL;
-              const REAL_NUMBER_TOKEN* cur = static_cast<const REAL_NUMBER_TOKEN*>(token);
-              num->content = cur->getContent();
+              Object *num = new Object(ObjectType::REAL);
+              num->content = token.getContentAs<float>();
               nextToken();
               return num;
           }
               
           case TokenType::ID : {
-              // std::cout << "new id" << "\n";
-              Object *symbol = new Object();
-              symbol->type = ObjectType::SYMBOL;
-              const ID_TOKEN* cur = static_cast<const ID_TOKEN*>(token);
-              symbol->content = cur->getContent();
+              Object *symbol = new Object(ObjectType::SYMBOL);
+              symbol->content = token.getContentAs<std::string>();
               nextToken();
               return symbol;
           }

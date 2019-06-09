@@ -8,8 +8,7 @@
 #include <locale>
 #include <cmath>
 
-#include "numler/alisp/common.hpp"
-
+#include "numler/alisp/common_lexer.hpp"
 
 
 namespace alisp
@@ -31,10 +30,10 @@ class Lexer
     public:
         Lexer(){};
 
-        std::vector<alisp::Token*> tokenize(const std::string& input){
+        std::vector<alisp::Token> tokenize(const std::string& input){
             
 
-            std::vector<alisp::Token*> tokens;
+            std::vector<alisp::Token> tokens;
             const char * s = input.c_str();
 
             int char_num = 0;
@@ -58,37 +57,37 @@ class Lexer
                 
                 if (*s == '(')
                 {
-                    tokens.push_back(new alisp::LEFT_BRACKET_TOKEN());
+                    tokens.push_back(alisp::Token(TokenType::LEFT_BRACKET));
                 }
 
                 else if (*s == ')')
                 {
-                    tokens.push_back(new alisp::RIGHT_BRACKET_TOKEN());
+                    tokens.push_back(alisp::Token(TokenType::RIGHT_BRACKET));
                 }
 
                 else if (*s == ':')
                 {
-                    tokens.push_back(new alisp::COLON_TOKEN());
+                    tokens.push_back(alisp::Token(TokenType::COLON));
                 }
 
                 else if (*s == '\'')
                 {
-                    tokens.push_back(new alisp::QUOTE_TOKEN());
+                    tokens.push_back(alisp::Token(TokenType::QUOTE));
                 }
 
                 else if (*s == '`')
                 {
-                    tokens.push_back(new alisp::BACKQUOTE_TOKEN());
+                    tokens.push_back(alisp::Token(TokenType::BACKQUOTE));
                 }
 
                 else if (*s == '@')
                 {
-                    tokens.push_back(new alisp::AT_TOKEN());
+                    tokens.push_back(alisp::Token(TokenType::AT));
                 }
 
                 else if (*s == '&')
                 {
-                    tokens.push_back(new alisp::AMPER_TOKEN());
+                    tokens.push_back(alisp::Token(TokenType::AMPER));
                 }
                 
                 else if (*s == '\"')
@@ -97,7 +96,7 @@ class Lexer
                     if (std::regex_search(s, match, STR_RE)) {
                         std::string res = match.str(0);
                         s += res.size() + 1;
-                        tokens.push_back(new alisp::STRING_TOKEN(std::move(res)));
+                        tokens.push_back(alisp::Token(TokenType::STRING, std::move(res)));
                     }else{
                         std::cout << "Invalid String" << "\n";
                         exit(1);
@@ -114,11 +113,11 @@ class Lexer
                         float intpart;
                         if (std::modf(num, &intpart) == 0.0f)
                         {
-                            tokens.push_back(new alisp::NUMBER_TOKEN(static_cast<int>(num)));
+                            tokens.push_back(alisp::Token(TokenType::NUMBER, static_cast<int>(num)));
                         }
                         else
                         {
-                            tokens.push_back(new alisp::REAL_NUMBER_TOKEN(num));
+                            tokens.push_back(alisp::Token(TokenType::REAL_NUMBER, num));
                         }
                             
 
@@ -134,7 +133,7 @@ class Lexer
                     if (std::regex_search(s, match, ID_RE)) {
                         std::string res = match.str(0);
                         s += res.size()-1;
-                        tokens.push_back(new alisp::ID_TOKEN(std::move(res)));
+                        tokens.push_back(alisp::Token(TokenType::ID, std::move(res)));
                     }else{
                         std::cout << "Invalid ID" << "\n";
                  
