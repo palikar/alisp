@@ -9,81 +9,17 @@
 #include <variant>
 #include <optional>
 #include <functional>
-		
+
+
 
 #include "numler/alisp/common_lexer.hpp"
+#include "numler/alisp/lisp_object.hpp"
 
 
 namespace alisp
 {
 
 
-enum class ObjectType
-{
-    SYMBOL,
-    LIST,
-    INT,
-    REAL,
-    CELL,
-    STRING,
-    PROCEDURE,
-    PRIMITIVE
-};
-
-
-struct Object;
-struct Cell
-{
-    Object* con;
-    Object* cdr;
-};
-
-struct Object
-{
-    ObjectType type;
-    std::variant<int, float, std::string, std::vector<Object*>> content;
-
-    Object(ObjectType type_):type(type_),content(){};
-    Object():content(){};
-};
-
-
-void printObject(Object* obj)
-{
-    switch (obj->type) {
-      case ObjectType::STRING:{
-          std::cout << '"' << std::get<std::string>(obj->content) << "\" ";
-          break;
-      }
-      case ObjectType::SYMBOL: {
-          std::cout << std::get<std::string>(obj->content) << " ";
-          break;
-      }
-      case ObjectType::REAL: {
-          std::cout << std::get<float>(obj->content) << " ";
-          break;
-      }
-      case ObjectType::INT: {
-          std::cout << std::get<int>(obj->content) << " ";
-          break;
-      }
-
-      case ObjectType::LIST: {
-          std::cout << "(";
-          for(auto* o :  std::get<std::vector<Object*>>(obj->content))
-          {
-              printObject(o);
-          }
-          std::cout << ") ";
-          
-          break;
-      }
-      default:
-          std::cout << "" << "\n";
-          break;
-    }
-
-}
 
 class Parser
 {
@@ -102,9 +38,15 @@ class Parser
 
     }
 
+    
     void nextToken()
     {
         ++(this->current_token);
+    }
+
+    Token peek()
+    {
+        return this->tokens[this->current_token+1];
     }
     
     std::optional<Token> currentToken()
@@ -115,7 +57,6 @@ class Parser
         }
         return this->tokens[this->current_token];
     }
-
 
     std::vector<Object*> parseWhole()
     {
@@ -199,6 +140,31 @@ class Parser
               nextToken();
               return symbol;
           }
+
+          case TokenType::RIGHT_BRACKET : {
+              std::cout << "Unexpected right bracket" << "\n";
+              exit(1);
+          }
+
+          case TokenType::QUOTE : {
+              Object *cell = new Object(ObjectType::CELL);
+
+              Cell cell_obj{};
+
+              cell_obj.con = new Object(ObjectType::SYMBOL);
+              cell_obj.con->content = std::string{"quote"};
+
+              nextToken();
+              cell_obj.cdr = parse();
+
+              cell->content = cell_obj;
+
+              return cell;              
+          }
+
+              
+
+              
               
           default:
               return nullptr;
