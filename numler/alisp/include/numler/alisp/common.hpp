@@ -12,6 +12,7 @@ enum class TokenType
     ID,
     STRING,
     NUMBER,
+    REAL_NUMBER,
     
     LEFT_BRACE,
     RIGHT_BRACE,
@@ -37,7 +38,8 @@ std::string get_token_str(TokenType type)
         ENUM_CASE(ID);
         ENUM_CASE(STRING);
         ENUM_CASE(NUMBER);
-
+        ENUM_CASE(REAL_NUMBER);
+        
         ENUM_CASE(AT);
         ENUM_CASE(COLON);
         ENUM_CASE(BACKQUOTE);
@@ -80,7 +82,6 @@ class SimpleToken : public Token
         return this->type;
     }
 
-    
     std::string str() const override 
     {        
         std::ostringstream os;
@@ -155,6 +156,8 @@ using RIGHT_BRACKET_TOKEN = SimpleToken<TokenType::RIGHT_BRACKET>;
 using STRING_TOKEN = ContentToken<TokenType::STRING, std::string>;
 using ID_TOKEN = ContentToken<TokenType::ID, std::string>;
 using NUMBER_TOKEN = ContentToken<TokenType::NUMBER, int>;
+using REAL_NUMBER_TOKEN = ContentToken<TokenType::REAL_NUMBER, float>;
+
 
 using QUOTATION_MARKS_TOKEN = SimpleToken<TokenType::QUOTATION_MARKS>;
 using QUOTE_TOKEN = SimpleToken<TokenType::QUOTE>;

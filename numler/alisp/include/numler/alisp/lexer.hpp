@@ -6,6 +6,7 @@
 #include <regex>
 #include <utility>
 #include <locale>
+#include <cmath>
 
 #include "numler/alisp/common.hpp"
 
@@ -14,18 +15,19 @@
 namespace alisp
 {
 
-    static const std::string STR_REG = R"((?!\")(?:[^\"\\]|\\.)*(?=\"))";
-    static const std::regex STR_RE{STR_REG};
 
-    static const std::string ID_REG = R"(^[\/\\\*a-zA-Z_-][\/\\\*a-zA-Z0-9_-]*)";
-    static const std::regex ID_RE{ID_REG};
+static const std::string STR_REG = R"((?!\")(?:[^\"\\]|\\.)*(?=\"))";
+static const std::regex STR_RE{STR_REG};
 
-    static const std::string NUM_REG = R"(^[0-9.]+(?=(?:\s|\(|\)|$)))";
-    static const std::regex NUM_RE{NUM_REG};
+static const std::string ID_REG = R"(^[\/\\\*a-zA-Z_-][\/\\\*a-zA-Z0-9_-]*)";
+static const std::regex ID_RE{ID_REG};
+
+static const std::string NUM_REG = R"(^[+-]?[0-9.]+(?=(?:\s|\(|\)|$)))";
+static const std::regex NUM_RE{NUM_REG};
     
     
-    class Lexer
-    {
+class Lexer
+{
     public:
         Lexer(){};
 
@@ -40,12 +42,13 @@ namespace alisp
             
             while (*s)
             {
-
+                
                 while (*s == ' ')
                 {
                     ++char_num;
                     ++s;
                 }
+
                 while (*s == '\n')
                 {
                     ++line_num;
@@ -57,26 +60,32 @@ namespace alisp
                 {
                     tokens.push_back(new alisp::LEFT_BRACKET_TOKEN());
                 }
+
                 else if (*s == ')')
                 {
                     tokens.push_back(new alisp::RIGHT_BRACKET_TOKEN());
                 }
+
                 else if (*s == ':')
                 {
                     tokens.push_back(new alisp::COLON_TOKEN());
                 }
+
                 else if (*s == '\'')
                 {
                     tokens.push_back(new alisp::QUOTE_TOKEN());
                 }
+
                 else if (*s == '`')
                 {
                     tokens.push_back(new alisp::BACKQUOTE_TOKEN());
                 }
+
                 else if (*s == '@')
                 {
                     tokens.push_back(new alisp::AT_TOKEN());
                 }
+
                 else if (*s == '&')
                 {
                     tokens.push_back(new alisp::AMPER_TOKEN());
@@ -91,16 +100,29 @@ namespace alisp
                         tokens.push_back(new alisp::STRING_TOKEN(std::move(res)));
                     }else{
                         std::cout << "Invalid String" << "\n";
+                        exit(1);
                     }
                 }
 
-                else if(std::isdigit(*s))
+                else if(std::isdigit(*s) or ((*s=='-' or *s=='+') and std::isdigit(*(s+1))))
                 {
                     std::cmatch match;
                     if (std::regex_search(s, match, NUM_RE)) {
-                        std::string res = match.str(0);
+                        const std::string& res = match.str(0);
                         s += res.size()-1;
-                        tokens.push_back(new alisp::NUMBER_TOKEN(std::stoi(res)));
+                        float num = std::stof(res);
+                        float intpart;
+                        if (std::modf(num, &intpart) == 0.0f)
+                        {
+                            tokens.push_back(new alisp::NUMBER_TOKEN(static_cast<int>(num)));
+                        }
+                        else
+                        {
+                            tokens.push_back(new alisp::REAL_NUMBER_TOKEN(num));
+                        }
+                            
+
+                        
                     }else{
                         std::cout << "Invalid Number" << "\n";
                     }
@@ -115,6 +137,7 @@ namespace alisp
                         tokens.push_back(new alisp::ID_TOKEN(std::move(res)));
                     }else{
                         std::cout << "Invalid ID" << "\n";
+                 
                     }
                 }
                 

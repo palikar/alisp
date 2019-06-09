@@ -12,7 +12,8 @@ int main()
   
     alisp::Lexer lex{};
     
-    auto toks = lex.tokenize(R"((nil))");
+    auto toks = lex.tokenize(R"((if 2 (progn (setq a 2) (setq a 2)))");
+    // auto toks = lex.tokenize(R"((if "asdsa" -2 (setq a) (setq b 3)))");
 
 
     for (const auto& t : toks)
@@ -21,9 +22,13 @@ int main()
     }
 
     alisp::Parser pars{toks};
+    auto res = pars.parseWhole();
+    for (auto r : res) {
+        std::cout << "1:";
+        alisp::printObject(r);
+        std::cout << "\n";
+    }
 
-    alisp::Object* res = pars.parse();
-    std::cout << (int)res->type << "\n";
 
   
     return 0;
