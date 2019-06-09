@@ -55,16 +55,6 @@ std::string get_token_str(TokenType type)
 
 #undef ENUM_CASE
 
-enum class CellType
-{
-    SYMBOL,
-    NUMBER,
-    STRING,
-    LIST,
-    LAMBDA,
-    PROC  // Precedure
-};
-
 
 
 class Token
@@ -72,7 +62,8 @@ class Token
   public:
     Token(){};
     
-    virtual std::string str() = 0;
+    virtual std::string str() const = 0;
+    virtual TokenType getType() const = 0;
     virtual ~Token(){};
 };
 
@@ -83,13 +74,14 @@ class SimpleToken : public Token
     TokenType type = t;
   public:
     SimpleToken(){};
-    TokenType getType() const
+
+    TokenType getType() const override
     {
         return this->type;
     }
 
     
-    std::string str() override 
+    std::string str() const override 
     {        
         std::ostringstream os;
         os << *this;
@@ -106,7 +98,7 @@ class ContentToken : public SimpleToken<TYPE>
   public:
     ContentToken(const T &content_) : content(content_) {};
 
-    std::string str() override 
+    std::string str() const override
     {
         std::ostringstream os;
         os << *this;
