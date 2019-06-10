@@ -1,3 +1,4 @@
+#pragma once
 
 #include <string>
 #include <vector>
@@ -9,27 +10,35 @@ namespace alisp
 
 
 
-class Name
+class ErrorMessanger
 {
   private:
 
     std::string current_file;
     std::string current_input;
-
+    std::vector<std::string> lines;
+    
+    bool file_input = false;
 
   public:
-    Name();
+
+
+    ErrorMessanger();
+
+
+    void set_input(std::string input);
+    void set_file(std::string file);
 
     
-    void lexer_error(int char_num,
-                     int line_num,
-                 const std::string& msg,
-                 const std::vector<std::string> input);
+    void lexer_error(size_t char_num,
+                     size_t line_num,
+                     const std::string& msg) const;
 
-    void parser_error(const Token& token,
-                      const std::string& msg);
-
-    void runtime_error(const std::string& msg);
+    
+    void parser_error(const ALToken& token,
+                      const std::string& msg) const;
+    
+    void runtime_error(const std::string& msg) const;
     
     
 };

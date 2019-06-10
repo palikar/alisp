@@ -178,8 +178,10 @@ set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL)
 
 
-
 find_package(clara)
+
+
+find_package(rang)
 
 
 

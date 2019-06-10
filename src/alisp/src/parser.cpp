@@ -5,7 +5,7 @@ namespace alisp
 {
 
 
-ALParser::ALParser(const std::vector<alisp::Token>& tokens_) :
+ALParser::ALParser(const std::vector<alisp::ALToken>& tokens_) :
     tokens(tokens_),
     current_token(0)
 {}
@@ -16,12 +16,12 @@ void ALParser::nextToken()
     ++(this->current_token);
 }
 
-Token ALParser::peek()
+ALToken ALParser::peek()
 {
     return this->tokens[this->current_token+1];
 }
     
-std::optional<Token> ALParser::currentToken()
+std::optional<ALToken> ALParser::currentToken()
 {
     if (this->current_token >= tokens.size())
     {
@@ -30,9 +30,9 @@ std::optional<Token> ALParser::currentToken()
     return this->tokens[this->current_token];
 }
 
-std::vector<Object*> ALParser::parseWhole()
+std::vector<ALObject*> ALParser::parseWhole()
 {
-    std::vector<Object*> objs;
+    std::vector<ALObject*> objs;
     while (this->current_token < this->tokens.size())
     {
         objs.push_back(parse());
@@ -40,22 +40,22 @@ std::vector<Object*> ALParser::parseWhole()
     return objs;
 }
 
-Object* ALParser::parse()
+ALObject* ALParser::parse()
 {
         
     auto tok = currentToken();
     if (!tok)
         return nullptr;
 
-    Token& token = tok.value();
+    ALToken& token = tok.value();
         
     switch (token.getType()) {
             
       case TokenType::LEFT_BRACKET: {
-          Object *list = new Object(ObjectType::LIST);
+          ALObject *list = new ALObject(ObjectType::LIST);
               
-          list->content = std::vector<Object*>();
-          auto& obj_list = std::get<std::vector<Object*>>(list->content);
+          list->content = std::vector<ALObject*>();
+          auto& obj_list = std::get<std::vector<ALObject*>>(list->content);
 
           nextToken();
           while(true)
@@ -75,7 +75,7 @@ Object* ALParser::parse()
                   break;
               }
                   
-              Object* next_obj = parse();
+              ALObject* next_obj = parse();
               if(next_obj != nullptr)
               {
                   obj_list.push_back(next_obj);
@@ -86,28 +86,28 @@ Object* ALParser::parse()
       }
               
       case TokenType::STRING : {
-          Object *str = new Object(ObjectType::STRING);
+          ALObject *str = new ALObject(ObjectType::STRING);
           str->content = token.getContentAs<std::string>();
           nextToken();
           return str;
       }
               
       case TokenType::NUMBER : {
-          Object *num = new Object(ObjectType::INT);
+          ALObject *num = new ALObject(ObjectType::INT);
           num->content = token.getContentAs<int>();
           nextToken();
           return num;
       }
 
           case TokenType::REAL_NUMBER : {
-              Object *num = new Object(ObjectType::REAL);
+              ALObject *num = new ALObject(ObjectType::REAL);
               num->content = token.getContentAs<float>();
               nextToken();
               return num;
           }
               
           case TokenType::ID : {
-              Object *symbol = new Object(ObjectType::SYMBOL);
+              ALObject *symbol = new ALObject(ObjectType::SYMBOL);
               symbol->content = token.getContentAs<std::string>();
               nextToken();
               return symbol;
@@ -119,11 +119,11 @@ Object* ALParser::parse()
           }
 
           case TokenType::QUOTE : {
-              Object *cell = new Object(ObjectType::CELL);
+              ALObject *cell = new ALObject(ObjectType::CELL);
 
               Cell cell_obj{};
 
-              cell_obj.con = new Object(ObjectType::SYMBOL);
+              cell_obj.con = new ALObject(ObjectType::SYMBOL);
               cell_obj.con->content = std::string{"quote"};
 
               nextToken();

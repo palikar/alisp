@@ -31,11 +31,11 @@ enum class ObjectType
 
 
 
-struct Object;
+struct ALObject;
 struct Cell
 {
-    Object* con;
-    Object* cdr;
+    ALObject* con;
+    ALObject* cdr;
 };
 
 
@@ -43,23 +43,22 @@ struct Cell
 class Env;
 class Args;
 
-typedef Object *Procedure(Env* env, Args* args);
+typedef ALObject *Procedure(Env* env, Args* args);
 
-struct Object
+struct ALObject
 {
     ObjectType type;
     std::variant<int,
                  float,
+                 Cell,
                  std::string,
-                 std::vector<Object*>, 
-                 Cell
-                 > content;
+                 std::vector<ALObject*> > content;
 
-    Object(ObjectType type_):type(type_),content(){};
-    Object():content(){};
+    ALObject(ObjectType type_):type(type_),content(){};
+    ALObject():content(){};
 };
 
 
-void printObject(Object* obj);
+void printObject(ALObject* obj);
 
 }

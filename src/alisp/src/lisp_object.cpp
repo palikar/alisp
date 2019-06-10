@@ -2,7 +2,8 @@
 
 namespace alisp
 {
-void printObject(Object* obj)
+
+void printObject(ALObject* obj)
 {
     switch (obj->type) {
 
@@ -37,7 +38,7 @@ void printObject(Object* obj)
 
       case ObjectType::LIST : {
           std::cout << "(";
-          for(auto* o :  std::get<std::vector<Object*>>(obj->content))
+          for(auto* o :  std::get<std::vector<ALObject*>>(obj->content))
           {
               printObject(o);
           }

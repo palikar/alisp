@@ -9,7 +9,7 @@
 #include <cmath>
 
 #include "alisp/alisp/common_lexer.hpp"
-
+#include "alisp/alisp/error_messaging.hpp"
 
 namespace alisp
 {
@@ -18,13 +18,15 @@ namespace alisp
 class ALLexer
 {
   private:
-    int char_num = 0;
-    int line_num = 0;
+    size_t char_num = 0;
+    size_t line_num = 0;
+
+    const ErrorMessanger& err;
     
   public:
-    ALLexer();
-    std::vector<alisp::Token> tokenize(const std::string& input);
+    ALLexer(const ErrorMessanger& err_);
 
+    std::vector<alisp::ALToken> tokenize(const std::string& input);
   
 };
 

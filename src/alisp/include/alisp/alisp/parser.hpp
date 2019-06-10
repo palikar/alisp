@@ -25,20 +25,20 @@ class ALParser
 {
   private:
 
-    std::vector<alisp::Token> tokens;
+    std::vector<alisp::ALToken> tokens;
     size_t current_token;
 
   public:
 
-    ALParser(const std::vector<alisp::Token>& tokens_);
+    ALParser(const std::vector<alisp::ALToken>& tokens_);
     
-    Token peek();
+    ALToken peek();
     void nextToken();
-    std::optional<Token> currentToken();
+    std::optional<ALToken> currentToken();
 
 
-    std::vector<Object*> parseWhole();
-    Object* parse();
+    std::vector<ALObject*> parseWhole();
+    ALObject* parse();
 
 
 };

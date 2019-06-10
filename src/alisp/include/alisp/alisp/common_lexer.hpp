@@ -32,20 +32,18 @@ enum class TokenType
 std::string get_token_str(TokenType type);
 
 
+class ALToken;
+inline std::ostream& operator<<(std::ostream& os, const ALToken& x);
 
-
-class Token;
-inline std::ostream& operator<<(std::ostream& os, const Token& x);
-
-class Token
+class ALToken
 {
   public:
 
 
-    Token(TokenType type_) : type(type_), content(){};
+    ALToken(TokenType type_) : type(type_), content(){};
 
     template<typename T>
-    Token(TokenType type_, T content_) : type(type_){
+    ALToken(TokenType type_, T content_) : type(type_){
         content = std::move(content_);
     }
 
@@ -70,7 +68,7 @@ class Token
 
     
 
-    friend inline std::ostream& operator<<(std::ostream& os, const Token& x);
+    friend inline std::ostream& operator<<(std::ostream& os, const ALToken& x);
   private:
     TokenType type;
     std::variant<int, float, std::string> content;
@@ -78,7 +76,7 @@ class Token
 
 
 
-inline std::ostream& operator<<(std::ostream& os, const Token& x)
+inline std::ostream& operator<<(std::ostream& os, const ALToken& x)
 {
     os << "<Token (";
     os << get_token_str(x.getType());
