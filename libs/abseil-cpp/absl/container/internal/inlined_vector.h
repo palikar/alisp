@@ -16,22 +16,54 @@
 #define ABSL_CONTAINER_INTERNAL_INLINED_VECTOR_INTERNAL_H_
 
 #include <cstddef>
+#include <cstring>
 #include <iterator>
 #include <memory>
 #include <utility>
 
 #include "absl/container/internal/compressed_tuple.h"
+#include "absl/memory/memory.h"
 #include "absl/meta/type_traits.h"
 
 namespace absl {
 namespace inlined_vector_internal {
 
-template <typename InlinedVector>
-class Storage;
+template <typename Iterator>
+using IsAtLeastForwardIterator = std::is_convertible<
+    typename std::iterator_traits<Iterator>::iterator_category,
+    std::forward_iterator_tag>;
 
-template <template <typename, size_t, typename> class InlinedVector, typename T,
-          size_t N, typename A>
-class Storage<InlinedVector<T, N, A>> {
+template <typename AllocatorType, typename ValueType, typename SizeType>
+void DestroyElements(AllocatorType* alloc_ptr, ValueType* destroy_first,
+                     SizeType destroy_size) {
+  using AllocatorTraits = absl::allocator_traits<AllocatorType>;
+  for (SizeType i = 0; i < destroy_size; ++i) {
+    AllocatorTraits::destroy(*alloc_ptr, destroy_first + i);
+  }
+
+#ifndef NDEBUG
+  // Overwrite unused memory with `0xab` so we can catch uninitialized usage.
+  //
+  // Cast to `void*` to tell the compiler that we don't care that we might be
+  // scribbling on a vtable pointer.
+  void* memory = reinterpret_cast<void*>(destroy_first);
+  size_t memory_size = sizeof(ValueType) * destroy_size;
+  std::memset(memory, 0xab, memory_size);
+#endif  // NDEBUG
+}
+
+template <typename AllocatorType>
+struct StorageView {
+  using pointer = typename AllocatorType::pointer;
+  using size_type = typename AllocatorType::size_type;
+
+  pointer data;
+  size_type size;
+  size_type capacity;
+};
+
+template <typename T, size_t N, typename A>
+class Storage {
  public:
   using allocator_type = A;
   using value_type = typename allocator_type::value_type;
@@ -46,10 +78,16 @@ class Storage<InlinedVector<T, N, A>> {
   using const_iterator = const_pointer;
   using reverse_iterator = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-  using AllocatorTraits = std::allocator_traits<allocator_type>;
+  using AllocatorTraits = absl::allocator_traits<allocator_type>;
+
+  using StorageView = inlined_vector_internal::StorageView<allocator_type>;
+
+  Storage() : metadata_() {}
 
   explicit Storage(const allocator_type& alloc)
       : metadata_(alloc, /* empty and inlined */ 0) {}
+
+  ~Storage() { DestroyAndDeallocate(); }
 
   size_type GetSize() const { return GetSizeAndIsAllocated() >> 1; }
 
@@ -75,10 +113,19 @@ class Storage<InlinedVector<T, N, A>> {
     return data_.allocated.allocated_capacity;
   }
 
-  allocator_type& GetAllocator() { return metadata_.template get<0>(); }
+  StorageView MakeStorageView() {
+    return GetIsAllocated() ? StorageView{GetAllocatedData(), GetSize(),
+                                          GetAllocatedCapacity()}
+                            : StorageView{GetInlinedData(), GetSize(),
+                                          static_cast<size_type>(N)};
+  }
 
-  const allocator_type& GetAllocator() const {
-    return metadata_.template get<0>();
+  allocator_type* GetAllocPtr() {
+    return std::addressof(metadata_.template get<0>());
+  }
+
+  const allocator_type* GetAllocPtr() const {
+    return std::addressof(metadata_.template get<0>());
   }
 
   void SetAllocatedSize(size_type size) {
@@ -89,11 +136,8 @@ class Storage<InlinedVector<T, N, A>> {
 
   void AddSize(size_type count) { GetSizeAndIsAllocated() += count << 1; }
 
-  void SetAllocatedData(pointer data) {
+  void SetAllocatedData(pointer data, size_type capacity) {
     data_.allocated.allocated_data = data;
-  }
-
-  void SetAllocatedCapacity(size_type capacity) {
     data_.allocated.allocated_capacity = capacity;
   }
 
@@ -106,6 +150,8 @@ class Storage<InlinedVector<T, N, A>> {
     using std::swap;
     swap(data_.allocated, other->data_.allocated);
   }
+
+  void DestroyAndDeallocate();
 
  private:
   size_type& GetSizeAndIsAllocated() { return metadata_.template get<1>(); }
@@ -136,6 +182,20 @@ class Storage<InlinedVector<T, N, A>> {
   Metadata metadata_;
   Data data_;
 };
+
+template <typename T, size_t N, typename A>
+void Storage<T, N, A>::DestroyAndDeallocate() {
+  namespace ivi = inlined_vector_internal;
+
+  StorageView storage_view = MakeStorageView();
+
+  ivi::DestroyElements(GetAllocPtr(), storage_view.data, storage_view.size);
+
+  if (GetIsAllocated()) {
+    AllocatorTraits::deallocate(*GetAllocPtr(), storage_view.data,
+                                storage_view.capacity);
+  }
+}
 
 }  // namespace inlined_vector_internal
 }  // namespace absl

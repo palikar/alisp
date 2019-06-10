@@ -32,6 +32,8 @@ option(BUILD_DOC "Build the project's documentation" ON)
 
 message("+++++++${PROJECT_NAME}++++++++++")
 
+set(CMAKE_CXX_STANDARD 17)
+
 add_library(project_warnings INTERFACE)
 add_library(project_options INTERFACE)
 

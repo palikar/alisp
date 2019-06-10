@@ -1,6 +1,11 @@
 
 add_executable(${PROJECT_NAME}_alisp
     src/main.cpp
+    src/common_lexer.cpp
+    src/lexer.cpp
+    src/main.cpp    
+    src/parser.cpp
+    src/lisp_object.cpp
     )
 
 
@@ -14,15 +19,17 @@ target_link_libraries(${PROJECT_NAME}_alisp
     project_options
     project_warnings
     PUBLIC
-    alisp_common
+    alisp_common    
     Threads::Threads
     fmt::fmt
     spdlog::spdlog
+    absl::strings
+    
     )
 
 
 
-install(TARGETS alisp_alisp
+install(TARGETS ${PROJECT_NAME}_alisp
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
     RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}

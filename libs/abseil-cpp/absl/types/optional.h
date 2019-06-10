@@ -64,34 +64,6 @@ using std::nullopt;
 #include "absl/types/bad_optional_access.h"
 #include "absl/types/internal/optional.h"
 
-// ABSL_OPTIONAL_USE_INHERITING_CONSTRUCTORS
-//
-// Inheriting constructors is supported in GCC 4.8+, Clang 3.3+ and MSVC 2015.
-// __cpp_inheriting_constructors is a predefined macro and a recommended way to
-// check for this language feature, but GCC doesn't support it until 5.0 and
-// Clang doesn't support it until 3.6.
-// Also, MSVC 2015 has a bug: it doesn't inherit the constexpr template
-// constructor. For example, the following code won't work on MSVC 2015 Update3:
-// struct Base {
-//   int t;
-//   template <typename T>
-//   constexpr Base(T t_) : t(t_) {}
-// };
-// struct Foo : Base {
-//   using Base::Base;
-// }
-// constexpr Foo foo(0);  // doesn't work on MSVC 2015
-#if defined(__clang__)
-#if __has_feature(cxx_inheriting_constructors)
-#define ABSL_OPTIONAL_USE_INHERITING_CONSTRUCTORS 1
-#endif
-#elif (defined(__GNUC__) &&                                       \
-       (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 8)) || \
-    (__cpp_inheriting_constructors >= 200802) ||                  \
-    (defined(_MSC_VER) && _MSC_VER >= 1910)
-#define ABSL_OPTIONAL_USE_INHERITING_CONSTRUCTORS 1
-#endif
-
 namespace absl {
 
 // nullopt_t
@@ -449,7 +421,9 @@ class optional : private optional_internal::optional_data<T>,
   //
   // Accesses the underlying `T` value of an `optional`. If the `optional` is
   // empty, behavior is undefined.
-  constexpr const T& operator*() const & { return reference(); }
+  constexpr const T& operator*() const& {
+    return ABSL_ASSERT(this->engaged_), reference();
+  }
   T& operator*() & {
     assert(this->engaged_);
     return reference();
@@ -535,7 +509,7 @@ class optional : private optional_internal::optional_data<T>,
   template <typename U>
   T value_or(U&& v) && {  // NOLINT(build/c++11)
     static_assert(std::is_move_constructible<value_type>::value,
-                  "optional<T>::value_or: T must by copy constructible");
+                  "optional<T>::value_or: T must by move constructible");
     static_assert(std::is_convertible<U&&, value_type>::value,
                   "optional<T>::value_or: U must be convertible to T");
     return static_cast<bool>(*this) ? std::move(**this)
@@ -791,7 +765,6 @@ struct hash<absl::optional<T> >
 
 }  // namespace std
 
-#undef ABSL_OPTIONAL_USE_INHERITING_CONSTRUCTORS
 #undef ABSL_MSVC_CONSTEXPR_BUG_IN_UNION_LIKE_CLASS
 
 #endif  // ABSL_HAVE_STD_OPTIONAL
