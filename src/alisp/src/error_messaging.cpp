@@ -18,37 +18,32 @@ static const size_t LINES_CONTEXT = 2;
 // static const size_t CHARS_CONTEXT = 15;
 
 
-ErrorMessanger::ErrorMessanger()
-{
 
-};
-
-
-void ErrorMessanger::set_input(std::string input)
-{
+	void ErrorMessanger::set_input(std::string input)
+	{
     this->current_input = std::move(input);
     this->lines = absl::StrSplit(this->current_input, '\n');
-}
+	}
 
 
-void ErrorMessanger::set_file(std::string file)
-{
+	void ErrorMessanger::set_file(std::string file)
+	{
     if (file.empty())
     {
-        this->file_input = false;
+			this->file_input = false;
     }
     else
     {
-        this->current_file = std::move(file);
-        this->file_input = true;
+			this->current_file = std::move(file);
+			this->file_input = true;
     }
-}
+	}
 
     
-void ErrorMessanger::lexer_error(size_t char_num,
-                                 size_t line_num,
-                                 const std::string& msg) const
-{
+	void ErrorMessanger::lexer_error(size_t char_num,
+																	 size_t line_num,
+																	 const std::string& msg) const
+	{
 
     std::cout << rang::fg::red << "Lexer error:" << rang::fg::reset;
     
@@ -89,9 +84,34 @@ void ErrorMessanger::parser_error(const ALToken& token,
 
 void ErrorMessanger::runtime_error(const std::string& msg) const
 {
-
-
+	
 }
+
+
+
+	void ErrorMessanger::lexer_error(size_t char_num,
+																	 size_t line_num,
+																	 const std::string& msg) const
+	{
+
+		std::string error_msg = absl::Substitute("Lexer error on line $0, on char $1: $2", line_num, char_num, msg);
+		throw std::runtime_error(std::move(error_msg));
+		
+	}
+
+	void ThrowingMessanger::parser_error(const ALToken& token,
+																			 const std::string& msg) const
+	{
+
+	}
+
+	void ThrowingMessanger::runtime_error(const std::string& msg) const
+	{
+	
+	}
+
+
+	
 
 
 }

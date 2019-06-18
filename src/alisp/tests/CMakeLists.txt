@@ -5,6 +5,7 @@
 
 get_target_property(TEST_SOURCES "${PROJECT_NAME}_alisp" SOURCES)
 add_executable(${PROJECT_NAME}_alisp_test
+    test_main.cpp
     test_lexer.cpp
     ../src/common_lexer.cpp
     ../src/lexer.cpp
