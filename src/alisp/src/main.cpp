@@ -24,7 +24,6 @@ int main(int, char *argv[])
     (progn
        (message "Hello World!")
        (if a (setq b 3) (setq c 4))))
-
 )"};
 
 

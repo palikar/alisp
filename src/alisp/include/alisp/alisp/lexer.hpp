@@ -24,8 +24,10 @@ class ALLexer
     const ErrorMessanger& err;
     
   public:
-    ALLexer(const ErrorMessanger& err_);
 
+    
+    explicit ALLexer(const ErrorMessanger& err_);
+    
     std::vector<alisp::ALToken> tokenize(const std::string& input);
   
 };

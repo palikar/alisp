@@ -40,10 +40,17 @@ class ALToken
   public:
 
 
-    ALToken(TokenType type_) : type(type_), content(){};
+    ALToken(TokenType type_, size_t char_n=0, size_t line=0)
+        : type(type_), content(),
+          line_num(line), char_num(char_n)
+    {};
 
     template<typename T>
-    ALToken(TokenType type_, T content_) : type(type_){
+    ALToken(TokenType type_, T content_, size_t char_n=0, size_t line=0)
+        : type(type_),
+          line_num(line), char_num(char_n)
+
+    {
         content = std::move(content_);
     }
 
@@ -67,11 +74,26 @@ class ALToken
     };
 
     
+    size_t getLine() const
+    {
+        return this->line_num;
+    };
+
+    size_t getChar() const
+    {
+        return this->char_num;
+    };
+
 
     friend inline std::ostream& operator<<(std::ostream& os, const ALToken& x);
+
+    
   private:
     TokenType type;
     std::variant<int, float, std::string> content;
+    size_t line_num;
+    size_t char_num;
+    
 };
 
 

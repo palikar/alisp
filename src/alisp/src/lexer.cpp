@@ -58,48 +58,50 @@ std::vector<alisp::ALToken> ALLexer::tokenize(const std::string& input){
                 
         if (*s == '(')
         {
-            tokens.push_back(alisp::ALToken(TokenType::LEFT_BRACKET));
+            tokens.push_back(alisp::ALToken(TokenType::LEFT_BRACKET, this->char_num, this->line_num));
         }
 
         else if (*s == ')')
         {
-            tokens.push_back(alisp::ALToken(TokenType::RIGHT_BRACKET));
+            tokens.push_back(alisp::ALToken(TokenType::RIGHT_BRACKET, this->char_num, this->line_num ));
         }
 
         else if (*s == ':')
         {
-            tokens.push_back(alisp::ALToken(TokenType::COLON));
+            tokens.push_back(alisp::ALToken(TokenType::COLON, this->char_num, this->line_num));
         }
 
         else if (*s == '\'')
         {
-            tokens.push_back(alisp::ALToken(TokenType::QUOTE));
+            tokens.push_back(alisp::ALToken(TokenType::QUOTE, this->char_num, this->line_num));
         }
 
         else if (*s == '`')
         {
-            tokens.push_back(alisp::ALToken(TokenType::BACKQUOTE));
+            tokens.push_back(alisp::ALToken(TokenType::BACKQUOTE, this->char_num, this->line_num));
         }
 
         else if (*s == '@')
         {
-            tokens.push_back(alisp::ALToken(TokenType::AT));
+            tokens.push_back(alisp::ALToken(TokenType::AT, this->char_num, this->line_num));
         }
 
         else if (*s == '&')
-        {
-            
+        {            
             std::cmatch match;
             if (std::regex_search(s, match, KEYWORD_RE))
             {
                 const std::string res = match.str(0);
                 s += res.size();
-                tokens.push_back(alisp::ALToken(TokenType::ID, std::move(res)));
+                tokens.push_back(alisp::ALToken(TokenType::ID,
+                                                std::move(res),
+                                                this->char_num,
+                                                this->line_num));
                 continue;
             }
             else
             {
-                tokens.push_back(alisp::ALToken(TokenType::AMPER));
+                tokens.push_back(alisp::ALToken(TokenType::AMPER, this->char_num, this->line_num));
             }
         }
                 
@@ -110,7 +112,10 @@ std::vector<alisp::ALToken> ALLexer::tokenize(const std::string& input){
             {
                 std::string res = match.str(0);
                 s += res.size() + 1;
-                tokens.push_back(alisp::ALToken(TokenType::STRING, std::move(res)));
+                tokens.push_back(alisp::ALToken(TokenType::STRING,
+                                                std::move(res),
+                                                this->char_num,
+                                                this->line_num));
             }
             else
             {
@@ -129,11 +134,17 @@ std::vector<alisp::ALToken> ALLexer::tokenize(const std::string& input){
                 float intpart;
                 if (std::modf(num, &intpart) == 0.0f)
                 {
-                    tokens.push_back(alisp::ALToken(TokenType::NUMBER, static_cast<int>(num)));
+                    tokens.push_back(alisp::ALToken(TokenType::NUMBER,
+                                                    static_cast<int>(num),
+                                                    this->char_num,
+                                                    this->line_num));
                 }
                 else
                 {
-                    tokens.push_back(alisp::ALToken(TokenType::REAL_NUMBER, num));
+                    tokens.push_back(alisp::ALToken(TokenType::REAL_NUMBER,
+                                                    num,
+                                                    this->char_num,
+                                                    this->line_num));
                 }
                             
 
@@ -165,6 +176,7 @@ std::vector<alisp::ALToken> ALLexer::tokenize(const std::string& input){
         ++this->char_num;
         ++s;
     }
+    
     return tokens;
 }
 
