@@ -320,6 +320,18 @@ TEST_CASE("Failing checks", "[lexer]")
 		input = R"(2.3.3)";
 		err.set_input(input);
 		REQUIRE_THROWS(toks = lex.tokenize(input));
+
+		input = R"(2ds.3)";
+		err.set_input(input);
+		REQUIRE_THROWS(toks = lex.tokenize(input));
+
+		input = R"(2d)";
+		err.set_input(input);
+		REQUIRE_THROWS(toks = lex.tokenize(input));
+
+		input = R"(2.2d)";
+		err.set_input(input);
+		REQUIRE_THROWS(toks = lex.tokenize(input));
 	}
 	
 	

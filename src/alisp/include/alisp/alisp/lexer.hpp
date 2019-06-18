@@ -19,8 +19,8 @@ namespace alisp
 
 	static const std::string ID_REG = R"(^[\/\\\*a-zA-Z_-][\/\\\*a-zA-Z0-9_-]*)";
 	static const std::regex ID_RE{ID_REG};
-
-	static const std::string NUM_REG = R"(^[+-]?[0-9.]+(?=(?:\s|\(|\)|$)))";
+ 
+	static const std::string NUM_REG = R"(^[-+]?[0-9]*\.?[0-9]+(?=(?:\s|\(|\)|$)))";
 	static const std::regex NUM_RE{NUM_REG};
 
 	static const std::string KEYWORD_REG = R"(&optional|&rest)";
