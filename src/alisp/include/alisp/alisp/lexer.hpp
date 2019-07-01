@@ -39,8 +39,10 @@ class ALLexer
     
   public:
 
+    
     explicit ALLexer(const ErrorHandler& err_) : err(err_)
-    {}
+    {
+    }
     
     std::vector<alisp::ALToken> tokenize(const std::string& input)
     {
