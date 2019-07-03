@@ -6,7 +6,7 @@
 #include "alisp/alisp/parser.hpp"
 #include "alisp/alisp/error_messaging.hpp"
 
-int main(int, char *argv[])
+int main(int, char** /* argv[]*/)
 {
 
     
