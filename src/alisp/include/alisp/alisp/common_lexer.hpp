@@ -8,8 +8,8 @@
 namespace alisp
 {
 
-	enum class TokenType
-	{
+enum class TokenType
+{
     ID,
     STRING,
     NUMBER,
@@ -27,68 +27,68 @@ namespace alisp
     BACKQUOTE,
     AT,
     COLON
-	};
+};
 
-	std::string get_token_str(TokenType type);
+std::string get_token_str(TokenType type);
 
 
-	class ALToken;
-	inline std::ostream& operator<<(std::ostream& os, const ALToken& x);
-	inline bool operator==(const ALToken &lhs, const ALToken &rhs);
-	inline bool operator!=(const ALToken &lhs, const ALToken &rhs);
+class ALToken;
+inline std::ostream& operator<<(std::ostream& os, const ALToken& x);
+inline bool operator==(const ALToken &lhs, const ALToken &rhs);
+inline bool operator!=(const ALToken &lhs, const ALToken &rhs);
 
-	class ALToken
-	{
+class ALToken
+{
   public:
 
 
     ALToken(TokenType type_, size_t char_n=0, size_t line=0)
-			: type(type_), content(),
-				line_num(line), char_num(char_n)
-			{};
+        : type(type_), content(),
+          line_num(line), char_num(char_n)
+    {};
 
     template<typename T>
     ALToken(TokenType type_, T content_, size_t char_n=0, size_t line=0)
-			: type(type_),
-				line_num(line), char_num(char_n)
+        : type(type_),
+          line_num(line), char_num(char_n)
 
-			{
+    {
         content = std::move(content_);
-			}
+    }
 
 
     template<typename T>
     T getContentAs() const
-			{
+    {
         return std::get<T>(this->content);
-			}
+    }
     
     std::string str() const
-			{
+    {
         std::ostringstream os;
         os << *this;
         return os.str();
-			};
+    };
 
     TokenType getType() const
-			{
+    {
         return type;
-			};
+    };
 
     
     size_t getLine() const
-			{
+    {
         return this->line_num;
-			};
+    };
 
     size_t getChar() const
-			{
+    {
         return this->char_num;
-			};
+    };
 
 
-		friend inline bool operator==(const ALToken &lhs, const ALToken &rhs);
-		friend inline std::ostream& operator<<(std::ostream& os, const ALToken& x);
+    friend inline bool operator==(const ALToken &lhs, const ALToken &rhs);
+    friend inline std::ostream& operator<<(std::ostream& os, const ALToken& x);
 
     
   private:
@@ -97,38 +97,38 @@ namespace alisp
     size_t line_num;
     size_t char_num;
     
-	};
+};
 
 
 
-	inline std::ostream& operator<<(std::ostream& os, const ALToken& x)
-	{
+inline std::ostream& operator<<(std::ostream& os, const ALToken& x)
+{
     os << "<Token (";
     os << get_token_str(x.getType());
     os << ") ";
 
     if (const auto val1 = std::get_if<0>(&x.content)) 
-			os << *val1;
+        os << *val1;
 
     else if (const auto val2 = std::get_if<1>(&x.content)) 
-			os << *val2;
+        os << *val2;
 
     else if (const auto val3 = std::get_if<2>(&x.content)) 
-			os << *val3;
+        os << *val3;
     
     os << ">";
     return os;
-	}
+}
 
-	inline bool operator==(const ALToken &lhs, const ALToken &rhs)
-	{
-		return lhs.getType() == rhs.getType();
-	}
+inline bool operator==(const ALToken &lhs, const ALToken &rhs)
+{
+    return lhs.getType() == rhs.getType();
+}
 
-	inline bool operator!=(const ALToken &lhs, const ALToken &rhs)
-	{
-		return lhs.getType() != rhs.getType();
-	}
+inline bool operator!=(const ALToken &lhs, const ALToken &rhs)
+{
+    return lhs.getType() != rhs.getType();
+}
 
 	
 

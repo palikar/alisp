@@ -143,7 +143,11 @@ class ALLexer
                 }
             }
 
-            else if(std::isdigit(*s) or ((*s=='-' or *s=='+') and std::isdigit(*(s+1))))
+            // TODO: This check is ugly, fix it!
+            else if(std::isdigit(*s)
+                    or ((*s=='-' or *s=='+') and std::isdigit(*(s+1)))
+                    or ((*s=='.') and std::isdigit(*(s+1)))
+                    or (((*(s)=='-' or *(s)=='+') and *(s+1)=='.') and std::isdigit(*(s+2))))
             {
                 std::cmatch match;
                 if (std::regex_search(s, match, NUM_RE)) {
@@ -186,14 +190,14 @@ class ALLexer
             }
 
             ++this->char_num;
-            ++s;
-        }
+                    ++s;
+                    }
     
-        return tokens;
+            return tokens;
 
-    }
+        }
   
-};
+    };
 
 
 }
