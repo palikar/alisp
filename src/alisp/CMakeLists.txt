@@ -7,6 +7,7 @@ add_executable(${PROJECT_NAME}_alisp
     src/parser.cpp
     src/lisp_object.cpp
     src/error_messaging.cpp
+    src/prompt.cpp
     )
 
 
@@ -20,12 +21,14 @@ target_link_libraries(${PROJECT_NAME}_alisp
     project_options
     project_warnings
     PUBLIC
+    clara::clara
     rang::rang
     alisp_common    
     Threads::Threads
     fmt::fmt
     spdlog::spdlog
     absl::strings
+    readline
     )
 
 

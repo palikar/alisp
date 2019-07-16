@@ -58,35 +58,35 @@ endif()
 
 
 target_compile_options(project_warnings
-  INTERFACE
-  -Wall
-  # -Werror
-  -Wextra
-  -Wshadow
-  -Wnon-virtual-dtor
-  -Wold-style-cast
-  -Wcast-align
-  # -Wunused
-  -Woverloaded-virtual
-  -Wpedantic
-  -Wconversion
-  -Wsign-conversion
-  -Wnull-dereference
-  -Wdouble-promotion
-  -Wformat=2
-  )
+    INTERFACE
+    -Wall
+    # -Werror
+    -Wextra
+    -Wshadow
+    -Wnon-virtual-dtor
+    -Wold-style-cast
+    -Wcast-align
+    # -Wunused
+    -Woverloaded-virtual
+    -Wpedantic
+    -Wconversion
+    -Wsign-conversion
+    -Wnull-dereference
+    -Wdouble-promotion
+    -Wformat=2
+    )
 
 
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     target_compile_options(project_warnings
-      INTERFACE
-      -Wmisleading-indentation
-      -Wduplicated-cond
-      -Wduplicated-branches
-      -Wlogical-op
-      -Wuseless-cast
-      )
+        INTERFACE
+        -Wmisleading-indentation
+        -Wduplicated-cond
+        -Wduplicated-branches
+        -Wlogical-op
+        -Wuseless-cast
+        )
     target_link_libraries(project_options INTERFACE stdc++fs)
 endif()
 
@@ -102,51 +102,51 @@ endif ()
 
 find_program(CCACHE ccache)
 if(CCACHE)
-	set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
 endif()
 
 
 
 if(ENABLE_CPPCHECK)
-	find_program(CPPCHECK cppcheck)
-	if(CPPCHECK)
-		set(CMAKE_CXX_CPPCHECK
-			${CPPCHECK}
-			--suppress=syntaxError
-			--enable=all
-			--inconclusive)
-	else()
-		message(SEND_ERROR "cppcheck requested but executable not found")
-	endif()
+    find_program(CPPCHECK cppcheck)
+    if(CPPCHECK)
+	set(CMAKE_CXX_CPPCHECK
+	    ${CPPCHECK}
+	    --suppress=syntaxError
+	    --enable=all
+	    --inconclusive)
+    else()
+	message(SEND_ERROR "cppcheck requested but executable not found")
+    endif()
 endif()
 
 if(ENABLE_CLANG_TIDY)
-	find_program(CLANGTIDY clang-tidy)
-	if(CLANGTIDY)
-		set(CMAKE_CXX_CLANG_TIDY ${CLANGTIDY})
-	else()
-		message(SEND_ERROR "clang-tidy requested but executable not found")
-	endif()
+    find_program(CLANGTIDY clang-tidy)
+    if(CLANGTIDY)
+	set(CMAKE_CXX_CLANG_TIDY ${CLANGTIDY})
+    else()
+	message(SEND_ERROR "clang-tidy requested but executable not found")
+    endif()
 endif()
 
 
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-	message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-	file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
+    message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+    file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
         "${CMAKE_BINARY_DIR}/conan.cmake")
 endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 conan_check(REQUIRED)
 conan_cmake_run(
-  CONANFILE
-  conanfile.txt
-  BASIC_SETUP
-  CONAN_COMMAND
-  ${CONAN_CMD}
-  CMAKE_TARGETS
-  BUILD
-  missing)
+    CONANFILE
+    conanfile.txt
+    BASIC_SETUP
+    CONAN_COMMAND
+    ${CONAN_CMD}
+    CMAKE_TARGETS
+    BUILD
+    missing)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
@@ -156,7 +156,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 
 if(ENABLE_TESTING)
-	enable_testing()
+    enable_testing()
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
@@ -171,9 +171,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 
 if(CONAN_CATCH2_ROOT_DEBUG)
-	include(${CONAN_CATCH2_ROOT_DEBUG}/lib/cmake/Catch2/Catch.cmake)
+    include(${CONAN_CATCH2_ROOT_DEBUG}/lib/cmake/Catch2/Catch.cmake)
 else()
-	include(${CONAN_CATCH2_ROOT}/lib/cmake/Catch2/Catch.cmake)
+    include(${CONAN_CATCH2_ROOT}/lib/cmake/Catch2/Catch.cmake)
 endif()
 find_package(Catch2 REQUIRED)
 
@@ -215,7 +215,7 @@ configure_file (
     "${PROJECT_SOURCE_DIR}/src/include/${PROJECT_NAME}/config.hpp.in"
     "${PROJECT_BINARY_DIR}/src/include/${PROJECT_NAME}/config.hpp"
     )
-      
+
 include_directories("${PROJECT_BINARY_DIR}/src/include")
 
 install (FILES
@@ -233,25 +233,25 @@ set (CPACK_PACKAGE_VERSION_PATCH "${MF_VERSION_PATCH}")
 include (CPack)
 
 if(BUILD_DOC)
-	find_package(Doxygen)
-	if (DOXYGEN_FOUND)
-		# set input and output files
-		set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in)
-		set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+    find_package(Doxygen)
+    if (DOXYGEN_FOUND)
+	# set input and output files
+	set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in)
+	set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
-		# request to configure the file
-		configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-		message(STATUS "Doxygen build started")
+	# request to configure the file
+	configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+	message(STATUS "Doxygen build started")
 
-		# note the option ALL which allows to build the docs together with the application
-		add_custom_target(doc ALL
-			COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			COMMENT "Generating API documentation with Doxygen"
-			VERBATIM )
-	else (DOXYGEN_FOUND)
-		message("Doxygen need to be installed to generate the doxygen documentation")
-	endif (DOXYGEN_FOUND)
+	# note the option ALL which allows to build the docs together with the application
+	add_custom_target(doc ALL
+	    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+	    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	    COMMENT "Generating API documentation with Doxygen"
+	    VERBATIM )
+    else (DOXYGEN_FOUND)
+	message("Doxygen need to be installed to generate the doxygen documentation")
+    endif (DOXYGEN_FOUND)
 endif()
 
 
