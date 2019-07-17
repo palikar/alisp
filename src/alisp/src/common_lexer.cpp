@@ -13,6 +13,7 @@ std::string get_token_str(TokenType type)
     switch (type) {
         ENUM_CASE(ID);
         ENUM_CASE(STRING);
+        ENUM_CASE(KEYWORD);
         ENUM_CASE(NUMBER);
         ENUM_CASE(REAL_NUMBER);
         

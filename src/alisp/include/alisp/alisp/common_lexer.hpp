@@ -12,6 +12,7 @@ enum class TokenType
 {
     ID,
     STRING,
+    KEYWORD,
     NUMBER,
     REAL_NUMBER,
     

@@ -7,6 +7,9 @@
 #include <utility>
 #include <locale>
 #include <cmath>
+#include <unordered_map>
+#include <array>
+#include <tuple>
 
 #include "alisp/alisp/common_lexer.hpp"
 #include "alisp/alisp/error_messaging.hpp"
@@ -26,7 +29,65 @@ static const std::regex NUM_RE{NUM_REG};
 static const std::string KEYWORD_REG = R"(&optional|&rest)";
 static const std::regex KEYWORD_RE{KEYWORD_REG};
 
-	
+
+enum Alphabet
+{
+    symbol_alphabet = 0,
+    id_alphabet,
+    whitespace_alphabet,
+    max_alphabet,
+    lengthof_alphabet = 256
+};
+
+
+struct Static_String
+{
+    template<size_t N>
+    constexpr Static_String(const char (&str)[N]) noexcept
+        : m_size(N-1), data(&str[0])
+    {
+    }
+
+    constexpr size_t size() const noexcept {
+        return m_size;
+    }
+
+    constexpr const char *c_str() const noexcept {
+        return data;
+    }
+
+    constexpr auto begin() const noexcept {
+        return data;
+    }
+
+    constexpr auto end() const noexcept {
+        return data + m_size;
+    }
+
+    constexpr bool operator==(const std::string_view &other) const noexcept {
+        //return std::string_view(data, m_size) == other;
+        auto b1 = begin();
+        const auto e1 = end();
+        auto b2 = other.begin();
+        const auto e2 = other.end();
+
+        if (e1 - b1 != e2 - b2) { return false; }
+
+        while (b1 != e1) {
+            if (*b1 != *b2) { return false; }
+            ++b1; ++b2;
+        }
+        return true;
+    }
+
+    bool operator==(const std::string &t_str) const noexcept {
+        return std::equal(begin(), end(), std::cbegin(t_str), std::cend(t_str));
+    }
+
+    const size_t m_size;
+    const char *data = nullptr;
+};
+
 
 template <class ErrorHandler>
 class ALLexer
@@ -36,7 +97,55 @@ class ALLexer
     size_t line_num = 0;
 
     const ErrorHandler& err;
+
+    constexpr static std::array<Static_String, 2> create_keywords() noexcept
+    {
+        std::array<Static_String, 2> keywords_vec = {{
+                Static_String{"&optional"},
+                Static_String{"&rest"}
+            }};
+        return keywords_vec;
+    }
     
+    constexpr static Static_String keyword_start{"&"};
+    constexpr static auto keywords = create_keywords();
+
+    constexpr static std::unordered_map<char, TokenType> create_symbols() noexcept
+    {
+        std::unordered_map<char, TokenType> symbols_vec = {{
+                {'(', TokenType::LEFT_BRACE},
+                {')',TokenType::RIGHT_BRACE},
+                {'{',TokenType::LEFT_BRACKET},
+                {'}',TokenType::RIGHT_BRACKET},
+                {'@', TokenType::AT},
+                {'\'',TokenType::QUOTE}
+            }};
+        return symbols_vec;
+    }
+
+    // constexpr static auto symbols_map = create_symbols();
+
+    template<typename Array2D, typename First, typename Second>
+    constexpr static void set_alphabet(Array2D &array, const First first, const Second second) noexcept
+    {
+        auto *first_ptr = &std::get<0>(array) + static_cast<std::size_t>(first);
+        auto *second_ptr = &std::get<0>(*first_ptr) + static_cast<std::size_t>(second);
+        *second_ptr = true;
+    }
+    
+    constexpr static std::array<std::array<bool, lengthof_alphabet>, max_alphabet> build_alphabet() noexcept
+    {
+        std::array<std::array<bool, Alphabet::lengthof_alphabet>, Alphabet::max_alphabet> alph{};
+
+        for (const auto& [sym, tok] : create_symbols())
+        {
+            set_alphabet(alph, Alphabet::symbol_alphabet, sym);
+        }
+        
+        return alph;
+    }
+
+
   public:
 
     
@@ -191,9 +300,9 @@ class ALLexer
 
             ++this->char_num;
                     ++s;
-                    }
+        }
     
-            return tokens;
+        return tokens;
 
         }
   
