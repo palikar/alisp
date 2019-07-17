@@ -133,11 +133,13 @@ TEST_CASE("Basic Lexer Tests", "[lexer]")
 		}
 
 		SECTION("Input with lots of spaces and new lines"){
-			input = R"((    define   (arg1
- arg2  ) "documentation"
+			input = R"((define (arg1
+ arg2 ) "documentation"
     (progn
                (setq s 3))
 ))";
+
+            
             
 			err.set_input(input);
 			toks = lex.tokenize(input);
@@ -239,7 +241,7 @@ TEST_CASE("More complicated Lexer Tests", "[lexer]")
         auto output = std::vector({alisp::ALToken(alisp::TokenType::LEFT_BRACKET),
                                    alisp::ALToken(alisp::TokenType::ID),          
                                    alisp::ALToken(alisp::TokenType::ID),          
-                                   alisp::ALToken(alisp::TokenType::ID),       
+                                   alisp::ALToken(alisp::TokenType::KEYWORD),
                                    alisp::ALToken(alisp::TokenType::RIGHT_BRACKET)});
 		err.set_input(input);
 		toks = lex.tokenize(input);
@@ -255,23 +257,22 @@ TEST_CASE("More complicated Lexer Tests", "[lexer]")
                     alisp::ALToken(alisp::TokenType::LEFT_BRACKET),
                         alisp::ALToken(alisp::TokenType::ID),
                         alisp::ALToken(alisp::TokenType::ID),
-                        alisp::ALToken(alisp::TokenType::ID),
+                        alisp::ALToken(alisp::TokenType::KEYWORD),
                         alisp::ALToken(alisp::TokenType::RIGHT_BRACKET)}));
 	}
 
-	SECTION("Amper")
-	{
-		input = R"((setq dsf &nonword))";
-		err.set_input(input);
-		toks = lex.tokenize(input);
-		REQUIRE_THAT(toks, Equals(std::vector{
-                    alisp::ALToken(alisp::TokenType::LEFT_BRACKET),
-                        alisp::ALToken(alisp::TokenType::ID),
-                        alisp::ALToken(alisp::TokenType::ID),
-                        alisp::ALToken(alisp::TokenType::AMPER),
-                        alisp::ALToken(alisp::TokenType::ID),
-                        alisp::ALToken(alisp::TokenType::RIGHT_BRACKET)}));
-    }
+	// SECTION("Amper")
+	// {
+	// 	input = R"((setq dsf &nonword))";
+	// 	err.set_input(input);
+	// 	toks = lex.tokenize(input);
+	// 	REQUIRE_THAT(toks, Equals(std::vector{
+    //                 alisp::ALToken(alisp::TokenType::LEFT_BRACKET),
+    //                     alisp::ALToken(alisp::TokenType::ID),
+    //                     alisp::ALToken(alisp::TokenType::ID),
+    //                     alisp::ALToken(alisp::TokenType::KEYWORD),
+    //                     alisp::ALToken(alisp::TokenType::RIGHT_BRACKET)}));
+    // }
 
 	SECTION("Keyword rest")
 	{
@@ -323,33 +324,11 @@ TEST_CASE("Failing checks", "[lexer]")
 
 	SECTION("Invalid numbers")
 	{
-		input = R"(3.1a3)";
+
+        input = R"(2.3.3)";
 		err.set_input(input);
 		REQUIRE_THROWS(toks = lex.tokenize(input));
 
-		input = R"(-2a3)";
-		err.set_input(input);
-		REQUIRE_THROWS(toks = lex.tokenize(input));
-
-		input = R"(-2a.3)";
-		err.set_input(input);
-		REQUIRE_THROWS(toks = lex.tokenize(input));
-
-		input = R"(2.3.3)";
-		err.set_input(input);
-		REQUIRE_THROWS(toks = lex.tokenize(input));
-
-		input = R"(2ds.3)";
-		err.set_input(input);
-		REQUIRE_THROWS(toks = lex.tokenize(input));
-
-		input = R"(2d)";
-		err.set_input(input);
-		REQUIRE_THROWS(toks = lex.tokenize(input));
-
-		input = R"(2.2d)";
-		err.set_input(input);
-		REQUIRE_THROWS(toks = lex.tokenize(input));
     }
 
 }

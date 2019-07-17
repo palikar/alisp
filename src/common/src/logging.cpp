@@ -15,10 +15,10 @@
 namespace nu::logging
 {
     
-	std::unique_ptr<spdlog::logger> _main_logger;
-	std::unique_ptr<spdlog::logger> _dev_debug;
+std::shared_ptr<spdlog::logger> _main_logger;
+std::shared_ptr<spdlog::logger> _dev_debug;
 
-	const std::string format{"[%@][%c][%^%l%$] %v"};
+const std::string format{"[%@][%c][%^%l%$] %v"};
 
 	const std::string file_name{"./alisp_log.txt"};
 	
@@ -40,7 +40,7 @@ namespace nu::logging
     std::vector<spdlog::sink_ptr> sinks;
 
 #if CONSOLE_LOGGING
-    auto console_sink = std::make_unique<spdlog::sinks::stdout_color_sink_mt>();
+    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     console_sink->set_pattern(format);
     console_sink->set_level(spdlog::level::debug);
     sinks.push_back(console_sink);
@@ -48,7 +48,7 @@ namespace nu::logging
         
         
 #if FILE_LOGGING
-    auto rotating_sink = std::make_unique<spdlog::sinks::rotating_file_sink_mt>(file_name, 1024*1024, 10);
+    auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(file_name, 1024*1024, 10);
     rotating_sink->set_pattern(format);
     rotating_sink->set_level(spdlog::level::trace);
     sinks.push_back(rotating_sink);
@@ -56,7 +56,7 @@ namespace nu::logging
 
 
 
-    _main_logger = std::make_unique<spdlog::logger>("main", std::begin(sinks), std::end(sinks));
+    _main_logger = std::make_shared<spdlog::logger>("main", std::begin(sinks), std::end(sinks));
     if (debug)
     {
 			_main_logger->set_level(spdlog::level::debug);
@@ -64,7 +64,7 @@ namespace nu::logging
 
 
 #if DEBUG_LOGGING
-    auto debug_sink = std::make_unique<spdlog::sinks::stdout_color_sink_mt>();
+    auto debug_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     debug_sink->set_pattern(dev_debug_format);
     debug_sink->set_level(spdlog::level::trace);
 
