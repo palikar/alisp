@@ -14,7 +14,7 @@ fi
 cp -r $DIR/templates/template_app_module/ $DIR/src/
 
 mv $DIR/src/template_app_module/ $DIR/src/${MODULE_NAME}
-mv $DIR/src/${MODULE_NAME}/include/src/MODULE_NAME $DIR/src/${MODULE_NAME}/include/src/${MODULE_NAME}
+mv $DIR/src/${MODULE_NAME}/include/PROJECT/MODULE_NAME $DIR/src/${MODULE_NAME}/include/PROJECT/${MODULE_NAME}
 
 mv $DIR/src/${MODULE_NAME}/include/PROJECT $DIR/src/${MODULE_NAME}/include/${project_name}
 

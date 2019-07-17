@@ -1,4 +1,4 @@
-#include "alisp/alisp/parser.hpp"
+#include "alisp/alisp/alisp_parser.hpp"
 
 
 namespace alisp
@@ -9,8 +9,6 @@ ALParser::ALParser(const std::vector<alisp::ALToken>& tokens_) :
     tokens(tokens_),
     current_token(0)
 {}
-
-
 void ALParser::nextToken()
 {
     ++(this->current_token);

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "alisp/alisp/prompt.hpp"
+#include "alisp/applications/prompt.hpp"
 
 #include <readline/readline.h>
 #include <readline/history.h>

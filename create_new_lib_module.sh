@@ -15,7 +15,7 @@ fi
 cp -r $DIR/templates/template_lib_module/ $DIR/src/
 
 mv $DIR/src/template_lib_module/ $DIR/src/${MODULE_NAME}
-mv $DIR/src/${MODULE_NAME}/include/${project_name}/MODULE_NAME $DIR/src/${MODULE_NAME}/include/${project_name}/${MODULE_NAME}
+mv $DIR/src/${MODULE_NAME}/include/PROJECT/MODULE_NAME $DIR/src/${MODULE_NAME}/include/PROJECT/${MODULE_NAME}
 
 mv $DIR/src/${MODULE_NAME}/include/PROJECT $DIR/src/${MODULE_NAME}/include/${project_name}
 

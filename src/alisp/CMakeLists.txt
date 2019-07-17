@@ -1,39 +1,35 @@
 
-add_executable(${PROJECT_NAME}_alisp
-    src/main.cpp
-    src/common_lexer.cpp
-    src/lexer.cpp
-    src/main.cpp    
-    src/parser.cpp
-    src/lisp_object.cpp
+add_library(alisp_language
+    src/alisp_common.cpp
+    src/alisp_lexer.cpp
+    src/alisp_parser.cpp
+    src/alisp_object.cpp
     src/error_messaging.cpp
-    src/prompt.cpp
     )
 
 
-target_include_directories(${PROJECT_NAME}_alisp
+target_include_directories(alisp_language
     PUBLIC include
     PRIVATE src
     )
 
-target_link_libraries(${PROJECT_NAME}_alisp
+target_link_libraries(alisp_language
     PRIVATE
     project_options
     project_warnings
     PUBLIC
     clara::clara
     rang::rang
-    alisp_common    
+    alisp_util
     Threads::Threads
     fmt::fmt
     spdlog::spdlog
     absl::strings
-    readline
     )
 
 
 
-install(TARGETS ${PROJECT_NAME}_alisp
+install(TARGETS alisp_language
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
     RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}

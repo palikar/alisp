@@ -11,10 +11,10 @@
 #include <array>
 #include <tuple>
 
-#include "alisp/alisp/common_lexer.hpp"
+#include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/error_messaging.hpp"
 
-#include "alisp/common/lite_string.hpp"
+#include "alisp/util/lite_string.hpp"
 
 
 namespace alisp

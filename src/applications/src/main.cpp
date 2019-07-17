@@ -2,14 +2,14 @@
 #include <string>
 #include <clara.hpp>
 
-
 #include "alisp/config.hpp"
-#include "alisp/alisp/common_lexer.hpp"
-#include "alisp/alisp/lexer.hpp"
-#include "alisp/alisp/parser.hpp"
+
+#include "alisp/alisp/alisp_common.hpp"
+#include "alisp/alisp/alisp_lexer.hpp"
+#include "alisp/alisp/alisp_parser.hpp"
 #include "alisp/alisp/error_messaging.hpp"
 
-#include "alisp/alisp/prompt.hpp"
+#include "alisp/applications/prompt.hpp"
 
 
 void eval_statement(const std::string& command);

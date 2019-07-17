@@ -2,8 +2,8 @@
 #include <string>
 
 
-#include "alisp/alisp/common_lexer.hpp"
-#include "alisp/alisp/lexer.hpp"
+#include "alisp/alisp/alisp_common.hpp"
+#include "alisp/alisp/alisp_lexer.hpp"
 
 namespace alisp
 {

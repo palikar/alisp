@@ -10,10 +10,9 @@
 #include <optional>
 #include <functional>
 
-
-
 namespace alisp
 {
+
 
 enum class ObjectType
 {

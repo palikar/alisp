@@ -17,14 +17,14 @@ namespace nu{
 
 
         template<class T>
-        class Inc
+        class Icrementer
         {
         private:
             T _init; 
             T _val;			
         public:
 			
-            Inc(const T initial, const T val) :
+            Icrementer(const T initial, const T val) :
                 _init(initial), _val(val){};
             void operator++(){_init += _val;}
             T operator()(){return _init;}			
@@ -32,7 +32,7 @@ namespace nu{
 
 		
         template<class T>
-        class IncWithFact
+        class IcrementerWithFact
         {
         private:
             T _init; 
@@ -40,7 +40,7 @@ namespace nu{
             T _fact;
         public:
 			
-            IncWithFact(const T initial, const T val, const T fact) :
+            IcrementerWithFact(const T initial, const T val, const T fact) :
                 _init(initial), _val(val), _fact(fact){};
             void operator++(){_init += _val * _fact;}
             T operator()(){return _init;}			

@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 
-#include "alisp/alisp/common_lexer.hpp"
+#include "alisp/alisp/alisp_common.hpp"
 
 
 namespace alisp
@@ -55,13 +55,11 @@ private:
 
 public:
 
-
 	ThrowingMessanger() = default;
     
 	void lexer_error(size_t char_num,
 									 size_t line_num,
 									 const std::string& msg) const;
-
     
 	void parser_error(const ALToken& token,
 										const std::string& msg) const;
