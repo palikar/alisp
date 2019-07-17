@@ -14,6 +14,9 @@
 #include "alisp/alisp/common_lexer.hpp"
 #include "alisp/alisp/error_messaging.hpp"
 
+#include "alisp/common/lite_string.hpp"
+
+
 namespace alisp
 {
 
@@ -29,64 +32,17 @@ static const std::regex NUM_RE{NUM_REG};
 static const std::string KEYWORD_REG = R"(&optional|&rest)";
 static const std::regex KEYWORD_RE{KEYWORD_REG};
 
-
+namespace inner {
 enum Alphabet
 {
     symbol_alphabet = 0,
     id_alphabet,
+    keyword_alphabet,
     whitespace_alphabet,
     max_alphabet,
     lengthof_alphabet = 256
 };
-
-
-struct Static_String
-{
-    template<size_t N>
-    constexpr Static_String(const char (&str)[N]) noexcept
-        : m_size(N-1), data(&str[0])
-    {
-    }
-
-    constexpr size_t size() const noexcept {
-        return m_size;
-    }
-
-    constexpr const char *c_str() const noexcept {
-        return data;
-    }
-
-    constexpr auto begin() const noexcept {
-        return data;
-    }
-
-    constexpr auto end() const noexcept {
-        return data + m_size;
-    }
-
-    constexpr bool operator==(const std::string_view &other) const noexcept {
-        //return std::string_view(data, m_size) == other;
-        auto b1 = begin();
-        const auto e1 = end();
-        auto b2 = other.begin();
-        const auto e2 = other.end();
-
-        if (e1 - b1 != e2 - b2) { return false; }
-
-        while (b1 != e1) {
-            if (*b1 != *b2) { return false; }
-            ++b1; ++b2;
-        }
-        return true;
-    }
-
-    bool operator==(const std::string &t_str) const noexcept {
-        return std::equal(begin(), end(), std::cbegin(t_str), std::cend(t_str));
-    }
-
-    const size_t m_size;
-    const char *data = nullptr;
-};
+}
 
 
 template <class ErrorHandler>
@@ -95,22 +51,23 @@ class ALLexer
   private:
     size_t char_num = 0;
     size_t line_num = 0;
+    const char *input;
 
     const ErrorHandler& err;
 
-    constexpr static std::array<Static_String, 2> create_keywords() noexcept
+    constexpr static std::array<LiteString, 2> create_keywords() noexcept
     {
-        std::array<Static_String, 2> keywords_vec = {{
-                Static_String{"&optional"},
-                Static_String{"&rest"}
+        std::array<LiteString, 2> keywords_vec = {{
+                LiteString{"&optional"},
+                LiteString{"&rest"}
             }};
         return keywords_vec;
     }
     
-    constexpr static Static_String keyword_start{"&"};
+    constexpr static LiteString keyword_start{"&"};
     constexpr static auto keywords = create_keywords();
 
-    constexpr static std::unordered_map<char, TokenType> create_symbols() noexcept
+    constexpr static std::unordered_map<char, TokenType> symbols_map() noexcept
     {
         std::unordered_map<char, TokenType> symbols_vec = {{
                 {'(', TokenType::LEFT_BRACE},
@@ -123,8 +80,6 @@ class ALLexer
         return symbols_vec;
     }
 
-    // constexpr static auto symbols_map = create_symbols();
-
     template<typename Array2D, typename First, typename Second>
     constexpr static void set_alphabet(Array2D &array, const First first, const Second second) noexcept
     {
@@ -132,19 +87,52 @@ class ALLexer
         auto *second_ptr = &std::get<0>(*first_ptr) + static_cast<std::size_t>(second);
         *second_ptr = true;
     }
-    
-    constexpr static std::array<std::array<bool, lengthof_alphabet>, max_alphabet> build_alphabet() noexcept
-    {
-        std::array<std::array<bool, Alphabet::lengthof_alphabet>, Alphabet::max_alphabet> alph{};
 
-        for (const auto& [sym, tok] : create_symbols())
-        {
-            set_alphabet(alph, Alphabet::symbol_alphabet, sym);
-        }
+    constexpr bool char_in_alphabet(char c, detail::Alphabet a) const noexcept { 
+        return m_alphabet[a][static_cast<uint8_t>(c)]; 
+    }
+    
+    constexpr static std::array<std::array<bool, inner::lengthof_alphabet>, inner::max_alphabet> build_alphabet() noexcept
+    {
+        std::array<std::array<bool, inner::lengthof_alphabet>, inner::max_alphabet> alph{};
+
+        set_alphabet(alph, inner::symbol_alphabet, '(');
+        set_alphabet(alph, inner::symbol_alphabet, ')');
+        set_alphabet(alph, inner::symbol_alphabet, '{');
+        set_alphabet(alph, inner::symbol_alphabet, '}');
+        set_alphabet(alph, inner::symbol_alphabet, '@');
+        set_alphabet(alph, inner::symbol_alphabet, '\'');
+
+        set_alphabet(alph, inner::whitespace_alphabet, ' ');
+        set_alphabet(alph, inner::whitespace_alphabet, '\t');
+
+        for ( size_t c = 'a' ; c <= 'z' ; ++c ) {set_alphabet(alph, inner::id_alphabet, c);}
+        for ( size_t c = 'A' ; c <= 'Z' ; ++c ) {set_alphabet(alph, inner::id_alphabet, c);}
+        for ( size_t c = '0' ; c <= '9' ; ++c ) {set_alphabet(alph, inner::id_alphabet, c);}
+        set_alphabet(alph, inner::id_alphabet, '-');
+        set_alphabet(alph, inner::id_alphabet, '_');
+        set_alphabet(alph, inner::id_alphabet, '+');
+        set_alphabet(alph, inner::id_alphabet, '-');
+        set_alphabet(alph, inner::id_alphabet, '*');
+        set_alphabet(alph, inner::id_alphabet, '/');
+        set_alphabet(alph, inner::id_alphabet, '=');
+        set_alphabet(alph, inner::id_alphabet, '$');
+        set_alphabet(alph, inner::id_alphabet, '%');
+        set_alphabet(alph, inner::id_alphabet, '?');
+        set_alphabet(alph, inner::id_alphabet, '|');
+        
+        for ( size_t c = 'a' ; c <= 'z' ; ++c ) {set_alphabet(alph, inner::keyword_alphabet, c);}
+        for ( size_t c = 'A' ; c <= 'Z' ; ++c ) {set_alphabet(alph, inner::keyword_alphabet, c);}
+        for ( size_t c = '0' ; c <= '9' ; ++c ) {set_alphabet(alph, inner::keyword_alphabet, c);}
+        set_alphabet(alph, inner::keyword_alphabet, '-');
+        set_alphabet(alph, inner::keyword_alphabet, '_');
+            
+
         
         return alph;
     }
 
+    constexpr static auto alphabet = build_alphabet();
 
   public:
 
@@ -152,13 +140,85 @@ class ALLexer
     explicit ALLexer(const ErrorHandler& err_) : err(err_)
     {
     }
+
+    ALLexer(const ALLexer&) = delete;
+    ALLexer(const ALLexer&&) = delete;
+
+
+    void skip_whitespace(){
+        while (char_in_alphabet(*input, inner::whitespace_alphabet))
+        {
+            ++this->char_num;
+            ++input;
+        }
+    }
+
+    
+    bool capture_symbol(std::vector<alisp::ALToken>& tokens)
+    {
+        
+        if(char_in_alphabet(*input, inner::symbol_alphabet))
+        {
+            tokens.push_back(alisp::ALToken(symbols_map[*input];, this->char_num, this->line_num));
+            return true;
+        }
+        return false;
+    }
+
+    bool capture_keyword(std::vector<alisp::ALToken>& tokens)
+    {
+        char *temp = input;
+        while(char_in_alphabet(*input, inner::keyword_alphabet))
+        {
+            this->char_num++;
+            ++input;
+        }
+        std::string word{temp, input};
+
+        for (const auto& key : keywords())
+        {
+            if (key == word)
+            {
+                tokens.push_back(alisp::ALToken(TokenType::ID,
+                                                std::move(word),
+                                                this->char_num,
+                                                this->line_num));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool capture_id(std::vector<alisp::ALToken>& tokens)
+    {
+        char *temp = input;
+        while(char_in_alphabet(*input, inner::keyword_alphabet))
+        {
+            this->char_num++;
+            ++input;
+        }
+        std::string word{temp, input};
+        tokens.push_back(alisp::ALToken(TokenType::ID,
+                                        std::move(word),
+                                        this->char_num,
+                                        this->line_num));
+        return true;
+    }
+
+    
+
+    inline bool check_char(const char c)
+    {
+        return *input == c;
+    }
+
     
     std::vector<alisp::ALToken> tokenize(const std::string& input)
     {
 				
 
         std::vector<alisp::ALToken> tokens;
-        const char * s = input.c_str();
+        this->input = input.c_str();
         this->char_num = 0;
         this->line_num = 0;
 
@@ -173,11 +233,6 @@ class ALLexer
                 ++s;
             }
 
-            while (*s == ' ')
-            {
-                ++this->char_num;
-                ++s;
-            }
 
             if(!*s)
             {
