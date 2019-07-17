@@ -231,7 +231,7 @@ class ALLexer
     }
 
 	  void skip_eol(){
-			while(this->position.has_more() && check_char(this->nl.c_str()))
+			while(this->position.has_more() && check_char(*this->nl.c_str()))
 			{
 				++this->postition;
 			}
@@ -251,23 +251,25 @@ class ALLexer
 
     bool capture_keyword(std::vector<alisp::ALToken>& tokens)
     {
-        auto temp = this->postion;
-        while(this->postion.has_more() && char_in_alphabet(*this->postion, inner::keyword_alphabet))
-        {
-					++this->postion;
-        }
-        const auto word = inner::Position::str(temp, this->postion);
+			if (!check_char(*keyword_start.c_str())) { return false;}
+			++this->position;
+			auto temp = this->postion;
+			while(this->postion.has_more() && char_in_alphabet(*this->postion, inner::keyword_alphabet))
+			{
+				++this->postion;
+			}
+			const auto word = inner::Position::str(temp, this->postion);
 
-        for (const auto& keyword : keywords)
-        {
-            if (word  == keyword)
-            {
-                tokens.push_back(alisp::ALToken(TokenType::ID, std::move(word), this->char_num,this->line_num));
-                return true;
-            }
-        }
+			for (const auto& keyword : keywords)
+			{
+				if (word  == keyword)
+				{
+					tokens.push_back(alisp::ALToken(TokenType::ID, std::move(word), this->char_num,this->line_num));
+					return true;
+				}
+			}
 				
-        return false;
+			return false;
     }
 
     bool capture_id(std::vector<alisp::ALToken>& tokens)
@@ -365,12 +367,8 @@ class ALLexer
 					skip_eol();
 
 					if (capture_symbol(tokens)) { continue; }
-					
-					if (check_char(*keyword_start.c_str()))
-					{
-						++this->position;
-						if(capture_keyword(tokens)) { continue; }
-					}
+
+					if (capture_keyword(tokens)) { continue; }
 
 					if (capture_string(tokens)) { continue; }
 
