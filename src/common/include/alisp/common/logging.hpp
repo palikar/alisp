@@ -34,9 +34,9 @@ namespace nu::logging
 #define DEBUG(...) (void)0
 #endif
 
-#define ABORT(...) \
-    do {           \
-        nu::logging::get_main_logger->critical(__VA_ARGS__);       \
-        nu::logging::get_main_logger->critical("Aborting!");       \
-        abort();                                                   \
-    } while (0)
+#define ABORT(...)																				\
+	do {																										\
+		nu::logging::get_main_logger->critical(__VA_ARGS__);	\
+		nu::logging::get_main_logger->critical("Aborting!");	\
+		abort();																							\
+	} while (0)

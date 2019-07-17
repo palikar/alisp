@@ -76,8 +76,7 @@ class ALToken
         return type;
     };
 
-    
-    size_t getLine() const
+	  size_t getLine() const
     {
         return this->line_num;
     };

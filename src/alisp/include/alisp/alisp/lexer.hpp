@@ -20,28 +20,100 @@
 namespace alisp
 {
 
-static const std::string STR_REG = R"((?!\")(?:[^\"\\]|\\.)*(?=\"))";
-static const std::regex STR_RE{STR_REG};
-
-static const std::string ID_REG = R"(^[\/\\\*a-zA-Z_-][\/\\\*a-zA-Z0-9_-]*)";
-static const std::regex ID_RE{ID_REG};
- 
-static const std::string NUM_REG = R"(^[-+]?[0-9]*\.?[0-9]+(?=(?:\s|\(|\)|$)))";
-static const std::regex NUM_RE{NUM_REG};
-
-static const std::string KEYWORD_REG = R"(&optional|&rest)";
-static const std::regex KEYWORD_RE{KEYWORD_REG};
 
 namespace inner {
-enum Alphabet
-{
+
+	enum Alphabet
+	{
     symbol_alphabet = 0,
     id_alphabet,
     keyword_alphabet,
     whitespace_alphabet,
     max_alphabet,
     lengthof_alphabet = 256
-};
+	};
+
+
+	struct Postion()
+	{
+		constexpr Position() = default;
+
+		constexpr Position(const char * t_pos, const char * t_end) noexcept
+			: line(1), col(1), m_pos(t_pos), m_end(t_end), m_last_col(1)
+		{
+		}
+
+		static std::string_view str(const Position &begin, const Position &end) noexcept {
+					
+			if (begin.m_pos != nullptr && end.m_pos != nullptr) {
+				return std::string_view(begin.m_pos, std::distance(begin.m_pos, end.m_pos));
+			} else {
+				return {};
+			}
+		}
+
+		constexpr Position &operator++() noexcept {
+			if (pos != end) {
+				if (*pos == '\n') {
+					++line;
+					last_col = col;
+					col = 1;
+				} else {
+					++col;
+				}
+
+				++m_pos;
+			}
+			return *this;
+		}
+
+		constexpr Position &operator--() noexcept {
+			--pos;
+			if (*pos == '\n') {
+				--line;
+				col = last_col;
+			} else {
+				--col;
+			}
+			return *this;
+		}
+
+		constexpr const char& operator*() const noexcept {
+			if (pos == end) {
+				return ""[0];
+			} else {
+				return *pos;
+			}
+		}
+
+		constexpr bool operator==(const Position &rhs) const noexcept {
+			return pos == rhs.pos;
+		}
+
+		constexpr bool operator!=(const Position &rhs) const noexcept {
+			return pos != rhs.m_pos;
+		}
+
+		constexpr bool has_more() const noexcept {
+			return pos != end;
+		}
+
+		constexpr size_t remaining() const noexcept {
+			return static_cast<size_t>(end - pos);
+		}
+
+
+
+		int line = -1;
+		int col = -1;
+
+	private:
+		const char *pos = nullptr;
+		const char *end = nullptr;
+		int last_col = -1;
+				
+	}
+	
 }
 
 
@@ -49,25 +121,27 @@ template <class ErrorHandler>
 class ALLexer
 {
   private:
-    size_t char_num = 0;
-    size_t line_num = 0;
-    const char *input;
+	  inner::Position position;
 
     const ErrorHandler& err;
 
-    constexpr static std::array<LiteString, 2> create_keywords() noexcept
+    
+    
+    constexpr static LiteString keyword_start{"&"};
+	  constexpr static LiteString cr_lf{"\r\n"};
+	  constexpr static LiteString nl{"\n"};
+
+	
+	  constexpr static std::array<LiteString, 2> create_keywords() noexcept
     {
         std::array<LiteString, 2> keywords_vec = {{
-                LiteString{"&optional"},
-                LiteString{"&rest"}
+                LiteString{"optional"},
+                LiteString{"rest"}
             }};
         return keywords_vec;
     }
-    
-    constexpr static LiteString keyword_start{"&"};
-    constexpr static auto keywords = create_keywords();
 
-    constexpr static std::unordered_map<char, TokenType> symbols_map() noexcept
+	  constexpr static std::unordered_map<char, TokenType> symbols_map() noexcept
     {
         std::unordered_map<char, TokenType> symbols_vec = {{
                 {'(', TokenType::LEFT_BRACE},
@@ -88,7 +162,8 @@ class ALLexer
         *second_ptr = true;
     }
 
-    constexpr bool char_in_alphabet(char c, detail::Alphabet a) const noexcept { 
+    constexpr bool char_in_alphabet(char c, detail::Alphabet a) const noexcept
+		{ 
         return m_alphabet[a][static_cast<uint8_t>(c)]; 
     }
     
@@ -133,33 +208,42 @@ class ALLexer
     }
 
     constexpr static auto alphabet = build_alphabet();
+	  constexpr static auto keywords = create_keywords();
 
   public:
 
     
-    explicit ALLexer(const ErrorHandler& err_) : err(err_)
+	explicit ALLexer(const ErrorHandler& err_) : err(err_)
     {
     }
 
     ALLexer(const ALLexer&) = delete;
-    ALLexer(const ALLexer&&) = delete;
+	  ALLexer(const ALLexer&&) = delete;
+	  ALLexer &operator(const ALLexer&) = delete;
+	  ALLexer &operator(ALLexer&&) = delete;
 
 
     void skip_whitespace(){
-        while (char_in_alphabet(*input, inner::whitespace_alphabet))
-        {
-            ++this->char_num;
-            ++input;
-        }
+			while (this->position.has_more() && char_in_alphabet(*this->position, inner::whitespace_alphabet))
+			{
+				++this->position;
+			}
     }
 
+	  void skip_eol(){
+			while(this->position.has_more() && check_char(this->nl.c_str()))
+			{
+				++this->postition;
+			}
+		}
     
     bool capture_symbol(std::vector<alisp::ALToken>& tokens)
     {
-        
-        if(char_in_alphabet(*input, inner::symbol_alphabet))
+			
+        if(char_in_alphabet(*this->postion, inner::symbol_alphabet))
         {
-            tokens.push_back(alisp::ALToken(symbols_map[*input];, this->char_num, this->line_num));
+            tokens.push_back(alisp::ALToken(symbols_map[*this->postion];, this->char_num, this->line_num));
+					  ++this->postion;
             return true;
         }
         return false;
@@ -167,199 +251,138 @@ class ALLexer
 
     bool capture_keyword(std::vector<alisp::ALToken>& tokens)
     {
-        char *temp = input;
-        while(char_in_alphabet(*input, inner::keyword_alphabet))
+        auto temp = this->postion;
+        while(this->postion.has_more() && char_in_alphabet(*this->postion, inner::keyword_alphabet))
         {
-            this->char_num++;
-            ++input;
+					++this->postion;
         }
-        std::string word{temp, input};
+        const auto word = inner::Position::str(temp, this->postion);
 
-        for (const auto& key : keywords())
+        for (const auto& keyword : keywords)
         {
-            if (key == word)
+            if (word  == keyword)
             {
-                tokens.push_back(alisp::ALToken(TokenType::ID,
-                                                std::move(word),
-                                                this->char_num,
-                                                this->line_num));
+                tokens.push_back(alisp::ALToken(TokenType::ID, std::move(word), this->char_num,this->line_num));
                 return true;
             }
         }
+				
         return false;
     }
 
     bool capture_id(std::vector<alisp::ALToken>& tokens)
     {
-        char *temp = input;
-        while(char_in_alphabet(*input, inner::keyword_alphabet))
+        auto temp = this->postion;
+        while(this->postion.has_more() && char_in_alphabet(*this->postion, inner::id_alphabet))
         {
-            this->char_num++;
-            ++input;
+            ++this->postion;
         }
-        std::string word{temp, input};
-        tokens.push_back(alisp::ALToken(TokenType::ID,
-                                        std::move(word),
-                                        this->char_num,
-                                        this->line_num));
-        return true;
+        std::string word{temp, this->postion};
+        tokens.push_back(alisp::ALToken(TokenType::ID, std::move(word), this->char_num, this->line_num));
+
+				return true;
     }
 
-    
+	  bool capture_string(std::vector<alisp::ALToken>& tokens)
+		{
+			if(*this->position != '\"') return false;
+			++this->position;
+			auto temp = this->position;
+			while(this->position.has_more() && *this->position != '\"' )
+			{
+				if ( *this->position == '\\') { this->position += 2; }
+			}
+
+			if (*this->position != '\"')
+			{
+				this->err.lexer_error(this->position.col, this->position.line, "Invalid string literal");
+			}
+
+			const auto text = inner::Position::str(temp, this->position);
+			tokens.push_back(alisp::ALToken(TokenType::STRING, std::move(text)));			
+			return true;
+		}
+	
+	  bool capture_num(std::vector<alisp::ALToken>& tokens)
+		{
+			int sign = 1;
+			bool real = false;
+			bool retval = true;
+
+			if (*this->position == '-')
+			{
+				sign = -1;
+				this->position++;
+			}
+
+			if (*this->position == '+') { this->position++; }
+
+			if (!std::isdigit(*this->position) && *this->position != '.') { return false; }
+
+			auto temp = this->position;
+			if (*this->position == '.') { real = true; }
+
+			while(this->position.has_more() && std::isdigit(*this->position))
+			{
+				++this->position;
+				if (*this->position == '.') {
+					real = true;
+					++this->position;
+				}
+			}
+
+			const auto res = inner::Postion::str(temp, this->position);
+
+			if (real)
+			{
+				float num = sign * std::stof(res);
+				tokens.push_back(alisp::ALToken(TokenType::REAL_NUMBER, num,this->char_num, this->line_num));
+			}
+			else
+			{
+			  int num = sign * std::stoi(res);
+				tokens.push_back(alisp::ALToken(TokenType::NUMBER, static_cast<int>(num), this->char_num, this->line_num));
+			}
+
+			return retval;
+		}
 
     inline bool check_char(const char c)
     {
         return *input == c;
     }
 
-    
-    std::vector<alisp::ALToken> tokenize(const std::string& input)
+	  std::vector<alisp::ALToken> tokenize(const std::string& input)
     {
-				
+			  std::vector<alisp::ALToken> tokens;
+			  const auto begin = input.empty() ? nullptr : &input.front();
+        const auto end = begin == nullptr ? nullptr : begin + input.size();
+				this->position = inner::Position{begin, end};
 
-        std::vector<alisp::ALToken> tokens;
-        this->input = input.c_str();
-        this->char_num = 0;
-        this->line_num = 0;
+				while(position.has_more())
+				{
+					skip_whitespace();
+					skip_eol();
 
-  
-        while (*s)
-        {
-        
-            while (*s == '\n')
-            {
-                ++line_num;
-                this->char_num = 0;
-                ++s;
-            }
-
-
-            if(!*s)
-            {
-                break;
-            }
-                
-            if (*s == '(')
-            {
-                tokens.push_back(alisp::ALToken(TokenType::LEFT_BRACKET, this->char_num, this->line_num));
-            }
-
-            else if (*s == ')')
-            {
-                tokens.push_back(alisp::ALToken(TokenType::RIGHT_BRACKET, this->char_num, this->line_num ));
-            }
+					if (capture_symbol(tokens)) { continue; }
 					
-            else if (*s == ':')
-            {
-                tokens.push_back(alisp::ALToken(TokenType::COLON, this->char_num, this->line_num));
-            }
+					if (check_char(*keyword_start.c_str()))
+					{
+						++this->position;
+						if(capture_keyword(tokens)) { continue; }
+					}
 
-            else if (*s == '\'')
-            {
-                tokens.push_back(alisp::ALToken(TokenType::QUOTE, this->char_num, this->line_num));
-            }
+					if (capture_string(tokens)) { continue; }
 
-            else if (*s == '`')
-            {
-                tokens.push_back(alisp::ALToken(TokenType::BACKQUOTE, this->char_num, this->line_num));
-            }
+					if (capture_num(tokens)) { continue; }
 
-            else if (*s == '@')
-            {
-                tokens.push_back(alisp::ALToken(TokenType::AT, this->char_num, this->line_num));
-            }
-
-            else if (*s == '&')
-            {
-                std::cmatch match;
-                if (std::regex_search(s, match, KEYWORD_RE))
-                {
-                    const std::string res = match.str(0);
-                    s += res.size();
-                    tokens.push_back(alisp::ALToken(TokenType::ID,
-                                                    std::move(res),
-                                                    this->char_num,
-                                                    this->line_num));
-                    continue;
-                }
-                else
-                {
-                    tokens.push_back(alisp::ALToken(TokenType::AMPER, this->char_num, this->line_num));
-                }
-            }
-                
-            else if (*s == '\"')
-            {
-                std::cmatch match;
-                if (std::regex_search(s, match, STR_RE))
-                {
-                    std::string res = match.str(0);
-                    s += res.size() + 1;
-                    tokens.push_back(alisp::ALToken(TokenType::STRING,
-                                                    std::move(res),
-                                                    this->char_num,
-                                                    this->line_num));
-                }
-                else
-                {
-                    this->err.lexer_error(this->char_num, this->line_num, "Invalid String");
-                    exit(1);
-                }
-            }
-
-            // TODO: This check is ugly, fix it!
-            else if(std::isdigit(*s)
-                    or ((*s=='-' or *s=='+') and std::isdigit(*(s+1)))
-                    or ((*s=='.') and std::isdigit(*(s+1)))
-                    or (((*(s)=='-' or *(s)=='+') and *(s+1)=='.') and std::isdigit(*(s+2))))
-            {
-                std::cmatch match;
-                if (std::regex_search(s, match, NUM_RE)) {
-                    const std::string& res = match.str(0);
-                    s += res.size()-1;
-                    float num = std::stof(res);
-                    float intpart;
-                    if (std::modf(num, &intpart) == 0.0f)
-                    {
-                        tokens.push_back(alisp::ALToken(TokenType::NUMBER,
-                                                        static_cast<int>(num),
-                                                        this->char_num,
-                                                        this->line_num));
-                    }
-                    else
-                    {
-                        tokens.push_back(alisp::ALToken(TokenType::REAL_NUMBER,
-                                                        num,
-                                                        this->char_num,
-                                                        this->line_num));
-                    }
-                            
-
-                        
-                }else{
-                    this->err.lexer_error(this->char_num, this->line_num, "Invalid numer");
-                }
-            }
-
-            else
-            {
-                std::cmatch match;
-                if (std::regex_search(s, match, ID_RE)) {
-                    std::string res = match.str(0);
-                    s += res.size()-1;
-                    tokens.push_back(alisp::ALToken(TokenType::ID, std::move(res)));
-                }else{
-                    this->err.lexer_error(this->char_num, this->line_num, "Invalid ID");
-                }
-            }
-
-            ++this->char_num;
-                    ++s;
+					if (capture_id(tokens)) { continue; }
+					
+					// this->err.lexer_error(this->char_num, this->line_num, "Invalid numer");
+					
         }
-    
+				
         return tokens;
-
-        }
   
     };
 
