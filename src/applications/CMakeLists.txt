@@ -1,5 +1,5 @@
 add_executable(alisp
-    src/main.cpp
+    src/alisp.cpp
     src/prompt.cpp
     )
 

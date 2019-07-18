@@ -8,10 +8,8 @@ void printObject(ALObject* obj)
     switch (obj->type) {
 
       case ObjectType::CELL :{
-
-
-          auto c = std::get<Cell>(obj->content);
-          std::cout << "(";
+				  auto c = std::get<Cell>(obj->content);
+					std::cout << "(";
           printObject(c.con);
           std::cout << ". ";
           printObject(c.cdr);
@@ -52,4 +50,6 @@ void printObject(ALObject* obj)
     }
 
 }
+
+	
 }

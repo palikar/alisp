@@ -82,8 +82,8 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     target_compile_options(project_warnings
         INTERFACE
         -Wmisleading-indentation
-        -Wduplicated-cond
-        -Wduplicated-branches
+        # -Wduplicated-cond
+        # -Wduplicated-branches
         -Wlogical-op
         -Wuseless-cast
         )

@@ -36,9 +36,9 @@ int main(int argc, char *argv[])
         | Opt(opts.version)["-v"]["--version"]("Show the version of alisp")
         | Opt(opts.eval, "string")["-e"]["--eval"]("Input to evaluate")
         | Arg(opts.input, "file")("Input file");
-                
+		
 
-    const auto result = cli.parse(Args(argc, argv));
+		const auto result = cli.parse(Args(argc, argv));
 
     if (!result) {
         std::cerr << "Error in command line: " << result.errorMessage() << '\n';

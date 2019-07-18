@@ -117,19 +117,20 @@ ALObject* ALParser::parse()
           }
 
           case TokenType::QUOTE : {
-              ALObject *cell = new ALObject(ObjectType::CELL);
+						
+              // ALObject *cell = new ALObject(ObjectType::CELL);
 
-              Cell cell_obj{};
+              // Cell cell_obj{};
 
-              cell_obj.con = new ALObject(ObjectType::SYMBOL);
-              cell_obj.con->content = std::string{"quote"};
+              // cell_obj.con = new ALObject(ObjectType::SYMBOL);
+              // cell_obj.con->content = std::string{"quote"};
 
-              nextToken();
-              cell_obj.cdr = parse();
+              // nextToken();
+              // cell_obj.cdr = parse();
 
-              cell->content = cell_obj;
+              // cell->content = cell_obj;
 
-              return cell;              
+              // return cell;              
           }
 
               
