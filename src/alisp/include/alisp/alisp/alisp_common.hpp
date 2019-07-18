@@ -8,6 +8,12 @@
 namespace alisp
 {
 
+
+namespace lexer
+{
+
+}
+
 enum class TokenType
 {
     ID,
@@ -31,7 +37,6 @@ enum class TokenType
 };
 
 std::string get_token_str(TokenType type);
-
 
 class ALToken;
 inline std::ostream& operator<<(std::ostream& os, const ALToken& x);
@@ -63,7 +68,22 @@ class ALToken
     {
         return std::get<T>(this->content);
     }
-    
+
+    float getReal() const
+    {
+        return getContentAs<float>();
+    }
+
+    int getNumber() const
+    {
+        return getContentAs<int>();
+    }
+
+    std::string getString() const
+    {
+        return getContentAs<std::string>();
+    }
+     
     std::string str() const
     {
         std::ostringstream os;
@@ -98,8 +118,6 @@ class ALToken
     size_t char_num;
     
 };
-
-
 
 inline std::ostream& operator<<(std::ostream& os, const ALToken& x)
 {

@@ -79,22 +79,26 @@ void eval_statement(const std::string& command)
 
     alisp::ErrorMessanger err;
     alisp::ALLexer lex{err};
+    alisp::parser::ALParser pars{err};
+
+    
     err.set_input(command);
     
     auto toks = lex.tokenize(command);
-    alisp::ALParser pars{toks};
 
     for (const auto& t : toks)
     {
         std::cout << t << "\n";
     }
-    
-    // auto res = pars.parseWhole();
 
-    // for (auto r : res) {
-    //     std::cout << ":";
-    //     alisp::printObject(r);
-    //     std::cout << "\n";
-    // }
+    std::cout << "---------" << "\n";
+    
+    auto res = pars.parse(toks);
+
+    for (auto r : res) {
+        std::cout << ":";
+        alisp::util::printObject(r);
+        std::cout << "\n";
+    }
 
 }

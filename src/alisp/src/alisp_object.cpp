@@ -2,39 +2,34 @@
 
 namespace alisp
 {
+namespace util
+{
 
 void printObject(ALObject* obj)
 {
     switch (obj->type) {
 
-      case ObjectType::CELL :{
-				  auto c = std::get<Cell>(obj->content);
-					std::cout << "(";
-          printObject(c.con);
-          std::cout << ". ";
-          printObject(c.cdr);
-          std::cout << ") ";
-          break;
-      }
-
-      case ObjectType::STRING :{
+      case ALObjectType::STRING :{
           std::cout << '"' << std::get<std::string>(obj->content) << "\" ";
           break;
       }
-      case ObjectType::SYMBOL : {
+          
+      case ALObjectType::ID : {
           std::cout << std::get<std::string>(obj->content) << " ";
           break;
       }
-      case ObjectType::REAL : {
+          
+      case ALObjectType::REAL : {
           std::cout << std::get<float>(obj->content) << " ";
           break;
       }
-      case ObjectType::INT : {
+          
+      case ALObjectType::INT : {
           std::cout << std::get<int>(obj->content) << " ";
           break;
       }
 
-      case ObjectType::LIST : {
+      case ALObjectType::LIST : {
           std::cout << "(";
           for(auto* o :  std::get<std::vector<ALObject*>>(obj->content))
           {
@@ -51,5 +46,5 @@ void printObject(ALObject* obj)
 
 }
 
-	
+}	
 }
