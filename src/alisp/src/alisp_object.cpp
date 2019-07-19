@@ -9,16 +9,19 @@ void printObject(ALObject* obj)
 {
     switch (obj->type) {
 
+      
       case ALObjectType::STRING :{
           std::cout << '"' << std::get<std::string>(obj->content) << "\" ";
           break;
       }
-          
+
+      case ALObjectType::PWORD:
       case ALObjectType::ID : {
           std::cout << std::get<std::string>(obj->content) << " ";
           break;
       }
-          
+
+      
       case ALObjectType::REAL : {
           std::cout << std::get<float>(obj->content) << " ";
           break;
@@ -29,6 +32,7 @@ void printObject(ALObject* obj)
           break;
       }
 
+      case ALObjectType::PLIST:
       case ALObjectType::LIST : {
           std::cout << "(";
           for(auto* o :  std::get<std::vector<ALObject*>>(obj->content))

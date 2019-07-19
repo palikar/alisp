@@ -53,12 +53,12 @@ class ALParser
         return this->tokens[this->current_token_pos + distance];
     }
 
-    void nextToken()
+    void next_token()
     {
         ++(this->current_token_pos);
     }
 
-    std::optional<ALToken> currentToken()
+    std::optional<ALToken> current_token()
     {
         if (this->current_token_pos >= tokens.size())
         {
@@ -69,7 +69,7 @@ class ALParser
 
     ALObject* parse_internal()
     {
-        auto tok = currentToken();
+        auto tok = current_token();
         if (!tok)
             return nullptr;
 
@@ -78,37 +78,57 @@ class ALParser
         switch (token.getType()) {
 
           case TokenType::LEFT_BRACKET: {
-              nextToken();
-              return parseList();
+              next_token();
+              return parse_list();
           }
 
           case TokenType::STRING : {
-              return parseString();
+              return parse_string();
           }
 
           case TokenType::NUMBER : {
-              return parseNumber();
+              return parse_number();
           }
 
           case TokenType::REAL_NUMBER : {
-              return parseReal();
+              return parse_real();
           }
 
           case TokenType::ID : {
-              return parseId();
+              return parse_id();
+          }
+
+          case TokenType::COLON : {
+              return parse_pword();
           }
 
           case TokenType::KEYWORD : {
-              return parseId();
+              return parse_id();
           }
 
+              // case TokenType::AT : {
+              //     return parse_backquote_splice();
+              // }
+
+          case TokenType::COMMA : {
+              return parse_backquote_eval();
+          }
+
+          case TokenType::HASHTAG : {
+              return parse_function();
+          }
+              
           case TokenType::RIGHT_BRACKET : {
               std::cout << "Unexpected right bracket" << "\n";
               exit(1);
           }
 
           case TokenType::QUOTE : {
-              return parseQuote();
+              return parse_quote();
+          }
+
+          case TokenType::BACKQUOTE : {
+              return parse_backquote();
           }
 
           default:
@@ -119,6 +139,103 @@ class ALParser
 
     }
 
+    ALObject* parse_backquote()
+    {
+        
+        //check if quote
+        next_token();
+        ALObject *cell = new ALObject(ALObjectType::LIST);
+        cell->content = std::vector<ALObject*>();
+        auto& list = std::get<std::vector<ALObject*>>(cell->content);
+
+        ALObject *quote = new ALObject(ALObjectType::ID);
+        quote->content = std::string{"semi-quote"};
+        list.push_back(quote);
+
+
+        ALObject *obj = parse_internal();
+        list.push_back(obj);
+
+        return cell;
+
+    
+    }
+    
+    ALObject* parse_backquote_eval()
+    {
+        //check if comma
+        next_token();
+        if(current_token().value().getType() == TokenType::AT)
+        {
+            next_token();
+            return parse_backquote_splice();
+        }
+        
+        ALObject *cell = new ALObject(ALObjectType::LIST);
+        cell->content = std::vector<ALObject*>();
+        auto& list = std::get<std::vector<ALObject*>>(cell->content);
+
+        ALObject *quote = new ALObject(ALObjectType::ID);
+        quote->content = std::string{"semi-quote-eval"};
+        list.push_back(quote);
+
+
+        ALObject *obj = parse_internal();
+        list.push_back(obj);
+
+        return cell;
+    }
+
+    ALObject* parse_backquote_splice()
+    {
+        ALObject *cell = new ALObject(ALObjectType::LIST);
+        cell->content = std::vector<ALObject*>();
+        auto& list = std::get<std::vector<ALObject*>>(cell->content);
+
+        ALObject *quote = new ALObject(ALObjectType::ID);
+        quote->content = std::string{"semi-quote-splice"};
+        list.push_back(quote);
+
+        ALObject *obj = parse_internal();
+        list.push_back(obj);
+
+        return cell;        
+    }
+
+    ALObject* parse_function()
+    {
+        
+        //check if hashtag
+        next_token();
+        //check if quote
+        next_token();
+        ALObject *cell = new ALObject(ALObjectType::LIST);
+        cell->content = std::vector<ALObject*>();
+        auto& list = std::get<std::vector<ALObject*>>(cell->content);
+
+        ALObject *quote = new ALObject(ALObjectType::ID);
+        quote->content = std::string{"function"};
+        list.push_back(quote);
+
+
+        ALObject *obj = parse_internal();
+        list.push_back(obj);
+
+        return cell;
+    }
+    
+    ALObject* parse_pword()
+    {
+        // TODO: check if colon
+        next_token();
+        // TODO: check if id
+        auto token = current_token().value();
+        ALObject *id = new ALObject(ALObjectType::PWORD);
+        id->content = ":" + token.getString();
+        next_token();
+        return id;
+    }
+
     ALObject* parse_arg_list()
     {
         //check opening bracket
@@ -127,7 +244,7 @@ class ALParser
         return nullptr;
     }
 
-    ALObject* parseList()
+    ALObject* parse_list()
     {
         ALObject *list = new ALObject(ALObjectType::LIST);
         list->content = std::vector<ALObject*>();
@@ -139,7 +256,7 @@ class ALParser
         //     def->content = std::string{"defun"};
         //     obj_list.push_back(def);
 
-        //     nextToken();
+        //     next_token();
             
         //     ALObject *arg_list = parse_arg_list();
         //     obj_list.push_back(arg_list);
@@ -148,7 +265,7 @@ class ALParser
         
         while(true)
         {
-            auto tok_opt = currentToken();
+            auto tok_opt = current_token();
             if(!tok_opt)
             {
                 std::cout << "Malformed sexp!" << "\n";
@@ -160,13 +277,13 @@ class ALParser
             
             if(token.getType() == TokenType::RIGHT_BRACKET)
             {
-                nextToken();
+                next_token();
                 break;
             }
 
             if(token.getType() == TokenType::RIGHT_BRACKET)
             {
-                nextToken();
+                next_token();
                 break;
             }
 
@@ -180,8 +297,10 @@ class ALParser
         return list;
     }
 
-    ALObject* parseQuote()
+    ALObject* parse_quote()
     {
+        //check if quote
+        next_token();
         ALObject *cell = new ALObject(ALObjectType::LIST);
         cell->content = std::vector<ALObject*>();
         auto& list = std::get<std::vector<ALObject*>>(cell->content);
@@ -190,7 +309,6 @@ class ALParser
         quote->content = std::string{"quote"};
         list.push_back(quote);
 
-        nextToken();
 
         ALObject *obj = parse_internal();
         list.push_back(obj);
@@ -199,41 +317,41 @@ class ALParser
 
     }
 
-    ALObject* parseId()
+    ALObject* parse_id()
     {
-        auto token = currentToken().value();
+        auto token = current_token().value();
         ALObject *id = new ALObject(ALObjectType::ID);
         id->content = token.getString();
-        nextToken();
+        next_token();
         return id;
     }
 
-    ALObject* parseString()
+    ALObject* parse_string()
     {
-        auto token = currentToken().value();
+        auto token = current_token().value();
         ALObject *str = new ALObject(ALObjectType::STRING);
         str->content = token.getString();
-        nextToken();
+        next_token();
         return str;
 
     }
 
-    ALObject* parseNumber()
+    ALObject* parse_number()
     {
-        auto token = currentToken().value();
+        auto token = current_token().value();
         ALObject *num = new ALObject(ALObjectType::INT);
         num->content = token.getNumber();
-        nextToken();
+        next_token();
         return num;
 
     }
 
-    ALObject* parseReal()
+    ALObject* parse_real()
     {
-        auto token = currentToken().value();
+        auto token = current_token().value();
         ALObject *num = new ALObject(ALObjectType::REAL);
         num->content = token.getReal();
-        nextToken();
+        next_token();
         return num;
 
     }

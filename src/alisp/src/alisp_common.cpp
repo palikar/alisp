@@ -22,13 +22,15 @@ std::string get_token_str(TokenType type)
 		ENUM_CASE(BACKQUOTE);
 		ENUM_CASE(QUOTE);
 		ENUM_CASE(QUOTATION_MARKS);
+        ENUM_CASE(HASHTAG);
+		ENUM_CASE(AMPER);
+		ENUM_CASE(COMMA);
         
-		ENUM_CASE(LEFT_BRACE);
+        ENUM_CASE(LEFT_BRACE);
 		ENUM_CASE(RIGHT_BRACE);
 		ENUM_CASE(RIGHT_BRACKET);
 		ENUM_CASE(LEFT_BRACKET);
-		ENUM_CASE(AMPER);
-	default : return std::string{"UNKNOWN"};
+      default : return std::string{"UNKNOWN"};
 	}
 }
 #undef ENUM_CASE

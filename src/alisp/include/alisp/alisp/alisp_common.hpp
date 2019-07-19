@@ -33,7 +33,10 @@ enum class TokenType
     QUOTE,
     BACKQUOTE,
     AT,
-    COLON
+    COLON,
+    COMMA,
+    HASHTAG
+    
 };
 
 std::string get_token_str(TokenType type);

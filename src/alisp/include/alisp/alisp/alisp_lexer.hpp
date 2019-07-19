@@ -164,7 +164,10 @@ class ALLexer
                 {')',TokenType::RIGHT_BRACKET},
                 {'@', TokenType::AT},
                 {'\'',TokenType::QUOTE},
-                {':',TokenType::COLON}
+                {':',TokenType::COLON},
+                {',',TokenType::COMMA},
+                {'#',TokenType::HASHTAG},
+                {'`',TokenType::BACKQUOTE}
             }};
         return symbols_vec;
     }
@@ -188,11 +191,14 @@ class ALLexer
 
         set_alphabet(alph, inner::symbol_alphabet, '(');
         set_alphabet(alph, inner::symbol_alphabet, ')');
-        set_alphabet(alph, inner::symbol_alphabet, '{');
-        set_alphabet(alph, inner::symbol_alphabet, '}');
+        // set_alphabet(alph, inner::symbol_alphabet, '{');
+        // set_alphabet(alph, inner::symbol_alphabet, '}');
         set_alphabet(alph, inner::symbol_alphabet, '@');
         set_alphabet(alph, inner::symbol_alphabet, '\'');
         set_alphabet(alph, inner::symbol_alphabet, ':');
+        set_alphabet(alph, inner::symbol_alphabet, '#');
+        set_alphabet(alph, inner::symbol_alphabet, ',');
+        set_alphabet(alph, inner::symbol_alphabet, '`');
 
         set_alphabet(alph, inner::whitespace_alphabet, ' ');
         set_alphabet(alph, inner::whitespace_alphabet, '\t');
