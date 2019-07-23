@@ -15,7 +15,7 @@
 #include "alisp/config.hpp"
 
 
-namespace nu::logging
+namespace alisp::logging
 {
 
 

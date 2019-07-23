@@ -12,7 +12,7 @@
 #include "alisp/config.hpp"
 
 
-namespace nu::logging
+namespace alisp::logging
 {
     
 std::shared_ptr<spdlog::logger> _main_logger;
@@ -20,30 +20,31 @@ std::shared_ptr<spdlog::logger> _dev_debug;
 
 const std::string format{"[%@][%c][%^%l%$] %v"};
 
-	const std::string file_name{"./alisp_log.txt"};
-	
-	const std::string dev_debug_format{"[%@][%^DEBUG%$] %v"};
+const std::string file_name{"./alisp_log.txt"};
 
-    
-	spdlog::logger* get_main_logger()
-	{
-    return _main_logger.get();
-	}
-	spdlog::logger* get_dev_logger()
-	{
-    return _dev_debug.get();
-	}
-    
-	void init_logging(bool debug = false)
-	{
+const std::string dev_debug_format{"[%@][%^DEBUG%$] %v"};
 
-    std::vector<spdlog::sink_ptr> sinks;
+  
+spdlog::logger* get_main_logger()
+{
+  return _main_logger.get();
+}
+
+spdlog::logger* get_dev_logger()
+{
+	return _dev_debug.get();
+	}
+  
+void init_logging(bool debug = false)
+{
+
+	std::vector<spdlog::sink_ptr> sinks;
 
 #if CONSOLE_LOGGING
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    console_sink->set_pattern(format);
-    console_sink->set_level(spdlog::level::debug);
-    sinks.push_back(console_sink);
+	auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+	console_sink->set_pattern(format);
+	console_sink->set_level(spdlog::level::debug);
+	sinks.push_back(console_sink);
 #endif
         
         
