@@ -13,25 +13,6 @@
 namespace alisp
 {
 
-namespace inner
-{
-
-template<typename ...Ts>
-struct Visitor : Ts...
-{
-    Visitor(const Ts&... args) : Ts(args)...
-    {
-    }
-};
-
-template<typename ...Ts>
-auto make_visitor(Ts... callable)
-{
-    return Visitor<Ts...>(callable...);
-}
-
-}
-
 enum class ALObjectType
 {
     ID,

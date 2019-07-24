@@ -52,7 +52,6 @@ void init()
     rl_attempted_completion_function = completer;
 
 
-    
 }
 
 void repl(const std::string& prompt)

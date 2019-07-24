@@ -3,12 +3,11 @@
 namespace alisp
 {
 
-
 #define ENUM_CASE(type) case TokenType::type :   \
     return std::string{#type};                   \
     break
 
-std::string get_token_str(TokenType type)
+std::string lexer::get_token_str(TokenType type)
 {
 	switch (type) {
 		ENUM_CASE(ID);
@@ -33,8 +32,7 @@ std::string get_token_str(TokenType type)
       default : return std::string{"UNKNOWN"};
 	}
 }
+
 #undef ENUM_CASE
-
-
 
 }

@@ -38,7 +38,7 @@ class ErrorMessanger
                      const std::string& msg) const;
 
     
-    void parser_error(const ALToken& token,
+    void parser_error(const lexer::ALToken& token,
                       const std::string& msg) const;
     
     void runtime_error(const std::string& msg) const;
@@ -50,19 +50,19 @@ class ErrorMessanger
 	
 class ThrowingMessanger : public ErrorMessanger
 {
-private:
+  private:
 
 
-public:
+  public:
 
 	ThrowingMessanger() = default;
     
 	void lexer_error(size_t char_num,
-									 size_t line_num,
-									 const std::string& msg) const;
+                     size_t line_num,
+                     const std::string& msg) const;
     
-	void parser_error(const ALToken& token,
-										const std::string& msg) const;
+	void parser_error(const lexer::ALToken& token,
+                      const std::string& msg) const;
     
 	void runtime_error(const std::string& msg) const;
     

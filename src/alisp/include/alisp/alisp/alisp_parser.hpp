@@ -6,6 +6,8 @@
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_object.hpp"
+#include "alisp/alisp/alisp_lexer.hpp"
+#include "alisp/utility.hpp"
 
 
 namespace alisp
@@ -15,32 +17,32 @@ namespace parser
 {
 
 
-
 template <class ErrorHandler>
-class ALParser
+class ALParser final : ParserBase
 {
   private:
 
-    std::vector<alisp::ALToken> tokens;
+    std::vector<lexer::ALToken> tokens;
     size_t current_token_pos;
 
     const ErrorHandler &err;
+    lexer::ALLexer<ErrorHandler> lexer;
 
   public:
 
     ALParser(const ErrorHandler &err_)
-        : current_token_pos(0), err(err_)
+        : current_token_pos(0), err(err_), lexer(err_)
     {
     }
 
   private:
 
-    ALToken peek()
+    lexer::ALToken peek()
     {
         return this->tokens[this->current_token_pos+1];
     }
 
-    ALToken peek(size_t distance)
+    lexer::ALToken peek(size_t distance)
     {
         return this->tokens[this->current_token_pos + distance];
     }
@@ -50,7 +52,7 @@ class ALParser
         ++(this->current_token_pos);
     }
 
-    std::optional<ALToken> current_token()
+    std::optional<lexer::ALToken> current_token()
     {
         if (this->current_token_pos >= tokens.size())
         {
@@ -65,36 +67,36 @@ class ALParser
         if (!tok)
             return nullptr;
 
-        ALToken& token = tok.value();
+        lexer::ALToken& token = tok.value();
 
         switch (token.getType()) {
 
-          case TokenType::LEFT_BRACKET: {
+          case lexer::TokenType::LEFT_BRACKET: {
               next_token();
               return parse_list();
           }
 
-          case TokenType::STRING : {
+          case lexer::TokenType::STRING : {
               return parse_string();
           }
 
-          case TokenType::NUMBER : {
+          case lexer::TokenType::NUMBER : {
               return parse_number();
           }
 
-          case TokenType::REAL_NUMBER : {
+          case lexer::TokenType::REAL_NUMBER : {
               return parse_real();
           }
 
-          case TokenType::ID : {
+          case lexer::TokenType::ID : {
               return parse_id();
           }
 
-          case TokenType::COLON : {
+          case lexer::TokenType::COLON : {
               return parse_pword();
           }
 
-          case TokenType::KEYWORD : {
+          case lexer::TokenType::KEYWORD : {
               return parse_id();
           }
 
@@ -102,24 +104,24 @@ class ALParser
               //     return parse_backquote_splice();
               // }
 
-          case TokenType::COMMA : {
+          case lexer::TokenType::COMMA : {
               return parse_backquote_eval();
           }
 
-          case TokenType::HASHTAG : {
+          case lexer::TokenType::HASHTAG : {
               return parse_function();
           }
               
-          case TokenType::RIGHT_BRACKET : {
+          case lexer::TokenType::RIGHT_BRACKET : {
               std::cout << "Unexpected right bracket" << "\n";
               exit(1);
           }
 
-          case TokenType::QUOTE : {
+          case lexer::TokenType::QUOTE : {
               return parse_quote();
           }
 
-          case TokenType::BACKQUOTE : {
+          case lexer::TokenType::BACKQUOTE : {
               return parse_backquote();
           }
 
@@ -157,7 +159,7 @@ class ALParser
     {
         //check if comma
         next_token();
-        if(current_token().value().getType() == TokenType::AT)
+        if(current_token().value().getType() == lexer::TokenType::AT)
         {
             next_token();
             return parse_backquote_splice();
@@ -267,13 +269,13 @@ class ALParser
             auto token = tok_opt.value();
 
             
-            if(token.getType() == TokenType::RIGHT_BRACKET)
+            if(token.getType() == lexer::TokenType::RIGHT_BRACKET)
             {
                 next_token();
                 break;
             }
 
-            if(token.getType() == TokenType::RIGHT_BRACKET)
+            if(token.getType() == lexer::TokenType::RIGHT_BRACKET)
             {
                 next_token();
                 break;
@@ -350,9 +352,17 @@ class ALParser
 
   public:
 
-    std::vector<ALObject*> parse(const std::vector<alisp::ALToken>& tokens_)
+
+    std::vector<ALObject*> parse(const std::string& input, const std::string& file_name) override
     {
-        this->tokens = tokens_;
+        
+        this->tokens = lexer.tokenize(input);
+        
+        for (const auto& t : this->tokens)
+        {
+            DEBUG(t.str());
+        }
+
         std::vector<ALObject*> objs;
         while (this->current_token_pos < this->tokens.size())
         {

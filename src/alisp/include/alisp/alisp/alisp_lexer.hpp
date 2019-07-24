@@ -13,7 +13,6 @@
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/error_messaging.hpp"
-
 #include "alisp/utility/lite_string.hpp"
 
 
@@ -134,16 +133,18 @@ struct Position
 }
 
 
+namespace lexer
+{
+
+
 template <class ErrorHandler>
 class ALLexer
 {
   private:
     inner::Position position;
-
+    
     const ErrorHandler& err;
 
-    
-    
     constexpr static utility::LiteString keyword_start{"&"};
     constexpr static utility::LiteString cr_lf{"\r\n"};
     constexpr static utility::LiteString nl{"\n"};
@@ -243,12 +244,13 @@ class ALLexer
         this->symbols_map = ALLexer::symbols_map_gen();
     }
 
+    
     ALLexer(const ALLexer&) = delete;
     ALLexer(const ALLexer&&) = delete;
     ALLexer &operator=(const ALLexer&) = delete;
     ALLexer &operator=(ALLexer&&) = delete;
 
-
+  private:
     void skip_whitespace(){
         while (this->position.has_more() && char_in_alphabet(*this->position, inner::whitespace_alphabet))
         {
@@ -263,13 +265,13 @@ class ALLexer
         }
     }
     
-    bool capture_symbol(std::vector<alisp::ALToken>& tokens)
+    bool capture_symbol(std::vector<ALToken>& tokens)
     {
         
         if(char_in_alphabet(*this->position, inner::symbol_alphabet))
         {
-            tokens.push_back(alisp::ALToken(symbols_map[*this->position],
-                                            static_cast<size_t>(this->position.col),
+            tokens.push_back(ALToken(symbols_map[*this->position],
+                                     static_cast<size_t>(this->position.col),
                                             static_cast<size_t>(this->position.line)));
             ++this->position;
             return true;
@@ -277,7 +279,7 @@ class ALLexer
         return false;
     }
 
-    bool capture_keyword(std::vector<alisp::ALToken>& tokens)
+    bool capture_keyword(std::vector<ALToken>& tokens)
     {
         if (!check_char(*keyword_start.c_str())) { return false;}
         ++this->position;
@@ -292,8 +294,8 @@ class ALLexer
         {
             if ( keyword == word )
             {
-                tokens.push_back(alisp::ALToken(TokenType::KEYWORD, std::string(word),
-                                                static_cast<size_t>(this->position.col),
+                tokens.push_back(ALToken(TokenType::KEYWORD, std::string(word),
+                                         static_cast<size_t>(this->position.col),
                                                 static_cast<size_t>(this->position.line)));
                 return true;
             }
@@ -306,7 +308,7 @@ class ALLexer
         return false;
     }
 
-    bool capture_id(std::vector<alisp::ALToken>& tokens)
+    bool capture_id(std::vector<ALToken>& tokens)
     {
         
         auto temp = this->position;
@@ -315,14 +317,14 @@ class ALLexer
             ++this->position;
         }
         const auto word = inner::Position::str(temp, this->position);
-        tokens.push_back(alisp::ALToken(TokenType::ID, std::string(word),
-                                        static_cast<size_t>(this->position.col),
+        tokens.push_back(ALToken(TokenType::ID, std::string(word),
+                                 static_cast<size_t>(this->position.col),
                                         static_cast<size_t>(this->position.line)));
 
         return true;
     }
 
-    bool capture_string(std::vector<alisp::ALToken>& tokens)
+    bool capture_string(std::vector<ALToken>& tokens)
     {
         
         if(*this->position != '\"') { return false; }
@@ -346,14 +348,14 @@ class ALLexer
         
 
         const auto text = inner::Position::str(temp, this->position);
-        tokens.push_back(alisp::ALToken(TokenType::STRING, std::string(text),
-                                        static_cast<size_t>(this->position.col),
+        tokens.push_back(ALToken(TokenType::STRING, std::string(text),
+                                 static_cast<size_t>(this->position.col),
                                         static_cast<size_t>(this->position.line)));
         ++this->position;
         return true;
     }
 	
-    bool capture_num(std::vector<alisp::ALToken>& tokens)
+    bool capture_num(std::vector<ALToken>& tokens)
     {
         int sign = 1;
         bool real = false;
@@ -397,28 +399,20 @@ class ALLexer
             }
         }
         
-        // if(!char_in_alphabet(*this->position, inner::whitespace_alphabet) &&
-        //    !char_in_alphabet(*this->position, inner::symbol_alphabet))
-        // {
-        //     this->err.lexer_error(static_cast<size_t>(this->position.col),
-        //                           static_cast<size_t>(this->position.line),
-        //                           "Invalid number.");
-        // }
-
         const auto res = inner::Position::str(temp, this->position);
 
         if (real)
         {
             float num = static_cast<float>(sign) * std::stof( std::string(res) );
-            tokens.push_back(alisp::ALToken(TokenType::REAL_NUMBER, num,
-                                            static_cast<size_t>(this->position.col),
+            tokens.push_back(ALToken(TokenType::REAL_NUMBER, num,
+                                     static_cast<size_t>(this->position.col),
                                             static_cast<size_t>(this->position.line)));
         }
         else
         {
             int num = sign * std::stoi( std::string(res) );
-            tokens.push_back(alisp::ALToken(TokenType::NUMBER, num,
-                                            static_cast<size_t>(this->position.col),
+            tokens.push_back(ALToken(TokenType::NUMBER, num,
+                                     static_cast<size_t>(this->position.col),
                                             static_cast<size_t>(this->position.line)));
         }
 
@@ -430,9 +424,10 @@ class ALLexer
         return *this->position == c;
     }
 
-    std::vector<alisp::ALToken> tokenize(const std::string& input)
+  public:
+    std::vector<ALToken> tokenize(const std::string& input)
     {
-        std::vector<alisp::ALToken> tokens;
+        std::vector<ALToken> tokens;
         const auto begin = input.empty() ? nullptr : &input.front();
         const auto end = begin == nullptr ? nullptr : begin + input.size();
         this->position = inner::Position(begin, end);
@@ -466,5 +461,6 @@ class ALLexer
 
 };
 
+}
 
 }

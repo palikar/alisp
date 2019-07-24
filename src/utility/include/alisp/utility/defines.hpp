@@ -31,7 +31,7 @@ constexpr static const bool debug_build = ALISP_DEBUG;
 
 [[nodiscard]] static inline const std::string get_build_info() noexcept
 {
-    std::string build_str = fmt::format("Alisp {}.{}.{}\n",
+    std::string build_str = fmt::format("ALisp {}.{}.{}\n",
                                         version_major, version_minor, version_patch);
     build_str += fmt::format("[{} {}] ", compiler_name, compiler_version);
     build_str += "Build:";

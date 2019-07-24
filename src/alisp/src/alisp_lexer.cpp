@@ -7,9 +7,5 @@
 
 namespace alisp
 {
-	template class ALLexer<ErrorMessanger>;
 
-
-
-	using SimpleParser = ALLexer<ErrorMessanger>;
 }

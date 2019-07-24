@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <clara.hpp>
+#include <fmt/format.h>
 
 #include "alisp/config.hpp"
 #include "alisp/utility/defines.hpp"
@@ -11,8 +12,7 @@
 #include "alisp/alisp/error_messaging.hpp"
 #include "alisp/applications/prompt.hpp"
 
-#include "alisp/utility/hash.hpp"
-#include "alisp/utility/logging.hpp"
+#include "alisp/utility.hpp"
 
 
 
@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
     }
 
     if (opts.version) {
-        std::cout << "Alisp 0.0.0" << '\n';
+        
+        std::cout << fmt::format("ALisp {}.{}.{}", alisp::version_major, alisp::version_minor, alisp::version_patch) << '\n';
         exit(1);
     }
 
@@ -85,22 +86,11 @@ void eval_statement(const std::string& command)
 {
 
     alisp::ErrorMessanger err;
-    alisp::ALLexer lex{err};
     alisp::parser::ALParser pars{err};
 
-    
     err.set_input(command);
-    
-    auto toks = lex.tokenize(command);
 
-    for (const auto& t : toks)
-    {
-        std::cout << t << "\n";
-    }
-
-    std::cout << "---------" << "\n";
-    
-    auto res = pars.parse(toks);
+    auto res = pars.parse(command, "--eval--");
 
     for (auto r : res) {
         std::cout << ":";

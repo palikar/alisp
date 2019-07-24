@@ -76,7 +76,7 @@ void ErrorMessanger::lexer_error(size_t char_num,
 }
 
 
-void ErrorMessanger::parser_error(const ALToken& token,
+void ErrorMessanger::parser_error(const lexer::ALToken& token,
                                   const std::string& msg) const
 {
 
@@ -99,7 +99,7 @@ void ThrowingMessanger::lexer_error(size_t char_num,
 		
 }
 
-void ThrowingMessanger::parser_error(const ALToken& // token
+void ThrowingMessanger::parser_error(const lexer::ALToken& // token
                                      ,
                                      const std::string& // msg
     ) const
