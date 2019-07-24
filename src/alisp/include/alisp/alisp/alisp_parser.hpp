@@ -3,14 +3,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <regex>
-#include <utility>
-#include <locale>
-#include <variant>
-#include <optional>
-#include <functional>
-
-
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_object.hpp"

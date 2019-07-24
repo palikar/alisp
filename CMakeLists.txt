@@ -24,6 +24,9 @@ option(ENABLE_CPPCHECK "Enable testing with cppcheck" FALSE)
 option(SIMPLE_BUILD "Build the project as minimally as possible" FALSE)
 option(BUILD_DOC "Build the project's documentation" ON)
 option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
+option(ELF_LOGGING "Use elf as a hashing function" FALSE)
+option(JENKINS_LOGGING "Use jenkins one at a time as a hashing function" FALSE)
+option(DEBUG_LOGGING "Enabling debug loggng" 0)
 
 
 
@@ -161,7 +164,6 @@ endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-
 #######################################################################
 #######################################################################
 ###########################    Libraries     ##########################
@@ -204,12 +206,24 @@ find_package(rang)
 
 
 
-set(PROJECT_BRIEF "This is a short description")
+set(PROJECT_BRIEF "The alisp scripting language")
 
-set(MF_VERSION_MAJOR 1)
-set(MF_VERSION_MINOR 0)
-set(MF_VERSION_PATCH 0)
-set(MF_VERSION ${MF_VERSION_MAJOR}.${MF_VERSION_MINOR}.${MF_VERSION_PATCH})
+
+if(ELF_HASHING)
+    target_compile_definitions(project_options INTERFACE -DELF_HASHING)
+endif(ELF_HASHING)
+
+
+if(JENKINS_HASHING)
+    target_compile_definitions(project_options INTERFACE -DJENKINS_HASHING)
+endif(JENKINS_HASHING)
+
+
+
+set(AL_VERSION_MAJOR 1)
+set(AL_VERSION_MINOR 0)
+set(AL_VERSION_PATCH 0)
+set(AL_VERSION ${AL_VERSION_MAJOR}.${AL_VERSION_MINOR}.${AL_VERSION_PATCH})
 
 configure_file (
     "${PROJECT_SOURCE_DIR}/src/include/${PROJECT_NAME}/config.hpp.in"
@@ -275,6 +289,10 @@ message("Build libcpp:     \t ${LIBCPP}")
 message("CCache executable:\t ${CCACHE}")
 message("Building doc:     \t ${BUILD_DOC}")
 message("Simple build:     \t ${SIMPLE_BUILD}")
+message("Jenkins Hashing:  \t ${JENKINS_HASHING}")
+message("Elf Hashing:      \t ${ELF_HASHING}")
+message("Debug Logging:    \t ${DEBUG_LOGGING}")
+
 
 message("------------------------------------------")
 message("Version:        \t ")

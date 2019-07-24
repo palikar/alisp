@@ -29,14 +29,15 @@ namespace alisp::logging
 
 
 #if DEBUG_LOGGING
-#define DEBUG(...) nu::logging::get_dev_logger->debug(__VA_ARGS__)
+#define DEBUG(...) alisp::logging::get_dev_logger()->debug(__VA_ARGS__)
 #else
 #define DEBUG(...) (void)0
 #endif
 
-#define ABORT(...)                                                      \
-	do {                                                                \
-		nu::logging::get_main_logger->critical(__VA_ARGS__);            \
-		nu::logging::get_main_logger->critical("Aborting!");            \
-		abort();                                                        \
+#define ABORT(...)                                                  \
+	do {                                                            \
+		alisp::logging::get_main_logger()->critical(__VA_ARGS__);   \
+		alisp::logging::get_main_logger()->critical("Aborting!");   \
+		abort();                                                    \
 	} while (0)
+ 

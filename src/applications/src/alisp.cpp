@@ -3,13 +3,17 @@
 #include <clara.hpp>
 
 #include "alisp/config.hpp"
+#include "alisp/utility/defines.hpp"
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_lexer.hpp"
 #include "alisp/alisp/alisp_parser.hpp"
 #include "alisp/alisp/error_messaging.hpp"
-
 #include "alisp/applications/prompt.hpp"
+
+#include "alisp/utility/hash.hpp"
+#include "alisp/utility/logging.hpp"
+
 
 
 void eval_statement(const std::string& command);
@@ -24,6 +28,9 @@ struct Options
 
 int main(int argc, char *argv[])
 {
+
+    alisp::logging::init_logging();
+        
     using clara::Opt;
     using clara::Arg;
     using clara::Args;
@@ -64,7 +71,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-
+    std::cout << alisp::get_build_info();
     alisp::prompt::init();
     alisp::prompt::repl(">>> ");
     

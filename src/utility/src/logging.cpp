@@ -33,7 +33,7 @@ spdlog::logger* get_main_logger()
 spdlog::logger* get_dev_logger()
 {
 	return _dev_debug.get();
-	}
+}
   
 void init_logging(bool debug = false)
 {

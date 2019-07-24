@@ -14,14 +14,15 @@
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/error_messaging.hpp"
 
-#include "alisp/util/lite_string.hpp"
+#include "alisp/utility/lite_string.hpp"
 
 
 namespace alisp
 {
 
 
-namespace inner {
+namespace inner
+{
 
 enum Alphabet
 {
@@ -143,16 +144,16 @@ class ALLexer
 
     
     
-    constexpr static LiteString keyword_start{"&"};
-    constexpr static LiteString cr_lf{"\r\n"};
-    constexpr static LiteString nl{"\n"};
+    constexpr static utility::LiteString keyword_start{"&"};
+    constexpr static utility::LiteString cr_lf{"\r\n"};
+    constexpr static utility::LiteString nl{"\n"};
 
 	
-    constexpr static std::array<LiteString, 2> create_keywords() noexcept
+    constexpr static std::array<utility::LiteString, 2> create_keywords() noexcept
     {
-        std::array<LiteString, 2> keywords_vec = {{
-                LiteString{"optional"},
-                LiteString{"rest"}
+        std::array<utility::LiteString, 2> keywords_vec = {{
+                utility::LiteString{"optional"},
+                utility::LiteString{"rest"}
             }};
         return keywords_vec;
     }
