@@ -7,9 +7,32 @@ namespace
 {
 namespace utility
 {
+
+
+	void replace(std::string& str, const std::string& from, const std::string& to)
+	{
+    //str = QString(str.c_str()).replace(before.c_str(), after.c_str()).toStdString();
+
+    if(from.empty())
+			return;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos)
+    {
+			str.replace(start_pos, from.length(), to);
+			start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+	}
+
+
+	void erase(std::string& str, const std::string& from)
+	{
+    replace(str, from, "");
+	}
+
+	
 		
-struct LiteString
-{
+	struct LiteString
+	{
     template<size_t N>
     constexpr LiteString(const char (&str)[N]) noexcept
         : m_size(N-1), data(&str[0])

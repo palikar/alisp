@@ -41,7 +41,7 @@ class ErrorMessanger
     void parser_error(const lexer::ALToken& token,
                       const std::string& msg) const;
     
-    void runtime_error(const std::string& msg) const;
+	void runtime_error(const std::string& msg) const;
     
     
 };
