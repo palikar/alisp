@@ -235,24 +235,20 @@ class ALParser
 
     ALObject* parse_id()
     {
-
         auto temp = this->position;
         while(this->position.has_more() && char_in_alphabet(*this->position, detail::id_alphabet))
         {
             ++this->position;
         }
-        const auto word = detail::Position::str(temp, this->position);
-        tokens.push_back(ALToken(TokenType::ID, std::string(word),
-                                 static_cast<size_t>(this->position.col),
-                                        static_cast<size_t>(this->position.line)));
 
-        return true;
+        const auto word = detail::Position::str(temp, this->position);
+        return make_symbol(word);
     }
 
     ALObject* parse_string()
     {
 
-        if(*this->position != '\"') { return false; }
+        if(*this->position != '\"') { return nullptr; }
 
         ++this->position;
 
@@ -270,21 +266,16 @@ class ALParser
                                   static_cast<size_t>(this->position.line),
                                   "Invalid string literal");
         }
-
-
         const auto text = detail::Position::str(temp, this->position);
-        tokens.push_back(ALToken(TokenType::STRING, std::string(text),
-                                 static_cast<size_t>(this->position.col),
-                                        static_cast<size_t>(this->position.line)));
         ++this->position;
-        return true;
+        
+        return make_string(text);
     }
 
     ALObject* parse_number()
     {
         int sign = 1;
         bool real = false;
-        bool retval = true;
 
         auto t = this->position;
         if (*this->position == '-')
@@ -298,7 +289,7 @@ class ALParser
         if (!std::isdigit(*this->position) && *this->position != '.')
         {
             this->position = t;
-            return false;
+            return nullptr;
         }
 
         auto temp = this->position;
@@ -326,22 +317,15 @@ class ALParser
 
         const auto res = detail::Position::str(temp, this->position);
 
-        if (real)
-        {
+        if (real) {
             float num = static_cast<float>(sign) * std::stof( std::string(res) );
-            tokens.push_back(ALToken(TokenType::REAL_NUMBER, num,
-                                     static_cast<size_t>(this->position.col),
-                                            static_cast<size_t>(this->position.line)));
-        }
-        else
-        {
+            return make_double(num);
+        } else {
             int num = sign * std::stoi( std::string(res) );
-            tokens.push_back(ALToken(TokenType::NUMBER, num,
-                                     static_cast<size_t>(this->position.col),
-                                     static_cast<size_t>(this->position.line)));
+            return make_int(num);
         }
 
-        return retval;
+
     }
 
     ALObject* parse_quote()
@@ -351,6 +335,7 @@ class ALParser
 
     ALObject* parse_list()
     {
+        
         return nullptr;
     }
 
