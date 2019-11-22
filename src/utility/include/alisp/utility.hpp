@@ -6,3 +6,4 @@
 #include <alisp/utility/lite_string.hpp>
 #include <alisp/utility/logging.hpp>
 #include <alisp/utility/meta.hpp>
+#include <alisp/utility/macros.hpp>

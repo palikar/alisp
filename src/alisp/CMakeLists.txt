@@ -1,10 +1,9 @@
-
 add_library(alisp_language
     src/alisp_common.cpp
-    src/alisp_lexer.cpp
-    src/alisp_parser.cpp
-    src/alisp_object.cpp
-    src/error_messaging.cpp
+    # src/alisp_lexer.cpp
+    # src/alisp_parser.cpp
+    # src/alisp_object.cpp
+    # src/error_messaging.cpp
     )
 
 
@@ -24,7 +23,6 @@ target_link_libraries(alisp_language
     Threads::Threads
     fmt::fmt
     spdlog::spdlog
-    absl::strings
     )
 
 
@@ -36,8 +34,6 @@ install(TARGETS alisp_language
     INCLUDES DESTINATION      ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
     ARCHIVE DESTINATION       ${CMAKE_INSTALL_SHAREDSTATEDIR}
     )
-
-
 
 
 

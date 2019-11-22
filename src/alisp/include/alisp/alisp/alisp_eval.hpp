@@ -9,7 +9,7 @@ namespace alisp
 {
 
 
-<typename Handler, typename T>
+template <typename Handler, typename T>
 class Evaluator
 {
   private:

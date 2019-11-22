@@ -26,9 +26,7 @@ option(BUILD_DOC "Build the project's documentation" ON)
 option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
 option(ELF_LOGGING "Use elf as a hashing function" FALSE)
 option(JENKINS_LOGGING "Use jenkins one at a time as a hashing function" FALSE)
-option(DEBUG_LOGGING "Enabling debug loggng" 0)
-
-
+option(DEBUG_LOGGING "Enabling debug logging" FALSE)
 
 
 #######################################################################
@@ -80,7 +78,6 @@ target_compile_options(project_warnings
     )
 
 
-
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     target_compile_options(project_warnings
         INTERFACE
@@ -95,9 +92,9 @@ endif()
 
 if (${FORCE_COLORED_OUTPUT})
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        add_compile_options (-fdiagnostics-color=always)
+        target_compile_options (project_options INTERFACE -fdiagnostics-color=always)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-        add_compile_options (-fcolor-diagnostics)
+        target_compile_options (project_options INTERFACE -fcolor-diagnostics)
     endif ()
 endif ()
 
@@ -135,11 +132,12 @@ endif()
 
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
     message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-    file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
+    file(DOWNLOAD  "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
         "${CMAKE_BINARY_DIR}/conan.cmake")
 endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
+
 conan_check(REQUIRED)
 conan_cmake_run(
     CONANFILE
@@ -150,13 +148,10 @@ conan_cmake_run(
     CMAKE_TARGETS
     BUILD
     missing)
-
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
-
-
 
 if(ENABLE_TESTING)
     enable_testing()
@@ -241,9 +236,9 @@ install (FILES
 include (InstallRequiredSystemLibraries)
 set (CPACK_RESOURCE_FILE_LICENSE  
     "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set (CPACK_PACKAGE_VERSION_MAJOR "${MF_VERSION_MAJOR}")
-set (CPACK_PACKAGE_VERSION_MINOR "${MF_VERSION_MINOR}")
-set (CPACK_PACKAGE_VERSION_PATCH "${MF_VERSION_PATCH}")
+set (CPACK_PACKAGE_VERSION_MAJOR "${AL_VERSION_MAJOR}")
+set (CPACK_PACKAGE_VERSION_MINOR "${AL_VERSION_MINOR}")
+set (CPACK_PACKAGE_VERSION_PATCH "${AL_VERSION_PATCH}")
 include (CPack)
 
 if(BUILD_DOC)
@@ -292,8 +287,6 @@ message("Simple build:     \t ${SIMPLE_BUILD}")
 message("Jenkins Hashing:  \t ${JENKINS_HASHING}")
 message("Elf Hashing:      \t ${ELF_HASHING}")
 message("Debug Logging:    \t ${DEBUG_LOGGING}")
-
-
 message("------------------------------------------")
 message("Version:        \t ")
 message("########################################")

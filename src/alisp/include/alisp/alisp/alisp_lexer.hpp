@@ -12,7 +12,6 @@
 #include <tuple>
 
 #include "alisp/alisp/alisp_common.hpp"
-#include "alisp/alisp/error_messaging.hpp"
 #include "alisp/utility/lite_string.hpp"
 
 
@@ -20,19 +19,17 @@ namespace alisp
 {
 
 
-namespace inner
+namespace detail
 {
 
 enum Alphabet
 {
-    symbol_alphabet = 0,
-    id_alphabet,
-    keyword_alphabet,
+    id_alphabet = 0,
     whitespace_alphabet,
-    max_alphabet,
-    lengthof_alphabet = 256
-	};
+};
 
+constexpr size_t LENGTHOF_ALPHABET = 256;
+constexpr size_t ALPHABETS_NUM = 2;
 
 struct Position
 {
@@ -44,7 +41,7 @@ struct Position
     }
 
     static std::string_view str(const Position &begin, const Position &end) noexcept {
-					
+
         if (begin.pos != nullptr && end.pos != nullptr) {
             return std::string_view(begin.pos,
                                     static_cast<size_t>(std::distance(begin.pos, end.pos)));
@@ -95,7 +92,7 @@ struct Position
         return pos != rhs.pos;
     }
 
-    
+
     constexpr Position &operator+=(size_t distance) noexcept {
         *this = (*this) + distance;
         return *this;
@@ -127,9 +124,11 @@ struct Position
     const char *pos = nullptr;
     const char *end = nullptr;
     int last_col = -1;
-				
+
 };
-	
+
+
+
 }
 
 
@@ -138,42 +137,18 @@ namespace lexer
 
 
 template <class ErrorHandler>
-class ALLexer
+class ALParser
 {
   private:
-    inner::Position position;
-    
+
+    detail::Position position;
     const ErrorHandler& err;
+
 
     constexpr static utility::LiteString keyword_start{"&"};
     constexpr static utility::LiteString cr_lf{"\r\n"};
     constexpr static utility::LiteString nl{"\n"};
-
-	
-    constexpr static std::array<utility::LiteString, 2> create_keywords() noexcept
-    {
-        std::array<utility::LiteString, 2> keywords_vec = {{
-                utility::LiteString{"optional"},
-                utility::LiteString{"rest"}
-            }};
-        return keywords_vec;
-    }
-
-    constexpr static std::unordered_map<char, TokenType> symbols_map_gen() noexcept
-    {
-        std::unordered_map<char, TokenType> symbols_vec = {{
-                {'(', TokenType::LEFT_BRACKET},
-                {')',TokenType::RIGHT_BRACKET},
-                {'@', TokenType::AT},
-                {'\'',TokenType::QUOTE},
-                {':',TokenType::COLON},
-                {',',TokenType::COMMA},
-                {'#',TokenType::HASHTAG},
-                {'`',TokenType::BACKQUOTE}
-            }};
-        return symbols_vec;
-    }
-
+    
     template<typename Array2D, typename First, typename Second>
     constexpr static void set_alphabet(Array2D &array, const First first, const Second second) noexcept
     {
@@ -182,77 +157,60 @@ class ALLexer
         *second_ptr = true;
     }
 
-    constexpr bool char_in_alphabet(char c, inner::Alphabet a) const noexcept
-    { 
-        return this->alphabet[a][static_cast<uint8_t>(c)]; 
-    }
-    
-    constexpr static std::array<std::array<bool, inner::lengthof_alphabet>, inner::max_alphabet> build_alphabet() noexcept
+    constexpr bool char_in_alphabet(char c, detail::Alphabet a) const noexcept
     {
-        std::array<std::array<bool, inner::lengthof_alphabet>, inner::max_alphabet> alph{};
+        return this->alphabet[a][static_cast<uint8_t>(c)];
+    }
 
-        set_alphabet(alph, inner::symbol_alphabet, '(');
-        set_alphabet(alph, inner::symbol_alphabet, ')');
-        // set_alphabet(alph, inner::symbol_alphabet, '{');
-        // set_alphabet(alph, inner::symbol_alphabet, '}');
-        set_alphabet(alph, inner::symbol_alphabet, '@');
-        set_alphabet(alph, inner::symbol_alphabet, '\'');
-        set_alphabet(alph, inner::symbol_alphabet, ':');
-        set_alphabet(alph, inner::symbol_alphabet, '#');
-        set_alphabet(alph, inner::symbol_alphabet, ',');
-        set_alphabet(alph, inner::symbol_alphabet, '`');
+    constexpr static std::array<std::array<bool, detail::LENGTHOF_ALPHABET>, detail::ALPHABETS_NUM> build_alphabet() noexcept
+    {
+        std::array<std::array<bool, detail::LENGTHOF_ALPHABET>, detail::ALPHABETS_NUM> alph{};
 
-        set_alphabet(alph, inner::whitespace_alphabet, ' ');
-        set_alphabet(alph, inner::whitespace_alphabet, '\t');
-        set_alphabet(alph, inner::whitespace_alphabet, '\n');
+        set_alphabet(alph, detail::whitespace_alphabet, ' ');
+        set_alphabet(alph, detail::whitespace_alphabet, '\t');
+        set_alphabet(alph, detail::whitespace_alphabet, '\n');
 
-        for ( size_t c = 'a' ; c <= 'z' ; ++c ) {set_alphabet(alph, inner::id_alphabet, c);}
-        for ( size_t c = 'A' ; c <= 'Z' ; ++c ) {set_alphabet(alph, inner::id_alphabet, c);}
-        for ( size_t c = '0' ; c <= '9' ; ++c ) {set_alphabet(alph, inner::id_alphabet, c);}
-        set_alphabet(alph, inner::id_alphabet, '-');
-        set_alphabet(alph, inner::id_alphabet, '_');
-        set_alphabet(alph, inner::id_alphabet, '+');
-        set_alphabet(alph, inner::id_alphabet, '-');
-        set_alphabet(alph, inner::id_alphabet, '*');
-        set_alphabet(alph, inner::id_alphabet, '/');
-        set_alphabet(alph, inner::id_alphabet, '=');
-        set_alphabet(alph, inner::id_alphabet, '$');
-        set_alphabet(alph, inner::id_alphabet, '%');
-        set_alphabet(alph, inner::id_alphabet, '?');
-        set_alphabet(alph, inner::id_alphabet, '|');
-        
-        for ( size_t c = 'a' ; c <= 'z' ; ++c ) {set_alphabet(alph, inner::keyword_alphabet, c);}
-        for ( size_t c = 'A' ; c <= 'Z' ; ++c ) {set_alphabet(alph, inner::keyword_alphabet, c);}
-        for ( size_t c = '0' ; c <= '9' ; ++c ) {set_alphabet(alph, inner::keyword_alphabet, c);}
-        set_alphabet(alph, inner::keyword_alphabet, '-');
-        set_alphabet(alph, inner::keyword_alphabet, '_');
-            
+        for ( size_t c = 'a' ; c <= 'z' ; ++c ) {set_alphabet(alph, detail::id_alphabet, c);}
+        for ( size_t c = 'A' ; c <= 'Z' ; ++c ) {set_alphabet(alph, detail::id_alphabet, c);}
+        for ( size_t c = '0' ; c <= '9' ; ++c ) {set_alphabet(alph, detail::id_alphabet, c);}
+        set_alphabet(alph, detail::id_alphabet, '-');
+        set_alphabet(alph, detail::id_alphabet, '_');
+        set_alphabet(alph, detail::id_alphabet, '+');
+        set_alphabet(alph, detail::id_alphabet, '-');
+        set_alphabet(alph, detail::id_alphabet, '*');
+        set_alphabet(alph, detail::id_alphabet, '/');
+        set_alphabet(alph, detail::id_alphabet, '=');
+        set_alphabet(alph, detail::id_alphabet, '$');
+        set_alphabet(alph, detail::id_alphabet, '%');
+        set_alphabet(alph, detail::id_alphabet, '?');
+        set_alphabet(alph, detail::id_alphabet, '|');
+        set_alphabet(alph, detail::id_alphabet, '@');
 
-        
+
         return alph;
     }
 
     constexpr static auto alphabet = build_alphabet();
-    constexpr static auto keywords = create_keywords();
-    std::unordered_map<char, TokenType> symbols_map;
 
   public:
 
-    
-	explicit ALLexer(const ErrorHandler& err_) : err(err_)
+
+    explicit ALParser(const ErrorHandler& err_) : err(err_)
     {
-        this->symbols_map = ALLexer::symbols_map_gen();
+
     }
 
-    
-    ALLexer(const ALLexer&) = delete;
-    ALLexer(const ALLexer&&) = delete;
-    ALLexer &operator=(const ALLexer&) = delete;
-    ALLexer &operator=(ALLexer&&) = delete;
+
+    ALParser(const ALParser&) = delete;
+    ALParser(const ALParser&&) = delete;
+    ALParser &operator=(const ALParser&) = delete;
+    ALParser &operator=(ALParser&&) = delete;
 
   private:
+
     void skip_whitespace(){
-        while (this->position.has_more() && char_in_alphabet(*this->position, inner::whitespace_alphabet))
+
+        while (this->position.has_more() && char_in_alphabet(*this->position, detail::whitespace_alphabet))
         {
             ++this->position;
         }
@@ -264,59 +222,26 @@ class ALLexer
             ++this->position;
         }
     }
-    
-    bool capture_symbol(std::vector<ALToken>& tokens)
+
+    bool check_char(const char c)
     {
-        
-        if(char_in_alphabet(*this->position, inner::symbol_alphabet))
-        {
-            tokens.push_back(ALToken(symbols_map[*this->position],
-                                     static_cast<size_t>(this->position.col),
-                                            static_cast<size_t>(this->position.line)));
-            ++this->position;
-            return true;
-        }
+        return *this->position == c;
+    }
+
+    bool check_num()
+    {
         return false;
     }
 
-    bool capture_keyword(std::vector<ALToken>& tokens)
+    ALObject* parse_id()
     {
-        if (!check_char(*keyword_start.c_str())) { return false;}
-        ++this->position;
+
         auto temp = this->position;
-        while(this->position.has_more() && char_in_alphabet(*this->position, inner::keyword_alphabet))
+        while(this->position.has_more() && char_in_alphabet(*this->position, detail::id_alphabet))
         {
             ++this->position;
         }
-        const auto word = inner::Position::str(temp, this->position);
-
-        for (const auto& keyword : keywords)
-        {
-            if ( keyword == word )
-            {
-                tokens.push_back(ALToken(TokenType::KEYWORD, std::string(word),
-                                         static_cast<size_t>(this->position.col),
-                                                static_cast<size_t>(this->position.line)));
-                return true;
-            }
-        }
-
-        this->err.lexer_error(static_cast<size_t>(this->position.col),
-                              static_cast<size_t>(this->position.line),
-                              "Invalid keyword: " + std::string(word));
-				
-        return false;
-    }
-
-    bool capture_id(std::vector<ALToken>& tokens)
-    {
-        
-        auto temp = this->position;
-        while(this->position.has_more() && char_in_alphabet(*this->position, inner::id_alphabet))
-        {
-            ++this->position;
-        }
-        const auto word = inner::Position::str(temp, this->position);
+        const auto word = detail::Position::str(temp, this->position);
         tokens.push_back(ALToken(TokenType::ID, std::string(word),
                                  static_cast<size_t>(this->position.col),
                                         static_cast<size_t>(this->position.line)));
@@ -324,15 +249,15 @@ class ALLexer
         return true;
     }
 
-    bool capture_string(std::vector<ALToken>& tokens)
+    ALObject* parse_string()
     {
-        
+
         if(*this->position != '\"') { return false; }
 
         ++this->position;
-        
+
         auto temp = this->position;
-        
+
         while(this->position.has_more() && *this->position != '\"' )
         {
             ++this->position;
@@ -345,17 +270,17 @@ class ALLexer
                                   static_cast<size_t>(this->position.line),
                                   "Invalid string literal");
         }
-        
 
-        const auto text = inner::Position::str(temp, this->position);
+
+        const auto text = detail::Position::str(temp, this->position);
         tokens.push_back(ALToken(TokenType::STRING, std::string(text),
                                  static_cast<size_t>(this->position.col),
                                         static_cast<size_t>(this->position.line)));
         ++this->position;
         return true;
     }
-	
-    bool capture_num(std::vector<ALToken>& tokens)
+
+    ALObject* parse_number()
     {
         int sign = 1;
         bool real = false;
@@ -398,8 +323,8 @@ class ALLexer
                 ++this->position;
             }
         }
-        
-        const auto res = inner::Position::str(temp, this->position);
+
+        const auto res = detail::Position::str(temp, this->position);
 
         if (real)
         {
@@ -413,49 +338,64 @@ class ALLexer
             int num = sign * std::stoi( std::string(res) );
             tokens.push_back(ALToken(TokenType::NUMBER, num,
                                      static_cast<size_t>(this->position.col),
-                                            static_cast<size_t>(this->position.line)));
+                                     static_cast<size_t>(this->position.line)));
         }
 
         return retval;
     }
 
-    inline bool check_char(const char c)
+    ALObject* parse_quote()
     {
-        return *this->position == c;
+        return nullptr;
     }
 
-  public:
-    std::vector<ALToken> tokenize(const std::string& input)
+    ALObject* parse_list()
     {
-        std::vector<ALToken> tokens;
+        return nullptr;
+    }
+
+    ALObject* parse_comma()
+    {
+        return nullptr;
+    }
+
+    ALObject* do_parse()
+    {
+        skip_whitespace();
+        if(!position.has_more()) return nullptr;
+
+        if ( *position =='('  ) return parse_list();   
+        if ( *position == '\"') return parse_string();
+        if ( *position == '\'') return parse_quote();
+        if ( *position == ',' ) return parse_comma();
+        if ( *position == '\'') return parse_quote();
+        if (  check_num()     ) return parse_number();
+
+        return parse_id();
+        
+    }
+
+
+  public:
+    std::vector<ALObject*> parse(const std::string& input)
+    {
+        std::vector<ALObject*> objects;
+
         const auto begin = input.empty() ? nullptr : &input.front();
         const auto end = begin == nullptr ? nullptr : begin + input.size();
-        this->position = inner::Position(begin, end);
+        this->position = detail::Position(begin, end);
 
         while(position.has_more())
         {
-            skip_whitespace();
-            // skip_eol();
-
-            if (capture_symbol(tokens)) { continue; }
-
-            if (capture_keyword(tokens)) { continue; }
-
-            if (capture_string(tokens)) { continue; }
-
-            if (capture_num(tokens)) { continue; }
-
-            if (capture_id(tokens)) { continue; }
-            
-
-            this->err.lexer_error(static_cast<size_t>(this->position.col),
-                                  static_cast<size_t>(this->position.line),
-                                  "Unknown lexer symbol");
-					
+            auto next_object = do_parse();
+            if (next_object)
+            {
+                objects.emplace_back(next_object);
+            }
         }
-				
-        return tokens;
-  
+
+        return objects;
+
     }
 
 

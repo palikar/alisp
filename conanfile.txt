@@ -9,5 +9,4 @@ clara/1.1.4@bincrafters/stable
 [generators]
 cmake
 cmake_find_package
-txt
 

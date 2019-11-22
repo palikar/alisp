@@ -17,10 +17,10 @@ target_link_libraries(alisp
     Threads::Threads
     fmt::fmt
     spdlog::spdlog
-    alisp_language
     readline
-    alisp_util
     clara::clara
+    alisp_language
+    alisp_util
     )
 
 
