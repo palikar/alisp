@@ -9,36 +9,46 @@ namespace alisp
 {
 
 
-template <typename Handler, typename T>
-class Evaluator
-{
-  private:
-
-    Handler &error_handler;
-    
-  public:
-    Evaluator(Handler &error_handler_) :error_handler(error_handler_)
-    {}
-
-    ALObject* eval(ALObject* obj)
-	{
+	namespace eval {
 		
-        switch (obj->type) {
-          case ObjectType::STRING :
-		  case ObjectType::REAL :
-          case ObjectType::INT : {
-              
-          }
-          case ObjectType::SYMBOL : {              
-          }
-          case ObjectType::LIST : {
-              break;
-          }
-          default:
-              break;
-        }
+		template <class Handler>
+		class Evaluator
+		{
+		private:
+
+			Handler &error_handler;
+    
+		public:
+			Evaluator(Handler &error_handler_) :error_handler(error_handler_)
+				{}
+
+			ALObject* eval(ALObject* obj)
+				{
+		
+					switch (obj->type) {
+					case ALObjectType::STRING :
+					case ALObjectType::REAL :
+					case ALObjectType::INT : {
+
+						break;
+					}
+					
+					case ALObjectType::SYMBOL : {
+
+						break;
+					}
+					case ALObjectType::LIST : {
+						break;
+					}
+					
+					default:
+						break;
+					}
+				}
+		};
+
+
 	}
-};
 
 
 }

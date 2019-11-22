@@ -1,6 +1,5 @@
 add_library(alisp_language
     src/alisp_common.cpp
-    # src/alisp_lexer.cpp
     # src/alisp_parser.cpp
     # src/alisp_object.cpp
     # src/error_messaging.cpp
