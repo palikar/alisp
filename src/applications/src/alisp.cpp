@@ -7,9 +7,10 @@
 #include "alisp/utility/defines.hpp"
 
 #include "alisp/alisp/alisp_common.hpp"
-#include "alisp/alisp/alisp_lexer.hpp"
 #include "alisp/alisp/alisp_parser.hpp"
-#include "alisp/alisp/error_messaging.hpp"
+#include "alisp/alisp/alisp_eval.hpp"
+#include "alisp/alisp/alisp_env.hpp"
+
 #include "alisp/applications/prompt.hpp"
 
 #include "alisp/utility.hpp"
@@ -85,17 +86,14 @@ int main(int argc, char *argv[])
 void eval_statement(const std::string& command)
 {
 
-    alisp::ErrorMessanger err;
-    alisp::parser::ALParser pars{err};
+    alisp::env::Environment env;
+    alisp::eval::Evaluator<alisp::env::Environment> eval(env);
+    alisp::parser::ALParser<alisp::env::Environment> pars(env);
 
-    err.set_input(command);
-
-    auto res = pars.parse(command, "--eval--");
-
-    for (auto r : res) {
-        std::cout << ":";
-        alisp::util::printObject(r);
-        std::cout << "\n";
-    }
+    
+    auto parse_res = pars.parse(command, "__EVAL__");
+    auto eval_res = eval.eval(parse_res[0]);
+    std::cout << alisp::ALObject::dump(eval_res) << "\n";
+    
 
 }

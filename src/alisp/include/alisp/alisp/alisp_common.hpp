@@ -147,10 +147,12 @@ struct Value
 };
 
 
+namespace env{class Environment;}
+
 struct Prim
 {
-    using func_type = ALObject* (*)(ALObject* obj);
-    ALObject *(*function)(ALObject* obj);
+    using func_type = ALObject* (*)(ALObject* obj, env::Environment* env);
+    ALObject *(*function)(ALObject* obj, env::Environment* env);
 };
 
 
@@ -163,17 +165,20 @@ class ALCell
 
     ALCell(std::string t_name) : m_name(std::move(t_name)), m_data(nullptr) {}
 
-    void make_prim(Prim::func_type func){
+    auto make_prim(Prim::func_type func){
         m_data = Prim{func};
         m_type = ALCellType::PRIMITIVE;
+        return *this;
     }
-    void make_function(ALObject *params, ALObject *body){
+    auto make_function(ALObject *params, ALObject *body){
         m_data = Callable{params, body};
         m_type = ALCellType::FUNCTION;
+        return *this;
     }
-    void make_value(ALObject *value){
+    auto make_value(ALObject *value){
         m_data = Value{value};
         m_type = ALCellType::VALUE;
+        return *this;
     }
 
     bool is_null() { return std::holds_alternative<std::nullptr_t>(m_data); }
@@ -242,32 +247,32 @@ struct ALOBjectHelper
 
 
 template<typename ... T>
-auto make_object(T && ... args)
+static auto make_object(T && ... args)
 {
     return detail::ALOBjectHelper::get(std::forward<T>(args) ...);
 }
 
-auto make_symbol(std::string name)
+static auto make_symbol(std::string name)
 {
     auto obj = new ALObject(name, true);
     return obj;
 }
 
 template<typename T>
-auto make_int(T value)
+static auto make_int(T value)
 {
     static_assert(std::is_integral_v<T>, "Value must be of integer type");
     return make_object(static_cast<int64_t>(value));
 }
 
 template<typename T>
-auto make_double(T value)
+static auto make_double(T value)
 {
     static_assert(std::is_arithmetic_v<T>, "Value must be of real type");
     return make_object(static_cast<double>(value));
 }
 
-auto make_string(std::string value)
+static auto make_string(std::string value)
 {
     return make_object(value);
 }
@@ -285,7 +290,7 @@ class ParserBase
     ParserBase &operator=(ParserBase&&) = delete;
     ParserBase &operator=(const ParserBase&&) = delete;
     virtual ~ParserBase() = default;
-    virtual std::vector<ALObject*> parse(const std::string& input, const std::string& file_name) = 0;
+    virtual std::vector<ALObject*> parse(const std::string& input, std::string file_name) = 0;
     
 };
 

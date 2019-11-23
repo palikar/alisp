@@ -2,6 +2,11 @@
 
 #include "alisp/applications/prompt.hpp"
 
+#include "alisp/alisp/alisp_common.hpp"
+#include "alisp/alisp/alisp_parser.hpp"
+#include "alisp/alisp/alisp_eval.hpp"
+#include "alisp/alisp/alisp_env.hpp"
+
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -56,16 +61,24 @@ void init()
 
 void repl(const std::string& prompt)
 {
+    
+    alisp::env::Environment env;
+    alisp::eval::Evaluator<alisp::env::Environment> eval(env);
+    alisp::parser::ALParser<alisp::env::Environment> pars(env);
+
+
     char* buf;
     while ((buf = readline(prompt.c_str())) != nullptr) {
         if (strlen(buf) > 0 && *buf != ' ') {
             add_history(buf);
         }
 
-        const std::string input{buf};
+        const std::string command{buf};
 
-        // use the engine here
-        std::cout << input << "\n";
+        auto parse_res = pars.parse(command, "__EVAL__");
+        auto eval_res = eval.eval(parse_res[0]);
+        std::cout << alisp::ALObject::dump(eval_res) << "\n";
+
 
         free(buf);
     }            

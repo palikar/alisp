@@ -2,53 +2,74 @@
 
 
 #include "alisp/alisp/alisp_common.hpp"
-#include "alisp/alisp/alisp_object.hpp"
 
 
 namespace alisp
 {
 
 
-	namespace eval {
-		
-		template <class Handler>
-		class Evaluator
-		{
-		private:
+namespace eval {
 
-			Handler &error_handler;
-    
-		public:
-			Evaluator(Handler &error_handler_) :error_handler(error_handler_)
-				{}
+template <typename Environment>
+class Evaluator
+{
+  private:
 
-			ALObject* eval(ALObject* obj)
-				{
-		
-					switch (obj->type) {
-					case ALObjectType::STRING :
-					case ALObjectType::REAL :
-					case ALObjectType::INT : {
+    Environment &env;
 
-						break;
-					}
-					
-					case ALObjectType::SYMBOL : {
+  public:
+    Evaluator(Environment &env_) : env(env_)
+    {}
 
-						break;
-					}
-					case ALObjectType::LIST : {
-						break;
-					}
-					
-					default:
-						break;
-					}
-				}
-		};
+    ALObject* eval(ALObject* obj)
+    {
+
+        switch (obj->type()) {
+          case ALObjectType::STRING_VALUE :
+          case ALObjectType::REAL_VALUE :
+          case ALObjectType::INT_VALUE : {
+              return obj;
+          }
+
+          case ALObjectType::SYMBOL : {
+              auto cell = env.find(obj);
+
+              if (cell->type() == ALCellType::VALUE) {
+                  return cell->value();
+              } else if (cell->type() == ALCellType::FUNCTION) {
+                  return make_string("Defined function");
+              } else if (cell->type() == ALCellType::MACRO) {
+                  return make_string("Macro");
+              } else if (cell->type() == ALCellType::PRIMITIVE) {
+                  return make_string("Primitive function"); 
+              }
+              return make_string("unknown");
+
+          }
+          case ALObjectType::LIST : {
+
+              auto head = obj->i(0);
+              auto func = env.find(head);
+
+              if (func->type() == ALCellType::PRIMITIVE)
+              {
+                  return func->prim()(obj, &env);
+              }
+              
+              break;
+          }
+
+          default:
+              break;
+        }
 
 
-	}
+        return nullptr;
+    }
+};
+
+
+}
 
 
 }

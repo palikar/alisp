@@ -1,15 +1,16 @@
-add_library(${PROJECT_NAME}_util
-    src/common.cpp
-    src/logging.cpp
+add_library(alisp_util
+    ./src/common.cpp
+    ./src/logging.cpp
+    ./src/defines.cpp
     )
 
 
-target_include_directories(${PROJECT_NAME}_util
+target_include_directories(alisp_util
     PUBLIC include
     PRIVATE src
     )
 
-target_link_libraries(${PROJECT_NAME}_util
+target_link_libraries(alisp_util
     PRIVATE
     project_options
     project_warnings
@@ -29,9 +30,6 @@ install(TARGETS ${PROJECT_NAME}_util
 	)
 
 
-
-
-
 if(ENABLE_TESTING)
-	add_subdirectory(tests)
+    add_subdirectory(tests)
 endif()

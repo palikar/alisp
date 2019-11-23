@@ -19,8 +19,8 @@ target_link_libraries(alisp
     spdlog::spdlog
     readline
     clara::clara
-    alisp_language
     alisp_util
+    alisp_language
     )
 
 
