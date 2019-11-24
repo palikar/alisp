@@ -75,10 +75,9 @@ void repl(const std::string& prompt)
 
         const std::string command{buf};
 
-        auto parse_res = pars.parse(command, "__EVAL__");
+        auto parse_res = pars.parse(&command, "__EVAL__");
         auto eval_res = eval.eval(parse_res[0]);
         std::cout << alisp::ALObject::dump(eval_res) << "\n";
-
 
         free(buf);
     }            

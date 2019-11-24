@@ -11,9 +11,9 @@ namespace env{
 ALObject* setq(ALObject* obj, Environment* env)
 {
     
-    auto new_var = new ALCell(obj->i(1)->to_string());
-    new_var->make_value(obj->i(2));
-    env->put(obj->i(1), new_var);    
+    auto new_var = new ALCell(obj->i(0)->to_string());
+    new_var->make_value(obj->i(1));
+    env->put(obj->i(0), new_var);
     return t;
 }
 
@@ -21,7 +21,7 @@ ALObject* setq(ALObject* obj, Environment* env)
 ALObject* print(ALObject* obj, Environment*)
 {
 
-    std::cout <<ALObject::dump(obj->i(1)) << "\n";
+    std::cout <<ALObject::dump(obj->i(0)) << "\n";
 
     return t;
 }

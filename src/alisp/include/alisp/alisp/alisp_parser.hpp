@@ -10,10 +10,11 @@
 #include <unordered_map>
 #include <array>
 #include <tuple>
+#include <stdexcept>
+
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_env.hpp"
-
 #include "alisp/utility/lite_string.hpp"
 #include "alisp/utility/macros.hpp"
 #include "alisp/utility/hash.hpp"
@@ -40,7 +41,7 @@ struct Position
     Position() = default;
 
     Position(const char * t_pos, const char * t_end) noexcept;
-    
+
     static std::string_view str(const Position &begin, const Position &end) noexcept;
 
     Position &operator++() noexcept;
@@ -55,7 +56,7 @@ struct Position
 
 
     Position &operator+=(size_t distance) noexcept;
-    
+
     Position operator+(size_t distance) const noexcept;
 
 
@@ -64,24 +65,23 @@ struct Position
     size_t remaining() const noexcept;
 
 
-
-    int line = -1;
-    int col = -1;
+    size_t line = 0;
+    size_t col = 0;
 
   private:
     const char *pos = nullptr;
     const char *end = nullptr;
-    int last_col = -1;
+    size_t last_col = 0;
 
 };
 
 
 struct DepthTracker
 {
-    
-	DepthTracker(size_t& depth);
-	~DepthTracker();
-    
+
+    DepthTracker(size_t& depth);
+    ~DepthTracker();
+
   private:
     size_t& m_depth;
 };
@@ -92,17 +92,73 @@ constexpr size_t MAX_DEPTH = 256;
 }
 
 
+namespace
+{
+
+static std::vector<std::string> split(const std::string& s, char delimiter)
+{
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while (std::getline(tokenStream, token, delimiter))
+    {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+
+class parse_exception : public std::runtime_error
+{
+  public:
+
+    parse_exception(const std::string& t_why, const FileLocation& t_where, const std::string& t_input) :
+        runtime_error(format(t_why, t_where, t_input))
+    {}
+
+
+  private:
+    static std::string format(const std::string& t_why, const FileLocation& t_where, const std::string& t_input)
+    {
+        const static int LINE_CONTEXT = 1;
+        std::ostringstream ss;
+
+        ss << "\t" << "In file \'" << t_where.file << '\'' << ": " << "line: " << t_where.line << ", col: " << t_where.col << '\n';
+        ss << "\t" << t_why << "\n";
+
+        auto lines = split(t_input, '\n');
+
+        auto start_index = static_cast<int>(t_where.line) - LINE_CONTEXT < 0 ? 0 : static_cast<int>(t_where.line) - LINE_CONTEXT;
+        auto end_index = static_cast<int>(t_where.line) + LINE_CONTEXT > static_cast<int>(std::size(lines)) ?
+            static_cast<int>(std::size(lines)) : static_cast<int>(std::size(lines)) + LINE_CONTEXT;
+
+        for (auto i = static_cast<size_t>(start_index); i < static_cast<size_t>(end_index); ++i) {
+            ss << "\t" <<  i << " |" << "\t" << lines[i] << "\n";
+        }
+
+        return ss.str();
+    }
+
+};
+
+
+}
+
+
+#define PARSE_ERROR(MSG) do{throw parse_exception(MSG, FileLocation{position.col, position.line, *m_file}, *m_input);}while(0)
+
 namespace parser
 {
-		
+
 template <class Environment>
 class ALParser : public ParserBase
 {
   private:
 
     detail::Position position;
-    std::string m_file;
     size_t depth;
+    std::shared_ptr<std::string> m_file;
+    const std::string* m_input;
 
     // const ErrorHandler& err;
     Environment& env;
@@ -204,13 +260,13 @@ class ALParser : public ParserBase
         bool e_minus_found = false;
         while (position.has_more() && !char_in_alphabet(*position, detail::whitespace_alphabet))
         {
-            
+
             if (check_char('.') && !dot_found) {
                 dot_found = true;
                 ++position;
                 continue;
             }
-            
+
             if (check_char('e') && !e_found) {
                 e_found = true;
                 ++position;
@@ -221,7 +277,7 @@ class ALParser : public ParserBase
                 ++position;
                 continue;
             }
-            
+
             if (!std::isdigit(*position)) {
                 position = temp;
                 return false;
@@ -248,6 +304,21 @@ class ALParser : public ParserBase
 
     }
 
+    bool check_id()
+    {
+        bool val = false;
+        auto temp = position;
+        while(position.has_more() && char_in_alphabet(*position, detail::id_alphabet)
+              && !char_in_alphabet(*position, detail::whitespace_alphabet))
+        {
+            ++position;
+            val = true;
+        }
+
+        position = temp;
+        return val;
+    }
+
     ALObject* parse_id()
     {
         auto temp = this->position;
@@ -261,7 +332,7 @@ class ALParser : public ParserBase
         auto word_hash = hash::hash(word);
 
         switch(word_hash){
-          case hash::hash("--FILE--"): return make_string(m_file);
+          case hash::hash("--FILE--"): return make_string(*m_file);
           case hash::hash("--LINE--"): return make_int(position.line);
         }
 
@@ -271,7 +342,7 @@ class ALParser : public ParserBase
     ALObject* parse_string()
     {
 
-        if(*this->position != '\"') { return nullptr; }
+        if(*this->position != '\"') {PARSE_ERROR("Invalid string literal.");}
 
         ++this->position;
 
@@ -285,23 +356,21 @@ class ALParser : public ParserBase
 
         if (*this->position != '\"')
         {
-            // this->err.lexer_error(static_cast<size_t>(this->position.col),
-            //                       static_cast<size_t>(this->position.line),
-            //                       "Invalid string literal");
+            PARSE_ERROR("Invalid string literal.");
         }
         const auto text = detail::Position::str(temp, this->position);
         ++this->position;
 
         return make_string(std::string{text});
-				
+
     }
 
     ALObject* parse_number()
     {
-        
+
         int sign = 1;
         bool real = false;
-        
+
 
         auto t = this->position;
         if (*this->position == '-')
@@ -315,7 +384,7 @@ class ALParser : public ParserBase
         if (!std::isdigit(*this->position) && *this->position != '.')
         {
             this->position = t;
-            return nullptr;
+            PARSE_ERROR("Invalid number literal.");
         }
 
         auto temp = this->position;
@@ -332,9 +401,7 @@ class ALParser : public ParserBase
             {
                 if (real)
                 {
-                    // this->err.lexer_error(static_cast<size_t>(this->position.col),
-                    //                       static_cast<size_t>(this->position.line),
-                    //                       "Invalid number.");
+                    PARSE_ERROR("Invalid number literal.");
                 }
                 real = true;
                 ++this->position;
@@ -350,17 +417,15 @@ class ALParser : public ParserBase
             int num = sign * std::stoi( std::string(res) );
             return make_int(num);
         }
-
-
     }
 
     ALObject* parse_quote()
     {
         ++position;
         skip_whitespace();
-        // TODO : check char here
+        if (!check_char('\'')) { PARSE_ERROR("Expected \'"); }
         auto obj = parse_next();
-        // TODO : check nulltpr here
+        if (!obj) { PARSE_ERROR("Expected expression after \'"); }
         return make_object(make_symbol("quote"), obj);
     }
 
@@ -368,35 +433,35 @@ class ALParser : public ParserBase
     {
         ++position;
         skip_whitespace();
-        // TODO : check char here
+        if (!check_char('`')) { PARSE_ERROR("Expected \'`\'"); }
         auto obj = parse_next();
-        // TODO : check nulltpr here
+        if (!obj) { PARSE_ERROR("Expected expression after \'`\'"); }
         return make_object(make_symbol("`"), obj);
     }
 
     ALObject* parse_hashtag()
     {
-        // TODO : check char here
+        if (!check_char('#')) { PARSE_ERROR("Expected \'#\'"); }
         ++position;
-        // TODO : check char here
+        if (!check_char('\'')) { PARSE_ERROR("Expected \'"); }        
         ++position;
         skip_whitespace();
         auto obj = parse_next();
-        // TODO : check nulltpr here
+        if (!obj ) { PARSE_ERROR("Expected expression after \'"); }
         return make_object(make_symbol("function"), obj);
-			
-        return nullptr;
     }
 
     ALObject* parse_list()
     {
         // TODO : check char here
+        if (!check_char('(')) { PARSE_ERROR("Malformed list. Missing openning parentheses."); }
+
         ++position;
         skip_whitespace();
 
         if(check_char(')')){
             ++position;
-            return make_symbol("nil");
+            return env::qnil;
         }
 
         std::vector<ALObject*> objs;
@@ -406,18 +471,19 @@ class ALParser : public ParserBase
             if(next_obj){
                 objs.emplace_back(next_obj);
             } else {
-                // TODO : error here!
+                PARSE_ERROR("Malformed list. Cannot parse element.");
                 return nullptr;
             }
 
             skip_whitespace();
-					
+
             if(check_char(')')){
                 ++position;
                 break;
             }
 
-				
+            if (!position.has_more()) { PARSE_ERROR("Malformed list. Missing closing parentheses."); }
+
         }
 
         return make_object(objs);
@@ -426,18 +492,19 @@ class ALParser : public ParserBase
 
     ALObject* parse_comma()
     {
-        // TODO : check char here
+        if (!check_char(',')) { PARSE_ERROR("Expected comma"); }
+        
         ++position;
         if (check_char('@')) {
             ++position;
             skip_whitespace();
             auto obj = parse_next();
-            // TODO : check nulltpr here
+            if ( !obj ) { PARSE_ERROR("Expected expression after \'@,\'"); }
             return make_object(make_symbol("@,"), obj);
         } else {
             skip_whitespace();
             auto obj = parse_next();
-            // TODO : check nulltpr here
+            if ( !obj ) { PARSE_ERROR("Expected expression after \',\'"); }
             return make_object(make_symbol(","), obj);
         }
     }
@@ -448,12 +515,12 @@ class ALParser : public ParserBase
         if (depth > detail::MAX_DEPTH && detail::MAX_DEPTH != 0) {
             return nullptr;
         }
-        
+
         skip_whitespace();
         if(!position.has_more()) return nullptr;
 
         if ( *position ==';'  ) skip_line();
-
+        
         if ( *position =='('  ) return parse_list();
         if ( *position == '\"') return parse_string();
         if ( *position == '\'') return parse_quote();
@@ -462,25 +529,28 @@ class ALParser : public ParserBase
         if ( *position == '`' ) return parse_backquote();
         if ( *position == '#' ) return parse_hashtag();
         if (  check_num()     ) return parse_number();
+        if (  check_id( )     ) return parse_id();
 
-        return parse_id();
-
+        if( position.has_more()) { PARSE_ERROR("Unparsed input. Cannot parse");}
+        
+        return nullptr;
     }
 
 
   public:
-			
-    std::vector<ALObject*> parse(const std::string& input, std::string file_name) override
+
+    std::vector<ALObject*> parse(const std::string* input, std::string file_name) override
     {
         std::vector<ALObject*> objects;
 
-        
-        const auto begin = input.empty() ? nullptr : &input.front();
-        const auto end = begin == nullptr ? nullptr : begin + input.size();
+        const auto begin = input->empty() ? nullptr : &input->front();
+        const auto end = begin == nullptr ? nullptr : begin + input->size();
         this->position = detail::Position(begin, end);
-        m_file = std::move(file_name);
+
+        m_file = std::make_shared<std::string>(std::move(file_name));
+        m_input = input;
+
         depth = 0;
-        
 
         while(position.has_more())
         {
@@ -499,5 +569,8 @@ class ALParser : public ParserBase
 };
 
 }
+
+
+#undef PARSE_ERROR
 
 }

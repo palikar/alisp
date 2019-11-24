@@ -65,7 +65,6 @@ bool Position::operator!=(const Position &rhs) const noexcept {
     return pos != rhs.pos;
 }
 
-
 Position &Position::operator+=(size_t distance) noexcept {
     *this = (*this) + distance;
     return *this;
@@ -78,7 +77,6 @@ Position Position::operator+(size_t distance) const noexcept {
     }
     return ret;
 }
-
 
 bool Position::has_more() const noexcept {
     return pos != end;

@@ -4,7 +4,7 @@
 #include <sstream>
 #include <variant>
 #include <vector>
-
+#include <iterator>
 
 namespace alisp
 {
@@ -132,7 +132,6 @@ class ALObject
 };
 
 
-
 struct Callable
 {
 
@@ -247,34 +246,47 @@ struct ALOBjectHelper
 
 
 template<typename ... T>
-static auto make_object(T && ... args)
+inline auto make_object(T && ... args)
 {
     return detail::ALOBjectHelper::get(std::forward<T>(args) ...);
 }
 
-static auto make_symbol(std::string name)
+inline auto make_symbol(std::string name)
 {
     auto obj = new ALObject(name, true);
     return obj;
 }
 
 template<typename T>
-static auto make_int(T value)
+inline auto make_int(T value)
 {
     static_assert(std::is_integral_v<T>, "Value must be of integer type");
     return make_object(static_cast<int64_t>(value));
 }
 
 template<typename T>
-static auto make_double(T value)
+inline auto make_double(T value)
 {
     static_assert(std::is_arithmetic_v<T>, "Value must be of real type");
     return make_object(static_cast<double>(value));
 }
 
-static auto make_string(std::string value)
+inline auto make_string(std::string value)
 {
     return make_object(value);
+}
+
+
+
+inline auto splice(ALObject* t_obj, std::vector<ALObject>::difference_type start_index,
+                   std::vector<ALObject>::difference_type end_index = -1){
+
+    const auto size = static_cast<std::vector<ALObject>::difference_type>(std::size(t_obj->children()));
+    const auto end_move = end_index == -1 ? size : end_index;
+
+    const auto new_child = std::vector<ALObject*>(std::next(std::begin(t_obj->children()),  start_index),
+                                                  std::next(std::begin(t_obj->children()), end_move));
+    return make_object(new_child);    
 }
 
 namespace parser
@@ -290,12 +302,20 @@ class ParserBase
     ParserBase &operator=(ParserBase&&) = delete;
     ParserBase &operator=(const ParserBase&&) = delete;
     virtual ~ParserBase() = default;
-    virtual std::vector<ALObject*> parse(const std::string& input, std::string file_name) = 0;
+    virtual std::vector<ALObject*> parse(const std::string* input, std::string file_name) = 0;
     
 };
 
 
 }
+
+
+
+struct FileLocation {
+    size_t col = 0;
+    size_t line = 0;
+    std::string& file;
+};
 
 
 }  // namespace alisp

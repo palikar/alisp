@@ -2,11 +2,11 @@
 
 
 #include "alisp/alisp/alisp_common.hpp"
+#include "alisp/alisp/alisp_env.hpp"
 
 
 namespace alisp
 {
-
 
 namespace eval {
 
@@ -21,9 +21,23 @@ class Evaluator
     Evaluator(Environment &env_) : env(env_)
     {}
 
+    bool is_falsy(ALObject* obj)
+    {
+        if(obj == env::qnil) return true;
+
+        if(obj->type() == ALObjectType::LIST) return obj->length() == 0;
+        if(obj->type() == ALObjectType::STRING_VALUE) return obj->to_string().empty();
+        if(obj->type() == ALObjectType::INT_VALUE) return obj->to_int() == 0;
+        if(obj->type() == ALObjectType::REAL_VALUE) return obj->to_real() == 0.0;
+
+        return false;
+
+    }
+
     ALObject* eval(ALObject* obj)
     {
-
+        if (is_falsy(obj)) return obj;
+        
         switch (obj->type()) {
           case ALObjectType::STRING_VALUE :
           case ALObjectType::REAL_VALUE :
@@ -53,7 +67,7 @@ class Evaluator
 
               if (func->type() == ALCellType::PRIMITIVE)
               {
-                  return func->prim()(obj, &env);
+                  return func->prim()(splice(obj, 1), &env);
               }
               
               break;

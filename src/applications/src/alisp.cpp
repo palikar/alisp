@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
+
 #include <clara.hpp>
 #include <fmt/format.h>
+#include <rang.hpp>
 
 #include "alisp/config.hpp"
 #include "alisp/utility/defines.hpp"
@@ -90,10 +92,20 @@ void eval_statement(const std::string& command)
     alisp::eval::Evaluator<alisp::env::Environment> eval(env);
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
 
-    
-    auto parse_res = pars.parse(command, "__EVAL__");
-    auto eval_res = eval.eval(parse_res[0]);
-    std::cout << alisp::ALObject::dump(eval_res) << "\n";
-    
+    try {
+        auto parse_res = pars.parse(&command, "__EVAL__");
 
+        for (auto p : parse_res ) {
+            std::cout << "Parse: " << alisp::ALObject::dump(p) << "\n";
+            auto eval_res = eval.eval(p);
+            std::cout << "Eval: " << alisp::ALObject::dump(eval_res) << "\n";
+        }
+    } catch (alisp::parse_exception& p_exc) {
+        std::cout << rang::fg::red << "Parser error:\n" << rang::fg::reset;
+        std::cout << p_exc.what() << "\n";
+
+    }
+
+
+    
 }
