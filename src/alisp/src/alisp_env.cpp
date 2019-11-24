@@ -1,4 +1,5 @@
 #include "alisp/alisp/alisp_env.hpp"
+#include "alisp/utility/macros.hpp"
 
 
 
@@ -8,9 +9,16 @@ namespace env{
 
 
 
+ALObject* defun(ALObject* obj, Environment* env)
+{
+    auto new_fun = new ALCell(obj->i(0)->to_string());
+    new_fun->make_function(obj->i(1), splice(obj, 2));
+    env->put(obj->i(0), new_fun);
+    return t;
+}
+
 ALObject* setq(ALObject* obj, Environment* env)
 {
-    
     auto new_var = new ALCell(obj->i(0)->to_string());
     new_var->make_value(obj->i(1));
     env->put(obj->i(0), new_var);
@@ -18,12 +26,37 @@ ALObject* setq(ALObject* obj, Environment* env)
 }
 
 
-ALObject* print(ALObject* obj, Environment*)
+ALObject* print(ALObject* obj, Environment* env)
 {
+    
 
-    std::cout <<ALObject::dump(obj->i(0)) << "\n";
+    const auto fun =
+        [](ALObject* obj){
+            
+            if(obj->type() == ALObjectType::STRING_VALUE) {
+                std::cout << obj->to_string() << "\n";
+                return t;
+            } else if(obj->type() == ALObjectType::INT_VALUE) {                
+                std::cout << obj->to_int() << "\n";
+                return t;
+            }  else if(obj->type() == ALObjectType::REAL_VALUE) {
+                std::cout << obj->to_real() << "\n";
+                return t;
+            }
+            return qnil;
+        };
+    
+    if(obj->i(0)->type() == ALObjectType::SYMBOL) {
+        auto ob = env->find(obj->i(0));
+        // TODO: check here
+        return fun(ob->value());
+    }
 
-    return t;
+    if(obj->i(0)->type() == ALObjectType::LIST) {
+        return qnil;
+    }
+
+    return fun(obj->i(0));
 }
 
 
@@ -38,7 +71,7 @@ std::unordered_map<std::string, ALObject> global_sym = {
     {"defun", ALObject("defun", true)},
     {"defvar", ALObject("defvar", true)},
     {"setq", ALObject("setq", true)},
-    
+
 };
 std::unordered_map<std::string, ALObject*> sym;
 
@@ -47,7 +80,7 @@ ALObject* t = &global_sym.at("t");
 
 ALObject* intern(const std::string& name)
 {
-    
+
     if(global_sym.count(name))
     {
         return &global_sym.at(name);
@@ -57,7 +90,7 @@ ALObject* intern(const std::string& name)
     {
         return sym.at(name);
     }
-    
+
     auto[new_sym, insertion] = sym.insert({name, make_symbol(name)});
     return new_sym->second;
 }
@@ -66,6 +99,7 @@ ALObject* intern(const std::string& name)
 std::unordered_map<std::string, ALCell> Environment::prims = {};
 auto Qsetq = Environment::prims.insert({"setq", ALCell("setq").make_prim(&setq)});
 auto Qprint = Environment::prims.insert({"print", ALCell("print").make_prim(&print)});
+auto Qdefun = Environment::prims.insert({"defun", ALCell("defun").make_prim(&defun)});
 
 
 

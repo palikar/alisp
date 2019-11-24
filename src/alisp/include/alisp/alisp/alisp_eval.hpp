@@ -5,23 +5,38 @@
 #include "alisp/alisp/alisp_env.hpp"
 
 
+template <typename ... Iterators>
+void advance_all (Iterators& ... iterators) {
+    (++iterators, ...);
+} 
+template <typename Function, typename Iterator, typename ... Iterators>
+Function zip (Function func, Iterator begin, 
+              Iterator end, 
+              Iterators ... iterators)
+{
+    for(;begin != end; ++begin, advance_all(iterators...)) func(*begin, *(iterators)... );
+    return func;
+}
+
+
 namespace alisp
 {
 
 namespace eval {
 
-template <typename Environment>
+
+template<class Env>
 class Evaluator
 {
   private:
 
-    Environment &env;
+    env::Environment &env;
 
   public:
-    Evaluator(Environment &env_) : env(env_)
+    Evaluator(env::Environment &env_) : env(env_)
     {}
 
-    bool is_falsy(ALObject* obj)
+    static bool is_falsy(ALObject* obj)
     {
         if(obj == env::qnil) return true;
 
@@ -32,6 +47,11 @@ class Evaluator
 
         return false;
 
+    }
+
+    static bool is_truthy(ALObject* obj)
+    {
+        return !is_falsy(obj);
     }
 
     ALObject* eval(ALObject* obj)
@@ -47,7 +67,7 @@ class Evaluator
 
           case ALObjectType::SYMBOL : {
               auto cell = env.find(obj);
-
+              // TODO : fix here
               if (cell->type() == ALCellType::VALUE) {
                   return cell->value();
               } else if (cell->type() == ALCellType::FUNCTION) {
@@ -64,11 +84,14 @@ class Evaluator
 
               auto head = obj->i(0);
               auto func = env.find(head);
-
-              if (func->type() == ALCellType::PRIMITIVE)
-              {
+              
+              if (func->type() == ALCellType::PRIMITIVE) {
                   return func->prim()(splice(obj, 1), &env);
+              } else if (func->type() == ALCellType::FUNCTION) {
+                  return eval_function(func, splice(obj, 1));
               }
+              
+              throw std::runtime_error("Head of a list must be bound to function");
               
               break;
           }
@@ -79,6 +102,36 @@ class Evaluator
 
 
         return nullptr;
+    }
+
+
+    ALObject* eval_function(ALCell* func, ALObject* args)
+    {
+        // TODO : checks here
+        auto[params, body] = func->callable();
+
+        // TODO : handling arguments here
+
+        if (params != env::qnil) {
+            const auto fun =
+                [&](ALObject* param, ALObject* arg){
+                    auto eval_arg = this->eval(arg);
+                    auto new_cel = new ALCell("args");
+                    new_cel->make_value(eval_arg);
+                    this->env.put(param, new_cel);
+                };
+        
+            zip(fun, std::begin(params->children()), std::end(params->children()), std::begin(args->children()));
+        }
+        
+
+        ALObject* res = nullptr;
+        for (auto child : body->children()) {
+            std::cout << dump(child) << "\n";
+            res = eval(child);
+        }
+        return res;
+
     }
 };
 

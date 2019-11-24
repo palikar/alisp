@@ -96,9 +96,9 @@ void eval_statement(const std::string& command)
         auto parse_res = pars.parse(&command, "__EVAL__");
 
         for (auto p : parse_res ) {
-            std::cout << "Parse: " << alisp::ALObject::dump(p) << "\n";
+            std::cout << "Parse: " << alisp::dump(p) << "\n";
             auto eval_res = eval.eval(p);
-            std::cout << "Eval: " << alisp::ALObject::dump(eval_res) << "\n";
+            std::cout << "Eval: " << alisp::dump(eval_res) << "\n";
         }
     } catch (alisp::parse_exception& p_exc) {
         std::cout << rang::fg::red << "Parser error:\n" << rang::fg::reset;

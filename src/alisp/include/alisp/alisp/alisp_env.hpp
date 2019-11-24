@@ -21,7 +21,6 @@ extern std::unordered_map<std::string, ALObject*> sym;
 extern ALObject* qnil;
 extern ALObject* t;
 
-
 ALObject* intern(const std::string& name);
 
 
@@ -50,12 +49,12 @@ class Environment {
 
   public:
     static std::unordered_map<std::string, ALCell> prims;
-    
+
   private:
     std::unordered_map<std::string, ALCell*> defs;
 
   public:
-    
+
     Environment() : defs()
     {
         auto ver = new ALCell("version");
@@ -66,6 +65,7 @@ class Environment {
     ALCell* find(const ALObject* t_sym)
     {
         auto name = t_sym->to_string();
+
 
         if (prims.count(name))
             return &prims.at(name);

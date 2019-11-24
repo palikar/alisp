@@ -11,7 +11,7 @@
 #include <array>
 #include <tuple>
 #include <stdexcept>
-
+#include <cctype>
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_env.hpp"
@@ -95,19 +95,6 @@ constexpr size_t MAX_DEPTH = 256;
 namespace
 {
 
-static std::vector<std::string> split(const std::string& s, char delimiter)
-{
-    std::vector<std::string> tokens;
-    std::string token;
-    std::istringstream tokenStream(s);
-    while (std::getline(tokenStream, token, delimiter))
-    {
-        tokens.push_back(token);
-    }
-    return tokens;
-}
-
-
 class parse_exception : public std::runtime_error
 {
   public:
@@ -126,7 +113,7 @@ class parse_exception : public std::runtime_error
         ss << "\t" << "In file \'" << t_where.file << '\'' << ": " << "line: " << t_where.line << ", col: " << t_where.col << '\n';
         ss << "\t" << t_why << "\n";
 
-        auto lines = split(t_input, '\n');
+        auto lines = utility::split(t_input, '\n');
 
         auto start_index = static_cast<int>(t_where.line) - LINE_CONTEXT < 0 ? 0 : static_cast<int>(t_where.line) - LINE_CONTEXT;
         auto end_index = static_cast<int>(t_where.line) + LINE_CONTEXT > static_cast<int>(std::size(lines)) ?
@@ -278,15 +265,19 @@ class ALParser : public ParserBase
                 continue;
             }
 
-            if (!std::isdigit(*position)) {
+            if ((std::isdigit(*position) == 0) && !val) {
                 position = temp;
                 return false;
+            } else {
+                position = temp;
+                return true;
             }
 
             if (check_char('.') or check_char('e') or check_char('.') or check_char('-')){
                 position = temp;
                 return false;
             }
+            
             val = true;
             ++position;
         }

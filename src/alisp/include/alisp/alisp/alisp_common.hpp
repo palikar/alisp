@@ -17,8 +17,12 @@ enum class ALObjectType
     STRING_VALUE, // "<value>"
     SYMBOL,     // <symbol>
     LIST       // (<obj_1> [<obj_n> ...])
-
 };
+
+constexpr const char* alobject_type_to_string(ALObjectType type){
+    constexpr const char* const names[] = {"integer", "real", "string", "symbol", "list"};
+    return names[static_cast<int>(type)];
+}
 
 enum class ALCellType
 {
@@ -87,44 +91,15 @@ class ALObject
     void add_child(ALObject* new_child){
         children().push_back(new_child);
     }
+
+    std::string pretty_print() const{
+        std::ostringstream oss;
+        oss << "(ALObject<" << alobject_type_to_string(type()) << "> )";
+        return oss.str();
+    }
     
 
-    static std::string dump(ALObject* obj)
-    {
-        std::ostringstream str;
-
-        switch(obj->type())
-        {
-          case ALObjectType::INT_VALUE:
-              str << obj->to_int() << " ";
-              break;
-              
-          case ALObjectType::REAL_VALUE:
-              str << obj->to_real() << " ";
-              break;
-              
-          case ALObjectType::STRING_VALUE:
-              str << "\"" << obj->to_string() << "\"" << " ";
-              break;
-              
-          case ALObjectType::SYMBOL:
-              str << obj->to_string() << " ";
-              break;
-              
-          case ALObjectType::LIST:
-              str << "(";
-              for (auto ob : obj->children())
-              {
-                  str << dump(ob);
-              }
-              str << ") ";
-              break;
-        }
-        
-        return str.str();
-    }
-
-  private:
+private:
 
     data m_data;
     const ALObjectType m_type;
@@ -276,6 +251,41 @@ inline auto make_string(std::string value)
     return make_object(value);
 }
 
+
+inline std::string dump(ALObject* obj)
+{
+    std::ostringstream str;
+
+    switch(obj->type())
+    {
+      case ALObjectType::INT_VALUE:
+          str << obj->to_int() << " ";
+          break;
+              
+      case ALObjectType::REAL_VALUE:
+          str << obj->to_real() << " ";
+          break;
+              
+      case ALObjectType::STRING_VALUE:
+          str << "\"" << obj->to_string() << "\"" << " ";
+          break;
+              
+      case ALObjectType::SYMBOL:
+          str << obj->to_string() << " ";
+          break;
+              
+      case ALObjectType::LIST:
+          str << "(";
+          for (auto ob : obj->children())
+          {
+              str << dump(ob);
+          }
+          str << ") ";
+          break;
+    }
+        
+    return str.str();
+}
 
 
 inline auto splice(ALObject* t_obj, std::vector<ALObject>::difference_type start_index,
