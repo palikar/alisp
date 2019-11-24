@@ -412,9 +412,9 @@ class ALParser : public ParserBase
 
     ALObject* parse_quote()
     {
+        if (!check_char('\'')) { PARSE_ERROR("Expected \'"); }
         ++position;
         skip_whitespace();
-        if (!check_char('\'')) { PARSE_ERROR("Expected \'"); }
         auto obj = parse_next();
         if (!obj) { PARSE_ERROR("Expected expression after \'"); }
         return make_object(make_symbol("quote"), obj);
@@ -452,7 +452,7 @@ class ALParser : public ParserBase
 
         if(check_char(')')){
             ++position;
-            return env::qnil;
+            return Qnil;
         }
 
         std::vector<ALObject*> objs;

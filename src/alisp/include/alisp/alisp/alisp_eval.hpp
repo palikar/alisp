@@ -4,19 +4,7 @@
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_env.hpp"
 
-
-template <typename ... Iterators>
-void advance_all (Iterators& ... iterators) {
-    (++iterators, ...);
-} 
-template <typename Function, typename Iterator, typename ... Iterators>
-Function zip (Function func, Iterator begin, 
-              Iterator end, 
-              Iterators ... iterators)
-{
-    for(;begin != end; ++begin, advance_all(iterators...)) func(*begin, *(iterators)... );
-    return func;
-}
+#include "alisp/utility/zipping.hpp"
 
 
 namespace alisp
@@ -38,7 +26,7 @@ class Evaluator
 
     static bool is_falsy(ALObject* obj)
     {
-        if(obj == env::qnil) return true;
+        if(obj == Qnil) return true;
 
         if(obj->type() == ALObjectType::LIST) return obj->length() == 0;
         if(obj->type() == ALObjectType::STRING_VALUE) return obj->to_string().empty();
@@ -112,7 +100,12 @@ class Evaluator
 
         // TODO : handling arguments here
 
-        if (params != env::qnil) {
+        if (params != Qnil) {
+            
+            if (std::size(params->children()) != std::size(args->children())){
+                throw std::runtime_error("Arguments do not match");
+            }
+            
             const auto fun =
                 [&](ALObject* param, ALObject* arg){
                     auto eval_arg = this->eval(arg);
@@ -121,13 +114,11 @@ class Evaluator
                     this->env.put(param, new_cel);
                 };
         
-            zip(fun, std::begin(params->children()), std::end(params->children()), std::begin(args->children()));
+            utility::zip(fun, std::begin(params->children()), std::end(params->children()), std::begin(args->children()));
         }
         
-
         ALObject* res = nullptr;
         for (auto child : body->children()) {
-            std::cout << dump(child) << "\n";
             res = eval(child);
         }
         return res;

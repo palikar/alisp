@@ -2,48 +2,48 @@
 #include "alisp/utility/macros.hpp"
 
 
-
 namespace alisp
 {
-namespace env{
 
 
 
-ALObject* defun(ALObject* obj, Environment* env)
+ALObject* Fquote(ALObject* obj, env::Environment*)
+{
+    return obj->i(1);
+}
+
+ALObject* Fdefun(ALObject* obj, env::Environment* env)
 {
     auto new_fun = new ALCell(obj->i(0)->to_string());
     new_fun->make_function(obj->i(1), splice(obj, 2));
     env->put(obj->i(0), new_fun);
-    return t;
+    return Qt;
 }
 
-ALObject* setq(ALObject* obj, Environment* env)
+ALObject* Fsetq(ALObject* obj, env::Environment* env)
 {
     auto new_var = new ALCell(obj->i(0)->to_string());
     new_var->make_value(obj->i(1));
     env->put(obj->i(0), new_var);
-    return t;
+    return Qt;
 }
 
-
-ALObject* print(ALObject* obj, Environment* env)
+ALObject* Fprint(ALObject* obj, env::Environment* env)
 {
-    
-
     const auto fun =
-        [](ALObject* obj){
+        [](ALObject* t_obj){
             
-            if(obj->type() == ALObjectType::STRING_VALUE) {
-                std::cout << obj->to_string() << "\n";
-                return t;
-            } else if(obj->type() == ALObjectType::INT_VALUE) {                
-                std::cout << obj->to_int() << "\n";
-                return t;
-            }  else if(obj->type() == ALObjectType::REAL_VALUE) {
-                std::cout << obj->to_real() << "\n";
-                return t;
+            if(t_obj->type() == ALObjectType::STRING_VALUE || t_obj->type() == ALObjectType::SYMBOL) {
+                std::cout << t_obj->to_string() << "\n";
+                return Qt;
+            } else if(t_obj->type() == ALObjectType::INT_VALUE) {                
+                std::cout << t_obj->to_int() << "\n";
+                return Qt;
+            }  else if(t_obj->type() == ALObjectType::REAL_VALUE) {
+                std::cout << t_obj->to_real() << "\n";
+                return Qt;
             }
-            return qnil;
+            return Qnil;
         };
     
     if(obj->i(0)->type() == ALObjectType::SYMBOL) {
@@ -53,56 +53,16 @@ ALObject* print(ALObject* obj, Environment* env)
     }
 
     if(obj->i(0)->type() == ALObjectType::LIST) {
-        return qnil;
+        return Qnil;
     }
 
     return fun(obj->i(0));
 }
 
-
-std::unordered_map<std::string, ALObject> global_sym = {
-    // simple constants
-    {"nil", ALObject("nil", true)},
-    {"t", ALObject("t", true)},
-
-    // language constructs
-    {"if", ALObject("if", true)},
-    {"while", ALObject("while", true)},
-    {"defun", ALObject("defun", true)},
-    {"defvar", ALObject("defvar", true)},
-    {"setq", ALObject("setq", true)},
-
-};
-std::unordered_map<std::string, ALObject*> sym;
-
-ALObject* qnil = &global_sym.at("nil");
-ALObject* t = &global_sym.at("t");
-
-ALObject* intern(const std::string& name)
+ALObject* Fif(ALObject* , env::Environment*)
 {
-
-    if(global_sym.count(name))
-    {
-        return &global_sym.at(name);
-    }
-
-    if(sym.count(name))
-    {
-        return sym.at(name);
-    }
-
-    auto[new_sym, insertion] = sym.insert({name, make_symbol(name)});
-    return new_sym->second;
+    return nullptr;
 }
 
-
-std::unordered_map<std::string, ALCell> Environment::prims = {};
-auto Qsetq = Environment::prims.insert({"setq", ALCell("setq").make_prim(&setq)});
-auto Qprint = Environment::prims.insert({"print", ALCell("print").make_prim(&print)});
-auto Qdefun = Environment::prims.insert({"defun", ALCell("defun").make_prim(&defun)});
-
-
-
-}
 
 }

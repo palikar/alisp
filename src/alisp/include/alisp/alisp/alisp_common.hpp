@@ -12,7 +12,7 @@ namespace alisp
 enum class ALObjectType
 {
 
-    INT_VALUE, // 1
+    INT_VALUE = 0, // 1
     REAL_VALUE , // 12.3
     STRING_VALUE, // "<value>"
     SYMBOL,     // <symbol>
@@ -34,6 +34,14 @@ enum class ALCellType
 
 };
 
+class alobject_error : public std::runtime_error
+{
+  public:
+    alobject_error(const std::string& t_why) : runtime_error(t_why) {}
+
+};
+
+
 class ALObject
 {
   public:
@@ -45,6 +53,38 @@ class ALObject
 
     using data = std::variant<int_type, real_type, string_type, list_type>;
 
+  private:
+
+    template<typename Type, typename Visitor, typename Or>
+    decltype(auto) visit_or(Visitor &&visitor, Or &&other) const
+    {
+        if (const auto val =  std::get_if<Type>(&m_data)) {
+            return visitor(*val);
+        } else {
+            return other();
+        }
+    }
+
+
+    template<typename Type>
+    void check() const
+    {
+        if (!std::get_if<Type>(&m_data)) {
+            if constexpr (std::is_same_v<Type, list_type>) throw alobject_error("Not a list object.");
+            if constexpr (std::is_same_v<Type, string_type>) throw alobject_error("Not a string object.");
+            if constexpr (std::is_same_v<Type, real_type>) throw alobject_error("Not a real object.");
+            if constexpr (std::is_same_v<Type, int_type>) throw alobject_error("Not a int object.");
+        }
+    }
+
+    
+    template<typename Type>
+    Type as() const
+    {
+        check<Type>();
+        return std::get<Type>(m_data);
+    }
+
   public:
 
     ALObject() : m_data(0.0), m_type(ALObjectType::REAL_VALUE){}
@@ -53,42 +93,45 @@ class ALObject
     ALObject(std::string value, bool symbol=false) : m_data(value), m_type(symbol ? ALObjectType::SYMBOL : ALObjectType::STRING_VALUE){}
     ALObject(std::vector<ALObject*> value) : m_data(std::move(value)), m_type(ALObjectType::LIST){}
 
+    ALObjectType type() const {return m_type;}
+    
     ALObject* i(const size_t index){
         return children()[index];
     }
     auto length() noexcept {
-        if (const auto val =  std::get_if<std::vector<ALObject*>>(&m_data)) {
-            return val->size();
-        } else {
-            return size_t(0);
-        }
+        return visit_or<list_type>( [](const auto& vec){ return std::size(vec); }, [](){ return size_t(0); });
     }
-    std::vector<ALObject*>& children() {
+    list_type& children() {
+        check<list_type>();
         return std::get<std::vector<ALObject*>>(m_data);
     }
 
-    ALObjectType type() const {return m_type;}
-    
-    std::string to_string() const noexcept {
+    string_type to_string() const {
+        check<string_type>();
         return std::get<std::string>(m_data);
     }
-    real_type to_real() const noexcept {
-        return std::get<double>(m_data);
+    real_type to_real() const {
+        check<real_type>();
+        return std::get<real_type>(m_data);
     }
-    int_type to_int() const noexcept {
+    int_type to_int() const {
+        check<int_type>();
         return std::get<int_type>(m_data);
     }
 
-    void set_value(int64_t val){
+    void set(int_type val){
+        check<int_type>();
         m_data = val;
     }
-    void set_value(double val){
+    void set(real_type val){
+        check<real_type>();
         m_data = val;
     }
-    void set_value(std::string val){
+    void set(string_type val){
+        check<string_type>();
         m_data = std::move(val);
     }
-    void add_child(ALObject* new_child){
+    void add(ALObject* new_child){
         children().push_back(new_child);
     }
 
@@ -97,13 +140,10 @@ class ALObject
         oss << "(ALObject<" << alobject_type_to_string(type()) << "> )";
         return oss.str();
     }
-    
 
 private:
-
     data m_data;
     const ALObjectType m_type;
-
 };
 
 
@@ -120,15 +160,16 @@ struct Value
     ALObject *val;
 };
 
-
-namespace env{class Environment;}
+namespace env
+{
+class Environment;
+}
 
 struct Prim
 {
     using func_type = ALObject* (*)(ALObject* obj, env::Environment* env);
     ALObject *(*function)(ALObject* obj, env::Environment* env);
 };
-
 
 class ALCell
 {
@@ -261,19 +302,19 @@ inline std::string dump(ALObject* obj)
       case ALObjectType::INT_VALUE:
           str << obj->to_int() << " ";
           break;
-              
+
       case ALObjectType::REAL_VALUE:
           str << obj->to_real() << " ";
           break;
-              
+
       case ALObjectType::STRING_VALUE:
           str << "\"" << obj->to_string() << "\"" << " ";
           break;
-              
+
       case ALObjectType::SYMBOL:
           str << obj->to_string() << " ";
           break;
-              
+
       case ALObjectType::LIST:
           str << "(";
           for (auto ob : obj->children())
@@ -283,7 +324,7 @@ inline std::string dump(ALObject* obj)
           str << ") ";
           break;
     }
-        
+
     return str.str();
 }
 
@@ -296,8 +337,9 @@ inline auto splice(ALObject* t_obj, std::vector<ALObject>::difference_type start
 
     const auto new_child = std::vector<ALObject*>(std::next(std::begin(t_obj->children()),  start_index),
                                                   std::next(std::begin(t_obj->children()), end_move));
-    return make_object(new_child);    
+    return make_object(new_child);
 }
+
 
 namespace parser
 {
@@ -313,19 +355,20 @@ class ParserBase
     ParserBase &operator=(const ParserBase&&) = delete;
     virtual ~ParserBase() = default;
     virtual std::vector<ALObject*> parse(const std::string* input, std::string file_name) = 0;
-    
+
 };
 
 
 }
 
-
-
-struct FileLocation {
+struct FileLocation
+{
     size_t col = 0;
     size_t line = 0;
     std::string& file;
 };
+
+
 
 
 }  // namespace alisp
