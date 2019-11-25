@@ -7,10 +7,10 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_env.hpp"
 
-#ifdef READLINE_AVAILABLE
+
 #include <readline/readline.h>
 #include <readline/history.h>
-#endif
+
 
 
 namespace alisp::prompt
@@ -57,25 +57,25 @@ char** completer(const char* text, int, int )
 void init()
 {
     rl_attempted_completion_function = completer;
-		using_history();
+    using_history();
 }
 
 	
 
-	std::string repl(const std::string& prompt)
-	{
-		char* buf;
-		while ((buf = readline(prompt.c_str())) != nullptr) {
+std::string repl(const std::string& prompt)
+{
+    char* buf;
+    while ((buf = readline(prompt.c_str())) != nullptr) {
 
-			if (strlen(buf) > 0 && *buf != ' ') {
-				add_history(buf);
-			}			
-			std::string command{buf};
-			free(buf);
-			return command;
+        if (strlen(buf) > 0 && *buf != ' ') {
+            add_history(buf);
+        }			
+        std::string command{buf};
+        free(buf);
+        return command;
 
-		}
-		return std::string{""};
-	}
+    }
+    return std::string{""};
+}
 
 }

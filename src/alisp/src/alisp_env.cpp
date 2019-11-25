@@ -1,26 +1,14 @@
-#include "alisp/alisp/alisp_env.hpp"
-#include "alisp/utility/macros.hpp"
+#include <algorithm>
 
+#include "alisp/alisp/alisp_env.hpp"
+#include "alisp/alisp/alisp_eval.hpp"
+
+#include "alisp/utility/macros.hpp"
 
 namespace alisp
 {
 
-
-
-ALObject* Fquote(ALObject* obj, env::Environment*)
-{
-    return obj->i(1);
-}
-
-ALObject* Fdefun(ALObject* obj, env::Environment* env)
-{
-    auto new_fun = new ALCell(obj->i(0)->to_string());
-    new_fun->make_function(obj->i(1), splice(obj, 2));
-    env->put(obj->i(0), new_fun);
-    return Qt;
-}
-
-ALObject* Fsetq(ALObject* obj, env::Environment* env)
+ALObject* Fdefvar(ALObject* obj, env::Environment* env, eval::Evaluator*)
 {
     auto new_var = new ALCell(obj->i(0)->to_string());
     new_var->make_value(obj->i(1));
@@ -28,41 +16,156 @@ ALObject* Fsetq(ALObject* obj, env::Environment* env)
     return Qt;
 }
 
-ALObject* Fprint(ALObject* obj, env::Environment* env)
+ALObject* Fquote(ALObject* obj, env::Environment*, eval::Evaluator*)
+{
+    return obj->i(0);
+}
+
+
+ALObject* Fdefun(ALObject* obj, env::Environment* env, eval::Evaluator*)
+{
+    auto new_fun = new ALCell(obj->i(0)->to_string());
+    new_fun->make_function(obj->i(1), splice(obj, 2));
+    env->put(obj->i(0), new_fun);
+    return Qt;
+}
+
+
+ALObject* Fsetq(ALObject* obj, env::Environment* env, eval::Evaluator*)
+{
+    auto new_var = new ALCell(obj->i(0)->to_string());
+    new_var->make_value(obj->i(1));
+    env->put(obj->i(0), new_var);
+    return Qt;
+}
+
+
+ALObject* Fprint(ALObject* obj, env::Environment*, eval::Evaluator* eval)
 {
     const auto fun =
         [](ALObject* t_obj){
-            
+
             if(t_obj->type() == ALObjectType::STRING_VALUE || t_obj->type() == ALObjectType::SYMBOL) {
                 std::cout << t_obj->to_string() << "\n";
                 return Qt;
-            } else if(t_obj->type() == ALObjectType::INT_VALUE) {                
+            } else if(t_obj->type() == ALObjectType::INT_VALUE) {
                 std::cout << t_obj->to_int() << "\n";
                 return Qt;
-            }  else if(t_obj->type() == ALObjectType::REAL_VALUE) {
+            } else if(t_obj->type() == ALObjectType::REAL_VALUE) {
                 std::cout << t_obj->to_real() << "\n";
                 return Qt;
             }
+
+
             return Qnil;
         };
-    
-    if(obj->i(0)->type() == ALObjectType::SYMBOL) {
-        auto ob = env->find(obj->i(0));
-        // TODO: check here
-        return fun(ob->value());
-    }
 
-    if(obj->i(0)->type() == ALObjectType::LIST) {
+    auto val = eval->eval(obj->i(0));
+    return fun(val);
+}
+
+
+ALObject* Fif(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    // TODO: sanity checks
+
+    if (!eval::Evaluator::is_falsy(evl->eval(obj->i(0)))) {
+        return evl->eval(obj->i(1));
+    } else if (obj->length() == 3) {
+        return evl->eval(obj->i(2));
+    } else {
         return Qnil;
     }
-
-    return fun(obj->i(0));
 }
 
-ALObject* Fif(ALObject* , env::Environment*)
+
+ALObject* Fmultiply(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
-    return nullptr;
+    int64_t product = 1;
+
+    for(auto o : obj->children())
+    {
+        product *= evl->eval(o)->to_int();
+    }
+
+    return make_int(product);
 }
+
+
+ALObject* Fplus(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    int64_t sum = 0;
+
+    for(auto o : obj->children())
+    {
+        sum += evl->eval(o)->to_int();
+    }
+
+    return make_int(sum);
+}
+
+
+ALObject* Fminus(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    int64_t sub = evl->eval(obj->i(0))->to_int();
+
+    const auto fun =
+        [&](auto& o){
+            sub -= evl->eval(o)->to_int();
+        };
+    std::for_each(std::next(std::begin(obj->children())), std::end(obj->children()), fun);
+
+    return make_int(sub);
+}
+
+ALObject* Fdev(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    int64_t sub = evl->eval(obj->i(0))->to_int();
+
+    const auto fun =
+        [&](auto& o){
+            sub /= evl->eval(o)->to_int();
+        };
+    std::for_each(std::next(std::begin(obj->children())), std::end(obj->children()), fun);
+
+    return make_int(sub);
+}
+
+
+ALObject* Flt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    const auto one = evl->eval(obj->i(0));
+    const auto two = evl->eval(obj->i(1));
+    if (one < two) return Qt;
+    else return Qnil;
+}
+
+ALObject* Fgt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    const auto one = evl->eval(obj->i(0));
+    const auto two = evl->eval(obj->i(1));
+    if (one > two) return Qt;
+    else return Qnil;
+}
+
+
+ALObject* Fgeq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    const auto one = evl->eval(obj->i(0));
+    const auto two = evl->eval(obj->i(1));
+    if (one >= two) return Qt;
+    else return Qnil;
+}
+
+
+ALObject* Fleq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    const auto one = evl->eval(obj->i(0));
+    const auto two = evl->eval(obj->i(1));
+    if (one <= two) return Qt;
+    else return Qnil;
+}
+
 
 
 }

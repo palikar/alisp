@@ -13,7 +13,6 @@ namespace alisp
 namespace eval {
 
 
-template<class Env>
 class Evaluator
 {
   private:
@@ -74,7 +73,7 @@ class Evaluator
               auto func = env.find(head);
               
               if (func->type() == ALCellType::PRIMITIVE) {
-                  return func->prim()(splice(obj, 1), &env);
+                  return func->prim()(splice(obj, 1), &env, this);
               } else if (func->type() == ALCellType::FUNCTION) {
                   return eval_function(func, splice(obj, 1));
               }

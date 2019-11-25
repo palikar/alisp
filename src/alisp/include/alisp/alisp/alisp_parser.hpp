@@ -510,9 +510,12 @@ class ALParser : public ParserBase
         skip_whitespace();
         if(!position.has_more()) return nullptr;
 
-        if ( *position ==';'  ) skip_line();
+        while ( *position == ';' ) {
+            skip_line();
+            skip_whitespace();
+        }
         
-        if ( *position =='('  ) return parse_list();
+        if ( *position == '(' ) return parse_list();
         if ( *position == '\"') return parse_string();
         if ( *position == '\'') return parse_quote();
         if ( *position == ',' ) return parse_comma();
@@ -522,7 +525,8 @@ class ALParser : public ParserBase
         if (  check_num()     ) return parse_number();
         if (  check_id( )     ) return parse_id();
 
-        if( position.has_more()) { PARSE_ERROR("Unparsed input. Cannot parse");}
+        std::cout << *position << "\n";
+        if( position.has_more()) { PARSE_ERROR("Unparsed input. Cannot parse.");}
         
         return nullptr;
     }

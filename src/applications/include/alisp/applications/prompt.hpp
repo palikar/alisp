@@ -9,14 +9,14 @@ namespace alisp::prompt
 {
     
 
-	std::vector<std::string> get_completions(const std::string& hint);
+std::vector<std::string> get_completions(const std::string& hint);
 
-	char* completion_generator(const char* text, int state);
+char* completion_generator(const char* text, int state);
 
-	char** completer(const char* text, int start, int end);
+char** completer(const char* text, int start, int end);
 
-	void init();
+void init();
 
-	std::string repl(const std::string& prompt)
+std::string repl(const std::string& prompt);
 
-		}
+}

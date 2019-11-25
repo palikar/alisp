@@ -10,6 +10,11 @@
 
 // grep -h -R "DEFUN" ../src/  | grep "#define" -v | nl -v0 -n rn
 
+namespace alisp::eval
+{
+class Evaluator;
+}
+
 #define PRIMITIVE_CAT(a, ...) a ## __VA_ARGS__
 #define CAT(a, ...) PRIMITIVE_CAT(a, __VA_ARGS__)
 
@@ -21,16 +26,26 @@
     inline auto V_ ## var = env::Environment::prims.insert({sym_name, ALCell(sym_name).make_value( var )})
 
 
-#define DEFUN(name)                                                     \
-    extern ALObject* F##name (ALObject*, env::Environment*);            \
-    inline auto Q##name = &env::global_sym.insert({#name, ALObject(#name, true)}).first->second; \
-    inline auto P##name = env::Environment::prims.insert({#name, ALCell(#name).make_prim(&F##name)})
+#define DEFUN(name, sym)                                           \
+    extern ALObject* F##name (ALObject*, env::Environment*, eval::Evaluator*); \
+    inline auto Q##name = &env::global_sym.insert({sym, ALObject(sym, true)}).first->second; \
+    inline auto P##name = env::Environment::prims.insert({sym, ALCell(sym).make_prim(&F##name)})
 
 
 
 namespace alisp {
 
-namespace env{
+
+class environment_error : public std::runtime_error
+{
+  public:
+    environment_error(const std::string& t_why) : runtime_error(t_why){}
+
+};
+
+
+namespace env
+{
 
 inline std::unordered_map<std::string, ALObject> global_sym;
 inline std::unordered_map<std::string, ALObject*> sym;
@@ -52,6 +67,8 @@ inline ALObject* intern(const std::string& name)
     return new_sym->second;
 }
 
+namespace detail
+{
 
 struct CellStack {
     using Scope = std::unordered_map<std::string, ALCell*>;
@@ -73,6 +90,9 @@ struct CellStack {
     int call_depth = 0;
 
 };
+
+}
+
 
 class Environment {
 
@@ -103,7 +123,7 @@ class Environment {
             if (scope.count(name)) { return scope.at(name); };
         }
 
-        // TODO: Unbound symbol; throw here
+        throw environment_error("\tUnbounded Symbol: " + name);
         
         return nullptr;
     }
@@ -135,13 +155,13 @@ class Environment {
         m_stack.pop_frame();
     }
 
-    CellStack::StackFrame& current_frame() {
+    detail::CellStack::StackFrame& current_frame() {
         return m_stack.stacks.back();
     }
 
 
   private:
-    CellStack m_stack;
+    detail::CellStack m_stack;
     size_t call_depth = 0;
 };
 }
@@ -153,13 +173,25 @@ DEFVAR(Qnil, "nil");
 DEFSYM(Qoptional, "&optional");
 DEFSYM(Qrest, "&rest");
 
+DEFUN(defun, "defun");
+DEFUN(defvar, "defvar");
 
-DEFUN(print);
-DEFUN(setq);
-DEFUN(quote);
-DEFUN(defun);
+DEFUN(setq, "setq");
+DEFUN(print, "print");
+DEFUN(quote, "quote");
+DEFUN(if, "if");
 
-DEFUN(if);
+DEFUN(plus, "+");
+DEFUN(minus, "-");
+DEFUN(dev, "/");
+DEFUN(multiply, "*");
+
+DEFUN(gt, ">");
+DEFUN(geq, ">=");
+DEFUN(lt, "<");
+DEFUN(leq, "<=");
+
+
 
 
 

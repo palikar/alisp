@@ -165,10 +165,16 @@ namespace env
 class Environment;
 }
 
+
+namespace eval
+{
+class Evaluator;
+}
+
 struct Prim
 {
-    using func_type = ALObject* (*)(ALObject* obj, env::Environment* env);
-    ALObject *(*function)(ALObject* obj, env::Environment* env);
+    using func_type = ALObject* (*)(ALObject* obj, env::Environment* env, eval::Evaluator* eval);
+    ALObject *(*function)(ALObject* obj, env::Environment* env, eval::Evaluator* eval);
 };
 
 class ALCell
