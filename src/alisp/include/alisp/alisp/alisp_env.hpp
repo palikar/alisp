@@ -130,7 +130,12 @@ class Environment {
 
     void put(const ALObject* t_sym, ALCell* t_cell)
     {
-        current_frame().back().insert({t_sym->to_string(), t_cell});
+        if (current_frame().back().count(t_sym->to_string())) {
+            current_frame().back().at(t_sym->to_string()) = t_cell;
+        } else {
+            current_frame().back().insert({t_sym->to_string(), t_cell});
+        }
+        
     }
 
     void new_scope()
@@ -190,6 +195,8 @@ DEFUN(gt, ">");
 DEFUN(geq, ">=");
 DEFUN(lt, "<");
 DEFUN(leq, "<=");
+DEFUN(eq, "==");
+DEFUN(neq, "!=");
 
 
 

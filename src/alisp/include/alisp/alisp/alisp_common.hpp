@@ -206,7 +206,7 @@ class ALCell
     bool is_value() { return std::holds_alternative<Value>(m_data); }
     bool is_callable() { return std::holds_alternative<Callable>(m_data); }
     bool is_pirm() { return std::holds_alternative<Prim>(m_data); }
-
+    
     [[nodiscard]] auto type() -> ALCellType {return m_type;}
     [[nodiscard]] auto value() -> ALObject*  {return std::get<Value>(m_data).val;}
     [[nodiscard]] auto callable() -> std::pair<ALObject*, ALObject*> {

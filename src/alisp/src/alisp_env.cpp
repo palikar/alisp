@@ -69,7 +69,7 @@ ALObject* Fif(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
     // TODO: sanity checks
 
-    if (!eval::Evaluator::is_falsy(evl->eval(obj->i(0)))) {
+    if (eval::Evaluator::is_truthy(evl->eval(obj->i(0)))) {
         return evl->eval(obj->i(1));
     } else if (obj->length() == 3) {
         return evl->eval(obj->i(2));
@@ -134,16 +134,26 @@ ALObject* Fdev(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 
 ALObject* Flt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
+    const auto one = evl->eval(obj->i(0))->to_int();
+    const auto two = evl->eval(obj->i(1))->to_int();
     if (one < two) return Qt;
     else return Qnil;
 }
 
+
+ALObject* Fleq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    const auto one = evl->eval(obj->i(0))->to_int();
+    const auto two = evl->eval(obj->i(1))->to_int();
+    if (one <= two) return Qt;
+    else return Qnil;
+}
+
+
 ALObject* Fgt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
+    const auto one = evl->eval(obj->i(0))->to_int();
+    const auto two = evl->eval(obj->i(1))->to_int();
     if (one > two) return Qt;
     else return Qnil;
 }
@@ -151,20 +161,30 @@ ALObject* Fgt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 
 ALObject* Fgeq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
+    const auto one = evl->eval(obj->i(0))->to_int();
+    const auto two = evl->eval(obj->i(1))->to_int();
     if (one >= two) return Qt;
     else return Qnil;
 }
 
-
-ALObject* Fleq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObject* Feq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
-    if (one <= two) return Qt;
+    const auto one = evl->eval(obj->i(0))->to_int();
+    const auto two = evl->eval(obj->i(1))->to_int();
+    if (one == two) return Qt;
     else return Qnil;
 }
+
+
+
+ALObject* Fneq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    const auto one = evl->eval(obj->i(0))->to_int();
+    const auto two = evl->eval(obj->i(1))->to_int();
+    if (one != two) return Qt;
+    else return Qnil;
+}
+
 
 
 

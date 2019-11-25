@@ -116,7 +116,7 @@ class parse_exception : public std::runtime_error
         auto lines = utility::split(t_input, '\n');
 
         auto start_index = static_cast<int>(t_where.line) - LINE_CONTEXT < 0 ? 0 : static_cast<int>(t_where.line) - LINE_CONTEXT;
-        auto end_index = static_cast<int>(t_where.line) + LINE_CONTEXT > static_cast<int>(std::size(lines)) ?
+        auto end_index = (static_cast<int>(t_where.line) + LINE_CONTEXT) > static_cast<int>(std::size(lines)) ?
             static_cast<int>(std::size(lines)) : static_cast<int>(std::size(lines)) + LINE_CONTEXT;
 
         for (auto i = static_cast<size_t>(start_index); i < static_cast<size_t>(end_index); ++i) {
@@ -191,6 +191,9 @@ class ALParser : public ParserBase
         set_alphabet(alph, detail::id_alphabet, '|');
         set_alphabet(alph, detail::id_alphabet, '@');
         set_alphabet(alph, detail::id_alphabet, ':');
+        set_alphabet(alph, detail::id_alphabet, '?');
+        set_alphabet(alph, detail::id_alphabet, '<');
+        set_alphabet(alph, detail::id_alphabet, '>');
 
 
         return alph;
@@ -524,8 +527,7 @@ class ALParser : public ParserBase
         if ( *position == '#' ) return parse_hashtag();
         if (  check_num()     ) return parse_number();
         if (  check_id( )     ) return parse_id();
-
-        std::cout << *position << "\n";
+        
         if( position.has_more()) { PARSE_ERROR("Unparsed input. Cannot parse.");}
         
         return nullptr;
