@@ -7,8 +7,10 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_env.hpp"
 
+#ifdef READLINE_AVAILABLE
 #include <readline/readline.h>
 #include <readline/history.h>
+#endif
 
 
 namespace alisp::prompt
@@ -55,32 +57,25 @@ char** completer(const char* text, int, int )
 void init()
 {
     rl_attempted_completion_function = completer;
-
-
+		using_history();
 }
 
-void repl(const std::string& prompt)
-{
-    
-    alisp::env::Environment env;
-    alisp::eval::Evaluator<alisp::env::Environment> eval(env);
-    alisp::parser::ALParser<alisp::env::Environment> pars(env);
+	
 
+	std::string repl(const std::string& prompt)
+	{
+		char* buf;
+		while ((buf = readline(prompt.c_str())) != nullptr) {
 
-    char* buf;
-    while ((buf = readline(prompt.c_str())) != nullptr) {
-        if (strlen(buf) > 0 && *buf != ' ') {
-            add_history(buf);
-        }
+			if (strlen(buf) > 0 && *buf != ' ') {
+				add_history(buf);
+			}			
+			std::string command{buf};
+			free(buf);
+			return command;
 
-        const std::string command{buf};
-
-        auto parse_res = pars.parse(&command, "__EVAL__");
-        auto eval_res = eval.eval(parse_res[0]);
-        std::cout << alisp::dump(eval_res) << "\n";
-
-        free(buf);
-    }            
-}
+		}
+		return std::string{""};
+	}
 
 }

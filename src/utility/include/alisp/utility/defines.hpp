@@ -3,6 +3,8 @@
 #include "alisp/config.hpp"
 #include <fmt/format.h>
 
+#include <vector>
+
 #define ALISP_COMPILER_VERSION __VERSION__
 
 #if defined(_WIN32)
