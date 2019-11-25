@@ -185,6 +185,7 @@ DEFUN(setq, "setq");
 DEFUN(print, "print");
 DEFUN(quote, "quote");
 DEFUN(if, "if");
+DEFUN(progn, "progn");
 
 DEFUN(plus, "+");
 DEFUN(minus, "-");

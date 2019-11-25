@@ -175,14 +175,20 @@ ALObject* Feq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     else return Qnil;
 }
 
-
-
 ALObject* Fneq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
     const auto one = evl->eval(obj->i(0))->to_int();
     const auto two = evl->eval(obj->i(1))->to_int();
     if (one != two) return Qt;
     else return Qnil;
+}
+
+
+ALObject* Fprogn(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    ALObject* res;
+    for(auto o : obj->children()){ res = evl->eval(o); }
+    return res;
 }
 
 
