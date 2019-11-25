@@ -24,6 +24,21 @@ void eval_statement(const std::string& command);
 void interactive();
 void eval_file(const std::filesystem::path& t_path);
 
+bool env_bool(const char* t_name)
+{
+	return getenv(t_name) != nullptr;
+}
+
+std::string env_string(const char* t_name)
+{
+	if (env_bool(t_name)){
+		return std::string{getenv(t_name)};
+	}
+	return {};
+}
+
+
+
 struct Options
 {
 		std::string eval{""};
