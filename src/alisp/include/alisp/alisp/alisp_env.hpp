@@ -7,31 +7,17 @@
 #include <iostream>
 
 #include "alisp/alisp/alisp_common.hpp"
+#include "alisp/alisp/alisp_macros.hpp"
 
 // grep -h -R "DEFUN" ../src/  | grep "#define" -v | nl -v0 -n rn
+
+
+
 
 namespace alisp::eval
 {
 class Evaluator;
 }
-
-#define PRIMITIVE_CAT(a, ...) a ## __VA_ARGS__
-#define CAT(a, ...) PRIMITIVE_CAT(a, __VA_ARGS__)
-
-#define DEFSYM(var, sym_name)                                           \
-    inline auto var = &env::global_sym.insert({sym_name, ALObject(sym_name, true)}).first->second
-
-#define DEFVAR(var, sym_name)                                           \
-    inline auto var = &env::global_sym.insert({sym_name, ALObject(sym_name, true)}).first->second; \
-    inline auto V_ ## var = env::Environment::prims.insert({sym_name, ALCell(sym_name).make_value( var )})
-
-
-#define DEFUN(name, sym)                                           \
-    extern ALObject* F##name (ALObject*, env::Environment*, eval::Evaluator*); \
-    inline auto Q##name = &env::global_sym.insert({sym, ALObject(sym, true)}).first->second; \
-    inline auto P##name = env::Environment::prims.insert({sym, ALCell(sym).make_prim(&F##name)})
-
-
 
 namespace alisp {
 
@@ -81,14 +67,12 @@ struct CellStack {
     }
 
     void push_frame() { stacks.emplace_back(1); }
-    void push_scope() { stacks.back().emplace_back(); }
-
     void pop_frame() { stacks.pop_back(); }
+
+    void push_scope() { stacks.back().emplace_back(); }
     void pop_scope() { stacks.back().pop_back(); }
 
     Stack stacks;
-    int call_depth = 0;
-
 };
 
 }
@@ -100,13 +84,15 @@ class Environment {
     inline static std::unordered_map<std::string, ALCell> prims;
 
   private:
-    std::unordered_map<std::string, ALCell*> defs;
+    std::unordered_map<std::string, ALCell*> m_defs;
+    detail::CellStack m_stack;
+    size_t m_call_depth = 0;
 
   public:
 
-    Environment() : defs()
+    Environment() : m_defs()
     {
-			
+        m_call_depth = 0;
     }
 
     ALCell* find(const ALObject* t_sym)
@@ -121,6 +107,8 @@ class Environment {
             if (scope.count(name)) { return scope.at(name); };
         }
 
+        if (m_defs.count(name)) { return m_defs.at(name); };
+        
         throw environment_error("\tUnbounded Symbol: " + name);
         
         return nullptr;
@@ -128,12 +116,19 @@ class Environment {
 
     void put(const ALObject* t_sym, ALCell* t_cell)
     {
-        if (current_frame().back().count(t_sym->to_string())) {
-            current_frame().back().at(t_sym->to_string()) = t_cell;
-        } else {
-            current_frame().back().insert({t_sym->to_string(), t_cell});
-        }
-        
+        if(m_call_depth == 0) {
+            if (current_frame().back().count(t_sym->to_string())) {
+                m_defs.at(t_sym->to_string()) = t_cell;
+            } else {
+                m_defs.insert({t_sym->to_string(), t_cell});
+            }            
+        } else {            
+            if (current_frame().back().count(t_sym->to_string())) {
+                current_frame().back().at(t_sym->to_string()) = t_cell;
+            } else {
+                current_frame().back().insert({t_sym->to_string(), t_cell});
+            }
+        }        
     }
 
     void new_scope()
@@ -148,66 +143,65 @@ class Environment {
 
     void call_function()
     {
-        ++call_depth;
+        ++m_call_depth;
         m_stack.push_frame();
     }
 
     void finish_function()
     {
-        --call_depth;
+        --m_call_depth;
         m_stack.pop_frame();
     }
+
+    auto call_depth() { return m_call_depth; }
 
     detail::CellStack::StackFrame& current_frame() {
         return m_stack.stacks.back();
     }
 
-
-  private:
-    detail::CellStack m_stack;
-    size_t call_depth = 0;
 };
 
 
 	
-	namespace detail
-	{
-		static FunctionCall
-		{
-		public: 
+namespace detail
+{
 
-			explicit FunctionCall(Environment& t_env) : m_env(t_env) {m_env.call_function();}
-			~FunctionCall() {m_env.finish_function();}
+struct FunctionCall
+{
+  public: 
 
-			FunctionCall(FunctionCall &&) = default;
-			FunctionCall& operator=(FunctionCall &&) = default;
-			FunctionCall(const FunctionCall &) = delete;
-			FunctionCall& operator=(const FunctionCall &) = delete;
+    explicit FunctionCall(Environment& t_env) : m_env(t_env) {m_env.call_function();}
+    ~FunctionCall() {m_env.finish_function();}
+
+    FunctionCall(FunctionCall &&) = default;
+    FunctionCall& operator=(FunctionCall &&) = default;
+    FunctionCall(const FunctionCall &) = delete;
+    FunctionCall& operator=(const FunctionCall &) = delete;
 			
-		private:
-			Environment& m_env;
+  private:
+    Environment& m_env;
 			
-		};
+};
 
-		static ScopePushPop
-		{
-		public: 
+struct ScopePushPop
+{
+  public: 
 
-			explicit ScopePushPop(Environment& t_env) : m_env(t_env) {m_env.new_scope();}
-			~ScopePushPop() {m_env.destroy_scope();}
+    explicit ScopePushPop(Environment& t_env) : m_env(t_env) {m_env.new_scope();}
+    ~ScopePushPop() {m_env.destroy_scope();}
 
-			ScopePushPop(ScopePushPop &&) = default;
-			ScopePushPop& operator=(ScopePushPop &&) = default;
-			ScopePushPop(const ScopePushPop &) = delete;
-			ScopePushPop& operator=(const ScopePushPop  &) = delete;
+    ScopePushPop(ScopePushPop &&) = default;
+    ScopePushPop& operator=(ScopePushPop &&) = default;
+    ScopePushPop(const ScopePushPop &) = delete;
+    ScopePushPop& operator=(const ScopePushPop  &) = delete;
 			
-		private:
-			Environment& m_env;
-		};
+  private:
+    Environment& m_env;
+};
 
-	}
 }
 
+}
 
 DEFVAR(Qt, "t");
 DEFVAR(Qnil, "nil");
@@ -224,6 +218,7 @@ DEFUN(quote, "quote");
 DEFUN(if, "if");
 DEFUN(while, "while");
 DEFUN(progn, "progn");
+DEFUN(let, "let");
 
 DEFUN(plus, "+");
 DEFUN(minus, "-");

@@ -68,20 +68,22 @@ class Evaluator
 
           }
 
-				case ALObjectType::LIST : {
+          case ALObjectType::LIST : {
 
-					auto head = obj->i(0);
-					auto func = env.find(head);
+              auto head = obj->i(0);
+              auto func = env.find(head);
               
-					if (func->type() == ALCellType::PRIMITIVE) {
-						env::detail::FunctionCall{env};
-						return func->prim()(splice(obj, 1), &env, this);
-					} else if (func->type() == ALCellType::FUNCTION) {
-						env::detail::FunctionCall{env};						
-						return eval_function(func, splice(obj, 1));
-					}
+              if (func->type() == ALCellType::PRIMITIVE) {
+
+                  // env::detail::FunctionCall{env};
+                  
+                  return func->prim()(splice(obj, 1), &env, this);
+              } else if (func->type() == ALCellType::FUNCTION) {
+                  env::detail::FunctionCall fc{env};
+                  return eval_function(func, splice(obj, 1));
+              }
               
-					throw std::runtime_error("Head of a list must be bound to function");
+              throw std::runtime_error("Head of a list must be bound to function");
               
               break;
           }
