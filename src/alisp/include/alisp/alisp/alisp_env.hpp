@@ -185,6 +185,7 @@ DEFUN(setq, "setq");
 DEFUN(print, "print");
 DEFUN(quote, "quote");
 DEFUN(if, "if");
+DEFUN(while, "while");
 DEFUN(progn, "progn");
 
 DEFUN(plus, "+");
@@ -198,7 +199,6 @@ DEFUN(lt, "<");
 DEFUN(leq, "<=");
 DEFUN(eq, "==");
 DEFUN(neq, "!=");
-
 
 
 

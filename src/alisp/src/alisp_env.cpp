@@ -31,10 +31,10 @@ ALObject* Fdefun(ALObject* obj, env::Environment* env, eval::Evaluator*)
 }
 
 
-ALObject* Fsetq(ALObject* obj, env::Environment* env, eval::Evaluator*)
+ALObject* Fsetq(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
 {
     auto new_var = new ALCell(obj->i(0)->to_string());
-    new_var->make_value(obj->i(1));
+    new_var->make_value(evl->eval(obj->i(1)));
     env->put(obj->i(0), new_var);
     return Qt;
 }
@@ -78,6 +78,14 @@ ALObject* Fif(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     }
 }
 
+ALObject* Fwhile(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    const auto fun = [&](auto& o){ evl->eval(o); };
+    while (eval::Evaluator::is_truthy(evl->eval(obj->i(0)))) {
+        std::for_each(std::next(std::begin(obj->children())), std::end(obj->children()), fun);
+    }
+    return Qt;
+}
 
 ALObject* Fmultiply(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
