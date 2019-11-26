@@ -33,7 +33,7 @@ class Evaluator
         if(obj->type() == ALObjectType::REAL_VALUE) return obj->to_real() == 0.0;
 
         return false;
-
+				
     }
 
     static bool is_truthy(ALObject* obj)
@@ -67,18 +67,21 @@ class Evaluator
               return make_string("unknown");
 
           }
-          case ALObjectType::LIST : {
 
-              auto head = obj->i(0);
-              auto func = env.find(head);
+				case ALObjectType::LIST : {
+
+					auto head = obj->i(0);
+					auto func = env.find(head);
               
-              if (func->type() == ALCellType::PRIMITIVE) {
-                  return func->prim()(splice(obj, 1), &env, this);
-              } else if (func->type() == ALCellType::FUNCTION) {
-                  return eval_function(func, splice(obj, 1));
-              }
+					if (func->type() == ALCellType::PRIMITIVE) {
+						env::detail::FunctionCall{env};
+						return func->prim()(splice(obj, 1), &env, this);
+					} else if (func->type() == ALCellType::FUNCTION) {
+						env::detail::FunctionCall{env};						
+						return eval_function(func, splice(obj, 1));
+					}
               
-              throw std::runtime_error("Head of a list must be bound to function");
+					throw std::runtime_error("Head of a list must be bound to function");
               
               break;
           }

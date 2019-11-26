@@ -106,9 +106,7 @@ class Environment {
 
     Environment() : defs()
     {
-        auto ver = new ALCell("version");
-        ver->make_value(make_string("1.0.0"));
-        defs.insert({"version", ver});
+			
     }
 
     ALCell* find(const ALObject* t_sym)
@@ -169,6 +167,45 @@ class Environment {
     detail::CellStack m_stack;
     size_t call_depth = 0;
 };
+
+
+	
+	namespace detail
+	{
+		static FunctionCall
+		{
+		public: 
+
+			explicit FunctionCall(Environment& t_env) : m_env(t_env) {m_env.call_function();}
+			~FunctionCall() {m_env.finish_function();}
+
+			FunctionCall(FunctionCall &&) = default;
+			FunctionCall& operator=(FunctionCall &&) = default;
+			FunctionCall(const FunctionCall &) = delete;
+			FunctionCall& operator=(const FunctionCall &) = delete;
+			
+		private:
+			Environment& m_env;
+			
+		};
+
+		static ScopePushPop
+		{
+		public: 
+
+			explicit ScopePushPop(Environment& t_env) : m_env(t_env) {m_env.new_scope();}
+			~ScopePushPop() {m_env.destroy_scope();}
+
+			ScopePushPop(ScopePushPop &&) = default;
+			ScopePushPop& operator=(ScopePushPop &&) = default;
+			ScopePushPop(const ScopePushPop &) = delete;
+			ScopePushPop& operator=(const ScopePushPop  &) = delete;
+			
+		private:
+			Environment& m_env;
+		};
+
+	}
 }
 
 
