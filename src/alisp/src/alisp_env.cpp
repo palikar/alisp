@@ -200,6 +200,25 @@ ALObject* Fprogn(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 }
 
 
+ALObject* Flet(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
+{
+    env::detail::ScopePushPop spp{*env};
+    
+    auto varlist = obj->i(0);
+    for (auto var : varlist->children()) {
+        auto new_var = new ALCell(var->i(0)->to_string());
+        new_var->make_value(evl->eval(var->i(1)));
+        env->put(var->i(0), new_var);
+    }
+    
+    ALObject* res;
+    const auto fun =
+        [&](auto& o){
+            res = evl->eval(o);
+        };
+    std::for_each(std::next(std::begin(obj->children())), std::end(obj->children()), fun);
 
+    return res;
+}
 
 }
