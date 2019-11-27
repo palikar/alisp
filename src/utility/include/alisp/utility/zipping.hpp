@@ -1,6 +1,5 @@
 #pragma once
 
-#include <type_traits>
 #include <iterator>
 
 namespace alisp::utility {
@@ -17,5 +16,6 @@ Function zip (Function func, Iterator begin,
     for(;begin != end; ++begin, advance_all(iterators...)) func(*begin, *(iterators)... );
     return func;
 }
+
 
 }

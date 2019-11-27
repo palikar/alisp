@@ -2,7 +2,7 @@
 #include <type_traits>
 
 
-namespace alisp::meta {
+namespace alisp::utility {
 
 template<class...>
 using void_t = void;
