@@ -15,3 +15,10 @@
     extern ALObject* F##name (ALObject*, env::Environment*, eval::Evaluator*); \
     inline auto Q##name = &env::global_sym.insert({sym, ALObject(sym, true)}).first->second; \
     inline auto P##name = env::Environment::prims.insert({sym, ALCell(sym).make_prim(&F##name)})
+
+
+
+#define DEFUN_NEW(name, lname, sname, fname, doc)                       \
+    extern ALObject* fname (ALObject*, env::Environment*, eval::Evaluator*); \
+    inline auto sname = &env::global_sym.insert({sym, ALObject(sym, true)}).first->second; \
+    inline auto P##name = env::Environment::prims.insert({lname, ALCell(lname).make_prim(&fname)})

@@ -9,17 +9,14 @@
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_macros.hpp"
 
-// grep -h -R "DEFUN" ../src/  | grep "#define" -v | nl -v0 -n rn
-
-
-
 
 namespace alisp::eval
 {
 class Evaluator;
 }
 
-namespace alisp {
+namespace alisp
+{
 
 
 class environment_error : public std::runtime_error
@@ -36,23 +33,7 @@ namespace env
 inline std::unordered_map<std::string, ALObject> global_sym;
 inline std::unordered_map<std::string, ALObject*> sym;
 
-inline ALObject* intern(const std::string& name)
-{
-    
-    if(global_sym.count(name))
-    {
-        return &global_sym.at(name);
-        
-    }
-
-    if(sym.count(name))
-    {
-        return sym.at(name);
-    }
-
-    auto[new_sym, insertion] = sym.insert({name, make_symbol(name)});
-    return new_sym->second;
-}
+extern ALObject* intern(const std::string& name);
 
 namespace detail
 {
@@ -156,14 +137,13 @@ class Environment {
         m_stack.pop_frame();
     }
 
-    auto call_depth() { return m_call_depth; }
+    size_t call_depth() { return m_call_depth; }
 
     detail::CellStack::StackFrame& current_frame() {
         return m_stack.stacks.back();
     }
 
 };
-
 
 
 namespace detail

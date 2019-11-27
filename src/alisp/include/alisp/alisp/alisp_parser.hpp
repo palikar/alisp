@@ -16,6 +16,7 @@
 #include "alisp/utility.hpp"
 
 #include "alisp/alisp/alisp_common.hpp"
+#include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_env.hpp"
 
 
@@ -139,6 +140,7 @@ namespace parser
 template <class Environment>
 class ALParser : public ParserBase
 {
+    
   private:
 
     detail::Position position;

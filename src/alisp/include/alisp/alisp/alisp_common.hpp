@@ -94,6 +94,10 @@ class ALObject
     ALObject(std::vector<ALObject*> value) : m_data(std::move(value)), m_type(ALObjectType::LIST){}
 
     ALObjectType type() const {return m_type;}
+    bool is_int() const { return m_type == ALObjectType::INT_VALUE; }
+    bool is_string() const { return m_type == ALObjectType::STRING_VALUE; }
+    bool is_real() const { return m_type == ALObjectType::REAL_VALUE; }
+    bool is_list() const { return m_type == ALObjectType::LIST; }
     
     ALObject* i(const size_t index){
         return children()[index];
@@ -111,8 +115,14 @@ class ALObject
         return std::get<std::string>(m_data);
     }
     real_type to_real() const {
-        check<real_type>();
-        return std::get<real_type>(m_data);
+        if (std::get_if<real_type>(&m_data)) {
+            return std::get<real_type>(m_data);
+        }
+        if (std::get_if<int_type>(&m_data)) {
+            return static_cast<real_type>(std::get<int_type>(m_data));
+        }
+        throw alobject_error("Not a number object.");
+        return 0.0;
     }
     int_type to_int() const {
         check<int_type>();
@@ -223,130 +233,6 @@ class ALCell
     data m_data;
     ALCellType m_type;
 };
-
-
-namespace detail
-{
-
-struct ALOBjectHelper
-{
-
-    template<typename T,
-             typename = std::enable_if_t<std::is_integral_v<T>>>
-    static ALObject* get(T a){
-
-        return new ALObject(static_cast<int64_t>(a));
-    }
-
-    static ALObject* get(double a){
-        return new ALObject(a);
-    }
-
-    static ALObject* get(std::string a){
-        return new ALObject(a);
-    }
-
-    static ALObject* get(std::vector<ALObject*> vec_objs)
-    {
-        return new ALObject(vec_objs);
-    }
-
-
-    static ALObject* get(ALObject* obj){
-        return obj;
-    }
-
-    template<typename ...T>
-    static ALObject* get(T... objs){
-        std::vector<ALObject*> vec_objs;
-        vec_objs.reserve(sizeof...(objs));
-        (vec_objs.push_back(ALOBjectHelper::get(objs)), ...);
-        return new ALObject(vec_objs);
-    }
-
-};
-
-}
-
-
-template<typename ... T>
-inline auto make_object(T && ... args)
-{
-    return detail::ALOBjectHelper::get(std::forward<T>(args) ...);
-}
-
-inline auto make_symbol(std::string name)
-{
-    auto obj = new ALObject(name, true);
-    return obj;
-}
-
-template<typename T>
-inline auto make_int(T value)
-{
-    static_assert(std::is_integral_v<T>, "Value must be of integer type");
-    return make_object(static_cast<int64_t>(value));
-}
-
-template<typename T>
-inline auto make_double(T value)
-{
-    static_assert(std::is_arithmetic_v<T>, "Value must be of real type");
-    return make_object(static_cast<double>(value));
-}
-
-inline auto make_string(std::string value)
-{
-    return make_object(value);
-}
-
-
-inline std::string dump(ALObject* obj)
-{
-    std::ostringstream str;
-
-    switch(obj->type())
-    {
-      case ALObjectType::INT_VALUE:
-          str << obj->to_int() << " ";
-          break;
-
-      case ALObjectType::REAL_VALUE:
-          str << obj->to_real() << " ";
-          break;
-
-      case ALObjectType::STRING_VALUE:
-          str << "\"" << obj->to_string() << "\"" << " ";
-          break;
-
-      case ALObjectType::SYMBOL:
-          str << obj->to_string() << " ";
-          break;
-
-      case ALObjectType::LIST:
-          str << "(";
-          for (auto ob : obj->children())
-          {
-              str << dump(ob);
-          }
-          str << ") ";
-          break;
-    }
-
-    return str.str();
-}
-
-
-inline auto splice(ALObject* t_obj, std::vector<ALObject>::difference_type start_index,
-                   std::vector<ALObject>::difference_type end_index = -1){
-
-    const auto size = static_cast<std::vector<ALObject>::difference_type>(std::size(t_obj->children()));
-    const auto end_move = end_index == -1 ? size : end_index;
-
-    const auto new_child = std::vector<ALObject*>(std::next(std::begin(t_obj->children()),  start_index),
-                                                  std::next(std::begin(t_obj->children()), end_move));
-    return make_object(new_child);
-}
 
 
 namespace parser
