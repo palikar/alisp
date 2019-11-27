@@ -216,6 +216,8 @@ DEFUN(leq, "<=");
 DEFUN(eq, "==");
 DEFUN(neq, "!=");
 
+DEFUN(exit, "exit");
+
 
 
 

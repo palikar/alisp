@@ -54,6 +54,12 @@ void assert_number (ALObject* obj)
     if(!obj->is_int() or !obj->is_real()) throw std::runtime_error("Invalid argument. Object must be a number");
 }
 
+void assert_int (ALObject* obj)
+{
+    if(!obj->is_int()) throw std::runtime_error("Invalid argument. Object must be an integer");
+}
+
+
 ALObject* Fdefvar(ALObject* obj, env::Environment* env, eval::Evaluator*)
 {
     assert_size<2>(obj);
@@ -329,6 +335,15 @@ ALObject* Fletx(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
     }
 
     return eval_list(evl, obj, 1);
+}
+
+ALObject* Fexit(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    assert_size<1>(obj);
+    auto val = evl->eval(obj->i(0));
+    assert_int(val);
+    exit(static_cast<int>(val->to_int()));
+    return Qnil;
 }
 
 }
