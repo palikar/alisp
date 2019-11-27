@@ -51,7 +51,7 @@ class ALObject
     using real_type = double;
     using string_type = std::string;
 
-    using data = std::variant<int_type, real_type, string_type, list_type>;
+    using data_type = std::variant<int_type, real_type, string_type, list_type>;
 
   private:
 
@@ -135,6 +135,8 @@ class ALObject
         children().push_back(new_child);
     }
 
+    data_type& data() { return m_data;}
+
     std::string pretty_print() const{
         std::ostringstream oss;
         oss << "(ALObject<" << alobject_type_to_string(type()) << "> )";
@@ -142,7 +144,7 @@ class ALObject
     }
 
 private:
-    data m_data;
+    data_type m_data;
     const ALObjectType m_type;
 };
 

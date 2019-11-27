@@ -6,8 +6,57 @@
 
 #include "alisp/utility/macros.hpp"
 
+
+template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+
+template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+
+
 namespace alisp
 {
+
+
+template <class ... Callable>
+auto visit(ALObject* obj, std::tuple<std::pair<ALObjectType, Callable>...> && visitors){
+    switch (obj->type()) {
+      case ALObjectType::INT_VALUE: {
+
+          if constexpr (std::get<0>(visitors).first == ALObjectType::INT_VALUE) {
+              std::get<0>(visitors).second(obj);
+          } else{
+              // recursive
+          }
+          
+          break;
+      }
+      case ALObjectType::REAL_VALUE: {
+          
+          break;
+       }
+
+      case ALObjectType::STRING_VALUE: {
+          
+          break;
+      }
+          
+      case ALObjectType::SYMBOL: {
+          
+          break;
+      }
+          
+      case ALObjectType::LIST: {
+          
+          break;
+      }
+
+          
+      default:
+          break;
+    }
+}
+
+
+
 
 ALObject* eval_list (eval::Evaluator* evl, ALObject* t_obj, size_t t_offset = 0) {
 
@@ -37,11 +86,17 @@ ALObject* eval_list_n (eval::Evaluator* evl, ALObject* t_obj,size_t t_offset = 0
     auto return_it = std::next(std::begin(objects), return_hops - 1);
     auto end_it = std::end(objects);
 
-    while (start_it++ != return_it) { evl->eval(*start_it); }
-
+    while (start_it != return_it) {
+        evl->eval(*start_it);
+        start_it = std::next(start_it);
+    }
     auto res = evl->eval(*start_it);
+    start_it = std::next(start_it);
 
-    while (start_it++ != end_it) { evl->eval(*start_it); }
+    while (start_it != end_it) {
+        evl->eval(*start_it);
+        start_it = std::next(start_it);
+    }
 
     return res;
 }
@@ -63,20 +118,20 @@ auto apply (eval::Evaluator* evl, ALObject* t_obj, Callable t_fun, size_t t_offs
 
     auto start_it = std::next(std::begin(objects), hops);
     auto end_it = std::prev(std::end(objects));
-
+    
     while (start_it != end_it) {
         if constexpr (eval){
             t_fun(evl->eval(*start_it));
         } else {
-            t_fun(evl->eval(*start_it));
+            t_fun(*start_it);
         }
         ++start_it;
     }
 
     if constexpr (eval){
-        return t_fun(evl->eval(*std::end(objects)));
+        return t_fun(evl->eval(*end_it));
     } else {
-        return t_fun(evl->eval(*std::end(objects)));
+        return t_fun(*end_it);
     }
     
 }
@@ -168,7 +223,19 @@ ALObject* Fprint(ALObject* obj, env::Environment*, eval::Evaluator* eval)
             return Qnil;
         };
 
+
     auto val = eval->eval(obj->i(0));
+
+    std::visit(overloaded {
+            [](ALObject::string_type& arg) { std::cout << arg << '\n'; },
+            [](ALObject::int_type&    arg) { std::cout << arg << '\n'; },
+            [](ALObject::real_type&   arg) { std::cout << arg << '\n'; },
+            [](ALObject::list_type&      ) { std::cout << "can't print list object" << ' '; }
+        }, val->data());
+
+    
+
+    
     return fun(val);
 }
 
