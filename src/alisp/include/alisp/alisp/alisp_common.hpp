@@ -98,6 +98,7 @@ class ALObject
     bool is_string() const { return m_type == ALObjectType::STRING_VALUE; }
     bool is_real() const { return m_type == ALObjectType::REAL_VALUE; }
     bool is_list() const { return m_type == ALObjectType::LIST; }
+    bool is_sym() const { return m_type == ALObjectType::SYMBOL; }
     
     ALObject* i(const size_t index){
         return children()[index];

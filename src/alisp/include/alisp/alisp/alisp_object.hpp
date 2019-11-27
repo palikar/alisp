@@ -391,7 +391,6 @@ inline bool are_objects_numbers(ALObject* obj)
     return true;
 }
 
-
 inline bool are_objects_int(ALObject* obj)
 {
     if (!obj->is_list()) { return obj->is_int(); }
@@ -424,6 +423,15 @@ inline bool min_list_elements(ALObject* obj, size_t t_element_cnt)
     return obj->is_list() && std::size(obj->children()) >= t_element_cnt;
 }
 
+inline bool max_list_elements(ALObject* obj, size_t t_element_cnt)
+{
+    return obj->is_list() && std::size(obj->children()) <= t_element_cnt;
+}
+
+inline bool psym(ALObject* obj)
+{
+    return obj->is_sym();
+}
 
 
 
