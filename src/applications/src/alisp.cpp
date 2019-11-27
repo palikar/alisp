@@ -8,16 +8,18 @@
 #include <rang.hpp>
 
 #include "alisp/config.hpp"
-#include "alisp/utility/defines.hpp"
+#include "alisp/utility.hpp"
+
+#include "alisp/applications/prompt.hpp"
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_parser.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_env.hpp"
 
-#include "alisp/applications/prompt.hpp"
 
-#include "alisp/utility.hpp"
+
+
 
 
 

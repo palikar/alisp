@@ -13,15 +13,17 @@ ALObject* eval_list (eval::Evaluator* evl, ALObject* t_obj, size_t t_offset = 0)
 
     auto objects = t_obj->children();
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
-
+    
+    
     auto start_it = std::next(std::begin(objects), hops);
     auto end_it = std::prev(std::end(objects));
 
-    while (start_it++ != end_it) {
+    while (start_it != end_it) {
         evl->eval(*start_it);
+        start_it = std::next(start_it); 
     }
-
-    return evl->eval(*std::end(objects));
+    
+    return evl->eval(*end_it);
 }
 
 template<size_t N>
@@ -110,6 +112,9 @@ StartType reduce (eval::Evaluator* evl, ALObject* t_obj, Callable && t_fun, Star
 
     return val;
 }
+
+
+
 
 ALObject* Fdefvar(ALObject* obj, env::Environment* env, eval::Evaluator*)
 {

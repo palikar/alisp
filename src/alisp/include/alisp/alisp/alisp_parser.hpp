@@ -13,11 +13,10 @@
 #include <stdexcept>
 #include <cctype>
 
+#include "alisp/utility.hpp"
+
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_env.hpp"
-#include "alisp/utility/lite_string.hpp"
-#include "alisp/utility/macros.hpp"
-#include "alisp/utility/hash.hpp"
 
 
 namespace alisp

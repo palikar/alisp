@@ -34,10 +34,10 @@ namespace alisp::logging
 #define DEBUG(...) (void)0
 #endif
 
-#define ABORT(...)																								\
+#define ABORT(...)                                                  \
 	do {                                                            \
-		alisp::logging::get_main_logger()->critical(__VA_ARGS__);			\
-		alisp::logging::get_main_logger()->critical("Aborting!");			\
-		abort();																											\
+		alisp::logging::get_main_logger()->critical(__VA_ARGS__);   \
+		alisp::logging::get_main_logger()->critical("Aborting!");   \
+		abort();                                                    \
 	} while (0)
  

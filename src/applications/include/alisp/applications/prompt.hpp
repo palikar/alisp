@@ -2,13 +2,10 @@
 
 #include <vector>
 #include <string>
-
-
-
+#include <iostream>
 namespace alisp::prompt
 {
     
-
 std::vector<std::string> get_completions(const std::string& hint);
 
 char* completion_generator(const char* text, int state);

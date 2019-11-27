@@ -3,10 +3,7 @@
 #include <cstdint>
 #include <string>
 
-namespace alisp
-{
-
-namespace hash
+namespace alisp::hash
 {
 
 namespace fnv
@@ -122,6 +119,6 @@ template<size_t N>
     return hash(s.begin(), s.end());
 }
 		
-}
+
 
 }

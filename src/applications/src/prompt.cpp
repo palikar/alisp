@@ -1,16 +1,8 @@
-#include <iostream>
-
 #include "alisp/applications/prompt.hpp"
-
-#include "alisp/alisp/alisp_common.hpp"
-#include "alisp/alisp/alisp_parser.hpp"
-#include "alisp/alisp/alisp_eval.hpp"
-#include "alisp/alisp/alisp_env.hpp"
 
 
 #include <readline/readline.h>
 #include <readline/history.h>
-
 
 
 namespace alisp::prompt
