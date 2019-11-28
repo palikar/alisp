@@ -69,7 +69,7 @@ class Environment {
     std::unordered_map<std::string, ALCell*> m_defs;
     detail::CellStack m_stack;
     size_t m_call_depth = 0;
-
+    // TODO: TLB
   public:
 
     Environment() : m_defs()
@@ -79,10 +79,9 @@ class Environment {
 
     ALCell* find(const ALObject* t_sym)
     {
-        auto name = t_sym->to_string();
+        const auto name = t_sym->to_string();
 
-        if (prims.count(name))
-            return &prims.at(name);
+        if (prims.count(name)) return &prims.at(name);
 
         for (auto& scope : current_frame())
         {
@@ -114,6 +113,20 @@ class Environment {
         }
         
     }
+
+    void put(const ALObject* t_sym, ALObject::string_type t_val)
+    {}
+
+    void put(const ALObject* t_sym, ALObject::int_type t_val)
+    {}
+
+    void put(const ALObject* t_sym, ALObject::real_type t_val)
+    {}
+
+    void put(const ALObject* t_sym, ALObject* t_val)
+    {}
+
+    
 
     void new_scope()
     {
