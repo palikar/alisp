@@ -12,18 +12,19 @@ namespace alisp
 ALObject* env::intern(const std::string& name)
 {
     
-    if(env::global_sym.count(name))
+    if(env::Environment::g_global_symbol_table.count(name))
     {
-        return &env::global_sym.at(name);
+        return &env::Environment::g_global_symbol_table.at(name);
         
     }
 
-    if(env::sym.count(name))
+    if(env::Environment::g_symbol_table.count(name))
     {
-        return env::sym.at(name);
+        return env::Environment::g_symbol_table.at(name);
     }
 
-    auto[new_sym, insertion] = env::sym.insert({name, make_symbol(name)});
+    auto[new_sym, insertion] =
+        env::Environment::g_symbol_table.insert({name, make_symbol(name)});
     return new_sym->second;
 }
 

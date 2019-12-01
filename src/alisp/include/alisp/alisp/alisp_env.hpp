@@ -30,15 +30,13 @@ class environment_error : public std::runtime_error
 namespace env
 {
 
-inline std::unordered_map<std::string, ALObject> global_sym;
-inline std::unordered_map<std::string, ALObject*> sym;
-
 extern ALObject* intern(const std::string& name);
 
 namespace detail
 {
 
 struct CellStack {
+  public:
     using Scope = std::unordered_map<std::string, ALCell*>;
     using StackFrame = std::vector<Scope>;
     using Stack = std::vector<StackFrame>;
@@ -54,6 +52,12 @@ struct CellStack {
     void push_scope() { stacks.back().emplace_back(); }
     void pop_scope() { stacks.back().pop_back(); }
 
+    Scope& root_scope(){ return stacks.front().front(); }
+    StackFrame& root_frame(){ return stacks.front() ;}
+
+    StackFrame& current_frame(){ return stacks.back() ;}
+    Scope& current_scope() { return stacks.back().back(); }
+
     Stack stacks;
 };
 
@@ -63,70 +67,76 @@ struct CellStack {
 class Environment {
 
   public:
-    inline static std::unordered_map<std::string, ALCell> prims;
+    static inline std::unordered_map<std::string, ALObject> g_global_symbol_table;
+    static inline std::unordered_map<std::string, ALObject*> g_symbol_table;
+    static inline std::unordered_map<std::string, ALCell> g_prime_values;
 
   private:
-    std::unordered_map<std::string, ALCell*> m_defs;
     detail::CellStack m_stack;
     size_t m_call_depth = 0;
-    // TODO: TLB
+
   public:
 
-    Environment() : m_defs()
+    Environment() : m_stack()
     {
         m_call_depth = 0;
     }
+
 
     ALCell* find(const ALObject* t_sym)
     {
         const auto name = t_sym->to_string();
 
-        if (prims.count(name)) return &prims.at(name);
+        if (g_prime_values.count(name)) return &g_prime_values.at(name);
 
         for (auto& scope : current_frame())
         {
             if (scope.count(name)) { return scope.at(name); };
         }
 
-        if (m_defs.count(name)) { return m_defs.at(name); };
+        if (m_stack.root_scope().count(name)) { return m_stack.root_scope().at(name); };
 
         throw environment_error("\tUnbounded Symbol: " + name);
 
         return nullptr;
     }
 
-    void put(const ALObject* t_sym, ALCell* t_cell)
-    {
 
-        if(m_call_depth == 0 && std::size(m_stack.stacks) == 1) {
-            if (current_frame().back().count(t_sym->to_string())) {
-                m_defs.at(t_sym->to_string()) = t_cell;
-            } else {
-                m_defs.insert({t_sym->to_string(), t_cell});
-            }
-        } else {
-            if (current_frame().back().count(t_sym->to_string())) {
-                current_frame().back().at(t_sym->to_string()) = t_cell;
-            } else {
-                current_frame().back().insert({t_sym->to_string(), t_cell});
-            }
-        }
-        
+    /**
+     * Defines global variabe. This is used by defvar and defconst
+     *
+     * @param t_sym
+     *
+     * @return
+     */
+    void define_variable(const ALObject* t_sym, ALObject* t_value)
+    {
+        auto& scope = m_stack.root_scope();
+        auto name = t_sym->to_string();
+
+        if (scope.count(name)) { throw environment_error("Variable alredy exists");}
+
+        auto new_cell = new ALCell(name);
+        new_cell->make_value(t_value);
+        scope.insert({name, new_cell});
     }
 
-    void put(const ALObject* t_sym, ALObject::string_type t_val)
-    {}
+    /**
+     * Puts a local variable on the current scope. This is used by let and let*.
+     *
+     * @param t_sym
+     * @param t_cell
+     */
+    void put(const ALObject* t_sym, ALCell* t_cell)
+    {
+        auto& scope = m_stack.current_scope();
+        auto name = t_sym->to_string();
 
-    void put(const ALObject* t_sym, ALObject::int_type t_val)
-    {}
+        if (scope.count(name)) { throw environment_error("Variable alredy exists");}
 
-    void put(const ALObject* t_sym, ALObject::real_type t_val)
-    {}
+        scope.insert({name, t_cell});
+    }
 
-    void put(const ALObject* t_sym, ALObject* t_val)
-    {}
-
-    
 
     void new_scope()
     {
@@ -152,10 +162,15 @@ class Environment {
 
     size_t call_depth() { return m_call_depth; }
 
+    bool in_function() { return m_call_depth != 0;}
+
+    bool in_root() { return !in_function() and std::size(m_stack.root_frame()) == 0;}
+
+    
     detail::CellStack::StackFrame& current_frame() {
         return m_stack.stacks.back();
     }
-
+    
 };
 
 
