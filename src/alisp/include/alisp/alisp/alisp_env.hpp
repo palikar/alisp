@@ -121,6 +121,20 @@ class Environment {
         scope.insert({name, new_cell});
     }
 
+    void define_function(const ALObject* t_sym, ALObject* t_params, ALObject* t_body)
+    {
+        
+        auto& scope = m_stack.root_scope();
+        auto name = t_sym->to_string();
+
+        if (scope.count(name)) { throw environment_error("Variable alredy exists");}
+
+        auto new_cell = new ALCell(name);
+        new_cell->make_function(t_params, t_body);
+        scope.insert({name, new_cell});
+    
+    }
+
     /**
      * Puts a local variable on the current scope. This is used by let and let*.
      *
@@ -135,6 +149,23 @@ class Environment {
         if (scope.count(name)) { throw environment_error("Variable alredy exists");}
 
         scope.insert({name, t_cell});
+    }
+
+    /** 
+     * Used by setq to update the value of a cell
+     *
+     * @param t_sym 
+     * @param t_value 
+     */
+    void update(const ALObject* t_sym, ALObject* t_value)
+    {
+        auto name = t_sym->to_string();
+
+        auto cell = find(t_sym);
+
+        cell->make_value(t_value);
+        
+        
     }
 
 

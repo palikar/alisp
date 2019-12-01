@@ -51,7 +51,7 @@ void assert_list (ALObject* obj)
 
 void assert_number (ALObject* obj)
 {
-    if(!obj->is_int() or !obj->is_real()) throw std::runtime_error("Invalid argument. Object must be a number");
+    if(!obj->is_int() and !obj->is_real()) throw std::runtime_error("Invalid argument. Object must be a number");
 }
 
 void assert_int (ALObject* obj)
@@ -65,17 +65,8 @@ ALObject* Fdefvar(ALObject* obj, env::Environment* env, eval::Evaluator*)
     assert_size<2>(obj);
     assert_symbol(obj->i(0));
 
-    auto new_var = new ALCell(obj->i(0)->to_string());
-    new_var->make_value(obj->i(1));
-    env->put(obj->i(0), new_var);
+    env->define_variable(obj->i(0), obj->i(1));
     return Qt;
-}
-
-ALObject* Fquote(ALObject* obj, env::Environment*, eval::Evaluator*)
-{
-    assert_size<1>(obj);
-    
-    return obj->i(0);
 }
 
 ALObject* Fdefun(ALObject* obj, env::Environment* env, eval::Evaluator*)
@@ -84,9 +75,8 @@ ALObject* Fdefun(ALObject* obj, env::Environment* env, eval::Evaluator*)
     assert_symbol(obj->i(0));
     assert_list(obj->i(1));
     
-    auto new_fun = new ALCell(obj->i(0)->to_string());
-    new_fun->make_function(obj->i(1), splice(obj, 2));
-    env->put(obj->i(0), new_fun);
+    
+    env->define_function(obj->i(0), obj->i(1), splice(obj, 2));
     return Qt;
 }
 
@@ -94,11 +84,11 @@ ALObject* Fsetq(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
 {
     assert_size<2>(obj);
     assert_symbol(obj->i(0));
-    
-    auto new_var = new ALCell(obj->i(0)->to_string());
-    new_var->make_value(evl->eval(obj->i(1)));
-    env->put(obj->i(0), new_var);
+
+    auto new_val = evl->eval(obj->i(1));
+    env->update(obj->i(0), new_val);
     return Qt;
+    
 }
 
 ALObject* Fprint(ALObject* t_obj, env::Environment*, eval::Evaluator* eval)
@@ -115,6 +105,12 @@ ALObject* Fprint(ALObject* t_obj, env::Environment*, eval::Evaluator* eval)
 
     return Qt;
 
+}
+
+ALObject* Fquote(ALObject* obj, env::Environment*, eval::Evaluator*)
+{
+    assert_size<1>(obj);   
+    return obj->i(0);
 }
 
 ALObject* Fif(ALObject* obj, env::Environment*, eval::Evaluator* evl)
@@ -212,7 +208,7 @@ ALObject* Flt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     
     const auto one = evl->eval(obj->i(0));
     const auto two = evl->eval(obj->i(1));
-
+    
     assert_number(one);
     assert_number(two);
     
@@ -330,6 +326,7 @@ ALObject* Fletx(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
     auto varlist = obj->i(0);
     for (auto var : varlist->children()) {
         auto new_var = new ALCell(var->i(0)->to_string());
+        // std::cout << dump(var->i(1)) << "\n";
         new_var->make_value(evl->eval(var->i(1)));
         env->put(var->i(0), new_var);
     }

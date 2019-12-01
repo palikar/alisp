@@ -5,6 +5,7 @@
 #include <variant>
 #include <vector>
 #include <iterator>
+#include <bitset>
 
 namespace alisp
 {
@@ -31,7 +32,14 @@ enum class ALCellType
     PRIMITIVE,
     MACRO,
     VALUE
+};
 
+
+enum class ValueType
+{
+    PLAIN,
+    SEXP,
+    CALLABLE
 };
 
 class alobject_error : public std::runtime_error
@@ -40,6 +48,11 @@ class alobject_error : public std::runtime_error
     alobject_error(const std::string& t_why) : runtime_error(t_why) {}
 
 };
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif    
 
 
 class ALObject
@@ -148,16 +161,50 @@ class ALObject
 
     data_type& data() { return m_data;}
 
+    void set_callable_value_flag()
+    {
+        m_flags |= ( 1 << 1  );
+        m_flags &= ~( 1 );
+    }
+    void set_value_value_flag()
+    {
+        m_flags |= ( 1 );
+        m_flags &= ~( 1 << 1 );
+    }
+    void set_sexp_value_flag()
+    {
+        m_flags |= ( 1 | 1 << 1  );
+    }
+
+    bool is_callable() { return (m_flags & s_val_mask)  == 0b10; }
+    
+    bool is_sexp() { return (m_flags & s_val_mask)  == 0b11; }
+    
+    bool is_value() { return (m_flags & s_val_mask)  == 0b01; }
+
+
+
     std::string pretty_print() const{
         std::ostringstream oss;
         oss << "(ALObject<" << alobject_type_to_string(type()) << "> )";
         return oss.str();
     }
 
-private:
+    
+
+  private:
+    static constexpr unsigned char s_val_mask = 0b0000'0011;
+    
     data_type m_data;
     const ALObjectType m_type;
+    std::uint_fast32_t m_flags = 0;
+    
 };
+
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 
 struct Callable

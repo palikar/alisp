@@ -175,6 +175,7 @@ class ALParser : public ParserBase
         set_alphabet(alph, detail::whitespace_alphabet, ' ');
         set_alphabet(alph, detail::whitespace_alphabet, '\t');
         set_alphabet(alph, detail::whitespace_alphabet, '\n');
+        set_alphabet(alph, detail::whitespace_alphabet, '\r');
 
         for ( size_t c = 'a' ; c <= 'z' ; ++c ) {set_alphabet(alph, detail::id_alphabet, c);}
         for ( size_t c = 'A' ; c <= 'Z' ; ++c ) {set_alphabet(alph, detail::id_alphabet, c);}
@@ -217,6 +218,17 @@ class ALParser : public ParserBase
 
   private:
 
+    void skip_empty(){
+
+        while (this->position.has_more() &&
+               (check_char(*cr_lf.c_str())
+                || check_char(*nl.c_str())
+                || char_in_alphabet(*position, detail::whitespace_alphabet)))
+        {
+            ++position;
+        }
+    }
+    
     void skip_whitespace(){
 
         while (this->position.has_more() && char_in_alphabet(*position, detail::whitespace_alphabet))
@@ -292,7 +304,7 @@ class ALParser : public ParserBase
     void skip_line()
     {
         auto current_line = position.line;
-        while (position.has_more() && !check_char(*nl.c_str())) {
+        while (position.has_more()) {
             ++position;
             if (current_line != position.line) return;
         }
@@ -463,6 +475,7 @@ class ALParser : public ParserBase
         while(true){
 
             auto next_obj = parse_next();
+
             if(next_obj){
                 objs.emplace_back(next_obj);
             } else {
@@ -471,6 +484,11 @@ class ALParser : public ParserBase
             }
 
             skip_whitespace();
+
+            while ( *position == ';' ) {
+                skip_line();
+                skip_whitespace();
+            }
 
             if(check_char(')')){
                 ++position;
@@ -511,8 +529,10 @@ class ALParser : public ParserBase
             return nullptr;
         }
 
-        skip_whitespace();
         if(!position.has_more()) return nullptr;
+
+        skip_empty();
+        skip_whitespace();
 
         while ( *position == ';' ) {
             skip_line();
@@ -528,7 +548,7 @@ class ALParser : public ParserBase
         if ( *position == '#' ) return parse_hashtag();
         if (  check_num()     ) return parse_number();
         if (  check_id( )     ) return parse_id();
-        
+
         if( position.has_more()) { PARSE_ERROR("Unparsed input. Cannot parse.");}
         
         return nullptr;
