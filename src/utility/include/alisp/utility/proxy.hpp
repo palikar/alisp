@@ -16,7 +16,7 @@ for_each(std::tuple<Tp...> &, FuncT)
 { }
 
 template<std::size_t I = 0, typename FuncT, typename... Tp>
-inline typename std::enable_if<I < sizeof...(Tp), void>::type
+inline std::enable_if_t<I < sizeof...(Tp), void>
 for_each(std::tuple<Tp...>& t, FuncT f)
 {
     f(std::get<I>(t));
