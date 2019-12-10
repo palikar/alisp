@@ -49,10 +49,13 @@ class alobject_error : public std::runtime_error
 
 };
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-conversion"
-#endif    
+enum class AlObjectFlags
+{
+
+    BIND_TYPE = (0x00000001),
+    TYPE = (0x0000000E),
+    LOC = (0x00000FF0)
+};
 
 
 class ALObject
@@ -161,51 +164,38 @@ class ALObject
 
     data_type& data() { return m_data;}
 
-    void set_callable_value_flag()
-    {
-        m_flags |= ( 1 << 1  );
-        m_flags &= ~( 1 );
-    }
-    void set_value_value_flag()
-    {
-        m_flags |= ( 1 );
-        m_flags &= ~( 1 << 1 );
-    }
-    void set_sexp_value_flag()
-    {
-        m_flags |= ( 1 | 1 << 1  );
-    }
-
-    bool is_callable() { return (m_flags & s_val_mask)  == 0b10; }
-    
-    bool is_sexp() { return (m_flags & s_val_mask)  == 0b11; }
-    
-    bool is_value() { return (m_flags & s_val_mask)  == 0b01; }
-
-
-
     std::string pretty_print() const{
         std::ostringstream oss;
         oss << "(ALObject<" << alobject_type_to_string(type()) << "> )";
         return oss.str();
     }
 
+    //     7    6    5    4    3    2   1     0
+    //   0000 0000 0000 0000 0000 0000 0000 0000
+    //   0000 0000 0000 0000 0000 0000 0000 0001 - BIND_TYPE
+    //   0000 0000 0000 0000 0000 0000 0000 1110 - TYPE (not used)
+    //   0000 0000 0000 0000 0000 1111 1111 0000 - LOC_MASK
+    //   0000 0000 0000 0000 0001 0000 0000 0000 - IN_TLB
+
+    // BIND_TYPE - 0 value, 1 function
+    
+
+    void value_bound() { m_flags &= ~AlObjectFlags::BIND_TYPE; }
+    bool is_value_bound() {m_flags & AlObjectFlags::BIND_TYPE == 0;}
+
+    void function_bound() { m_flags |= AlObjectFlags::BIND_TYPE; }
+    bool is_function_bound() {m_flags & AlObjectFlags::BIND_TYPE == 1;}
+
+    void set_location(std::uinit_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
+    void get_location() { return static_cast<std::uinit_fast16_t>((m_flags & AlObjectFlags::LOC) >> 4);}
     
 
   private:
-    static constexpr unsigned char s_val_mask = 0b0000'0011;
-    
     data_type m_data;
     const ALObjectType m_type;
     std::uint_fast32_t m_flags = 0;
     
 };
-
-
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
-
 
 struct Callable
 {
