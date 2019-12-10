@@ -262,6 +262,7 @@ DEFUN(println, "println");
 DEFUN(quote, "quote");
 DEFUN(if, "if");
 DEFUN(while, "while");
+DEFUN(dolist, "dolist");
 
 DEFUN(or, "or");
 DEFUN(and, "and");

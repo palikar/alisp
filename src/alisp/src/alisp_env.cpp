@@ -191,6 +191,31 @@ ALObject* Funless(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return Qnil;
 }
 
+ALObject* Fdolist(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
+{
+    
+    assert_min_size<1>(obj);
+
+    auto var_and_list = obj->i(0);
+    auto bound_sym = var_and_list->i(0);
+    auto list = evl->eval(var_and_list->i(1));
+
+    env::detail::ScopePushPop spp{*env};
+
+    auto new_var = new ALCell("loop_var");
+    new_var->make_value(Qnil);
+    env->put(bound_sym, new_var);
+    
+    for (auto list_element : list->children())
+    {
+        env->update(bound_sym, list_element);
+        eval_list(evl, obj, 1);
+    }
+    
+    return Qt;
+
+}
+
 
 
 
@@ -267,7 +292,6 @@ ALObject* Fand(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return sum ? Qt : Qnil;
 }
 
-
 ALObject* For(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
     auto eval_obj = eval_transform(evl, obj);
@@ -282,6 +306,8 @@ ALObject* Fnot(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     bool sum = is_truthy(evl->eval(obj->i(0)));
     return !sum ? Qt : Qnil;
 }
+
+
 
 
 ALObject* Flt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
