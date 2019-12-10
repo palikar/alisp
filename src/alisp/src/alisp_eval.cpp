@@ -156,6 +156,7 @@ ALObject* Evaluator::eval(ALObject* obj)
               return func->prim()(splice(obj, 1), &env, this);
           } else if (func->type() == ALCellType::FUNCTION) {
               env::detail::FunctionCall fc{env};
+              // TODO: Trace the stack here
               return eval_function(func, splice(obj, 1));
           }
               

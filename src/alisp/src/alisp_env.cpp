@@ -93,18 +93,30 @@ ALObject* Fsetq(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
 
 ALObject* Fprint(ALObject* t_obj, env::Environment*, eval::Evaluator* eval)
 {
-    assert_size<1>(t_obj);
+    assert_min_size<1>(t_obj);
     
-    auto val = eval->eval(t_obj->i(0));
-    make_visit(val,
-               type(ALObjectType::INT_VALUE ) >  [](ALObject* obj) { std::cout << obj->to_int() << '\n'; },
-               type(ALObjectType::REAL_VALUE ) >  [](ALObject* obj) { std::cout << obj->to_real() << '\n'; },
-               type(ALObjectType::STRING_VALUE ) >  [](ALObject* obj) { std::cout << obj->to_string() << '\n'; },
-               type(ALObjectType::SYMBOL ) >  [](ALObject* obj) { std::cout << obj->to_string() << '\n'; }
-        );
+    
+    for (auto child : t_obj->children())
+    {
+        auto val = eval->eval(child);
+        make_visit(val,
+                   type(ALObjectType::INT_VALUE ) >  [](ALObject* obj) { std::cout << obj->to_int(); },
+                   type(ALObjectType::REAL_VALUE ) >  [](ALObject* obj) { std::cout << obj->to_real(); },
+                   type(ALObjectType::STRING_VALUE ) >  [](ALObject* obj) { std::cout << obj->to_string(); },
+                   type(ALObjectType::SYMBOL ) >  [](ALObject* obj) { std::cout << obj->to_string(); }
+            );
 
+    }    
+    
     return Qt;
 
+}
+
+ALObject* Fprintln(ALObject* t_obj, env::Environment* env, eval::Evaluator* eval)
+{
+    Fprint(t_obj, env, eval);
+    std::cout << '\n';
+    return Qt;
 }
 
 ALObject* Fdump(ALObject* t_obj, env::Environment*, eval::Evaluator* eval)
@@ -310,9 +322,19 @@ ALObject* Flet(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
     cells.reserve(std::size(varlist->children()));
 
     for (auto var : varlist->children()) {
-        auto new_var = new ALCell(var->i(0)->to_string());
-        new_var->make_value(evl->eval(var->i(1)));
-        cells.push_back({var->i(0), new_var});
+        std::cout << dump(var) << "\n";
+        if (plist(var)) {
+            assert_size<2>(var);
+            auto new_var = new ALCell(var->i(0)->to_string());
+            new_var->make_value(evl->eval(var->i(1)));
+            cells.push_back({var->i(0), new_var});
+        } else {
+            assert_symbol(var);
+            auto new_var = new ALCell(var->to_string());
+            new_var->make_value(Qnil);
+            cells.push_back({var, new_var});
+        }
+        
     }
 
     for (auto[ob, cell] : cells) {
@@ -331,9 +353,20 @@ ALObject* Fletx(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
 
     auto varlist = obj->i(0);
     for (auto var : varlist->children()) {
-        auto new_var = new ALCell(var->i(0)->to_string());
-        new_var->make_value(evl->eval(var->i(1)));
-        env->put(var->i(0), new_var);
+        
+        if (plist(var)) {
+            assert_size<2>(var);
+            auto new_var = new ALCell(var->i(0)->to_string());
+            new_var->make_value(evl->eval(var->i(1)));
+            env->put(var->i(0), new_var);
+        } else {
+            assert_symbol(var);
+            auto new_var = new ALCell(var->to_string());
+            new_var->make_value(Qnil);
+            env->put(var, new_var);
+        }
+        
+        
     }
 
     return eval_list(evl, obj, 1);

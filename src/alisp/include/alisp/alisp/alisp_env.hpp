@@ -94,8 +94,6 @@ class Environment {
         
         if (g_prime_values.count(name)) { return &g_prime_values.at(name) ;}
 
-        
-
         if (m_stack.root_scope().count(name)) { return m_stack.root_scope().at(name); };
 
         throw environment_error("\tUnbounded Symbol: " + name);
@@ -161,13 +159,7 @@ class Environment {
      */
     void update(const ALObject* t_sym, ALObject* t_value)
     {
-        auto name = t_sym->to_string();
-
-        auto cell = find(t_sym);
-
-        cell->make_value(t_value);
-        
-        
+        find(t_sym)->make_value(t_value);
     }
 
 
@@ -203,6 +195,9 @@ class Environment {
     detail::CellStack::StackFrame& current_frame() {
         return m_stack.stacks.back();
     }
+
+    // TODO: trace here
+    
     
 };
 
@@ -221,6 +216,8 @@ struct FunctionCall
     FunctionCall& operator=(FunctionCall &&) = default;
     FunctionCall(const FunctionCall &) = delete;
     FunctionCall& operator=(const FunctionCall &) = delete;
+
+    // TODO: trace here
 
   private:
     Environment& m_env;
@@ -257,7 +254,10 @@ DEFUN(defun, "defun");
 DEFUN(defvar, "defvar");
 
 DEFUN(setq, "setq");
+
 DEFUN(print, "print");
+DEFUN(println, "println");
+
 DEFUN(quote, "quote");
 DEFUN(if, "if");
 DEFUN(while, "while");
