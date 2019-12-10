@@ -275,6 +275,15 @@ ALObject* For(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return sum ? Qt : Qnil;
 }
 
+ALObject* Fnot(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    assert_size<1>(obj);
+    
+    bool sum = is_truthy(evl->eval(obj->i(0)));
+    return !sum ? Qt : Qnil;
+}
+
+
 ALObject* Flt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<0>(obj);

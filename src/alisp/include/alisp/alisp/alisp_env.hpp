@@ -265,6 +265,7 @@ DEFUN(while, "while");
 
 DEFUN(or, "or");
 DEFUN(and, "and");
+DEFUN(not, "not");
 
 DEFUN(unless, "unless");
 DEFUN(when, "when");
