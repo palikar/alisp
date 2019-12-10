@@ -107,6 +107,12 @@ ALObject* Fprint(ALObject* t_obj, env::Environment*, eval::Evaluator* eval)
 
 }
 
+ALObject* Fdump(ALObject* t_obj, env::Environment*, eval::Evaluator* eval)
+{
+    std::cout << dump(eval->eval(t_obj->i(0))) << "\n";
+    return Qt;
+}
+
 ALObject* Fquote(ALObject* obj, env::Environment*, eval::Evaluator*)
 {
     assert_size<1>(obj);   
@@ -326,7 +332,6 @@ ALObject* Fletx(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
     auto varlist = obj->i(0);
     for (auto var : varlist->children()) {
         auto new_var = new ALCell(var->i(0)->to_string());
-        // std::cout << dump(var->i(1)) << "\n";
         new_var->make_value(evl->eval(var->i(1)));
         env->put(var->i(0), new_var);
     }

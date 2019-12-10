@@ -87,12 +87,14 @@ class Environment {
     {
         const auto name = t_sym->to_string();
 
-        if (g_prime_values.count(name)) return &g_prime_values.at(name);
-
         for (auto& scope : current_frame())
         {
             if (scope.count(name)) { return scope.at(name); };
         }
+        
+        if (g_prime_values.count(name)) { return &g_prime_values.at(name) ;}
+
+        
 
         if (m_stack.root_scope().count(name)) { return m_stack.root_scope().at(name); };
 
@@ -127,7 +129,7 @@ class Environment {
         auto& scope = m_stack.root_scope();
         auto name = t_sym->to_string();
 
-        if (scope.count(name)) { throw environment_error("Variable alredy exists");}
+        if (scope.count(name)) { throw environment_error("Function alredy exists");}
 
         auto new_cell = new ALCell(name);
         new_cell->make_function(t_params, t_body);
@@ -276,6 +278,8 @@ DEFUN(eq, "==");
 DEFUN(neq, "!=");
 
 DEFUN(exit, "exit");
+
+DEFUN(dump, "dump");
 
 
 

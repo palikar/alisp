@@ -25,7 +25,10 @@ class Evaluator
     ALObject* eval(ALObject* obj);
     ALObject* eval_function(ALCell* func, ALObject* args);
     void handle_argument_bindings(ALObject* params, ALObject* args);
+    void put_argument(ALObject* param, ALObject* arg);
+
     
+    ALObject* operator()(ALObject* obj) { return eval(obj); }
 };
 
 

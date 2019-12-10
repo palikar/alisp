@@ -6,6 +6,8 @@
 #include <vector>
 #include <iterator>
 #include <bitset>
+#include <cstdint>
+
 
 namespace alisp
 {
@@ -49,12 +51,13 @@ class alobject_error : public std::runtime_error
 
 };
 
-enum class AlObjectFlags
+struct AlObjectFlags
 {
+  public:
 
-    BIND_TYPE = (0x00000001),
-    TYPE = (0x0000000E),
-    LOC = (0x00000FF0)
+    constexpr static std::uint32_t BIND_TYPE = 0x00000001;
+    constexpr static std::uint32_t TYPE = 0x0000000E;
+    constexpr static std::uint32_t LOC = 0x00000FF0;
 };
 
 
@@ -181,13 +184,13 @@ class ALObject
     
 
     void value_bound() { m_flags &= ~AlObjectFlags::BIND_TYPE; }
-    bool is_value_bound() {m_flags & AlObjectFlags::BIND_TYPE == 0;}
+    bool is_value_bound() { return (m_flags & AlObjectFlags::BIND_TYPE) == 0;}
 
     void function_bound() { m_flags |= AlObjectFlags::BIND_TYPE; }
-    bool is_function_bound() {m_flags & AlObjectFlags::BIND_TYPE == 1;}
+    bool is_function_bound() { return (m_flags & AlObjectFlags::BIND_TYPE) == 1;}
 
-    void set_location(std::uinit_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
-    void get_location() { return static_cast<std::uinit_fast16_t>((m_flags & AlObjectFlags::LOC) >> 4);}
+    void set_location(std::uint_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
+    auto get_location() { return ((m_flags & AlObjectFlags::LOC) >> 4);}
     
 
   private:
