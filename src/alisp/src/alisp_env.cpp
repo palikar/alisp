@@ -60,6 +60,10 @@ void assert_int (ALObject* obj)
 }
 
 
+
+
+
+
 ALObject* Fdefvar(ALObject* obj, env::Environment* env, eval::Evaluator*)
 {
     assert_size<2>(obj);
@@ -89,6 +93,19 @@ ALObject* Fsetq(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
     env->update(obj->i(0), new_val);
     return Qt;
     
+}
+
+ALObject* Fset(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
+{
+    assert_size<2>(obj);
+
+    auto sym = evl->eval(obj->i(0));
+    
+    assert_symbol(sym);
+
+    auto new_val = evl->eval(obj->i(1));
+    env->update(sym, new_val);
+    return Qt;    
 }
 
 ALObject* Fprint(ALObject* t_obj, env::Environment*, eval::Evaluator* eval)
@@ -154,6 +171,29 @@ ALObject* Fwhile(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return Qt;
 }
 
+ALObject* Fwhen(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    assert_min_size<2>(obj);
+
+    if (is_truthy(evl->eval(obj->i(0)))) {
+        return eval_list(evl, obj, 1);;
+    }
+    return Qnil;
+}
+
+ALObject* Funless(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    assert_min_size<2>(obj);
+
+    if (!is_truthy(evl->eval(obj->i(0)))) {
+        return eval_list(evl, obj, 1);;
+    }
+    return Qnil;
+}
+
+
+
+
 ALObject* Fmultiply(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
     auto eval_obj = eval_transform(evl, obj);
@@ -218,6 +258,21 @@ ALObject* Fdev(ALObject* obj, env::Environment*, eval::Evaluator* evl)
         return make_double(sum);
     }
     return Qnil;
+}
+
+ALObject* Fand(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    auto eval_obj = eval_transform(evl, obj);
+    bool sum = reduce<false>(evl, eval_obj, AND_OBJ_FUN, true);
+    return sum ? Qt : Qnil;
+}
+
+
+ALObject* For(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    auto eval_obj = eval_transform(evl, obj);
+    bool sum = reduce<false>(evl, eval_obj, OR_OBJ_FUN, false);
+    return sum ? Qt : Qnil;
 }
 
 ALObject* Flt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
@@ -303,6 +358,9 @@ ALObject* Fneq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     if (one->to_real() != two->to_real()) return Qt;
     else return Qnil;
 }
+
+
+
 
 ALObject* Fprogn(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {

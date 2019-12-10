@@ -254,6 +254,7 @@ DEFUN(defun, "defun");
 DEFUN(defvar, "defvar");
 
 DEFUN(setq, "setq");
+DEFUN(set, "set");
 
 DEFUN(print, "print");
 DEFUN(println, "println");
@@ -261,6 +262,13 @@ DEFUN(println, "println");
 DEFUN(quote, "quote");
 DEFUN(if, "if");
 DEFUN(while, "while");
+
+DEFUN(or, "or");
+DEFUN(and, "and");
+
+DEFUN(unless, "unless");
+DEFUN(when, "when");
+
 DEFUN(progn, "progn");
 DEFUN(letx, "let*");
 DEFUN(let, "let");

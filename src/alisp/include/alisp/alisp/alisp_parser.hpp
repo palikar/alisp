@@ -188,6 +188,7 @@ class ALParser : public ParserBase
         set_alphabet(alph, detail::id_alphabet, '*');
         set_alphabet(alph, detail::id_alphabet, '/');
         set_alphabet(alph, detail::id_alphabet, '=');
+        set_alphabet(alph, detail::id_alphabet, '!');
         set_alphabet(alph, detail::id_alphabet, '$');
         set_alphabet(alph, detail::id_alphabet, '%');
         set_alphabet(alph, detail::id_alphabet, '?');
