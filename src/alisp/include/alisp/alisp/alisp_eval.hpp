@@ -24,7 +24,7 @@ class Evaluator
 
     ALObject* eval(ALObject* obj);
     ALObject* eval_function(ALCell* func, ALObject* args);
-
+    void handle_argument_bindings(ALObject* params, ALObject* args);
     
 };
 

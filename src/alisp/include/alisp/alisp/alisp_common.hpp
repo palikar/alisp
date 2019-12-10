@@ -121,7 +121,7 @@ class ALObject
     }
     list_type& children() {
         check<list_type>();
-        return std::get<std::vector<ALObject*>>(m_data);
+        return std::get<list_type>(m_data);
     }
 
     string_type to_string() const {

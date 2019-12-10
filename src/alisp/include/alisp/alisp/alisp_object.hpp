@@ -175,29 +175,29 @@ struct pattern_entry {
     pattern_entry(Check check, Call call) :
         m_check(check),  m_call(call){}
     bool check(ALObject* obj){ return m_check(obj);}
-                                          void call(ALObject* obj){ m_call(obj);}
-                                      };
+    void call(ALObject* obj){ m_call(obj);}
+};
 
-                                      template<typename Check, typename Call>
-                                      pattern_entry<Check, Call> operator>(match<Check> t_match, Call && callable)
-                                      {
-                                          return pattern_entry(t_match.m_fun, callable);
-                                      }
+template<typename Check, typename Call>
+pattern_entry<Check, Call> operator>(match<Check> t_match, Call && callable)
+{
+    return pattern_entry(t_match.m_fun, callable);
+}
 
 
-                                      template<size_t N, class ... Matches, class ... Checks>
-                                      void visit_match_impl([[maybe_unused]] ALObject* obj, [[maybe_unused]] std::tuple<pattern_entry<Checks, Matches>...> patterns){
+template<size_t N, class ... Matches, class ... Checks>
+void visit_match_impl([[maybe_unused]] ALObject* obj, [[maybe_unused]] std::tuple<pattern_entry<Checks, Matches>...> patterns){
 
-                                          if constexpr (N >= sizeof...(Checks)) {
-                                              return;
-                                          } else {
-                                              if (std::get<N>(patterns).check(obj)) {
-                                                  std::get<N>(patterns).call(obj);
-                                              } else{
-                                                  visit_match_impl<N+1>(obj, patterns);
-                                              }
-                                          }
-                                      }
+    if constexpr (N >= sizeof...(Checks)) {
+            return;
+        } else {
+        if (std::get<N>(patterns).check(obj)) {
+            std::get<N>(patterns).call(obj);
+        } else{
+            visit_match_impl<N+1>(obj, patterns);
+        }
+    }
+}
 
 template <class ... Matches, class ... Checks >
 void visit_match(ALObject* obj, std::tuple<pattern_entry<Checks, Matches>...> patterns ){
@@ -431,6 +431,21 @@ inline bool max_list_elements(ALObject* obj, size_t t_element_cnt)
 inline bool psym(ALObject* obj)
 {
     return obj->is_sym();
+}
+
+inline bool pint(ALObject* obj)
+{
+    return obj->is_int();
+}
+
+inline bool preal(ALObject* obj)
+{
+    return obj->is_real();
+}
+
+inline bool plist(ALObject* obj)
+{
+    return obj->is_list();
 }
 
 
