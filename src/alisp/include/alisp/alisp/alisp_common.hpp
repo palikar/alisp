@@ -27,16 +27,6 @@ constexpr const char* alobject_type_to_string(ALObjectType type){
     return names[static_cast<int>(type)];
 }
 
-enum class ALCellType
-{
-
-    FUNCTION,
-    PRIMITIVE,
-    MACRO,
-    VALUE
-};
-
-
 enum class ValueType
 {
     PLAIN,
@@ -186,18 +176,6 @@ class ALObject
         return this;
     }
 
-
-    auto get_function() { return std::make_pair(i(0), i(1));}
-    auto make_function(ALObject* params, ALObject* body) {
-        set_function_flag();
-        return this;
-    }
-
-    
-
-    
-
-
     
     //     7    6    5    4    3    2   1     0
     //   0000 0000 0000 0000 0000 0000 0000 0000
@@ -208,6 +186,7 @@ class ALObject
     //   0000 0000 0000 0000 0010 0000 0000 0000 - IS_PRIME
     //   0000 0000 0000 0000 0100 0000 0000 0000 - IS_FUNCTION
     //   0000 0000 0000 0000 1000 0000 0000 0000 - IS_MACRO
+    //   0000 0000 0000 0001 0000 0000 0000 0000 - CONST
 
     struct AlObjectFlags
     {
@@ -253,18 +232,7 @@ class ALObject
     
 };
 
-struct Callable
-{
 
-    ALObject *params;
-    ALObject *body;
-};
-
-
-struct Value
-{
-    ALObject *val;
-};
 
 namespace env
 {
@@ -277,50 +245,6 @@ namespace eval
 class Evaluator;
 }
 
-class ALCell
-{
-  public:
-
-
-    using data = std::variant<std::nullptr_t, Callable, Value, Prim>;
-
-    ALCell(std::string t_name) : m_name(std::move(t_name)), m_data(nullptr) {}
-
-    auto make_prim(Prim::func_type func){
-        m_data = Prim{func};
-        m_type = ALCellType::PRIMITIVE;
-        return *this;
-    }
-    auto make_function(ALObject *params, ALObject *body){
-        m_data = Callable{params, body};
-        m_type = ALCellType::FUNCTION;
-        return *this;
-    }
-    auto make_value(ALObject *value){
-        m_data = Value{value};
-        m_type = ALCellType::VALUE;
-        return *this;
-    }
-
-    bool is_null() { return std::holds_alternative<std::nullptr_t>(m_data); }
-    bool is_value() { return std::holds_alternative<Value>(m_data); }
-    bool is_callable() { return std::holds_alternative<Callable>(m_data); }
-    bool is_pirm() { return std::holds_alternative<Prim>(m_data); }
-    
-    [[nodiscard]] auto type() -> ALCellType {return m_type;}
-    [[nodiscard]] auto value() -> ALObject*  {return std::get<Value>(m_data).val;}
-    [[nodiscard]] auto callable() -> std::pair<ALObject*, ALObject*> {
-        auto call = std::get<Callable>(m_data);
-        return std::make_pair(call.params, call.body);
-    }
-    [[nodiscard]] auto prim() -> Prim::func_type {return std::get<Prim>(m_data).function;}
-
-
-  private:
-    std::string m_name;
-    data m_data;
-    ALCellType m_type;
-};
 
 
 namespace parser

@@ -140,10 +140,9 @@ ALObject* Evaluator::eval(ALObject* obj)
 
       case ALObjectType::LIST : {
 
-          auto head = obj->i(0);
-          auto func = env.find(head);
+          auto func = env.find(obj->i(0));
 
-          if ( !func->check_function_flag() ) {
+          if ( !func->check_function_flag() ) { 
               throw std::runtime_error("Head of a list must be bound to function");
           }
 

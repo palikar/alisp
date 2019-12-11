@@ -82,23 +82,34 @@ class Environment {
         m_call_depth = 0;
     }
 
+  private:
 
-    ALObject* find(const ALObject* t_sym)
+    auto scan(const ALObject* t_sym)
     {
+        
         const auto name = t_sym->to_string();
 
         for (auto& scope : current_frame())
         {
-            if (scope.count(name)) { return scope.at(name); };
+            if (scope.count(name)) { return scope.find(name); };
         }
         
-        if (g_prime_values.count(name)) { return &g_prime_values.at(name) ;}
+        if (g_prime_values.count(name)) { return &g_prime_values.find(name) ;}
 
-        if (m_stack.root_scope().count(name)) { return m_stack.root_scope().at(name); };
+        if (m_stack.root_scope().count(name)) { return m_stack.root_scope().find(name); };
 
         throw environment_error("\tUnbounded Symbol: " + name);
 
         return nullptr;
+    
+        
+    }
+
+  public:
+
+    ALObject* find(const ALObject* t_sym)
+    {
+        return scan(t_sym)->second;
     }
 
 
@@ -128,7 +139,23 @@ class Environment {
         if (scope.count(name)) { throw environment_error("Function alredy exists");}
 
         auto new_fun = make_object(t_params, t_body);
-        new_fun->make_function();
+        new_fun->set_function_flag();
+        
+        scope.insert({name, new_fun});
+    
+    }
+
+    void define_function(const ALObject* t_sym, ALObject* t_params, ALObject* t_body)
+    {
+        
+        auto& scope = m_stack.root_scope();
+        auto name = t_sym->to_string();
+
+        if (scope.count(name)) { throw environment_error("Function alredy exists");}
+
+        auto new_fun = make_object(t_params, t_body);
+        new_fun->set_function_flag();
+        new_fun->set_macro_flag();
         
         scope.insert({name, new_fun});
     
@@ -158,7 +185,7 @@ class Environment {
      */
     void update(const ALObject* t_sym, ALObject* t_value)
     {
-        // find(t_sym)->make_value(t_value);
+        scan(t_sym)->second = t_value;
     }
 
 
@@ -259,6 +286,8 @@ DEFUN(print, "print");
 DEFUN(println, "println");
 
 DEFUN(quote, "quote");
+DEFUN(function, "function");
+
 DEFUN(if, "if");
 DEFUN(while, "while");
 DEFUN(dolist, "dolist");

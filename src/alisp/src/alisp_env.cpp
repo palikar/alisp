@@ -91,8 +91,9 @@ ALObject* Flambda(ALObject* obj, env::Environment*, eval::Evaluator* eval)
     assert_list(obj->i(1));
     
     auto new_lambda = make_object(obj->i(1), splice(obj, 2));
+    new_lambda->set_function_flag();
     
-    return Qt;
+    return new_lambda;
 }
 
 
@@ -156,6 +157,13 @@ ALObject* Fdump(ALObject* t_obj, env::Environment*, eval::Evaluator* eval)
 }
 
 ALObject* Fquote(ALObject* obj, env::Environment*, eval::Evaluator*)
+{
+    assert_size<1>(obj);   
+    return obj->i(0);
+}
+
+
+ALObject* Ffunction(ALObject* obj, env::Environment*, eval::Evaluator*)
 {
     assert_size<1>(obj);   
     return obj->i(0);
