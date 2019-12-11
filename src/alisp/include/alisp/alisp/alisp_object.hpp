@@ -10,6 +10,7 @@
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_env.hpp"
+#include "alisp/alisp/alisp_declarations.hpp"
 
 #include "alisp/utility.hpp"
 
