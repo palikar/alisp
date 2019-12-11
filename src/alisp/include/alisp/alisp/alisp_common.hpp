@@ -276,7 +276,8 @@ struct FileLocation
 
 
 
-struct signal_exception : public runtime_error{
+struct signal_exception : public runtime_error
+{
 
     signal_exception(ALOBject* sym, ALOBject* list) :
         m_sym(sym), m_list(list), runtime_error(format(sym, list))
@@ -298,9 +299,9 @@ struct signal_exception : public runtime_error{
 
     
 
-}
+};
 
 
 
-
-    }  // namespace alisp
+    
+}  // namespace alisp
