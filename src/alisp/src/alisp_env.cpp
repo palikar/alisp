@@ -342,6 +342,28 @@ ALObject* Fnot(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 }
 
 
+ALObject* Fleftshift(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    
+    auto lhs = evl->eval(obj->i(0));
+    auto rhs = evl->eval(obj->i(1));
+
+    assert_int(rhs);
+    assert_int(lhs);
+
+    return make_int(SHIFT_LEFT(lhs, rhs));
+}
+
+ALObject* Frightshift(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    auto lhs = evl->eval(obj->i(0));
+    auto rhs = evl->eval(obj->i(1));
+    assert_int(rhs);
+    assert_int(lhs);
+    return make_int(SHIFT_RIGHT(lhs, rhs));
+}
+
+
 
 
 ALObject* Flt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
@@ -459,7 +481,6 @@ ALObject* Fpfunction(ALObject* obj, env::Environment*, eval::Evaluator*)
 }
 
 
-
 ALObject* Fmapc(ALObject* obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<2>(obj);
@@ -471,6 +492,17 @@ ALObject* Fmapc(ALObject* obj, env::Environment*, eval::Evaluator* eval)
         eval->apply_function(fun_obj, list);
     }
     
+}
+
+ALObject* Ffuncall(ALObject* obj, env::Environment*, eval::Evaluator* eval)
+{
+    assert_min_size<1>(obj);
+
+    auto fun_obj = eval->eval(obj->i(0));
+    auto args = eval_transform(splice(obj, 1));
+    
+    eval->apply_function(fun_obj, args);
+
 }
 
 

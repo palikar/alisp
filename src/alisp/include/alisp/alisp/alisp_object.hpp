@@ -220,6 +220,7 @@ inline void make_visit (ALObject* obj, detail::pattern_entry<Matches, Checks> ..
 
 
 
+
 /*  _     _     _    */
 /* | |   (_)___| |_  */
 /* | |   | / __| __| */
@@ -482,6 +483,14 @@ inline const auto ADD_OBJ_FUN_D = [](double t_acc, ALObject* t_obj) {return t_ac
 inline const auto SUB_OBJ_FUN_D = [](double t_acc, ALObject* t_obj) {return t_acc - t_obj->to_real();};
 inline const auto MUL_OBJ_FUN_D = [](double t_acc, ALObject* t_obj) {return t_acc * t_obj->to_real();};
 inline const auto DIV_OBJ_FUN_D = [](double t_acc, ALObject* t_obj) {return t_acc / t_obj->to_real();};
+
+
+inline const auto SHIFT_LEFT = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() << t_rhs->to_int()};
+inline const auto SHIFT_RIGHT = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() >> t_rhs->to_int()};
+inline const auto BIT_OR = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() | t_rhs->to_int()};
+inline const auto BIT_AND = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() & t_rhs->to_int()};
+inline const auto BIT_XOR = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() ^ t_rhs->to_int()};
+inline const auto BIT_INV = [](ALObject* t_obj) { return ~t_obj->to_int()};
 
 
 }

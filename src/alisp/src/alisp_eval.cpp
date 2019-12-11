@@ -164,7 +164,6 @@ ALObject* Evaluator::eval(ALObject* obj)
     return nullptr;
 }
 
-
 ALObject* Evaluator::eval_function(ALObject* func, ALObject* args)
 {
     auto[params, body] = func->get_function();
