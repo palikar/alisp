@@ -453,6 +453,12 @@ inline bool pstring(ALObject* obj)
     return obj->is_string();
 }
 
+inline bool pfunction(ALObject* obj)
+{
+    return obj->check_function_flag();
+}
+
+
 
 inline const auto AND_OBJ_FUN = [](bool t_acc, ALObject* t_obj) {return t_acc and is_truthy(t_obj);};
 inline const auto OR_OBJ_FUN = [](bool t_acc, ALObject* t_obj) {return t_acc or is_truthy(t_obj);};

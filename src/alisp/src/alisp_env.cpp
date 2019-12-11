@@ -453,6 +453,11 @@ ALObject* Fpstring(ALObject* obj, env::Environment*, eval::Evaluator*)
     return pstring(obj) ? Qt : Qnil;
 }
 
+ALObject* Fpfunction(ALObject* obj, env::Environment*, eval::Evaluator*)
+{
+    return pfunction(obj) ? Qt : Qnil;
+}
+
 
 
 ALObject* Fmapc(ALObject* obj, env::Environment*, eval::Evaluator* eval)
@@ -461,6 +466,10 @@ ALObject* Fmapc(ALObject* obj, env::Environment*, eval::Evaluator* eval)
     
     auto fun_obj = eval->eval(obj->i(0));
     auto list = eval->eval(obj->i(1));
+
+    for (auto el : list) {
+        eval->apply_function(fun_obj, list);
+    }
     
 }
 

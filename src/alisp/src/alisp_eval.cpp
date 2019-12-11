@@ -167,19 +167,17 @@ ALObject* Evaluator::eval(ALObject* obj)
 
 ALObject* Evaluator::eval_function(ALObject* func, ALObject* args)
 {
-    // TODO : checks here
     auto[params, body] = func->get_function();
-    
     handle_argument_bindings(params, args);
-
-    ALObject* res = nullptr;
-    for (auto child : body->children()) {
-        res = eval(child);
-    }
-    return res;
-
+    return eval_list(this, body, 0);
 }
 
+ALObject* Evaluator::apply_function(ALObject* func, ALObject* args)
+{
+    auto[params, body] = func->get_function();
+    handle_argument_bindings<false>(params, args);
+    return eval_list(this, body, 0);
+}
 
 
 }

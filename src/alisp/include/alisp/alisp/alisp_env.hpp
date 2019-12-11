@@ -293,6 +293,8 @@ DEFUN(while, "while");
 DEFUN(dolist, "dolist");
 DEFUN(cond, "cond");
 
+DEFUN(mapc, "mapc");
+
 DEFUN(or, "or");
 DEFUN(and, "and");
 DEFUN(not, "not");
@@ -321,6 +323,7 @@ DEFUN(plist, "plist");
 DEFUN(pint, "pint");
 DEFUN(preal, "preal");
 DEFUN(pstring, "pstring");
+DEFUN(pfunction, "pfunction");
 
 
 DEFUN(exit, "exit");
