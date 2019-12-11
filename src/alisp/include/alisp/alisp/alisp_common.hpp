@@ -51,13 +51,11 @@ class alobject_error : public std::runtime_error
 
 };
 
-struct AlObjectFlags
-{
-  public:
 
-    constexpr static std::uint32_t BIND_TYPE = 0x00000001;
-    constexpr static std::uint32_t TYPE = 0x0000000E;
-    constexpr static std::uint32_t LOC = 0x00000FF0;
+struct Prim
+{
+    using func_type = ALObject* (*)(ALObject* obj, env::Environment* env, eval::Evaluator* eval);
+    ALObject *(*function)(ALObject* obj, env::Environment* env, eval::Evaluator* eval);
 };
 
 
@@ -178,21 +176,64 @@ class ALObject
         return oss.str();
     }
 
+
+
+    auto get_prime() { reinterpret_cast<Prime::func_type>(children()[0]); }
+    auto make_prime(Prim::func_type func) {
+        set_function_flag();
+        set_prime_flag();
+        children()[0] = reinterpret_cast<ALObject*>(func);
+        return this;
+    }
+
+
+    auto get_function() { return std::make_pair(i(0), i(1));}
+    auto make_function(ALObject* params, ALObject* body) {
+        set_function_flag();
+        return this;
+    }
+
+    
+
+    
+
+
+    
     //     7    6    5    4    3    2   1     0
     //   0000 0000 0000 0000 0000 0000 0000 0000
     //   0000 0000 0000 0000 0000 0000 0000 0001 - BIND_TYPE
     //   0000 0000 0000 0000 0000 0000 0000 1110 - TYPE (not used)
     //   0000 0000 0000 0000 0000 1111 1111 0000 - LOC_MASK
     //   0000 0000 0000 0000 0001 0000 0000 0000 - IN_TLB
+    //   0000 0000 0000 0000 0010 0000 0000 0000 - IS_PRIME
+    //   0000 0000 0000 0000 0100 0000 0000 0000 - IS_FUNCTION
+    //   0000 0000 0000 0000 1000 0000 0000 0000 - IS_MACRO
 
-    // BIND_TYPE - 0 value, 1 function
+    struct AlObjectFlags
+    {
+      public:
+
+        constexpr static std::uint32_t BIND_TYPE = 0x00000001;
+        constexpr static std::uint32_t TYPE = 0x0000000E;
+        constexpr static std::uint32_t LOC = 0x00000FF0;
+        constexpr static std::uint32_t PRIME = 0x00002000;
+        constexpr static std::uint32_t FUN = 0x00004000;
+        constexpr static std::uint32_t MACRO = 0x00008000;
+    };
+
+
+    void set_function_flag() { m_flags |= AlObjectFlags::FUN; }
+    void set_prime_flag() { m_flags |= AlObjectFlags::PRIME; }
+    void set_macro_flag() { m_flags |= AlObjectFlags::MACRO; }
+
+    void reset_function_flag() { m_flags &= ~AlObjectFlags::FUN; }
+    void reset_prime_flag() { m_flags &= ~AlObjectFlags::PRIME; }
+    void reset_macro_flag() { m_flags &= ~AlObjectFlags::MACRO; }
+
+    bool check_function_flag() { (m_flags & AlObjectFlags::FUN) > 0; }
+    bool check_prime_flag() { (m_flags & AlObjectFlags::PRIME) > 0; }
+    bool check_macro_flag() { (m_flags & AlObjectFlags::MACRO) > 0; }
     
-
-    void value_bound() { m_flags &= ~AlObjectFlags::BIND_TYPE; }
-    bool is_value_bound() { return (m_flags & AlObjectFlags::BIND_TYPE) == 0;}
-
-    void function_bound() { m_flags |= AlObjectFlags::BIND_TYPE; }
-    bool is_function_bound() { return (m_flags & AlObjectFlags::BIND_TYPE) == 1;}
 
     void set_location(std::uint_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
     auto get_location() { return ((m_flags & AlObjectFlags::LOC) >> 4);}
@@ -202,7 +243,8 @@ class ALObject
     auto end() { return std::end(children()); }
     auto cbegin() const { return std::cbegin(children()); }
     auto cend() const { return std::cend(children()); }
-    
+
+    friend operator bool() const;
 
   private:
     data_type m_data;
@@ -234,12 +276,6 @@ namespace eval
 {
 class Evaluator;
 }
-
-struct Prim
-{
-    using func_type = ALObject* (*)(ALObject* obj, env::Environment* env, eval::Evaluator* eval);
-    ALObject *(*function)(ALObject* obj, env::Environment* env, eval::Evaluator* eval);
-};
 
 class ALCell
 {

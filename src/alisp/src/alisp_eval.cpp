@@ -18,11 +18,7 @@ Evaluator::Evaluator(env::Environment &env_) : env(env_) {}
 
 void Evaluator::put_argument(ALObject* param, ALObject* arg)
 {
-    // auto eval_arg = this->eval(arg);
-    auto new_cel = new ALCell("args");
-    new_cel->make_value(arg);
-    this->env.put(param, new_cel);
-
+    this->env.put(param, arg);
 }
 
 template<bool evaluation>
@@ -139,19 +135,7 @@ ALObject* Evaluator::eval(ALObject* obj)
       }
 
       case ALObjectType::SYMBOL : {
-          auto cell = env.find(obj);
-          // TODO : fix here
-          if (cell->type() == ALCellType::VALUE) {
-              return cell->value();
-          } else if (cell->type() == ALCellType::FUNCTION) {
-              return make_string("Defined function");
-          } else if (cell->type() == ALCellType::MACRO) {
-              return make_string("Macro");
-          } else if (cell->type() == ALCellType::PRIMITIVE) {
-              return make_string("Primitive function");
-          }
-          return make_string("unknown");
-
+          return env.find(obj);
       }
 
       case ALObjectType::LIST : {
@@ -159,36 +143,34 @@ ALObject* Evaluator::eval(ALObject* obj)
           auto head = obj->i(0);
           auto func = env.find(head);
 
-          if (func->type() == ALCellType::PRIMITIVE) {
+          if ( !func->check_function_flag() ) {
+              throw std::runtime_error("Head of a list must be bound to function");
+          }
 
-              // env::detail::FunctionCall{env};
-
-              return func->prim()(splice(obj, 1), &env, this);
-          } else if (func->type() == ALCellType::FUNCTION) {
+          if (func->check_prime_flag) {
+              return func->get_prime()(splice(obj, 1), &env, this);
+          } else {
               env::detail::FunctionCall fc{env};
               // TODO: Trace the stack here
               return eval_function(func, splice(obj, 1));
           }
-
-          throw std::runtime_error("Head of a list must be bound to function");
-
+          
           break;
       }
 
-      default:
-              break;
-        }
-
-
-        return nullptr;
+      default: break;
     }
 
 
-ALObject* Evaluator::eval_function(ALCell* func, ALObject* args)
+    return nullptr;
+}
+
+
+ALObject* Evaluator::eval_function(ALObject* func, ALObject* args)
 {
     // TODO : checks here
-    auto[params, body] = func->callable();
-
+    auto[params, body] = func->get_function();
+    
     handle_argument_bindings(params, args);
 
     ALObject* res = nullptr;

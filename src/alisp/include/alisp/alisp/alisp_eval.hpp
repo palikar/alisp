@@ -23,7 +23,7 @@ class Evaluator
     Evaluator(env::Environment &env_);
 
     ALObject* eval(ALObject* obj);
-    ALObject* eval_function(ALCell* func, ALObject* args);
+    ALObject* eval_function(ALObject* func, ALObject* args);
 
     template<bool evaluation = true>
     void handle_argument_bindings(ALObject* params, ALObject* args);

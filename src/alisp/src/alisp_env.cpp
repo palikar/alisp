@@ -84,6 +84,19 @@ ALObject* Fdefun(ALObject* obj, env::Environment* env, eval::Evaluator*)
     return Qt;
 }
 
+ALObject* Flambda(ALObject* obj, env::Environment*, eval::Evaluator* eval)
+{
+    assert_min_size<2>(obj);
+    assert_symbol(obj->i(0));
+    assert_list(obj->i(1));
+    
+    auto new_lambda = make_object(obj->i(1), splice(obj, 2));
+    
+    return Qt;
+}
+
+
+
 ALObject* Fsetq(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
 {
     assert_size<2>(obj);
@@ -202,9 +215,7 @@ ALObject* Fdolist(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
 
     env::detail::ScopePushPop spp{*env};
 
-    auto new_var = new ALCell("loop_var");
-    new_var->make_value(Qnil);
-    env->put(bound_sym, new_var);
+    env->put(bound_sym, Qnil);
     
     for (auto list_element : list->children())
     {
@@ -409,6 +420,42 @@ ALObject* Fneq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     else return Qnil;
 }
 
+ALObject* Fpsym(ALObject* obj, env::Environment*, eval::Evaluator*)
+{
+    return psym(obj) ? Qt : Qnil;
+}
+
+ALObject* Fplist(ALObject* obj, env::Environment*, eval::Evaluator*)
+{
+    return plist(obj) ? Qt : Qnil;
+}
+
+ALObject* Fpint(ALObject* obj, env::Environment*, eval::Evaluator*)
+{
+    return pint(obj) ? Qt : Qnil;
+}
+
+ALObject* Fpreal(ALObject* obj, env::Environment*, eval::Evaluator*)
+{
+    return preal(obj) ? Qt : Qnil;
+}
+
+ALObject* Fpstring(ALObject* obj, env::Environment*, eval::Evaluator*)
+{
+    return pstring(obj) ? Qt : Qnil;
+}
+
+
+
+ALObject* Fmapc(ALObject* obj, env::Environment*, eval::Evaluator* eval)
+{
+    assert_size<2>(obj);
+    
+    auto fun_obj = eval->eval(obj->i(0));
+    auto list = eval->eval(obj->i(1));
+    
+}
+
 
 
 
@@ -426,21 +473,17 @@ ALObject* Flet(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
 
     auto varlist = obj->i(0);
 
-    std::vector<std::pair<ALObject*,ALCell*>> cells;
+    std::vector<std::pair<ALObject*,ALObject*>> cells;
     cells.reserve(std::size(varlist->children()));
 
     for (auto var : varlist->children()) {
         std::cout << dump(var) << "\n";
         if (plist(var)) {
             assert_size<2>(var);
-            auto new_var = new ALCell(var->i(0)->to_string());
-            new_var->make_value(evl->eval(var->i(1)));
-            cells.push_back({var->i(0), new_var});
+            cells.push_back({var->i(0), evl->eval(var->i(1))});
         } else {
             assert_symbol(var);
-            auto new_var = new ALCell(var->to_string());
-            new_var->make_value(Qnil);
-            cells.push_back({var, new_var});
+            cells.push_back({var, Qnil});
         }
         
     }
@@ -464,16 +507,11 @@ ALObject* Fletx(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
         
         if (plist(var)) {
             assert_size<2>(var);
-            auto new_var = new ALCell(var->i(0)->to_string());
-            new_var->make_value(evl->eval(var->i(1)));
-            env->put(var->i(0), new_var);
+            env->put(var->i(0), evl->eval(var->i(1)));
         } else {
             assert_symbol(var);
-            auto new_var = new ALCell(var->to_string());
-            new_var->make_value(Qnil);
-            env->put(var, new_var);
+            env->put(var, Qnil);
         }
-        
         
     }
 

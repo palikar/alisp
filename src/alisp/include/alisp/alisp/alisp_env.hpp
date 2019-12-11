@@ -37,7 +37,7 @@ namespace detail
 
 struct CellStack {
   public:
-    using Scope = std::unordered_map<std::string, ALCell*>;
+    using Scope = std::unordered_map<std::string, ALObject*>;
     using StackFrame = std::vector<Scope>;
     using Stack = std::vector<StackFrame>;
 
@@ -67,9 +67,9 @@ struct CellStack {
 class Environment {
 
   public:
-    static inline std::unordered_map<std::string, ALObject> g_global_symbol_table;
     static inline std::unordered_map<std::string, ALObject*> g_symbol_table;
-    static inline std::unordered_map<std::string, ALCell> g_prime_values;
+    static inline std::unordered_map<std::string, ALObject> g_global_symbol_table;
+    static inline std::unordered_map<std::string, ALObject> g_prime_values;
 
   private:
     detail::CellStack m_stack;
@@ -83,7 +83,7 @@ class Environment {
     }
 
 
-    ALCell* find(const ALObject* t_sym)
+    ALObject* find(const ALObject* t_sym)
     {
         const auto name = t_sym->to_string();
 
@@ -116,9 +116,7 @@ class Environment {
 
         if (scope.count(name)) { throw environment_error("Variable alredy exists");}
 
-        auto new_cell = new ALCell(name);
-        new_cell->make_value(t_value);
-        scope.insert({name, new_cell});
+        scope.insert({name, t_value});
     }
 
     void define_function(const ALObject* t_sym, ALObject* t_params, ALObject* t_body)
@@ -129,9 +127,10 @@ class Environment {
 
         if (scope.count(name)) { throw environment_error("Function alredy exists");}
 
-        auto new_cell = new ALCell(name);
-        new_cell->make_function(t_params, t_body);
-        scope.insert({name, new_cell});
+        auto new_fun = make_object(t_params, t_body);
+        new_fun->make_function();
+        
+        scope.insert({name, new_fun});
     
     }
 
@@ -141,14 +140,14 @@ class Environment {
      * @param t_sym
      * @param t_cell
      */
-    void put(const ALObject* t_sym, ALCell* t_cell)
+    void put(const ALObject* t_sym, ALObject* t_val)
     {
         auto& scope = m_stack.current_scope();
         auto name = t_sym->to_string();
 
         if (scope.count(name)) { throw environment_error("Variable alredy exists");}
 
-        scope.insert({name, t_cell});
+        scope.insert({name, t_val});
     }
 
     /** 
@@ -159,7 +158,7 @@ class Environment {
      */
     void update(const ALObject* t_sym, ALObject* t_value)
     {
-        find(t_sym)->make_value(t_value);
+        // find(t_sym)->make_value(t_value);
     }
 
 
@@ -288,8 +287,14 @@ DEFUN(leq, "<=");
 DEFUN(eq, "==");
 DEFUN(neq, "!=");
 
-DEFUN(exit, "exit");
+DEFUN(psym, "psym");
+DEFUN(plist, "plist");
+DEFUN(pint, "pint");
+DEFUN(preal, "preal");
+DEFUN(pstring, "pstring");
 
+
+DEFUN(exit, "exit");
 DEFUN(dump, "dump");
 
 

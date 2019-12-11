@@ -448,6 +448,15 @@ inline bool plist(ALObject* obj)
     return obj->is_list();
 }
 
+inline bool pstring(ALObject* obj)
+{
+    return obj->is_string();
+}
+
+
+inline const auto AND_OBJ_FUN = [](bool t_acc, ALObject* t_obj) {return t_acc and is_truthy(t_obj);};
+inline const auto OR_OBJ_FUN = [](bool t_acc, ALObject* t_obj) {return t_acc or is_truthy(t_obj);};
+
 
 
 /*  __  __       _   _             _   _ _      */
@@ -467,17 +476,6 @@ inline const auto ADD_OBJ_FUN_D = [](double t_acc, ALObject* t_obj) {return t_ac
 inline const auto SUB_OBJ_FUN_D = [](double t_acc, ALObject* t_obj) {return t_acc - t_obj->to_real();};
 inline const auto MUL_OBJ_FUN_D = [](double t_acc, ALObject* t_obj) {return t_acc * t_obj->to_real();};
 inline const auto DIV_OBJ_FUN_D = [](double t_acc, ALObject* t_obj) {return t_acc / t_obj->to_real();};
-
-
-/*  ____              _         _   _ _     */
-/* | __ )  ___   ___ | |  _   _| |_(_) |___ */
-/* |  _ \ / _ \ / _ \| | | | | | __| | / __|*/
-/* | |_) | (_) | (_) | | | |_| | |_| | \__ \*/
-/* |____/ \___/ \___/|_|  \__,_|\__|_|_|___/*/
-
-inline const auto AND_OBJ_FUN = [](bool t_acc, ALObject* t_obj) {return t_acc and is_truthy(t_obj);};
-inline const auto OR_OBJ_FUN = [](bool t_acc, ALObject* t_obj) {return t_acc or is_truthy(t_obj);};
-
 
 
 }
