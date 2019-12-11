@@ -141,29 +141,39 @@ ALObject* Evaluator::eval(ALObject* obj)
       case ALObjectType::LIST : {
 
           auto func = env.find(obj->i(0));
-
           if ( !func->check_function_flag() ) { 
               throw std::runtime_error("Head of a list must be bound to function");
           }
+          
+          // CallTracer tracer{};
+          try {
 
-          if (func->check_prime_flag) {
+              if (func->check_prime_flag) {
+              
+                  // TODO: Trace the stack here
+                  return func->get_prime()(splice(obj, 1), &env, this);
+              
+              } else if (func->check_macro_flag) {
 
-              // TODO: Trace the stack here
-              return func->get_prime()(splice(obj, 1), &env, this);
+                  env::detail::FunctionCall fc{env};
+                  // TODO: Trace the stack here
+                  return eval(apply_function(func, splice(obj, 1)));
               
-          } else if (func->check_macro_flag) {
+              } else {
+              
+                  env::detail::FunctionCall fc{env};
+                  // TODO: Trace the stack here
+                  return eval_function(func, splice(obj, 1));
+              
+              }
 
-              env::detail::FunctionCall fc{env};
-              // TODO: Trace the stack here
-              return eval(apply_function(func, splice(obj, 1)));
               
-          } else {
-              
-              env::detail::FunctionCall fc{env};
-              // TODO: Trace the stack here
-              return eval_function(func, splice(obj, 1));
-              
+          } catch (...) {
+
+              // tracer.dump()
+              throw;
           }
+
           
           break;
       }

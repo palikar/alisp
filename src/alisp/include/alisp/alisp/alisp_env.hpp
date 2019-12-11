@@ -73,16 +73,8 @@ class Environment {
 
   private:
     detail::CellStack m_stack;
+    std::vector<std::string> m_stack_trace;
     size_t m_call_depth = 0;
-
-  public:
-
-    Environment() : m_stack()
-    {
-        m_call_depth = 0;
-    }
-
-  private:
 
     auto scan(const ALObject* t_sym)
     {
@@ -100,13 +92,23 @@ class Environment {
 
         throw environment_error("\tUnbounded Symbol: " + name);
 
-        return nullptr;
-    
-        
+        return nullptr;        
     }
+
+
+    
+
+    
 
   public:
 
+    Environment() : m_stack()
+    {
+        m_call_depth = 0;
+    }
+
+
+    
     ALObject* find(const ALObject* t_sym)
     {
         return scan(t_sym)->second;
@@ -217,6 +219,9 @@ class Environment {
 
     bool in_root() { return !in_function() and std::size(m_stack.root_frame()) == 0;}
 
+
+    auto& get_stack_trace() { return m_stack_trace; }
+
     
     detail::CellStack::StackFrame& current_frame() {
         return m_stack.stacks.back();
@@ -265,6 +270,24 @@ struct ScopePushPop
   private:
     Environment& m_env;
 };
+
+
+
+
+struct CallTracer
+{
+
+    template<typename Call>
+    static auto trace(Call && call)
+    {
+        
+
+    }
+
+};
+
+
+
 
 }
 
@@ -336,3 +359,25 @@ DEFUN(dump, "dump");
 
 
 }
+
+
+
+
+
+#define TRACE(epx, ...)
+CallTracer::trace(...);
+auto res = exp;
+CallTracer::pop();
+return res;
+
+
+
+
+
+
+
+
+
+
+
+
