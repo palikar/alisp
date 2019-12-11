@@ -217,6 +217,21 @@ ALObject* Fdolist(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
 }
 
 
+ALObject* Fcond(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    assert_list(obj);
+
+    for (auto condition : obj->children())
+    {
+        if (is_truthy(evl->eval(condition->i(0))))
+        {
+            return eval_list(evl, condition, 1);
+        }
+    }
+    return Qnil;
+}
+
+
 
 
 ALObject* Fmultiply(ALObject* obj, env::Environment*, eval::Evaluator* evl)

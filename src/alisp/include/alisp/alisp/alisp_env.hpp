@@ -263,6 +263,7 @@ DEFUN(quote, "quote");
 DEFUN(if, "if");
 DEFUN(while, "while");
 DEFUN(dolist, "dolist");
+DEFUN(cond, "cond");
 
 DEFUN(or, "or");
 DEFUN(and, "and");

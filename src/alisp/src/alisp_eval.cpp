@@ -18,16 +18,17 @@ Evaluator::Evaluator(env::Environment &env_) : env(env_) {}
 
 void Evaluator::put_argument(ALObject* param, ALObject* arg)
 {
-    // auto eval_arg = this->eval(arg);  
+    // auto eval_arg = this->eval(arg);
     auto new_cel = new ALCell("args");
     new_cel->make_value(arg);
     this->env.put(param, new_cel);
 
 }
 
+template<bool evaluation>
 void Evaluator::handle_argument_bindings(ALObject* params, ALObject* args)
 {
-    
+
     if (params->length() == 0 && args->length() != 0)
     {
         // TODO: Better error here
@@ -42,8 +43,17 @@ void Evaluator::handle_argument_bindings(ALObject* params, ALObject* args)
 
     if (args->length() == 0 && params->length() == 0 ) { return; }
 
-    auto eval_args = eval_transform(this, args);
+    auto eval_args =
+        [&](){
+            if constexpr (evaluation) {
+                return eval_transform(this, args);
+            } else {
+                return args;
+            }
+        }();
+
     
+
     auto next_argument = std::begin(eval_args->children());
     auto next_param = std::begin(params->children());
 
@@ -74,7 +84,7 @@ void Evaluator::handle_argument_bindings(ALObject* params, ALObject* args)
          }
          else
          {
-            
+
              if(rest)
              {
                  put_argument(*next_param, splice(eval_args, index));
@@ -99,28 +109,28 @@ void Evaluator::handle_argument_bindings(ALObject* params, ALObject* args)
              next_argument = std::next(next_argument);
              next_param = std::next(next_param);
          }
-        
+
      }
 
 
-     if ( prev_opt_or_rest )
-     {
-         // TODO: Better error here
-         throw std::runtime_error("Arguments do not match");
-     }
+    if ( prev_opt_or_rest )
+    {
+        // TODO: Better error here
+        throw std::runtime_error("Arguments do not match");
+    }
 
-     if (index < arg_cnt)
-     {
-         // TODO: Better error here
-         throw std::runtime_error("Arguments do not match");
-     }
+    if (index < arg_cnt)
+    {
+        // TODO: Better error here
+        throw std::runtime_error("Arguments do not match");
+    }
 
 }
 
 ALObject* Evaluator::eval(ALObject* obj)
 {
     if (is_falsy(obj)) return obj;
-        
+
     switch (obj->type()) {
       case ALObjectType::STRING_VALUE :
       case ALObjectType::REAL_VALUE :
@@ -138,7 +148,7 @@ ALObject* Evaluator::eval(ALObject* obj)
           } else if (cell->type() == ALCellType::MACRO) {
               return make_string("Macro");
           } else if (cell->type() == ALCellType::PRIMITIVE) {
-              return make_string("Primitive function"); 
+              return make_string("Primitive function");
           }
           return make_string("unknown");
 
@@ -148,20 +158,20 @@ ALObject* Evaluator::eval(ALObject* obj)
 
           auto head = obj->i(0);
           auto func = env.find(head);
-              
+
           if (func->type() == ALCellType::PRIMITIVE) {
 
               // env::detail::FunctionCall{env};
-                  
+
               return func->prim()(splice(obj, 1), &env, this);
           } else if (func->type() == ALCellType::FUNCTION) {
               env::detail::FunctionCall fc{env};
               // TODO: Trace the stack here
               return eval_function(func, splice(obj, 1));
           }
-              
+
           throw std::runtime_error("Head of a list must be bound to function");
-              
+
           break;
       }
 
@@ -179,8 +189,8 @@ ALObject* Evaluator::eval_function(ALCell* func, ALObject* args)
     // TODO : checks here
     auto[params, body] = func->callable();
 
-    handle_argument_bindings(params, args);    
-        
+    handle_argument_bindings(params, args);
+
     ALObject* res = nullptr;
     for (auto child : body->children()) {
         res = eval(child);

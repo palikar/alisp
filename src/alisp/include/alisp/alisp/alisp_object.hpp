@@ -247,11 +247,11 @@ inline ALObject* eval_list (eval::Evaluator* evl, ALObject* t_obj, size_t t_offs
 }
 
 template<size_t N>
-inline ALObject* eval_list_n (eval::Evaluator* evl, ALObject* t_obj,size_t t_offset = 0) {
+inline ALObject* eval_list_n (eval::Evaluator* evl, ALObject* t_obj, size_t t_offset = 0) {
 
     auto objects = t_obj->children();
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
-    const auto return_hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(N);
+    constexpr auto return_hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(N);
 
     auto start_it = std::next(std::begin(objects), hops);
     auto return_it = std::next(std::begin(objects), return_hops - 1);
