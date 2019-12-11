@@ -276,5 +276,31 @@ struct FileLocation
 
 
 
+struct signal_exception : public runtime_error{
 
-}  // namespace alisp
+    signal_exception(ALOBject* sym, ALOBject* list) :
+        m_sym(sym), m_list(list), runtime_error(format(sym, list))
+    {
+        
+    }
+
+  private:
+    ALOBject* m_sym;
+    ALOBject* m_list;
+
+    static std::string format(){
+        std::ostringstream ss;
+        ss << "Signal error <" << dump(m_sym) << "> :";
+        ss << dump(list);
+        ss << '\n';
+        return ss.str();
+    }
+
+    
+
+}
+
+
+
+
+    }  // namespace alisp

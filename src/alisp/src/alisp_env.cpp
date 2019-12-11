@@ -84,6 +84,17 @@ ALObject* Fdefun(ALObject* obj, env::Environment* env, eval::Evaluator*)
     return Qt;
 }
 
+ALObject* Fdefmacro(ALObject* obj, env::Environment* env, eval::Evaluator*)
+{
+    assert_min_size<2>(obj);
+    assert_symbol(obj->i(0));
+    assert_list(obj->i(1));
+    
+    
+    env->define_macro(obj->i(0), obj->i(1), splice(obj, 2));
+    return Qt;
+}
+
 ALObject* Flambda(ALObject* obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_min_size<2>(obj);
@@ -248,6 +259,22 @@ ALObject* Fcond(ALObject* obj, env::Environment*, eval::Evaluator* evl)
         }
     }
     return Qnil;
+}
+
+
+ALObject* Fsignal(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+{
+    assert_size<2>(obj);
+
+    auto sym = evl->eval(obj->i(0));
+    auto data = evl->eval(obj->i(1));
+
+    assert_symbol(sym);
+    assert_list(sym);
+
+    throw signal_exception(sym, data);
+
+    return Qt;
 }
 
 

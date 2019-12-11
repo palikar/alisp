@@ -147,11 +147,22 @@ ALObject* Evaluator::eval(ALObject* obj)
           }
 
           if (func->check_prime_flag) {
+
+              // TODO: Trace the stack here
               return func->get_prime()(splice(obj, 1), &env, this);
+              
+          } else if (func->check_macro_flag) {
+
+              env::detail::FunctionCall fc{env};
+              // TODO: Trace the stack here
+              return eval(apply_function(func, splice(obj, 1)));
+              
           } else {
+              
               env::detail::FunctionCall fc{env};
               // TODO: Trace the stack here
               return eval_function(func, splice(obj, 1));
+              
           }
           
           break;

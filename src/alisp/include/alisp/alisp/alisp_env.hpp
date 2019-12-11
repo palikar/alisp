@@ -145,7 +145,7 @@ class Environment {
     
     }
 
-    void define_function(const ALObject* t_sym, ALObject* t_params, ALObject* t_body)
+    void define_macro(const ALObject* t_sym, ALObject* t_params, ALObject* t_body)
     {
         
         auto& scope = m_stack.root_scope();
@@ -277,7 +277,10 @@ DEFSYM(Qoptional, "&optional");
 DEFSYM(Qrest, "&rest");
 
 DEFUN(defun, "defun");
+DEFUN(defmacro, "defmacro");
 DEFUN(defvar, "defvar");
+
+DEFUN(signal, "signal");
 
 DEFUN(setq, "setq");
 DEFUN(set, "set");
