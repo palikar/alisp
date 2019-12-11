@@ -8,6 +8,7 @@
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_macros.hpp"
+#include "alisp/alisp/alisp_object.hpp"
 
 
 namespace alisp::eval
@@ -76,29 +77,9 @@ class Environment {
     std::vector<std::string> m_stack_trace;
     size_t m_call_depth = 0;
 
-    auto scan(const ALObject* t_sym)
-    {
-        
-        const auto name = t_sym->to_string();
+    // auto scan(const ALObject* t_sym)
+    // {}
 
-        for (auto& scope : current_frame())
-        {
-            if (scope.count(name)) { return scope.find(name); };
-        }
-        
-        if (g_prime_values.count(name)) { return &g_prime_values.find(name) ;}
-
-        if (m_stack.root_scope().count(name)) { return m_stack.root_scope().find(name); };
-
-        throw environment_error("\tUnbounded Symbol: " + name);
-
-        return nullptr;        
-    }
-
-
-    
-
-    
 
   public:
 
@@ -111,7 +92,21 @@ class Environment {
     
     ALObject* find(const ALObject* t_sym)
     {
-        return scan(t_sym)->second;
+        
+        const auto name = t_sym->to_string();
+
+        for (auto& scope : current_frame())
+        {
+            if (scope.count(name)) { return scope.at(name); };
+        }
+        
+        if (g_prime_values.count(name)) { return &g_prime_values.at(name) ;}
+
+        if (m_stack.root_scope().count(name)) { return m_stack.root_scope().at(name); };
+
+        throw environment_error("\tUnbounded Symbol: " + name);
+
+        return nullptr;        
     }
 
 
@@ -130,6 +125,7 @@ class Environment {
         if (scope.count(name)) { throw environment_error("Variable alredy exists");}
 
         scope.insert({name, t_value});
+        
     }
 
     void define_function(const ALObject* t_sym, ALObject* t_params, ALObject* t_body)
@@ -187,7 +183,20 @@ class Environment {
      */
     void update(const ALObject* t_sym, ALObject* t_value)
     {
-        scan(t_sym)->second = t_value;
+        
+        const auto name = t_sym->to_string();
+
+        for (auto& scope : current_frame())
+        {
+            if (scope.count(name)) { scope.at(name) = t_value; };
+        }
+        
+        if (m_stack.root_scope().count(name)) { m_stack.root_scope().at(name) = t_value; };
+
+        throw environment_error("\tUnbounded Symbol: " + name);
+
+        
+        // scan(t_sym)->second = t_value;
     }
 
 
@@ -274,17 +283,17 @@ struct ScopePushPop
 
 
 
-struct CallTracer
-{
+// struct CallTracer
+// {
 
-    template<typename Call>
-    static auto trace(Call && call)
-    {
+//     template<typename Call>
+//     static auto trace(Call && call)
+//     {
         
 
-    }
+//     }
 
-};
+// };
 
 
 
@@ -299,77 +308,66 @@ DEFVAR(Qnil, "nil");
 DEFSYM(Qoptional, "&optional");
 DEFSYM(Qrest, "&rest");
 
-DEFUN(defun, "defun");
-DEFUN(defmacro, "defmacro");
-DEFUN(defvar, "defvar");
+// DEFUN(defun, "defun");
+// DEFUN(defmacro, "defmacro");
+// DEFUN(defvar, "defvar");
 
-DEFUN(signal, "signal");
+// DEFUN(signal, "signal");
 
-DEFUN(setq, "setq");
-DEFUN(set, "set");
+// DEFUN(setq, "setq");
+// DEFUN(set, "set");
 
 DEFUN(print, "print");
-DEFUN(println, "println");
+// DEFUN(println, "println");
 
-DEFUN(quote, "quote");
-DEFUN(function, "function");
+// DEFUN(quote, "quote");
+// DEFUN(function, "function");
 
-DEFUN(if, "if");
-DEFUN(while, "while");
-DEFUN(dolist, "dolist");
-DEFUN(cond, "cond");
+// DEFUN(if, "if");
+// DEFUN(while, "while");
+// DEFUN(dolist, "dolist");
+// DEFUN(cond, "cond");
 
-DEFUN(mapc, "mapc");
+// DEFUN(mapc, "mapc");
 
-DEFUN(or, "or");
-DEFUN(and, "and");
-DEFUN(not, "not");
+// DEFUN(or, "or");
+// DEFUN(and, "and");
+// DEFUN(not, "not");
 
-DEFUN(unless, "unless");
-DEFUN(when, "when");
+// DEFUN(unless, "unless");
+// DEFUN(when, "when");
 
-DEFUN(progn, "progn");
-DEFUN(letx, "let*");
-DEFUN(let, "let");
+// DEFUN(progn, "progn");
+// DEFUN(letx, "let*");
+// DEFUN(let, "let");
 
-DEFUN(plus, "+");
-DEFUN(minus, "-");
-DEFUN(dev, "/");
-DEFUN(multiply, "*");
+// DEFUN(plus, "+");
+// DEFUN(minus, "-");
+// DEFUN(dev, "/");
+// DEFUN(multiply, "*");
 
-DEFUN(gt, ">");
-DEFUN(geq, ">=");
-DEFUN(lt, "<");
-DEFUN(leq, "<=");
-DEFUN(eq, "==");
-DEFUN(neq, "!=");
+// DEFUN(gt, ">");
+// DEFUN(geq, ">=");
+// DEFUN(lt, "<");
+// DEFUN(leq, "<=");
+// DEFUN(eq, "==");
+// DEFUN(neq, "!=");
 
-DEFUN(psym, "psym");
-DEFUN(plist, "plist");
-DEFUN(pint, "pint");
-DEFUN(preal, "preal");
-DEFUN(pstring, "pstring");
-DEFUN(pfunction, "pfunction");
+// DEFUN(psym, "psym");
+// DEFUN(plist, "plist");
+// DEFUN(pint, "pint");
+// DEFUN(preal, "preal");
+// DEFUN(pstring, "pstring");
+// DEFUN(pfunction, "pfunction");
 
 
-DEFUN(exit, "exit");
-DEFUN(dump, "dump");
+// DEFUN(exit, "exit");
+// DEFUN(dump, "dump");
 
 
 
 
 }
-
-
-
-
-
-#define TRACE(epx, ...)
-CallTracer::trace(...);
-auto res = exp;
-CallTracer::pop();
-return res;
-
 
 
 

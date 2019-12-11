@@ -42,6 +42,19 @@ class alobject_error : public std::runtime_error
 };
 
 
+
+namespace env
+{
+class Environment;
+}
+
+
+namespace eval
+{
+class Evaluator;
+}
+
+class ALObject;
 struct Prim
 {
     using func_type = ALObject* (*)(ALObject* obj, env::Environment* env, eval::Evaluator* eval);
@@ -167,15 +180,18 @@ class ALObject
     }
 
 
-
-    auto get_prime() { reinterpret_cast<Prime::func_type>(children()[0]); }
+    
+    auto get_prime() { return reinterpret_cast<Prim::func_type>(children()[0]); }
     auto make_prime(Prim::func_type func) {
         set_function_flag();
         set_prime_flag();
-        children()[0] = reinterpret_cast<ALObject*>(func);
+        auto fn = reinterpret_cast<ALObject*>(reinterpret_cast<void *&>(func));
+        std::get<list_type>(m_data).push_back(fn);
+        // children()[0] = reinterpret_cast<ALObject*>(func);
         return this;
     }
 
+    auto get_function(){ return std::pair(i(0), i(1)); }
     
     //     7    6    5    4    3    2   1     0
     //   0000 0000 0000 0000 0000 0000 0000 0000
@@ -209,9 +225,9 @@ class ALObject
     void reset_prime_flag() { m_flags &= ~AlObjectFlags::PRIME; }
     void reset_macro_flag() { m_flags &= ~AlObjectFlags::MACRO; }
 
-    bool check_function_flag() { (m_flags & AlObjectFlags::FUN) > 0; }
-    bool check_prime_flag() { (m_flags & AlObjectFlags::PRIME) > 0; }
-    bool check_macro_flag() { (m_flags & AlObjectFlags::MACRO) > 0; }
+    bool check_function_flag() { return (m_flags & AlObjectFlags::FUN) > 0; }
+    bool check_prime_flag() { return (m_flags & AlObjectFlags::PRIME) > 0; }
+    bool check_macro_flag() { return (m_flags & AlObjectFlags::MACRO) > 0; }
     
 
     void set_location(std::uint_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
@@ -223,28 +239,13 @@ class ALObject
     auto cbegin() const { return std::cbegin(children()); }
     auto cend() const { return std::cend(children()); }
 
-    friend operator bool() const;
-
+    
   private:
     data_type m_data;
     const ALObjectType m_type;
     std::uint_fast32_t m_flags = 0;
     
 };
-
-
-
-namespace env
-{
-class Environment;
-}
-
-
-namespace eval
-{
-class Evaluator;
-}
-
 
 
 namespace parser
@@ -275,33 +276,4 @@ struct FileLocation
 };
 
 
-
-struct signal_exception : public runtime_error
-{
-
-    signal_exception(ALOBject* sym, ALOBject* list) :
-        m_sym(sym), m_list(list), runtime_error(format(sym, list))
-    {
-        
-    }
-
-  private:
-    ALOBject* m_sym;
-    ALOBject* m_list;
-
-    static std::string format(){
-        std::ostringstream ss;
-        ss << "Signal error <" << dump(m_sym) << "> :";
-        ss << dump(list);
-        ss << '\n';
-        return ss.str();
-    }
-
-    
-
-};
-
-
-
-    
 }  // namespace alisp

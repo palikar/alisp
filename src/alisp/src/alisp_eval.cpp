@@ -20,7 +20,6 @@ void Evaluator::put_argument(ALObject* param, ALObject* arg)
 {
     this->env.put(param, arg);
 }
-
 template<bool evaluation>
 void Evaluator::handle_argument_bindings(ALObject* params, ALObject* args)
 {
@@ -148,12 +147,12 @@ ALObject* Evaluator::eval(ALObject* obj)
           // CallTracer tracer{};
           try {
 
-              if (func->check_prime_flag) {
+              if (func->check_prime_flag()) {
               
                   // TODO: Trace the stack here
                   return func->get_prime()(splice(obj, 1), &env, this);
               
-              } else if (func->check_macro_flag) {
+              } else if (func->check_macro_flag()) {
 
                   env::detail::FunctionCall fc{env};
                   // TODO: Trace the stack here

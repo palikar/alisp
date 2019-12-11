@@ -183,7 +183,6 @@ void eval_file(const std::filesystem::path& t_path)
                 if (opts.parse_debug) std::cout << "DEUBG[PARSER]: " << alisp::dump(p) << "\n";
 
                 auto eval_res = eval.eval(p);
-
                 if (opts.eval_debug) std::cout << "DEUBG[EVAL]: " << alisp::dump(eval_res) << "\n";
 
             }

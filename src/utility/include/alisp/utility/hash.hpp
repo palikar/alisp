@@ -74,7 +74,7 @@ static constexpr std::uint32_t hash(Itr begin, Itr end)
 #endif
     
     std::uint32_t hash = 0;
-    std::uint32_t high;				
+    std::uint32_t high = 0;				
 
     while (begin != end)
     {

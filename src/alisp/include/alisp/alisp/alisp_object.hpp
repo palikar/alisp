@@ -10,7 +10,6 @@
 #include "alisp/utility.hpp"
 
 #include "alisp/alisp/alisp_common.hpp"
-#include "alisp/alisp/alisp_env.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 
 
@@ -27,7 +26,7 @@ namespace alisp
 namespace detail
 {
 
-struct ALOBjectHelper
+struct ALObjectHelper
 {
 
     template<typename T,
@@ -59,7 +58,7 @@ struct ALOBjectHelper
     static ALObject* get(T... objs){
         std::vector<ALObject*> vec_objs;
         vec_objs.reserve(sizeof...(objs));
-        (vec_objs.push_back(ALOBjectHelper::get(objs)), ...);
+        (vec_objs.push_back(ALObjectHelper::get(objs)), ...);
         return new ALObject(vec_objs);
     }
 
@@ -70,7 +69,7 @@ struct ALOBjectHelper
 template<typename ... T>
 inline auto make_object(T && ... args)
 {
-    return detail::ALOBjectHelper::get(std::forward<T>(args) ...);
+    return detail::ALObjectHelper::get(std::forward<T>(args) ...);
 }
 
 inline auto make_symbol(std::string name)
@@ -367,7 +366,7 @@ inline ALObject* eval_transform (eval::Evaluator* evl, ALObject* t_obj, size_t t
 
 inline bool is_falsy(ALObject* obj)
 {
-    if(obj == Qnil) return true;
+    // if(obj == Qnil) return true;
 
     if(obj->type() == ALObjectType::LIST) return obj->length() == 0;
     if(obj->type() == ALObjectType::STRING_VALUE) return obj->to_string().empty();
@@ -485,12 +484,12 @@ inline const auto MUL_OBJ_FUN_D = [](double t_acc, ALObject* t_obj) {return t_ac
 inline const auto DIV_OBJ_FUN_D = [](double t_acc, ALObject* t_obj) {return t_acc / t_obj->to_real();};
 
 
-inline const auto SHIFT_LEFT = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() << t_rhs->to_int()};
-inline const auto SHIFT_RIGHT = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() >> t_rhs->to_int()};
-inline const auto BIT_OR = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() | t_rhs->to_int()};
-inline const auto BIT_AND = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() & t_rhs->to_int()};
-inline const auto BIT_XOR = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() ^ t_rhs->to_int()};
-inline const auto BIT_INV = [](ALObject* t_obj) { return ~t_obj->to_int()};
+inline const auto SHIFT_LEFT = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() << t_rhs->to_int();};
+inline const auto SHIFT_RIGHT = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() >> t_rhs->to_int();};
+inline const auto BIT_OR = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() | t_rhs->to_int();};
+inline const auto BIT_AND = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() & t_rhs->to_int();};
+inline const auto BIT_XOR = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() ^ t_rhs->to_int();};
+inline const auto BIT_INV = [](ALObject* t_obj) { return ~t_obj->to_int();};
 
 
 }
