@@ -129,6 +129,11 @@ class ALObject
         check<list_type>();
         return std::get<list_type>(m_data);
     }
+    const list_type& children() const {
+        check<list_type>();
+        return std::get<list_type>(m_data);
+    }
+    
 
     string_type to_string() const {
         check<string_type>();
@@ -191,6 +196,12 @@ class ALObject
 
     void set_location(std::uint_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
     auto get_location() { return ((m_flags & AlObjectFlags::LOC) >> 4);}
+
+
+    auto begin() { return std::begin(children()); }
+    auto end() { return std::end(children()); }
+    auto cbegin() const { return std::cbegin(children()); }
+    auto cend() const { return std::cend(children()); }
     
 
   private:
