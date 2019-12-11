@@ -34,15 +34,10 @@ DEFSYM(Qrest, "&rest");
 DEFUN(defun, "defun");
 DEFUN(defmacro, "defmacro");
 DEFUN(defvar, "defvar");
-
 DEFUN(setq, "setq");
 DEFUN(set, "set");
-
 DEFUN(quote, "quote");
 DEFUN(function, "function");
-
-DEFUN(signal, "signal");
-
 DEFUN(if, "if");
 DEFUN(while, "while");
 DEFUN(dolist, "dolist");
@@ -52,7 +47,7 @@ DEFUN(when, "when");
 DEFUN(progn, "progn");
 DEFUN(letx, "let*");
 DEFUN(let, "let");
-
+DEFUN(signal, "signal");
 DEFUN(exit, "exit");
 
 /*  ____       _       _   _              */
@@ -75,12 +70,21 @@ DEFUN(dump, "dump");
 
 
 DEFUN(mapc, "mapc");
+
+
+
+/*  ____               _ _           _             */
+/* |  _ \ _ __ ___  __| (_) ___ __ _| |_ ___  ___  */
+/* | |_) | '__/ _ \/ _` | |/ __/ _` | __/ _ \/ __| */
+/* |  __/| | |  __/ (_| | | (_| (_| | ||  __/\__ \ */
+/* |_|   |_|  \___|\__,_|_|\___\__,_|\__\___||___/ */
+
+DEFUN(pfunction, "pfunction");
 DEFUN(psym, "psym");
 DEFUN(plist, "plist");
 DEFUN(pint, "pint");
 DEFUN(preal, "preal");
 DEFUN(pstring, "pstring");
-DEFUN(pfunction, "pfunction");
 
 /*  _                _       */
 /* | |    ___   __ _(_) ___  */
@@ -112,3 +116,4 @@ DEFUN(eq, "==");
 DEFUN(neq, "!=");
 
 }
+

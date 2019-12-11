@@ -4,6 +4,14 @@ add_library(alisp_language
     src/alisp_env.cpp
     src/alisp_eval.cpp
     src/alisp_object.cpp
+
+    src/alisp_language.cpp
+    src/alisp_lists.cpp
+    src/alisp_logic.cpp
+    src/alisp_math.cpp
+    src/alisp_predicates.cpp
+    src/alisp_printing.cpp
+    
     # src/error_messaging.cpp
     )
 
