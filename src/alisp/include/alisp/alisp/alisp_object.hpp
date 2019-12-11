@@ -7,10 +7,11 @@
 #include <vector>
 #include <iterator>
 
-#include "alisp/utility.hpp"
-
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
+#include "alisp/alisp/alisp_env.hpp"
+
+#include "alisp/utility.hpp"
 
 
 namespace alisp
@@ -239,6 +240,7 @@ inline ALObject* eval_list (eval::Evaluator* evl, ALObject* t_obj, size_t t_offs
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
     auto start_it = std::next(std::begin(objects), hops);
     auto end_it = std::prev(std::end(objects));
+
     while (start_it != end_it) {
         evl->eval(*start_it);
         start_it = std::next(start_it);
@@ -366,7 +368,7 @@ inline ALObject* eval_transform (eval::Evaluator* evl, ALObject* t_obj, size_t t
 
 inline bool is_falsy(ALObject* obj)
 {
-    // if(obj == Qnil) return true;
+    if(obj == Qnil) return true;
 
     if(obj->type() == ALObjectType::LIST) return obj->length() == 0;
     if(obj->type() == ALObjectType::STRING_VALUE) return obj->to_string().empty();

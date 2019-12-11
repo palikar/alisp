@@ -11,6 +11,42 @@
 
 namespace alisp
 {
+namespace env
+{
+
+
+void Environment::define_function(const ALObject* t_sym, ALObject* t_params, ALObject* t_body)
+{
+        
+    auto& scope = m_stack.root_scope();
+    auto name = t_sym->to_string();
+
+    if (scope.count(name)) { throw environment_error("Function alredy exists");}
+
+    auto new_fun = make_object(t_params, t_body);
+    new_fun->set_function_flag();
+        
+    scope.insert({name, new_fun});
+    
+}
+
+void Environment::define_macro(const ALObject* t_sym, ALObject* t_params, ALObject* t_body)
+{
+        
+    auto& scope = m_stack.root_scope();
+    auto name = t_sym->to_string();
+
+    if (scope.count(name)) { throw environment_error("Function alredy exists");}
+
+    auto new_fun = make_object(t_params, t_body);
+    new_fun->set_function_flag();
+    new_fun->set_macro_flag();
+        
+    scope.insert({name, new_fun});
+    
+}
+
+}
 
 template<size_t N>
 void assert_min_size (ALObject* obj)
@@ -240,6 +276,7 @@ ALObject* Fdolist(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
     for (auto list_element : list->children())
     {
         env->update(bound_sym, list_element);
+
         eval_list(evl, obj, 1);
     }
     
@@ -555,7 +592,6 @@ ALObject* Flet(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
     cells.reserve(std::size(varlist->children()));
 
     for (auto var : varlist->children()) {
-        std::cout << dump(var) << "\n";
         if (plist(var)) {
             assert_size<2>(var);
             cells.push_back({var->i(0), evl->eval(var->i(1))});

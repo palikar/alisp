@@ -8,7 +8,6 @@
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_macros.hpp"
-#include "alisp/alisp/alisp_object.hpp"
 
 
 namespace alisp::eval
@@ -105,8 +104,6 @@ class Environment {
         if (m_stack.root_scope().count(name)) { return m_stack.root_scope().at(name); };
 
         throw environment_error("\tUnbounded Symbol: " + name);
-
-        return nullptr;        
     }
 
 
@@ -128,36 +125,10 @@ class Environment {
         
     }
 
-    void define_function(const ALObject* t_sym, ALObject* t_params, ALObject* t_body)
-    {
-        
-        auto& scope = m_stack.root_scope();
-        auto name = t_sym->to_string();
-
-        if (scope.count(name)) { throw environment_error("Function alredy exists");}
-
-        auto new_fun = make_object(t_params, t_body);
-        new_fun->set_function_flag();
-        
-        scope.insert({name, new_fun});
+    void define_function(const ALObject* t_sym, ALObject* t_params, ALObject* t_body);
     
-    }
+    void define_macro(const ALObject* t_sym, ALObject* t_params, ALObject* t_body);
 
-    void define_macro(const ALObject* t_sym, ALObject* t_params, ALObject* t_body)
-    {
-        
-        auto& scope = m_stack.root_scope();
-        auto name = t_sym->to_string();
-
-        if (scope.count(name)) { throw environment_error("Function alredy exists");}
-
-        auto new_fun = make_object(t_params, t_body);
-        new_fun->set_function_flag();
-        new_fun->set_macro_flag();
-        
-        scope.insert({name, new_fun});
-    
-    }
 
     /**
      * Puts a local variable on the current scope. This is used by let and let*.
@@ -183,20 +154,19 @@ class Environment {
      */
     void update(const ALObject* t_sym, ALObject* t_value)
     {
-        
         const auto name = t_sym->to_string();
 
-        for (auto& scope : current_frame())
+        for (auto& scope : m_stack.current_frame())
         {
-            if (scope.count(name)) { scope.at(name) = t_value; };
+            if (scope.count(name)) {
+                scope.at(name) = t_value;
+                return;
+            };
         }
         
         if (m_stack.root_scope().count(name)) { m_stack.root_scope().at(name) = t_value; };
 
         throw environment_error("\tUnbounded Symbol: " + name);
-
-        
-        // scan(t_sym)->second = t_value;
     }
 
 
@@ -280,91 +250,9 @@ struct ScopePushPop
     Environment& m_env;
 };
 
-
-
-
-// struct CallTracer
-// {
-
-//     template<typename Call>
-//     static auto trace(Call && call)
-//     {
-        
-
-//     }
-
-// };
-
-
-
-
 }
 
 }
-
-DEFVAR(Qt, "t");
-DEFVAR(Qnil, "nil");
-
-DEFSYM(Qoptional, "&optional");
-DEFSYM(Qrest, "&rest");
-
-// DEFUN(defun, "defun");
-// DEFUN(defmacro, "defmacro");
-// DEFUN(defvar, "defvar");
-
-// DEFUN(signal, "signal");
-
-// DEFUN(setq, "setq");
-// DEFUN(set, "set");
-
-DEFUN(print, "print");
-// DEFUN(println, "println");
-
-// DEFUN(quote, "quote");
-// DEFUN(function, "function");
-
-// DEFUN(if, "if");
-// DEFUN(while, "while");
-// DEFUN(dolist, "dolist");
-// DEFUN(cond, "cond");
-
-// DEFUN(mapc, "mapc");
-
-// DEFUN(or, "or");
-// DEFUN(and, "and");
-// DEFUN(not, "not");
-
-// DEFUN(unless, "unless");
-// DEFUN(when, "when");
-
-// DEFUN(progn, "progn");
-// DEFUN(letx, "let*");
-// DEFUN(let, "let");
-
-// DEFUN(plus, "+");
-// DEFUN(minus, "-");
-// DEFUN(dev, "/");
-// DEFUN(multiply, "*");
-
-// DEFUN(gt, ">");
-// DEFUN(geq, ">=");
-// DEFUN(lt, "<");
-// DEFUN(leq, "<=");
-// DEFUN(eq, "==");
-// DEFUN(neq, "!=");
-
-// DEFUN(psym, "psym");
-// DEFUN(plist, "plist");
-// DEFUN(pint, "pint");
-// DEFUN(preal, "preal");
-// DEFUN(pstring, "pstring");
-// DEFUN(pfunction, "pfunction");
-
-
-// DEFUN(exit, "exit");
-// DEFUN(dump, "dump");
-
-
 
 
 }
@@ -379,3 +267,4 @@ DEFUN(print, "print");
 
 
 
+ 
