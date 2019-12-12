@@ -633,7 +633,7 @@ class ALParser : public ParserBase
         skip_whitespace();
         auto obj = parse_next();
         if (!obj ) { PARSE_ERROR("Expected expression after \'"); }
-        return make_object(Qfunction, obj);
+        return make_object("function", obj);
     }
 
     ALObject* parse_question()
