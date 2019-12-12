@@ -239,9 +239,10 @@ class ALParser : public ParserBase
         number_type m_num;
         int m_radix;
         bool is_signed = false;
+        int sign = 1;
         std::vector<char> buf;
         
-        NumberParser(int t_radix) : m_num(t_num), m_radix(t_radix){}
+        WholeNumberParser(int t_radix) : m_radix(t_radix) {}
         
         bool parse(const char t_char)
         {
@@ -250,9 +251,10 @@ class ALParser : public ParserBase
             {
                 if (is_signed) return false;
                 is_signed = true;
+                sign = t_char == '-' ? -1 : 1;
             }
             
-            auto dig = digit_to_number(t_char);
+            auto dig = digit_to_number(t_char, m_radix);
             if (dig < 0) return false;
 
             m_num *= m_radix;
@@ -288,8 +290,8 @@ class ALParser : public ParserBase
             switch(t_char)
             {
               case '.':
-                  if (decimal_place > 0) return false;
-                  decimal_place = 10;
+                  if (m_decimal_place > 0) return false;
+                  m_decimal_place = 10;
                   break;
               case '-':
               case '+':
@@ -317,10 +319,10 @@ class ALParser : public ParserBase
               case '9':
                   if (m_decimal_place < 10) {
                       m_num *= 10;
-                      m_num += static_cast<T>(t_char - '0');
+                      m_num += static_cast<number_type>(t_char - '0');
                   }
                   else {
-                      t += static_cast<T>(t_char - '0') / decimal_place;
+                      m_num += static_cast<number_type>(t_char - '0') / m_decimal_place;
                       m_decimal_place *= 10;
                   }
                   break;
