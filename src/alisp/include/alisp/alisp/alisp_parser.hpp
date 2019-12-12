@@ -86,7 +86,7 @@ struct DepthTracker
 
     DepthTracker(size_t& depth);
     ~DepthTracker();
- 
+
   private:
     size_t& m_depth;
 };
@@ -334,7 +334,7 @@ class ALParser : public ParserBase
               case '7':
               case '8':
               case '9':
-                  
+
                   if (m_decimal_place < 10) {
                       m_num *= 10;
                       m_num += static_cast<number_type>(t_char - '0');
@@ -366,13 +366,135 @@ class ALParser : public ParserBase
       public:
         string_type& m_str;
         bool is_escaped = false;
-        
+        bool is_octal = false;
+        bool is_hex = false;
+        std::size_t unicode_size = 0;
+        string_type octal_matches;
+        string_type hex_matches;
 
         StringParser(string_type& t_str) : m_str(t_str) {}
 
+
+        void process_hex()
+        {
+            if (!hex_matches.empty()) {
+                auto val = stoll(hex_matches, nullptr, 16);
+                m_str.push_back(char(val));
+            }
+            hex_matches.clear();
+            is_escaped = false;
+            is_hex = false;
+        }
+
+        void process_octal()
+        {
+            if (!octal_matches.empty()) {
+                auto val = stoll(octal_matches, nullptr, 8);
+                m_str.push_back(char(val));
+            }
+            octal_matches.clear();
+            is_escaped = false;
+            is_octal = false;
+        }
+
+        void process_unicode()
+        {
+            const auto ch = static_cast<uint32_t>(std::stoi(hex_matches, nullptr, 16));
+            const auto match_size = hex_matches.size();
+            hex_matches.clear();
+            is_escaped = false;
+            const auto u_size = unicode_size;
+            unicode_size = 0;
+
+            char buf[4];
+            if (u_size != match_size) {
+                throw std::runtime_error("Incomplete unicode escape sequence");
+            }
+            if (u_size == 4 && ch >= 0xD800 && ch <= 0xDFFF) {
+                throw std::runtime_error("Invalid 16 bit universal character");
+            }
+
+
+            if (ch < 0x80) {
+                m_str += static_cast<char>(ch);
+            } else if (ch < 0x800) {
+                buf[0] = static_cast<char>(0xC0 | (ch >> 6));
+                buf[1] = static_cast<char>(0x80 | (ch & 0x3F));
+                m_str.append(buf, 2);
+            } else if (ch < 0x10000) {
+                buf[0] = static_cast<char>(0xE0 |  (ch >> 12));
+                buf[1] = static_cast<char>(0x80 | ((ch >>  6) & 0x3F));
+                buf[2] = static_cast<char>(0x80 |  (ch        & 0x3F));
+                m_str.append(buf, 3);
+            } else if (ch < 0x200000) {
+                buf[0] = static_cast<char>(0xF0 |  (ch >> 18));
+                buf[1] = static_cast<char>(0x80 | ((ch >> 12) & 0x3F));
+                buf[2] = static_cast<char>(0x80 | ((ch >>  6) & 0x3F));
+                buf[3] = static_cast<char>(0x80 |  (ch        & 0x3F));
+                m_str.append(buf, 4);
+            } else {
+                // this must be an invalid escape sequence?
+                throw std::runtime_error("Invalid 32 bit universal character");
+            }
+        }
+
         bool parse(const char t_char)
         {
-            
+
+            const bool is_octal_char = t_char >= '0' && t_char <= '7';
+
+            const bool is_hex_char  = (t_char >= '0' && t_char <= '9')
+                || (t_char >= 'a' && t_char <= 'f')
+                || (t_char >= 'A' && t_char <= 'F');
+
+
+            if (is_octal) {
+
+                if (is_octal_char) {
+                    octal_matches.push_back(t_char);
+                } else {
+                    return false;
+                }
+
+                if (std::size(octal_matches) == 3) {
+                    //process
+                }
+
+                return true;
+            }
+
+            if (is_hex) {
+
+                if (is_hex_char) {
+                    hex_matches.push_back(t_char);
+                } else {
+                    return false;
+                }
+
+                if (std::size(hex_matches) == 2*sizeof(char)) {
+                    //process
+                }
+
+                return true;
+            }
+
+            if (unicode_size > 0) {
+
+                if (is_hex_char) {
+                    hex_matches.push_back(t_char);
+                } else {
+                    return false;
+                }
+
+                if (std::size(hex_matches) == unicode_size) {
+                    //process
+                }
+                return true;
+            }
+
+
+
+
             if (t_char == '\\') {
                 if (is_escaped) {
                     m_str.push_back('\\');
@@ -383,10 +505,9 @@ class ALParser : public ParserBase
 
                 return true;
             }
-            
-            if(is_escaped){
 
-                
+            if (is_escaped) {
+
                 switch(t_char)
                 {
                   case '\'': m_str.push_back('\''); return true;
@@ -399,7 +520,7 @@ class ALParser : public ParserBase
                   case 't' : m_str.push_back('\t'); return true;
                   case 'v' : m_str.push_back('\v'); return true;
                 }
-                
+
             }
 
             m_str.push_back(t_char);
@@ -448,7 +569,7 @@ class ALParser : public ParserBase
         if (check_char('-') || check_char('+')) { ++position; }
 
         bool valid = char_in_alphabet(*position, detail::int_alphabet);
-        
+
         while (position.has_more() && char_in_alphabet(*position, detail::int_alphabet))
         {
 
@@ -466,7 +587,7 @@ class ALParser : public ParserBase
         }
 
         if (char_in_alphabet(*position, detail::double_alphabet)) valid = false;
-        
+
         position = temp;
         return valid;
     }
@@ -474,9 +595,9 @@ class ALParser : public ParserBase
     bool check_real()
     {
         auto temp = position;
-        
+
         if (check_char('-') || check_char('+')) { ++position; }
-        
+
         bool valid = check_char('.') || (digit_to_number(*position, 10) >= 0);
         bool dot_found = false;
         bool e_found = false;
@@ -521,9 +642,9 @@ class ALParser : public ParserBase
             prev_e = false;
             ++position;
         }
-        
+
         position = temp;
-        return valid;    
+        return valid;
 
     }
 
@@ -556,13 +677,13 @@ class ALParser : public ParserBase
     ALObject* parse_integer()
     {
         WholeNumberParser<ALObject::int_type, base> parser;
-        
+
         while(position.has_more() && char_in_alphabet(*position, detail::int_alphabet))
         {
             if (!parser.parse(*position)) {  PARSE_ERROR("Invalid integer");  };
             ++position;
         }
-            
+
         return make_int(parser.get_num());
     }
 
@@ -610,9 +731,9 @@ class ALParser : public ParserBase
         while(this->position.has_more() && *this->position != '\"' )
         {
             parser.parse(*position);
-            ++position;    
+            ++position;
         }
-        
+
         if (*this->position != '\"') { PARSE_ERROR("Invalid string literal."); }
         ++position;
 
@@ -645,7 +766,7 @@ class ALParser : public ParserBase
         skip_whitespace();
         auto obj = parse_next();
         if (!obj ) { PARSE_ERROR("Expected expression after \'"); }
-        return make_object("function", obj);
+        return make_object(Qfunction, obj);
     }
 
     ALObject* parse_question()
@@ -695,24 +816,24 @@ class ALParser : public ParserBase
               case '\\':
                   ++position;
                   return make_int(static_cast<ALObject::int_type>('\\'));
-              default:  PARSE_ERROR("Unknown escape sequence \'?\'"); 
-            }            
-            
+              default:  PARSE_ERROR("Unknown escape sequence \'?\'");
+            }
+
         } else {
             char captured = *position;
             ++position;
             return make_int(static_cast<ALObject::int_type>(captured));
         }
-        
+
     }
-        
+
     ALObject* parse_hashtag()
     {
         if (!check_char('#')) { PARSE_ERROR("Expected \'#\'"); }
         ++position;
 
         std::cout << *position << "\n";
-        
+
         switch(*position)
         {
           case '\'':
@@ -732,7 +853,7 @@ class ALParser : public ParserBase
               return parse_integer<16>();
         }
 
-        PARSE_ERROR("Unknown syntax after #."); 
+        PARSE_ERROR("Unknown syntax after #.");
 
         return nullptr;
 
@@ -819,7 +940,7 @@ class ALParser : public ParserBase
             skip_whitespace();
         }
 
-        
+
         if ( *position == '(' ) return parse_list();
         if ( *position == '\"') return parse_string();
         if ( *position == '\'') return parse_quote();
