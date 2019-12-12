@@ -206,6 +206,7 @@ ALObject* Evaluator::handle_lambda(ALObject* func, ALObject* args)
         obj = eval(func);
     }
 
+    env::detail::FunctionCall fc{env};
     if (obj->check_prime_flag()) {
         return obj->get_prime()(args, &env, this);
     } else {

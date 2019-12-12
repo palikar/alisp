@@ -99,6 +99,11 @@ inline auto make_string(std::string value)
     return make_object(value);
 }
 
+inline auto make_list(ALObject* obj)
+{
+    return new ALObject({obj});
+}
+
 inline auto splice(ALObject* t_obj, std::vector<ALObject>::difference_type start_index,
                    std::vector<ALObject>::difference_type end_index = -1){
 

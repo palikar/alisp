@@ -47,7 +47,6 @@ DEFUN(unless, "unless");
 DEFUN(when, "when");
 DEFUN(progn, "progn");
 DEFUN(letx, "let*");
-
 DEFUN(let, "let");
 DEFUN(funcall, "funcall");
 
