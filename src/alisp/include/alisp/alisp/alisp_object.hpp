@@ -31,15 +31,15 @@ namespace detail
 struct ALObjectHelper
 {
 
-    template<typename T,
-             typename = std::enable_if_t<std::is_integral_v<T>>>
-    static ALObject* get(T a){
+    template<typename T>
+    static auto get(T a) -> typename  std::enable_if_t<std::is_integral_v<T>, ALObject*> {
 
-        return new ALObject(static_cast<int64_t>(a));
+        return new ALObject(static_cast<ALObject::int_type>(a));
     }
 
-    static ALObject* get(double a){
-        return new ALObject(a);
+    template<typename T>
+    static auto get(double a) -> typename std::enable_if_t<std::is_floating_point_v<T>, ALObject*> {
+        return new ALObject(static_cast<ALObject::real_type>(a));
     }
 
     static ALObject* get(std::string a){
@@ -84,7 +84,9 @@ template<typename T>
 inline auto make_int(T value)
 {
     static_assert(std::is_integral_v<T>, "Value must be of integer type");
-    return make_object(static_cast<int64_t>(value));
+
+    auto obj = make_object(static_cast<ALObject::int_type>(value));
+    return obj;
 }
 
 template<typename T>
