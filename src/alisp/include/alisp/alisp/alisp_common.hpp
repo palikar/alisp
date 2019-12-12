@@ -202,31 +202,40 @@ class ALObject
     //   0000 0000 0000 0000 0100 0000 0000 0000 - IS_FUNCTION
     //   0000 0000 0000 0000 1000 0000 0000 0000 - IS_MACRO
     //   0000 0000 0000 0001 0000 0000 0000 0000 - CONST
+    //   0000 0000 0000 0010 0000 0000 0000 0000 - CHAR
 
     struct AlObjectFlags
     {
       public:
 
         constexpr static std::uint32_t BIND_TYPE = 0x00000001;
-        constexpr static std::uint32_t TYPE = 0x0000000E;
-        constexpr static std::uint32_t LOC = 0x00000FF0;
-        constexpr static std::uint32_t PRIME = 0x00002000;
-        constexpr static std::uint32_t FUN = 0x00004000;
-        constexpr static std::uint32_t MACRO = 0x00008000;
+        constexpr static std::uint32_t TYPE =      0x0000000E;
+        constexpr static std::uint32_t LOC =       0x00000FF0;
+        constexpr static std::uint32_t PRIME =     0x00002000;
+        constexpr static std::uint32_t FUN =       0x00004000;
+        constexpr static std::uint32_t MACRO =     0x00008000;
+        constexpr static std::uint32_t CONST =     0x00010000;
+        constexpr static std::uint32_t CHAR =      0x00020000;
     };
 
 
     void set_function_flag() { m_flags |= AlObjectFlags::FUN; }
     void set_prime_flag() { m_flags |= AlObjectFlags::PRIME; }
     void set_macro_flag() { m_flags |= AlObjectFlags::MACRO; }
+    void set_const_flag() { m_flags |= AlObjectFlags::CONST; }
+    void set_char_flag() { m_flags |= AlObjectFlags::CHAR; }
 
     void reset_function_flag() { m_flags &= ~AlObjectFlags::FUN; }
     void reset_prime_flag() { m_flags &= ~AlObjectFlags::PRIME; }
     void reset_macro_flag() { m_flags &= ~AlObjectFlags::MACRO; }
+    void reset_const_flag() { m_flags &= ~AlObjectFlags::CONST; }
+    void reset_char_flag() { m_flags &= ~AlObjectFlags::CHAR; }
 
     bool check_function_flag() { return (m_flags & AlObjectFlags::FUN) > 0; }
     bool check_prime_flag() { return (m_flags & AlObjectFlags::PRIME) > 0; }
     bool check_macro_flag() { return (m_flags & AlObjectFlags::MACRO) > 0; }
+    bool check_const_flag() { return (m_flags & AlObjectFlags::CONST) > 0; }
+    bool check_char_flag() { return (m_flags & AlObjectFlags::CHAR) > 0; }
     
 
     void set_location(std::uint_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
