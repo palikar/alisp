@@ -13,11 +13,11 @@
 #include <stdexcept>
 #include <cctype>
 
-#include "alisp/utility.hpp"
-
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_env.hpp"
+
+#include "alisp/utility.hpp"
 
 
 namespace alisp
@@ -86,7 +86,7 @@ struct DepthTracker
 
     DepthTracker(size_t& depth);
     ~DepthTracker();
-
+ 
   private:
     size_t& m_depth;
 };
@@ -254,10 +254,9 @@ class ALParser : public ParserBase
     template<typename number_type, int m_radix>
     struct WholeNumberParser
     {
-        number_type m_num;
+        number_type m_num = 0;
         bool is_signed = false;
         int sign = 1;
-        std::vector<char> buf;
 
         WholeNumberParser() {}
 
@@ -269,6 +268,7 @@ class ALParser : public ParserBase
                 if (is_signed) return false;
                 is_signed = true;
                 sign = t_char == '-' ? -1 : 1;
+                return true;
             }
 
             auto dig = digit_to_number(t_char, m_radix);
@@ -290,8 +290,8 @@ class ALParser : public ParserBase
     template<typename number_type>
     struct RealNumberParser
     {
-        number_type m_num;
-        number_type m_base;
+        number_type m_num = 0;
+        number_type m_base= 0;
         number_type m_decimal_place = 0;
         int exp = 0;
         bool base_signed = false;
@@ -334,6 +334,7 @@ class ALParser : public ParserBase
               case '7':
               case '8':
               case '9':
+                  
                   if (m_decimal_place < 10) {
                       m_num *= 10;
                       m_num += static_cast<number_type>(t_char - '0');
@@ -342,6 +343,7 @@ class ALParser : public ParserBase
                       m_num += static_cast<number_type>(t_char - '0') / m_decimal_place;
                       m_decimal_place *= 10;
                   }
+
                   break;
               default:
                   return false;
@@ -392,7 +394,7 @@ class ALParser : public ParserBase
                   case 'a' : m_str.push_back('\a'); return true;
                   case 'b' : m_str.push_back('\b'); return true;
                   case 'f' : m_str.push_back('\f'); return true;
-                  case 'n' : m_str.push_back('\b'); return true;
+                  case 'n' : m_str.push_back('\n'); return true;
                   case 'r' : m_str.push_back('\r'); return true;
                   case 't' : m_str.push_back('\t'); return true;
                   case 'v' : m_str.push_back('\v'); return true;
@@ -439,20 +441,22 @@ class ALParser : public ParserBase
         return *this->position == c;
     }
 
-    bool check_int(int base = 2)
+    bool check_int(int base = 10)
     {
         auto temp = position;
 
-        bool valid = true;
-        
         if (check_char('-') || check_char('+')) { ++position; }
 
-        while (position.has_more() && !char_in_alphabet(*position, detail::whitespace_alphabet))
+        bool valid = char_in_alphabet(*position, detail::int_alphabet);
+        
+        while (position.has_more() && char_in_alphabet(*position, detail::int_alphabet))
         {
+
             if (check_char('-')) {
                 valid = false;
                 break;
             }
+
             if (digit_to_number(*position, base) < 0) {
                 valid = false;
                 break;
@@ -460,6 +464,8 @@ class ALParser : public ParserBase
 
             ++position;
         }
+
+        if (char_in_alphabet(*position, detail::double_alphabet)) valid = false;
         
         position = temp;
         return valid;
@@ -468,16 +474,17 @@ class ALParser : public ParserBase
     bool check_real()
     {
         auto temp = position;
+        
+        if (check_char('-') || check_char('+')) { ++position; }
 
-        bool valid = true;
+        bool valid = char_in_alphabet(*position, detail::double_alphabet);
         bool dot_found = false;
         bool e_found = false;
         bool e_minus_found = false;
         bool prev_e = false;
-        
-        if (check_char('-') || check_char('+')) { ++position; }
 
-        while (position.has_more() && !char_in_alphabet(*position, detail::whitespace_alphabet))
+
+        while (position.has_more() && char_in_alphabet(*position, detail::double_alphabet))
         {
             if (check_char('e') || check_char('E')){
                 if (e_found){
@@ -493,9 +500,17 @@ class ALParser : public ParserBase
                     valid = false;
                     break;
                 }
+                if (e_minus_found) {
+                    valid = false;
+                    break;
+                }
                 e_minus_found = true;
             } else if (check_char('.')) {
                 if (e_found) {
+                    valid = false;
+                    break;
+                }
+                if (dot_found){
                     valid = false;
                     break;
                 }
@@ -509,8 +524,7 @@ class ALParser : public ParserBase
         }
         
         position = temp;
-        return valid;
-    
+        return valid;    
 
     }
 
@@ -556,14 +570,14 @@ class ALParser : public ParserBase
     ALObject* parse_real()
     {
         RealNumberParser<ALObject::real_type> parser;
-        
+
         while(position.has_more() && char_in_alphabet(*position, detail::double_alphabet))
         {
             if (!parser.parse(*position)) {  PARSE_ERROR("Invalid real number");  };
             ++position;
         }
-            
-        return make_real(parser.get_num());
+
+        return make_double(parser.get_num());
     }
 
     ALObject* parse_id()
@@ -643,24 +657,54 @@ class ALParser : public ParserBase
         ++position;
 
         if (check_char('\\')){
-            
-            switch(*position++){
-              case 'a': return make_int(static_cast<ALObject::int_type>('\a'));
-              case 'b': return make_int(static_cast<ALObject::int_type>('\b'));
-              case 't': return make_int(static_cast<ALObject::int_type>('\t'));
-              case 'n': return make_int(static_cast<ALObject::int_type>('\n'));
-              case 'v': return make_int(static_cast<ALObject::int_type>('\v'));
-              case 'f': return make_int(static_cast<ALObject::int_type>('\f'));
-              case 'r': return make_int(static_cast<ALObject::int_type>('\r'));
-              case 'e': return make_int(static_cast<ALObject::int_type>('\e'));
-              case 's': return make_int(static_cast<ALObject::int_type>('\s'));
-              case '\\': return make_int(static_cast<ALObject::int_type>('\\'));
-              case '\d': return make_int(static_cast<ALObject::int_type>('\d'));
+            ++position;
+            switch(*position){
+              case '\'':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>('\''));
+              case '\"':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>('\"'));
+              case 'a':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>('\a'));
+              case 'b':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>('\b'));
+              case 't':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>('\t'));
+              case 'n':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>('\n'));
+              case 'v':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>('\v'));
+              case 'f':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>('\f'));
+              case 'r':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>('\r'));
+              case 'e':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>(27));
+              case 'd':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>(127));
+              case 's':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>(' '));
+              case '\\':
+                  ++position;
+                  return make_int(static_cast<ALObject::int_type>('\\'));
               default:  PARSE_ERROR("Unknown escape sequence \'?\'"); 
             }            
             
         } else {
-            return make_int(static_cast<ALObject::int_type>(*position++));
+            char captured = *position;
+            ++position;
+            return make_int(static_cast<ALObject::int_type>(captured));
         }
         
     }
@@ -684,6 +728,9 @@ class ALParser : public ParserBase
               return parse_integer<16>();
         }
 
+        PARSE_ERROR("Unknown syntax after #."); 
+
+        return nullptr;
 
     }
 
@@ -777,7 +824,7 @@ class ALParser : public ParserBase
         if ( *position == '`' ) return parse_backquote();
         if ( *position == '#' ) return parse_hashtag();
         if ( *position == '?' ) return parse_question();
-        if (  check_int()     ) return parse_integer<2>();
+        if (  check_int()     ) return parse_integer<10>();
         if (  check_real()    ) return parse_real();
         if (  check_id()      ) return parse_id();
 

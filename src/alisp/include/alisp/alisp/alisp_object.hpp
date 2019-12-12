@@ -38,7 +38,7 @@ struct ALObjectHelper
     }
 
     template<typename T>
-    static auto get(double a) -> typename std::enable_if_t<std::is_floating_point_v<T>, ALObject*> {
+    static auto get(T a) -> typename std::enable_if_t<std::is_floating_point_v<T>, ALObject*> {
         return new ALObject(static_cast<ALObject::real_type>(a));
     }
 
