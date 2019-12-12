@@ -221,6 +221,125 @@ class ALParser : public ParserBase
 
   private:
 
+    static int digit_to_number(char character, int base)
+    {
+        int digit;
+        if ('0' <= character && character <= '9') { digit = character - '0'; }
+        else if ('a' <= character && character <= 'z') { digit = character - 'a' + 10; }
+        else if ('A' <= character && character <= 'Z') { digit = character - 'A' + 10; }
+        else { return -2; }
+
+        return digit < base ? digit : -1;
+    }
+
+
+    template<typename number_type>
+    struct WholeNumberParser
+    {
+        number_type m_num;
+        int m_radix;
+        bool is_signed = false;
+        std::vector<char> buf;
+        
+        NumberParser(int t_radix) : m_num(t_num), m_radix(t_radix){}
+        
+        bool parse(const char t_char)
+        {
+
+            if ( t_char == '-' || t_char == '+' )
+            {
+                if (is_signed) return false;
+                is_signed = true;
+            }
+            
+            auto dig = digit_to_number(t_char);
+            if (dig < 0) return false;
+
+            m_num *= m_radix;
+            m_num += static_cast<number_type>(dig);
+            
+            return true;
+        }
+
+        number_type get_num()
+        {
+            return m_num * sign;
+        }
+
+    };
+
+    template<typename number_type>
+    struct RealNumberParser
+    {
+        number_type m_num;
+        number_type m_base;
+        number_type m_decimal_place = 0;
+        int exp = 0;
+        bool base_signed = false;
+        bool exp_signed = false;
+        int base_sign = 1;
+        int exp_sign = 1;
+
+        
+        RealNumberParser() {}
+
+        bool parse(const char t_char)
+        {
+            switch(t_char)
+            {
+              case '.':
+                  if (decimal_place > 0) return false;
+                  decimal_place = 10;
+                  break;
+              case '-':
+              case '+':
+                  if (exp != 1 and base_signed) return false;
+                  if (exp == 1 and exp_signed) return false;
+                  if (exp == 1) {exp_signed = true; exp_sign = t_char == '-' ? -1 : 1;}
+                  else {base_signed = true; base_sign = t_char == '-' ? -1 : 1;}
+                  break;                  
+              case 'e':
+              case 'E':
+                  exp = 1;
+                  m_decimal_place = 0;
+                  m_base = m_num;
+                  m_num = 0;
+                  break;
+              case '0':
+              case '1':
+              case '2':
+              case '3':
+              case '4':
+              case '5':
+              case '6':
+              case '7':
+              case '8':
+              case '9':
+                  if (m_decimal_place < 10) {
+                      m_num *= 10;
+                      m_num += static_cast<T>(t_char - '0');
+                  }
+                  else {
+                      t += static_cast<T>(t_char - '0') / decimal_place;
+                      m_decimal_place *= 10;
+                  }
+                  break;
+              default:
+                  return false;
+            }
+            return true;
+        }
+
+
+        number_type get_num()
+        {
+            return exp ? (base_sign * m_base) * std::pow(T(10), exp_sign * m_num) : base_sign * m_num;
+        }
+
+    };
+
+    
+
     void skip_empty(){
 
         while (this->position.has_more() &&
@@ -440,7 +559,7 @@ class ALParser : public ParserBase
     }
 
     ALObject* parse_backquote()
-    {
+    { 
         ++position;
         skip_whitespace();
         if (!check_char('`')) { PARSE_ERROR("Expected \'`\'"); }

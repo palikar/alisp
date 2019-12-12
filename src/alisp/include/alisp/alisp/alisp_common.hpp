@@ -218,7 +218,6 @@ class ALObject
         constexpr static std::uint32_t CHAR =      0x00020000;
     };
 
-
     void set_function_flag() { m_flags |= AlObjectFlags::FUN; }
     void set_prime_flag() { m_flags |= AlObjectFlags::PRIME; }
     void set_macro_flag() { m_flags |= AlObjectFlags::MACRO; }
