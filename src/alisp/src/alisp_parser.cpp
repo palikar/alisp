@@ -49,6 +49,32 @@ Position &Position::operator--() noexcept {
     return *this;
 }
 
+Position &Position::operator++(int) noexcept {
+    if (pos != end) {
+        if (*pos == '\n') {
+            ++line;
+            last_col = col;
+            col = 1;
+        } else {
+            ++col;
+        }
+
+        ++pos;
+    }
+    return *this;
+}
+
+Position &Position::operator--(int) noexcept {
+    --pos;
+    if (*pos == '\n') {
+        --line;
+        col = last_col;
+    } else {
+        --col;
+    }
+    return *this;
+}
+
 const char& Position::operator*() const noexcept {
     if (pos == end) {
         return ""[0];

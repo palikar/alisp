@@ -47,8 +47,11 @@ struct Position
     static std::string_view str(const Position &begin, const Position &end) noexcept;
 
     Position &operator++() noexcept;
-
     Position &operator--() noexcept;
+
+    Position &operator++(int) noexcept;
+    Position &operator--(int) noexcept;
+
 
     const char& operator*() const noexcept;
 
@@ -633,6 +636,34 @@ class ALParser : public ParserBase
         return make_object(Qfunction, obj);
     }
 
+    ALObject* parse_question()
+    {
+        if (!check_char('?')) { PARSE_ERROR("Expected \'?\'"); }
+        ++position;
+
+        if (check_char('\\')){
+            
+            switch(*position++){
+              case 'a': return make_int(static_cast<ALObject::int_type>('\a'));
+              case 'b': return make_int(static_cast<ALObject::int_type>('\b'));
+              case 't': return make_int(static_cast<ALObject::int_type>('\t'));
+              case 'n': return make_int(static_cast<ALObject::int_type>('\n'));
+              case 'v': return make_int(static_cast<ALObject::int_type>('\v'));
+              case 'f': return make_int(static_cast<ALObject::int_type>('\f'));
+              case 'r': return make_int(static_cast<ALObject::int_type>('\r'));
+              case 'e': return make_int(static_cast<ALObject::int_type>('\e'));
+              case 's': return make_int(static_cast<ALObject::int_type>('\s'));
+              case '\\': return make_int(static_cast<ALObject::int_type>('\\'));
+              case '\d': return make_int(static_cast<ALObject::int_type>('\d'));
+              default:  PARSE_ERROR("Unknown escape sequence \'?\'"); 
+            }            
+            
+        } else {
+            return make_int(static_cast<ALObject::int_type>(*position++));
+        }
+        
+    }
+        
     ALObject* parse_hashtag()
     {
         if (!check_char('#')) { PARSE_ERROR("Expected \'#\'"); }
@@ -744,6 +775,7 @@ class ALParser : public ParserBase
         if ( *position == '\'') return parse_quote();
         if ( *position == '`' ) return parse_backquote();
         if ( *position == '#' ) return parse_hashtag();
+        if ( *position == '?' ) return parse_question();
         if (  check_int()     ) return parse_integer<2>();
         if (  check_real()    ) return parse_real();
         if (  check_id()      ) return parse_id();
