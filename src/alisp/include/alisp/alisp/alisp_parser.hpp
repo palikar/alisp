@@ -203,6 +203,8 @@ class ALParser : public ParserBase
 
 
         for ( size_t c = '0' ; c <= '9' ; ++c ) {set_alphabet(alph, detail::int_alphabet, c);}
+        for ( size_t c = 'a' ; c <= 'f' ; ++c ) {set_alphabet(alph, detail::id_alphabet, c);}
+        for ( size_t c = 'A' ; c <= 'F' ; ++c ) {set_alphabet(alph, detail::id_alphabet, c);}
         set_alphabet(alph, detail::int_alphabet, '-');
         set_alphabet(alph, detail::int_alphabet, '+');
 
@@ -433,56 +435,79 @@ class ALParser : public ParserBase
         return *this->position == c;
     }
 
-    bool check_num()
+    bool check_int(int base = 2)
     {
         auto temp = position;
 
-        if (check_char('-') || check_char('+')) {
+        bool valid = true;
+        
+        if (check_char('-') || check_char('+')) { ++position; }
+
+        while (position.has_more() && !char_in_alphabet(*position, detail::whitespace_alphabet))
+        {
+            if (check_char('-')) {
+                valid = false;
+                break;
+            }
+            if (digit_to_number(*position, base) < 0) {
+                valid = false;
+                break;
+            }
+
             ++position;
         }
-        bool val = false;
+        
+        position = temp;
+        return valid;
+    }
 
+    bool check_real()
+    {
+        auto temp = position;
+
+        bool valid = true;
         bool dot_found = false;
         bool e_found = false;
         bool e_minus_found = false;
+        bool prev_e = false;
+        
+        if (check_char('-') || check_char('+')) { ++position; }
+
         while (position.has_more() && !char_in_alphabet(*position, detail::whitespace_alphabet))
         {
-
-            if (check_char('.') && !dot_found) {
-                dot_found = true;
-                ++position;
-                continue;
-            }
-
-            if (check_char('e') && !e_found) {
+            if (check_char('e') || check_char('E')){
+                if (e_found){
+                    valid = false;
+                    break;
+                }
                 e_found = true;
+                prev_e = true;
                 ++position;
                 continue;
-            }
-            if (check_char('-') && !e_minus_found && e_found) {
+            } else if (check_char('-') || check_char('+')) {
+                if (!prev_e) {
+                    valid = false;
+                    break;
+                }
                 e_minus_found = true;
-                ++position;
-                continue;
-            }
-
-            if ((std::isdigit(*position) == 0) && !val) {
-                position = temp;
-                return false;
-            } else {
-                position = temp;
-                return true;
-            }
-
-            if (check_char('.') or check_char('e') or check_char('.') or check_char('-')){
-                position = temp;
-                return false;
-            }
-
-            val = true;
+            } else if (check_char('.')) {
+                if (e_found) {
+                    valid = false;
+                    break;
+                }
+                dot_found = true;
+            } else if (digit_to_number(*position, 10) < 0){
+                valid = false;
+                break;
+            };
+            prev_e = false;
             ++position;
         }
+        
         position = temp;
-        return val;
+        return valid;
+    
+
     }
 
     void skip_line()
@@ -508,6 +533,33 @@ class ALParser : public ParserBase
 
         position = temp;
         return val;
+    }
+
+    template<int base>
+    ALObject* parse_integer()
+    {
+        WholeNumberParser<ALObject::int_type, base> parser();
+        
+        while(position.has_more() && char_in_alphabet(*position, detail::int_alphabet))
+        {
+            if (!parser.parse(*position)) {  PARSE_ERROR("Invalid integer");  };
+            ++position;
+        }
+            
+        return make_int(parser.get_num());
+    }
+
+    ALObject* parse_real()
+    {
+        RealNumberParser<ALObject::real_type> parser();
+        
+        while(position.has_more() && char_in_alphabet(*position, detail::double_alphabet))
+        {
+            if (!parser.parse(*position)) {  PARSE_ERROR("Invalid real number");  };
+            ++position;
+        }
+            
+        return make_real(parser.get_num());
     }
 
     ALObject* parse_id()
@@ -551,60 +603,6 @@ class ALParser : public ParserBase
 
     }
 
-    ALObject* parse_number()
-    {
-
-        int sign = 1;
-        bool real = false;
-
-
-        auto t = this->position;
-        if (*this->position == '-')
-        {
-            sign = -1;
-            ++this->position;
-        }
-
-        if (*this->position == '+') { ++this->position; }
-
-        if (!std::isdigit(*this->position) && *this->position != '.')
-        {
-            this->position = t;
-            PARSE_ERROR("Invalid number literal.");
-        }
-
-        auto temp = this->position;
-        if (*this->position == '.')
-        {
-            ++this->position;
-            real = true;
-        }
-
-        while(this->position.has_more() && std::isdigit(*this->position))
-        {
-            ++this->position;
-            if (*this->position == '.')
-            {
-                if (real)
-                {
-                    PARSE_ERROR("Invalid number literal.");
-                }
-                real = true;
-                ++this->position;
-            }
-        }
-
-        const auto res = detail::Position::str(temp, this->position);
-
-        if (real) {
-            double num = static_cast<double>(sign) * std::stod( std::string(res) );
-            return make_double(num);
-        } else {
-            int num = sign * std::stoi( std::string(res) );
-            return make_int(num);
-        }
-    }
-
     ALObject* parse_quote()
     {
         if (!check_char('\'')) { PARSE_ERROR("Expected \'"); }
@@ -623,21 +621,6 @@ class ALParser : public ParserBase
         auto obj = parse_next();
         if (!obj) { PARSE_ERROR("Expected expression after \'`\'"); }
         return make_object(make_symbol("`"), obj);
-    }
-
-    template<int base>
-    ALObject* parse_integer()
-    {
-
-        WholeNumberParser<ALObject::int_type, base> parser();
-        
-        while(position.has_more() && char_in_alphabet(*position, detail::int_alphabet))
-        {
-            if (!parser.parse(*position)) {  PARSE_ERROR("Invalid integer \'`\'");  };
-            ++position;
-        }
-            
-        return make_int(parser.get_num());
     }
 
     ALObject* parse_function_quote()
@@ -761,8 +744,9 @@ class ALParser : public ParserBase
         if ( *position == '\'') return parse_quote();
         if ( *position == '`' ) return parse_backquote();
         if ( *position == '#' ) return parse_hashtag();
-        if (  check_num()     ) return parse_number();
-        if (  check_id( )     ) return parse_id();
+        if (  check_int()     ) return parse_integer<2>();
+        if (  check_real()    ) return parse_real();
+        if (  check_id()      ) return parse_id();
 
         if( position.has_more()) { PARSE_ERROR("Unparsed input. Cannot parse.");}
 
