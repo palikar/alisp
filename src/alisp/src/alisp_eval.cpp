@@ -198,6 +198,22 @@ ALObject* Evaluator::apply_function(ALObject* func, ALObject* args)
     return eval_list(this, body, 0);
 }
 
+ALObject* Evaluator::handle_lambda(ALObject* func, ALObject* args)
+{
+    auto obj = func;
+    if(psym(func))
+    {
+        obj = eval(func);
+    }
+
+    if (obj->check_prime_flag()) {
+        return obj->get_prime()(args, &env, this);
+    } else {
+        return apply_function(obj, args);
+    }
+
+}
+
 
 }
 

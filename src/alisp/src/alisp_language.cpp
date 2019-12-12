@@ -14,12 +14,12 @@
 namespace alisp
 {
 
-ALObject* Fdefvar(ALObject* obj, env::Environment* env, eval::Evaluator*)
+ALObject* Fdefvar(ALObject* obj, env::Environment* env, eval::Evaluator* eval)
 {
     assert_size<2>(obj);
     assert_symbol(obj->i(0));
 
-    env->define_variable(obj->i(0), obj->i(1));
+    env->define_variable(obj->i(0), eval->eval(obj->i(1)));
 
     return Qt;
 }
@@ -49,10 +49,9 @@ ALObject* Fdefmacro(ALObject* obj, env::Environment* env, eval::Evaluator*)
 ALObject* Flambda(ALObject* obj, env::Environment*, eval::Evaluator*)
 {
     assert_min_size<2>(obj);
-    assert_symbol(obj->i(0));
     assert_list(obj->i(1));
     
-    auto new_lambda = make_object(obj->i(1), splice(obj, 2));
+    auto new_lambda = make_object(obj->i(0), splice(obj, 1));
     new_lambda->set_function_flag();
     
     return new_lambda;
@@ -106,6 +105,7 @@ ALObject* Fif(ALObject* obj, env::Environment*, eval::Evaluator* evl)
         return Qnil;
     }
 }
+
 ALObject* Fwhile(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<1>(obj);
@@ -196,7 +196,8 @@ ALObject* Ffuncall(ALObject* obj, env::Environment*, eval::Evaluator* eval)
     auto fun_obj = eval->eval(obj->i(0));
     auto args = eval_transform(eval, splice(obj, 1));
     
-    return eval->apply_function(fun_obj, args);
+    
+    return eval->handle_lambda(fun_obj, args);
 
 }
 

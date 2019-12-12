@@ -24,6 +24,8 @@ class Evaluator
     ALObject* eval(ALObject* obj);
     ALObject* eval_function(ALObject* func, ALObject* args);
     ALObject* apply_function(ALObject* func, ALObject* args);
+    ALObject* handle_lambda(ALObject* func, ALObject* args);
+    
 
     template<bool evaluation = true>
     void handle_argument_bindings(ALObject* params, ALObject* args);

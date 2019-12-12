@@ -187,7 +187,6 @@ class ALObject
         set_prime_flag();
         auto fn = reinterpret_cast<ALObject*>(reinterpret_cast<void *&>(func));
         std::get<list_type>(m_data).push_back(fn);
-        // children()[0] = reinterpret_cast<ALObject*>(func);
         return this;
     }
 

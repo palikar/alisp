@@ -17,8 +17,7 @@ namespace alisp
 ALObject* Fprint(ALObject* t_obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_min_size<1>(t_obj);
-    
-    
+
     for (auto child : t_obj->children())
     {
         auto val = eval->eval(child);

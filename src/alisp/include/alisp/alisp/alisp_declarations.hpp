@@ -38,6 +38,7 @@ DEFUN(setq, "setq");
 DEFUN(set, "set");
 DEFUN(quote, "quote");
 DEFUN(function, "function");
+DEFUN(lambda, "lambda");
 DEFUN(if, "if");
 DEFUN(while, "while");
 DEFUN(dolist, "dolist");
@@ -46,7 +47,10 @@ DEFUN(unless, "unless");
 DEFUN(when, "when");
 DEFUN(progn, "progn");
 DEFUN(letx, "let*");
+
 DEFUN(let, "let");
+DEFUN(funcall, "funcall");
+
 DEFUN(signal, "signal");
 DEFUN(exit, "exit");
 
