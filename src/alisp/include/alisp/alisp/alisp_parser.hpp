@@ -361,6 +361,7 @@ class ALParser : public ParserBase
     template<typename string_type>
     struct StringParser
     {
+      public:
         string_type& m_str;
         bool is_escaped = false;
         
@@ -541,7 +542,7 @@ class ALParser : public ParserBase
     template<int base>
     ALObject* parse_integer()
     {
-        WholeNumberParser<ALObject::int_type, base> parser();
+        WholeNumberParser<ALObject::int_type, base> parser;
         
         while(position.has_more() && char_in_alphabet(*position, detail::int_alphabet))
         {
@@ -554,7 +555,7 @@ class ALParser : public ParserBase
 
     ALObject* parse_real()
     {
-        RealNumberParser<ALObject::real_type> parser();
+        RealNumberParser<ALObject::real_type> parser;
         
         while(position.has_more() && char_in_alphabet(*position, detail::double_alphabet))
         {
