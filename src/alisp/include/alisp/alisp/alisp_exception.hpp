@@ -30,5 +30,11 @@ struct signal_exception : public std::runtime_error
     }
 };
 
+// class environment_error : public std::runtime_error
+// {
+//   public:
+//     environment_error(const std::string& t_why) : runtime_error(t_why){}
+
+// };
 
 }

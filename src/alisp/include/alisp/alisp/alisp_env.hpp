@@ -10,6 +10,18 @@
 #include "alisp/alisp/alisp_macros.hpp"
 
 
+// template <typename T>
+// struct reversion_wrapper { T& iterable; };
+
+// template <typename T>
+// auto begin (reversion_wrapper<T> w) { return std::rbegin(w.iterable); }
+
+// template <typename T>
+// auto end (reversion_wrapper<T> w) { return std::rend(w.iterable); }
+
+// template <typename T>
+// reversion_wrapper<T> reverse (T&& iterable) { return { iterable }; }
+
 namespace alisp::eval
 {
 class Evaluator;
@@ -114,16 +126,7 @@ class Environment {
      *
      * @return
      */
-    void define_variable(const ALObject* t_sym, ALObject* t_value)
-    {
-        auto& scope = m_stack.root_scope();
-        auto name = t_sym->to_string();
-
-        if (scope.count(name)) { throw environment_error("Variable alredy exists");}
-
-        scope.insert({name, t_value});
-        
-    }
+    void define_variable(const ALObject* t_sym, ALObject* t_value);
 
     void define_function(const ALObject* t_sym, ALObject* t_params, ALObject* t_body);
     
@@ -136,38 +139,14 @@ class Environment {
      * @param t_sym
      * @param t_cell
      */
-    void put(const ALObject* t_sym, ALObject* t_val)
-    {
-        auto& scope = m_stack.current_scope();
-        auto name = t_sym->to_string();
-
-        if (scope.count(name)) { throw environment_error("Variable alredy exists");}
-
-        scope.insert({name, t_val});
-    }
-
+    void put(const ALObject* t_sym, ALObject* t_val);
     /** 
      * Used by setq to update the value of a cell
      *
      * @param t_sym 
      * @param t_value 
      */
-    void update(const ALObject* t_sym, ALObject* t_value)
-    {
-        const auto name = t_sym->to_string();
-
-        for (auto& scope : m_stack.current_frame())
-        {
-            if (scope.count(name)) {
-                scope.at(name) = t_value;
-                return;
-            };
-        }
-        
-        if (m_stack.root_scope().count(name)) { m_stack.root_scope().at(name) = t_value; };
-
-        throw environment_error("\tUnbounded Symbol: " + name);
-    }
+    void update(const ALObject* t_sym, ALObject* t_value);
 
 
     void new_scope()
@@ -205,8 +184,6 @@ class Environment {
     detail::CellStack::StackFrame& current_frame() {
         return m_stack.stacks.back();
     }
-
-    // TODO: trace here
     
     
 };

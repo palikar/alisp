@@ -14,6 +14,8 @@
 namespace alisp
 {
 
+
+
 ALObject* Fmapc(ALObject* obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<2>(obj);
