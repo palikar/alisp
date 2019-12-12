@@ -21,6 +21,7 @@ DEFVAR(Qnil, "nil");
 
 DEFSYM(Qoptional, "&optional");
 DEFSYM(Qrest, "&rest");
+DEFSYM(Qfunction, "function");
 
 
 /*  _                                                ____                _                   _        */

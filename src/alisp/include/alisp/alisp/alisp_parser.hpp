@@ -31,10 +31,12 @@ enum Alphabet
 {
     id_alphabet = 0,
     whitespace_alphabet,
+    int_alphabet,
+    double_alphabet,
 };
 
 constexpr size_t LENGTHOF_ALPHABET = 256;
-constexpr size_t ALPHABETS_NUM = 2;
+constexpr size_t ALPHABETS_NUM = 4;
 
 struct Position
 {
@@ -140,7 +142,7 @@ namespace parser
 template <class Environment>
 class ALParser : public ParserBase
 {
-    
+
   private:
 
     detail::Position position;
@@ -148,7 +150,6 @@ class ALParser : public ParserBase
     std::shared_ptr<std::string> m_file;
     const std::string* m_input;
 
-    // const ErrorHandler& err;
     Environment& env;
 
 
@@ -201,6 +202,18 @@ class ALParser : public ParserBase
         set_alphabet(alph, detail::id_alphabet, '&');
 
 
+        for ( size_t c = '0' ; c <= '9' ; ++c ) {set_alphabet(alph, detail::int_alphabet, c);}
+        set_alphabet(alph, detail::int_alphabet, '-');
+        set_alphabet(alph, detail::int_alphabet, '+');
+
+        for ( size_t c = '0' ; c <= '9' ; ++c ) {set_alphabet(alph, detail::double_alphabet, c);}
+        set_alphabet(alph, detail::double_alphabet, '-');
+        set_alphabet(alph, detail::double_alphabet, '+');
+        set_alphabet(alph, detail::double_alphabet, '.');
+        set_alphabet(alph, detail::double_alphabet, 'E');
+        set_alphabet(alph, detail::double_alphabet, 'e');
+
+
         return alph;
     }
 
@@ -233,17 +246,16 @@ class ALParser : public ParserBase
     }
 
 
-    template<typename number_type>
+    template<typename number_type, int m_radix>
     struct WholeNumberParser
     {
         number_type m_num;
-        int m_radix;
         bool is_signed = false;
         int sign = 1;
         std::vector<char> buf;
-        
-        WholeNumberParser(int t_radix) : m_radix(t_radix) {}
-        
+
+        WholeNumberParser() {}
+
         bool parse(const char t_char)
         {
 
@@ -253,13 +265,13 @@ class ALParser : public ParserBase
                 is_signed = true;
                 sign = t_char == '-' ? -1 : 1;
             }
-            
+
             auto dig = digit_to_number(t_char, m_radix);
             if (dig < 0) return false;
 
             m_num *= m_radix;
             m_num += static_cast<number_type>(dig);
-            
+
             return true;
         }
 
@@ -282,7 +294,7 @@ class ALParser : public ParserBase
         int base_sign = 1;
         int exp_sign = 1;
 
-        
+
         RealNumberParser() {}
 
         bool parse(const char t_char)
@@ -299,7 +311,7 @@ class ALParser : public ParserBase
                   if (exp == 1 and exp_signed) return false;
                   if (exp == 1) {exp_signed = true; exp_sign = t_char == '-' ? -1 : 1;}
                   else {base_signed = true; base_sign = t_char == '-' ? -1 : 1;}
-                  break;                  
+                  break;
               case 'e':
               case 'E':
                   exp = 1;
@@ -335,12 +347,60 @@ class ALParser : public ParserBase
 
         number_type get_num()
         {
-            return exp ? (base_sign * m_base) * std::pow(T(10), exp_sign * m_num) : base_sign * m_num;
+            return exp ? (base_sign * m_base) * std::pow(number_type(10), exp_sign * m_num) : base_sign * m_num;
         }
 
     };
 
-    
+
+    template<typename string_type>
+    struct StringParser
+    {
+        string_type& m_str;
+        bool is_escaped = false;
+        
+
+        StringParser(string_type& t_str) : m_str(t_str) {}
+
+        bool parse(const char t_char)
+        {
+            
+            if (t_char == '\\') {
+                if (is_escaped) {
+                    m_str.push_back('\\');
+                    is_escaped = false;
+                } else {
+                    is_escaped = true;
+                }
+
+                return true;
+            }
+            
+            if(is_escaped){
+
+                
+                switch(t_char)
+                {
+                  case '\'': m_str.push_back('\''); return true;
+                  case '\"': m_str.push_back('\"'); return true;
+                  case 'a' : m_str.push_back('\a'); return true;
+                  case 'b' : m_str.push_back('\b'); return true;
+                  case 'f' : m_str.push_back('\f'); return true;
+                  case 'n' : m_str.push_back('\b'); return true;
+                  case 'r' : m_str.push_back('\r'); return true;
+                  case 't' : m_str.push_back('\t'); return true;
+                  case 'v' : m_str.push_back('\v'); return true;
+                }
+                
+            }
+
+            m_str.push_back(t_char);
+            return true;
+        }
+
+    };
+
+
 
     void skip_empty(){
 
@@ -352,7 +412,7 @@ class ALParser : public ParserBase
             ++position;
         }
     }
-    
+
     void skip_whitespace(){
 
         while (this->position.has_more() && char_in_alphabet(*position, detail::whitespace_alphabet))
@@ -417,7 +477,7 @@ class ALParser : public ParserBase
                 position = temp;
                 return false;
             }
-            
+
             val = true;
             ++position;
         }
@@ -472,25 +532,20 @@ class ALParser : public ParserBase
 
     ALObject* parse_string()
     {
-
         if(*this->position != '\"') {PARSE_ERROR("Invalid string literal.");}
-
         ++this->position;
 
-        auto temp = this->position;
+        std::string text{""};
+        StringParser<std::string> parser(text);
 
         while(this->position.has_more() && *this->position != '\"' )
         {
-            ++this->position;
-            if ( *this->position == '\\') { this->position += 2; }
+            parser.parse(*position);
+            ++position;    
         }
-
-        if (*this->position != '\"')
-        {
-            PARSE_ERROR("Invalid string literal.");
-        }
-        const auto text = detail::Position::str(temp, this->position);
-        ++this->position;
+        
+        if (*this->position != '\"') { PARSE_ERROR("Invalid string literal."); }
+        ++position;
 
         return make_string(std::string{text});
 
@@ -561,7 +616,7 @@ class ALParser : public ParserBase
     }
 
     ALObject* parse_backquote()
-    { 
+    {
         ++position;
         skip_whitespace();
         if (!check_char('`')) { PARSE_ERROR("Expected \'`\'"); }
@@ -570,16 +625,51 @@ class ALParser : public ParserBase
         return make_object(make_symbol("`"), obj);
     }
 
-    ALObject* parse_hashtag()
+    template<int base>
+    ALObject* parse_integer()
     {
-        if (!check_char('#')) { PARSE_ERROR("Expected \'#\'"); }
-        ++position;
-        if (!check_char('\'')) { PARSE_ERROR("Expected \'"); }        
+
+        WholeNumberParser<ALObject::int_type, base> parser();
+        
+        while(position.has_more() && char_in_alphabet(*position, detail::int_alphabet))
+        {
+            if (!parser.parse(*position)) {  PARSE_ERROR("Invalid integer \'`\'");  };
+            ++position;
+        }
+            
+        return make_int(parser.get_num());
+    }
+
+    ALObject* parse_function_quote()
+    {
+        if (!check_char('\'')) { PARSE_ERROR("Expected \'"); }
         ++position;
         skip_whitespace();
         auto obj = parse_next();
         if (!obj ) { PARSE_ERROR("Expected expression after \'"); }
-        return make_object(make_symbol("function"), obj);
+        return make_object(Qfunction, obj);
+    }
+
+    ALObject* parse_hashtag()
+    {
+        if (!check_char('#')) { PARSE_ERROR("Expected \'#\'"); }
+        ++position;
+
+        switch(*position)
+        {
+          case '\'': return parse_function_quote();
+          case 'b':
+          case 'B':
+              return parse_integer<2>();
+          case 'o':
+          case 'O':
+              return parse_integer<8>();
+          case 'x':
+          case 'X':
+              return parse_integer<16>();
+        }
+
+
     }
 
     ALObject* parse_list()
@@ -630,7 +720,7 @@ class ALParser : public ParserBase
     ALObject* parse_comma()
     {
         if (!check_char(',')) { PARSE_ERROR("Expected comma"); }
-        
+
         ++position;
         if (check_char('@')) {
             ++position;
@@ -662,6 +752,7 @@ class ALParser : public ParserBase
             skip_line();
             skip_whitespace();
         }
+
         
         if ( *position == '(' ) return parse_list();
         if ( *position == '\"') return parse_string();
@@ -674,7 +765,7 @@ class ALParser : public ParserBase
         if (  check_id( )     ) return parse_id();
 
         if( position.has_more()) { PARSE_ERROR("Unparsed input. Cannot parse.");}
-        
+
         return nullptr;
     }
 
