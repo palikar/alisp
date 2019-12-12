@@ -206,8 +206,8 @@ class ALParser : public ParserBase
 
 
         for ( size_t c = '0' ; c <= '9' ; ++c ) {set_alphabet(alph, detail::int_alphabet, c);}
-        for ( size_t c = 'a' ; c <= 'f' ; ++c ) {set_alphabet(alph, detail::id_alphabet, c);}
-        for ( size_t c = 'A' ; c <= 'F' ; ++c ) {set_alphabet(alph, detail::id_alphabet, c);}
+        for ( size_t c = 'a' ; c <= 'f' ; ++c ) {set_alphabet(alph, detail::int_alphabet, c);}
+        for ( size_t c = 'A' ; c <= 'F' ; ++c ) {set_alphabet(alph, detail::int_alphabet, c);}
         set_alphabet(alph, detail::int_alphabet, '-');
         set_alphabet(alph, detail::int_alphabet, '+');
 
@@ -476,13 +476,12 @@ class ALParser : public ParserBase
         auto temp = position;
         
         if (check_char('-') || check_char('+')) { ++position; }
-
-        bool valid = char_in_alphabet(*position, detail::double_alphabet);
+        
+        bool valid = check_char('.') || (digit_to_number(*position, 10) >= 0);
         bool dot_found = false;
         bool e_found = false;
         bool e_minus_found = false;
         bool prev_e = false;
-
 
         while (position.has_more() && char_in_alphabet(*position, detail::double_alphabet))
         {
@@ -643,8 +642,6 @@ class ALParser : public ParserBase
 
     ALObject* parse_function_quote()
     {
-        if (!check_char('\'')) { PARSE_ERROR("Expected \'"); }
-        ++position;
         skip_whitespace();
         auto obj = parse_next();
         if (!obj ) { PARSE_ERROR("Expected expression after \'"); }
@@ -714,17 +711,24 @@ class ALParser : public ParserBase
         if (!check_char('#')) { PARSE_ERROR("Expected \'#\'"); }
         ++position;
 
+        std::cout << *position << "\n";
+        
         switch(*position)
         {
-          case '\'': return parse_function_quote();
+          case '\'':
+              ++position;
+              return parse_function_quote();
           case 'b':
           case 'B':
+              ++position;
               return parse_integer<2>();
           case 'o':
           case 'O':
+              ++position;
               return parse_integer<8>();
           case 'x':
           case 'X':
+              ++position;
               return parse_integer<16>();
         }
 
