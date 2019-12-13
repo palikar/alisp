@@ -112,8 +112,14 @@ inline auto splice(ALObject* t_obj, std::vector<ALObject>::difference_type start
     const auto size = static_cast<std::vector<ALObject>::difference_type>(std::size(t_obj->children()));
     const auto end_move = end_index == -1 ? size : end_index;
 
-    const auto new_child = std::vector<ALObject*>(std::next(std::begin(t_obj->children()),  start_index),
-                                                  std::next(std::begin(t_obj->children()), end_move));
+    auto begin_it = std::next(std::begin(t_obj->children()),  start_index);
+    auto end_it = std::next(std::begin(t_obj->children()), end_move);
+
+    if (begin_it > end_it) {
+        return  Qnil;
+    }
+    
+    const auto new_child = std::vector<ALObject*>(begin_it, end_it);
     return make_object(new_child);
 }
 

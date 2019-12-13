@@ -28,6 +28,8 @@ option(ELF_LOGGING "Use elf as a hashing function" FALSE)
 option(JENKINS_LOGGING "Use jenkins one at a time as a hashing function" FALSE)
 option(DEBUG_LOGGING "Enabling debug logging" FALSE)
 
+option(BUILD_EXAMPLES "Enable targets for running the example scripts" FALSE)
+
 
 #######################################################################
 #######################################################################
@@ -234,12 +236,23 @@ install (FILES
 
 
 include (InstallRequiredSystemLibraries)
-set (CPACK_RESOURCE_FILE_LICENSE  
-    "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set (CPACK_PACKAGE_VERSION_MAJOR "${AL_VERSION_MAJOR}")
-set (CPACK_PACKAGE_VERSION_MINOR "${AL_VERSION_MINOR}")
-set (CPACK_PACKAGE_VERSION_PATCH "${AL_VERSION_PATCH}")
-include (CPack)
+set(CPACK_PACKAGE_VENDOR "Stanislav Arnaudov")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The alisp interpreted langege.")
+set(CPACK_PACKAGE_VERSION_MAJOR ${AL_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${AL_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${AL_VERSION_PATCH})
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
+set(CPACK_SOURCE_IGNORE_FILES
+    /.git
+    /.github
+    /dist
+    /.*build.*
+    /\\\\.DS_Store)
+include(CPack)
+
+
 
 if(BUILD_DOC)
     find_package(Doxygen)
@@ -265,8 +278,12 @@ endif()
 
 
 add_subdirectory(libs)
-
 add_subdirectory(src)
+
+
+if(BUILD_EXAMPLES)
+    
+endif(BUILD_EXAMPLES)
 
 
 message("#########################################")
