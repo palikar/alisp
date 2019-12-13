@@ -440,13 +440,10 @@ class ALParser : public ParserBase
 
         bool parse(const char t_char)
         {
-
             const bool is_octal_char = t_char >= '0' && t_char <= '7';
-
             const bool is_hex_char  = (t_char >= '0' && t_char <= '9')
                 || (t_char >= 'a' && t_char <= 'f')
                 || (t_char >= 'A' && t_char <= 'F');
-
 
             if (is_octal) {
 
@@ -492,9 +489,6 @@ class ALParser : public ParserBase
                 return true;
             }
 
-
-
-
             if (t_char == '\\') {
                 if (is_escaped) {
                     m_str.push_back('\\');
@@ -508,6 +502,28 @@ class ALParser : public ParserBase
 
             if (is_escaped) {
 
+                is_escaped = false;
+                
+                if (is_octal_char) {
+                    is_octal = true;
+                    octal_matches.push_back(t_char);
+                    return true;
+                }
+
+                if (t_char == 'x') {
+                    is_hex = true;
+                    hex_matches.push_back(t_char);
+                    return true;
+                }
+                
+                if (t_char == 'u') {
+                    unicode_size = 4;
+                }
+
+                if (t_char == 'U') {
+                    unicode_size = 8;
+                }
+                
                 switch(t_char)
                 {
                   case '\'': m_str.push_back('\''); return true;
@@ -519,11 +535,14 @@ class ALParser : public ParserBase
                   case 'r' : m_str.push_back('\r'); return true;
                   case 't' : m_str.push_back('\t'); return true;
                   case 'v' : m_str.push_back('\v'); return true;
+                  default: return false;
                 }
 
+                return true;
             }
 
             m_str.push_back(t_char);
+            
             return true;
         }
 
