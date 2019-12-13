@@ -32,7 +32,13 @@ inline void assert_size (ALObject* obj)
 inline void assert_numbers (ALObject* obj)
 {
     if(!are_objects_numbers(obj))
-        throw std::runtime_error("Invalid argument. The list must contain only numbers(real of int)");
+        throw std::runtime_error("Invalid argument. The list must contain only numbers (real of int)");
+}
+
+inline void assert_number (ALObject* obj)
+{
+    if(preal(obj) || pint(obj))
+        throw std::runtime_error("Invalid argument. The object must be number (real of int)");
 }
 
 inline void assert_symbol (ALObject* obj)
@@ -54,7 +60,6 @@ inline void assert_int (ALObject* obj)
 {
     if(!obj->is_int()) throw std::runtime_error("Invalid argument. Object must be an integer");
 }
-
 
 
 }

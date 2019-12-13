@@ -15,3 +15,17 @@
     extern ALObject* F##name (ALObject*, env::Environment*, eval::Evaluator*); \
     inline auto Q##name = &env::Environment::g_global_symbol_table.insert({sym, ALObject(sym, true)}).first->second; \
     inline auto P##name = env::Environment::g_prime_values.insert({sym, *ALObject(ALObject::list_type{}).make_prime(&F##name)})
+
+
+    
+#define APP_FUNCTION_(NAME, FUN, TYPE)                                  \
+    ALObject* NAME(ALObject* obj, env::Environment*, eval::Evaluator* evl) \
+    {                                                                   \
+        assert_size<0>(obj);                                            \
+        assert_number(obj->i(0));                                       \
+        return make_##TYPE(FUN(evl->eval(obj->i(0))->to_##TYPE()));     \
+    }
+
+
+#define REAL_APP_FUNCTION(NAME, FUN) APP_FUNCTION_(NAME, FUN, real)
+#define INT_APP_FUNCTION(NAME, FUN) APP_FUNCTION_(NAME, FUN, int)
