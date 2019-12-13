@@ -374,7 +374,7 @@ class ALParser : public ParserBase
 
         StringParser(string_type& t_str) : m_str(t_str) {}
 
-
+        
         void process_hex()
         {
             if (!hex_matches.empty()) {

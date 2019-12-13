@@ -15,34 +15,40 @@ namespace alisp
 {
 
 
-ALObject* Fpsym(ALObject* obj, env::Environment*, eval::Evaluator*)
+ALObject* Fpsym(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
-    return psym(obj) ? Qt : Qnil;
+    assert_size<1>(obj);
+    return psym(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
-ALObject* Fplist(ALObject* obj, env::Environment*, eval::Evaluator*)
+ALObject* Fplist(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
-    return plist(obj) ? Qt : Qnil;
+    assert_size<1>(obj);
+    return plist(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
-ALObject* Fpint(ALObject* obj, env::Environment*, eval::Evaluator*)
+ALObject* Fpint(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
-    return pint(obj) ? Qt : Qnil;
+    assert_size<1>(obj);
+    return pint(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
-ALObject* Fpreal(ALObject* obj, env::Environment*, eval::Evaluator*)
+ALObject* Fpreal(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
-    return preal(obj) ? Qt : Qnil;
+    assert_size<1>(obj);
+    return preal(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
-ALObject* Fpstring(ALObject* obj, env::Environment*, eval::Evaluator*)
+ALObject* Fpstring(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
-    return pstring(obj) ? Qt : Qnil;
+    assert_size<1>(obj);
+    return pstring(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
-ALObject* Fpfunction(ALObject* obj, env::Environment*, eval::Evaluator*)
+ALObject* Fpfunction(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
-    return pfunction(obj) ? Qt : Qnil;
+    assert_size<1>(obj);
+    return pfunction(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
 
