@@ -215,7 +215,7 @@ ALObject* Flet(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
 
     auto varlist = obj->i(0);
 
-    std::vector<std::pair<ALObject*,ALObject*>> cells;
+    
     cells.reserve(std::size(varlist->children()));
 
     for (auto var : varlist->children()) {
@@ -228,7 +228,7 @@ ALObject* Flet(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
         }
         
     }
-
+    std::vector<std::pair<ALObject*,ALObject*>> cells;
     for (auto[ob, cell] : cells) {
         env->put(ob, cell);
     }
