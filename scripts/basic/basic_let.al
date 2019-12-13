@@ -1,0 +1,11 @@
+(let ((a "a")
+      (b "b")
+      c d e)
+  (println a)
+  (println b))
+
+(let* ((a "a")
+       (b "b")
+       c d e)
+  (println a)
+  (println b))
