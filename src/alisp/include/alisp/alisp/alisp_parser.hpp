@@ -454,7 +454,7 @@ class ALParser : public ParserBase
                 }
 
                 if (std::size(octal_matches) == 3) {
-                    //process
+                    process_octal();
                 }
 
                 return true;
@@ -469,7 +469,7 @@ class ALParser : public ParserBase
                 }
 
                 if (std::size(hex_matches) == 2*sizeof(char)) {
-                    //process
+                    process_hex();
                 }
 
                 return true;
@@ -484,7 +484,7 @@ class ALParser : public ParserBase
                 }
 
                 if (std::size(hex_matches) == unicode_size) {
-                    //process
+                    process_unicode();
                 }
                 return true;
             }
@@ -512,16 +512,17 @@ class ALParser : public ParserBase
 
                 if (t_char == 'x') {
                     is_hex = true;
-                    hex_matches.push_back(t_char);
                     return true;
                 }
                 
                 if (t_char == 'u') {
                     unicode_size = 4;
+                    return true;
                 }
 
                 if (t_char == 'U') {
                     unicode_size = 8;
+                    return true;
                 }
                 
                 switch(t_char)
