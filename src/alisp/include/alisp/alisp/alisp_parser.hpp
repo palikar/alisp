@@ -773,9 +773,9 @@ class ALParser : public ParserBase
 
     ALObject* parse_backquote()
     {
+        if (!check_char('`')) { PARSE_ERROR("Expected \'`\'"); }
         ++position;
         skip_whitespace();
-        if (!check_char('`')) { PARSE_ERROR("Expected \'`\'"); }
         auto obj = parse_next();
         if (!obj) { PARSE_ERROR("Expected expression after \'`\'"); }
         return make_object(make_symbol("`"), obj);
@@ -840,6 +840,7 @@ class ALParser : public ParserBase
             }
 
         } else {
+            
             char captured = *position;
             ++position;
             return make_int(static_cast<ALObject::int_type>(captured));
@@ -851,8 +852,6 @@ class ALParser : public ParserBase
     {
         if (!check_char('#')) { PARSE_ERROR("Expected \'#\'"); }
         ++position;
-
-        std::cout << *position << "\n";
 
         switch(*position)
         {
@@ -934,7 +933,7 @@ class ALParser : public ParserBase
             skip_whitespace();
             auto obj = parse_next();
             if ( !obj ) { PARSE_ERROR("Expected expression after \'@,\'"); }
-            return make_object(make_symbol("@,"), obj);
+            return make_object(make_symbol(",@"), obj);
         } else {
             skip_whitespace();
             auto obj = parse_next();
