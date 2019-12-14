@@ -1,21 +1,22 @@
-
-
-
-
-
-get_target_property(TEST_SOURCES "${PROJECT_NAME}_alisp" SOURCES)
-add_executable(${PROJECT_NAME}_alisp_test
+add_executable(alisp_language_test
     test_main.cpp
     test_lexer.cpp
-    ../src/common_lexer.cpp
-    ../src/lexer.cpp
-    ../src/parser.cpp
-    ../src/lisp_object.cpp
-    ../src/error_messaging.cpp
+
+    ../src/alisp_parser.cpp
+    ../src/alisp_env.cpp
+    ../src/alisp_eval.cpp
+    ../src/alisp_object.cpp
+
+    ../src/alisp_language.cpp
+    ../src/alisp_lists.cpp
+    ../src/alisp_logic.cpp
+    ../src/alisp_math.cpp
+    ../src/alisp_predicates.cpp
+    ../src/alisp_printing.cpp
     
     )
 
-target_include_directories(${PROJECT_NAME}_alisp_test
+target_include_directories(alisp_language_test
     PUBLIC ../include
     PRIVATE ../src
     )
@@ -24,20 +25,20 @@ target_include_directories(${PROJECT_NAME}_alisp_test
 
 
 
-target_link_libraries(${PROJECT_NAME}_alisp_test
+target_link_libraries(alisp_language_test
     PRIVATE
     project_options
     project_warnings
     PUBLIC
+    alisp_util
     rang::rang
-    alisp_common    
     Threads::Threads
     fmt::fmt
     spdlog::spdlog
-    absl::strings
     Catch2::Catch2)
 
 
 include(CTest)
 include(Catch)
-catch_discover_tests(${PROJECT_NAME}_alisp_test)
+
+catch_discover_tests(alisp_language_test)

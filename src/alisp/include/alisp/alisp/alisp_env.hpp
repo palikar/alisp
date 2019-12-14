@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <unordered_map>
 #include <vector>
 #include <array>
@@ -9,18 +8,8 @@
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_macros.hpp"
 
+#include "alisp/utility/helpers.hpp"
 
-// template <typename T>
-// struct reversion_wrapper { T& iterable; };
-
-// template <typename T>
-// auto begin (reversion_wrapper<T> w) { return std::rbegin(w.iterable); }
-
-// template <typename T>
-// auto end (reversion_wrapper<T> w) { return std::rend(w.iterable); }
-
-// template <typename T>
-// reversion_wrapper<T> reverse (T&& iterable) { return { iterable }; }
 
 namespace alisp::eval
 {
@@ -76,7 +65,8 @@ struct CellStack {
 }
 
 
-class Environment {
+class Environment
+{
 
   public:
     static inline std::unordered_map<std::string, ALObject*> g_symbol_table;
@@ -100,23 +90,7 @@ class Environment {
     }
 
 
-    
-    ALObject* find(const ALObject* t_sym)
-    {
-        
-        const auto name = t_sym->to_string();
-
-        for (auto& scope : current_frame())
-        {
-            if (scope.count(name)) { return scope.at(name); };
-        }
-        
-        if (g_prime_values.count(name)) { return &g_prime_values.at(name) ;}
-
-        if (m_stack.root_scope().count(name)) { return m_stack.root_scope().at(name); };
-
-        throw environment_error("\tUnbounded Symbol: " + name);
-    }
+    ALObject* find(const ALObject* t_sym);
 
 
     /**
@@ -177,15 +151,9 @@ class Environment {
 
     bool in_root() { return !in_function() and std::size(m_stack.root_frame()) == 0;}
 
-
     auto& get_stack_trace() { return m_stack_trace; }
 
-    
-    detail::CellStack::StackFrame& current_frame() {
-        return m_stack.stacks.back();
-    }
-    
-    
+
 };
 
 

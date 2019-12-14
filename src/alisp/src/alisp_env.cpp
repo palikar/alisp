@@ -17,6 +17,23 @@ namespace alisp
 namespace env
 {
 
+ALObject* Environment::find(const ALObject* t_sym)
+{
+        
+    const auto name = t_sym->to_string();
+
+    for (auto& scope : utility::reverse(m_stack.current_frame()))
+    {
+        if (scope.count(name)) { return scope.at(name); };
+    }
+        
+    if (g_prime_values.count(name)) { return &g_prime_values.at(name) ;}
+
+    if (m_stack.root_scope().count(name)) { return m_stack.root_scope().at(name); };
+
+    throw environment_error("\tUnbounded Symbol: " + name);
+}
+
 void Environment::update(const ALObject* t_sym, ALObject* t_value)
 {
     const auto name = t_sym->to_string();

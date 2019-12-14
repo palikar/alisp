@@ -48,8 +48,8 @@ ALObject* Fdefmacro(ALObject* obj, env::Environment* env, eval::Evaluator*)
 
 ALObject* Flambda(ALObject* obj, env::Environment*, eval::Evaluator*)
 {
-    assert_min_size<2>(obj);
-    assert_list(obj->i(1));
+    assert_min_size<1>(obj);
+    assert_list(obj->i(0));
     
     auto new_lambda = make_object(obj->i(0), splice(obj, 1));
     new_lambda->set_function_flag();
@@ -211,11 +211,9 @@ ALObject* Flet(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
     assert_min_size<1>(obj);
     assert_list(obj->i(0));
     
-    env::detail::ScopePushPop spp{*env};
-
     auto varlist = obj->i(0);
 
-    
+    std::vector<std::pair<ALObject*,ALObject*>> cells;
     cells.reserve(std::size(varlist->children()));
 
     for (auto var : varlist->children()) {
@@ -225,10 +223,11 @@ ALObject* Flet(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
         } else {
             assert_symbol(var);
             cells.push_back({var, Qnil});
-        }
-        
+        }        
     }
-    std::vector<std::pair<ALObject*,ALObject*>> cells;
+
+    env::detail::ScopePushPop spp{*env};
+    
     for (auto[ob, cell] : cells) {
         env->put(ob, cell);
     }

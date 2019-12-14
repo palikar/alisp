@@ -1,5 +1,4 @@
 add_library(alisp_language
-    # src/alisp_common.cpp
     src/alisp_parser.cpp
     src/alisp_env.cpp
     src/alisp_eval.cpp
@@ -11,8 +10,7 @@ add_library(alisp_language
     src/alisp_math.cpp
     src/alisp_predicates.cpp
     src/alisp_printing.cpp
-    
-    # src/error_messaging.cpp
+
     )
 
 
@@ -26,6 +24,7 @@ target_link_libraries(alisp_language
     project_options
     project_warnings
     PUBLIC
+    alisp_util
     clara::clara
     rang::rang
     alisp_util

@@ -6,6 +6,7 @@
 #include <alisp/utility/logging.hpp>
 #include <alisp/utility/macros.hpp>
 #include <alisp/utility/meta.hpp>
+#include <alisp/utility/proxy.hpp>
 #include <alisp/utility/slice.hpp>
 #include <alisp/utility/string_utils.hpp>
 #include <alisp/utility/zipping.hpp>

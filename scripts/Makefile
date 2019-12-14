@@ -27,12 +27,12 @@ examples : $(example_scripts)
 
 $(basic_scripts):
 	$(call colorecho, 10, "-n", "Executing $@... ")
-	@echo $(ALISP_EXE) $(ALISP_FLAGS) ./basic/$@ > ./basic/$@.output || (echo -n $(RED) "failed" $(NC); exit 0)
+	@$(ALISP_EXE) $(ALISP_FLAGS) ./basic/$@ > ./basic/$@.output || (echo -n $(RED) "failed" $(NC); exit 1)
 	@echo ""
 
 $(example_scripts):
 	$(call colorecho, 10, "-n", "Executing $@... ")
-	@echo $(ALISP_EXE) $(ALISP_FLAGS) ./examples/$@ > ./examples/$@.output || (echo -n $(RED) "failed" $(NC); exit 0)
+	@$(ALISP_EXE) $(ALISP_FLAGS) ./examples/$@ > ./examples/$@.output || (echo -n $(RED) "failed" $(NC); exit 1)
 	@echo ""
 
 clean:
