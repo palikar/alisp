@@ -22,7 +22,7 @@ option(ENABLE_TESTING "Enable the building of the test" FALSE)
 option(ENABLE_CLANG_TIDY "Enable testing with clang-tidy" FALSE)
 option(ENABLE_CPPCHECK "Enable testing with cppcheck" FALSE)
 option(SIMPLE_BUILD "Build the project as minimally as possible" FALSE)
-option(BUILD_DOC "Build the project's documentation" ON)
+option(BUILD_DOC "Build the project's documentation" FALSE)
 option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
 option(ELF_LOGGING "Use elf as a hashing function" FALSE)
 option(JENKINS_LOGGING "Use jenkins one at a time as a hashing function" FALSE)
@@ -282,7 +282,17 @@ add_subdirectory(src)
 
 
 if(BUILD_EXAMPLES)
+
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/scripts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    add_custom_command(
+        OUTPUT SYMBOLIC ${CMAKE_CURRENT_BINARY_DIR}/scripts_results
+        COMMAND ALISP_EXE=../bin/alisp make
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts
+        USES_TERMINAL
+        )
     
+    add_custom_target(test_examples ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/scripts_results alisp)
+
 endif(BUILD_EXAMPLES)
 
 

@@ -1,6 +1,8 @@
 add_executable(alisp_language_test
     test_main.cpp
     test_parser.cpp
+    test_env.cpp
+    test_common.cpp
 
     ../src/alisp_parser.cpp
     ../src/alisp_env.cpp

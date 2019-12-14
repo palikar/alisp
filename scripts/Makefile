@@ -8,7 +8,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32'
 NC='\033[0m'
 
-ALISP_EXE=../build/bin/alisp
+ALISP_EXE ?= ../build/bin/alisp
 ALISP_FLAGS=
 SHELL=/bin/sh
 
