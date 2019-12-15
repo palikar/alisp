@@ -44,7 +44,6 @@ struct CellStack {
 
     CellStack() {
         push_frame();
-        push_scope();
     }
 
     void push_frame() { stacks.emplace_back(1); }
@@ -149,7 +148,7 @@ class Environment
 
     bool in_function() { return m_call_depth != 0;}
 
-    bool in_root() { return !in_function() and std::size(m_stack.root_frame()) == 0;}
+    bool in_root() { return (!in_function()) && (std::size(m_stack.root_frame()) == 1); }
 
     auto& get_stack_trace() { return m_stack_trace; }
 
