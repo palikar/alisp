@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
 project(alisp LANGUAGES CXX)
 
 include(cmake/safeguards.cmake)
@@ -157,6 +160,22 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 if(ENABLE_TESTING)
     enable_testing()
+    
+    if(ONLY_COVERAGE OR ENABLE_COVERAGE)
+
+        include(CodeCoverage)
+
+        setup_target_for_coverage_gcovr_html(
+            NAME alisp_coverage_html
+            EXECUTABLE ctest -j2
+            DEPENDENCIES alisp_language_test)
+
+        setup_target_for_coverage_gcovr_xml(
+            NAME alisp_coverage_xml
+            EXECUTABLE ctest -j2
+            DEPENDENCIES alisp_language_test)
+    endif()
+    
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
