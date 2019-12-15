@@ -15,7 +15,7 @@ add_executable(alisp_language_test
     ../src/alisp_math.cpp
     ../src/alisp_predicates.cpp
     ../src/alisp_printing.cpp
-    
+
     )
 
 target_include_directories(alisp_language_test
@@ -38,6 +38,7 @@ target_link_libraries(alisp_language_test
     fmt::fmt
     spdlog::spdlog
     Catch2::Catch2)
+
 
 
 include(CTest)

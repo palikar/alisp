@@ -167,12 +167,12 @@ if(ENABLE_TESTING)
 
         setup_target_for_coverage_gcovr_html(
             NAME alisp_coverage_html
-            EXECUTABLE ctest -j2
+            EXECUTABLE ./bin/alisp_language_test
             DEPENDENCIES alisp_language_test)
-
+        
         setup_target_for_coverage_gcovr_xml(
             NAME alisp_coverage_xml
-            EXECUTABLE ctest -j2
+            EXECUTABLE ./bin/alisp_language_test
             DEPENDENCIES alisp_language_test)
     endif()
     
