@@ -46,6 +46,12 @@ struct ALObjectHelper
         return new ALObject(a);
     }
 
+    
+    static ALObject* get(const char* a){
+        return new ALObject(std::string(a));
+    }
+
+
     static ALObject* get(std::vector<ALObject*> vec_objs)
     {
         return new ALObject(vec_objs);

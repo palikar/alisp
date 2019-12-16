@@ -23,7 +23,7 @@ TEST_CASE("Evaluator Test [simple]", "[eval]")
 
     SECTION ("int") {
         std::string input{"42"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->is_int() );
         CHECK ( res->to_int() == 42 );
@@ -31,7 +31,7 @@ TEST_CASE("Evaluator Test [simple]", "[eval]")
     
     SECTION ("double") {
         std::string input{"42.32"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->is_real() );
         CHECK ( res->to_real() == 42.32_a );
@@ -40,7 +40,7 @@ TEST_CASE("Evaluator Test [simple]", "[eval]")
     SECTION ("string") {
         
         std::string input{"\"string\""};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->is_string() );
         CHECK ( res->to_string().compare("string") == 0 );
@@ -49,7 +49,7 @@ TEST_CASE("Evaluator Test [simple]", "[eval]")
 
     SECTION ("sym") {
         std::string input{"nil"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
         
         CHECK ( res->is_sym() );
     }    
@@ -68,9 +68,9 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
     SECTION ( "defun" ) {
         
         std::string input{"(defun fun (a) \'a)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        eval.eval(pars.parse(&input, "__TEST__")[0]);
 
-        CHECK ( env.find("fun")->check_function_flag() );
+        CHECK ( env.find(make_symbol("fun"))->check_function_flag() );
         
     }
 
@@ -78,9 +78,9 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
         
         
         std::string input{"(defmacro fun (a) \'a)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        eval.eval(pars.parse(&input, "__TEST__")[0]);
 
-        CHECK ( env.find("fun")->check_macro_flag() );
+        CHECK ( env.find(make_symbol("fun"))->check_macro_flag() );
         
     
     }
@@ -88,43 +88,48 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
     SECTION ( "defvar" ) {
 
         std::string input{"(defvar a 42)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        eval.eval(pars.parse(&input, "__TEST__")[0]);
 
-        CHECK ( env.find("a")->is_int() );
+        CHECK ( env.find(make_symbol("a"))->is_int() );
         
     }
 
     SECTION ( "setq" ) {
-        std::string input{"(setq a 43)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
 
-        CHECK ( env.find("a")->is_int() );
-        CHECK ( env.find("a")->to_int() == 43 );
+        std::string input{"(defvar a 42)"};
+        eval.eval(pars.parse(&input, "__TEST__")[0]);
+        
+        input = "(setq a 43)";
+        eval.eval(pars.parse(&input, "__TEST__")[0]);
+
+        CHECK ( env.find(make_symbol("a"))->is_int() );
+        CHECK ( env.find(make_symbol("a"))->to_int() == 43 );
         
     }
 
     SECTION ( "set" ) {
-        
-        std::string input{"(set \'a 44)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
 
-        CHECK ( env.find("a")->is_int() );
-        CHECK ( env.find("a")->to_int() == 44 );
+        std::string input{"(defvar a 42)"};
+        eval.eval(pars.parse(&input, "__TEST__")[0]);
+        
+        input = "(set \'a 44)";
+        eval.eval(pars.parse(&input, "__TEST__")[0]);
+
+        CHECK ( env.find(make_symbol("a"))->is_int() );
+        CHECK ( env.find(make_symbol("a"))->to_int() == 44 );
     
     }
 
     SECTION ( "quote" ) {
         std::string input{"'sym"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
-        CHECK ( env.find("a")->is_sym() );
+        CHECK ( res->is_sym() );
     }
 
     SECTION ( "function" ) {
-        
-        
-        std::string input{"((function a))"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        std::string input{"(function a)"};
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->is_sym() );
     }
@@ -132,7 +137,7 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
     SECTION ( "lambda" ) {
         
         std::string input{"(lambda (a) \'a)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->check_function_flag() );
             
@@ -140,14 +145,14 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
 
     SECTION ( "if[1]" ) {
         std::string input{"(if 'nil 42 32)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->to_int() == 32 );
     }
 
     SECTION ( "if[2]" ) {
         std::string input{"(if 't 42 32)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->to_int() == 42 );
     }
@@ -161,7 +166,7 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
     SECTION ( "unless" ) {
         
         std::string input{"(unless 'nil 42 32)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->to_int() == 32 );    
     }
@@ -169,21 +174,21 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
     SECTION ( "when" ) {
         
         std::string input{"(when 't 42 32)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->to_int() == 32 );    
     }
 
     SECTION ( "progn" ) {
         std::string input{"(progn 42 32)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->to_int() == 32 );
     }
 
     SECTION ( "let*" ) {
         std::string input{"(let* ((a 42)) a)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->to_int() == 42 );
     
@@ -191,7 +196,7 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
 
     SECTION ( "let" ) {
         std::string input{"(let ((a 42)) a)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->to_int() == 42 );
     }
@@ -207,7 +212,7 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
 }
 
 
-TEST_CASE("Evaluator Test [math]", "[eval]+")
+TEST_CASE("Evaluator Test [math]", "[eval]")
 {
     using namespace alisp;
 
@@ -217,7 +222,7 @@ TEST_CASE("Evaluator Test [math]", "[eval]+")
 
     SECTION ( "+" ) {
         std::string input{"(+ 10 10)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->to_int() == 20 );
         
@@ -225,7 +230,7 @@ TEST_CASE("Evaluator Test [math]", "[eval]+")
     SECTION ( "-" ) {
     
         std::string input{"(- 10 5)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->to_int() == 5 );
         
@@ -233,7 +238,7 @@ TEST_CASE("Evaluator Test [math]", "[eval]+")
     SECTION ( "/" ) {
     
         std::string input{"(/ 10 2)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->to_int() == 5 );
         
@@ -241,7 +246,7 @@ TEST_CASE("Evaluator Test [math]", "[eval]+")
     SECTION ( "*" ) {
         
         std::string input{"(* 10 10)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( res->to_int() == 100 );    
     }
@@ -249,7 +254,7 @@ TEST_CASE("Evaluator Test [math]", "[eval]+")
     SECTION ( ">" ) {
         
         std::string input{"(> 10 11)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( is_falsy(res) );
         
@@ -259,32 +264,32 @@ TEST_CASE("Evaluator Test [math]", "[eval]+")
     
         
         std::string input{"(>= 10 11)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( is_falsy(res) );    
     
     }
     SECTION ( "<" ) {
         std::string input{"(< 10 11)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( is_truthy(res) );
     }
     SECTION ( "<=" ) {
         std::string input{"(<= 10 11)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( is_truthy(res) );
     }
     SECTION ( "==" ) {
         std::string input{"(== 10 10)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( is_truthy(res) );
     }
     SECTION ( "!=" ) {
-        std::string input{"(!= 10 11)"};
-        auto res = eval->eval(pars.parse(&input, "__TEST__")[0]);
+        std::string input{"(!= 11 11)"};
+        auto res = eval.eval(pars.parse(&input, "__TEST__")[0]);
 
         CHECK ( is_falsy(res) );
     }
@@ -293,7 +298,7 @@ TEST_CASE("Evaluator Test [math]", "[eval]+")
 
 
 
-TEST_CASE("Evaluator Test [logic]", "[eval]+")
+TEST_CASE("Evaluator Test [logic]", "[eval]")
 {
     using namespace alisp;
 
@@ -309,7 +314,7 @@ TEST_CASE("Evaluator Test [logic]", "[eval]+")
 
 
 
-TEST_CASE("Evaluator Test [predicates]", "[eval]+")
+TEST_CASE("Evaluator Test [predicates]", "[eval]")
 {
     using namespace alisp;
 
@@ -329,7 +334,7 @@ TEST_CASE("Evaluator Test [predicates]", "[eval]+")
 
 
 
-TEST_CASE("Evaluator Test [lists]", "[eval]+")
+TEST_CASE("Evaluator Test [lists]", "[eval]")
 {
     using namespace alisp;
 

@@ -748,8 +748,10 @@ class ALParser : public ParserBase
         std::string text{""};
         StringParser<std::string> parser(text);
 
-        while(this->position.has_more() && *this->position != '\"' )
+        bool escaped = false;
+        while(this->position.has_more() && ( *this->position != '\"' or escaped ))
         {
+            escaped = *this->position == '\\' and !escaped;
             parser.parse(*position);
             ++position;
         }

@@ -209,6 +209,7 @@ TEST_CASE("Parser Test [number literals]", "[parser]")
 
 TEST_CASE("Parser Test [char literas]", "[parser]")
 {
+    using namespace alisp;
     alisp::env::Environment env;
     alisp::eval::Evaluator eval(env);
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
@@ -244,7 +245,7 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
     }
 
     SECTION ("char [4]") {
-        input = "\\";
+        input = "?\\\\";
         res = pars.parse(&input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
@@ -253,7 +254,7 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
     }
 
     SECTION ("char [5]") {
-        input = "\'";
+        input = "?\\'";
         res = pars.parse(&input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
@@ -262,12 +263,12 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
     }
 
     SECTION ("char [6]") {
-        input = "\r";
+        input = "?\\r";
         res = pars.parse(&input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
-        CHECK ( res[0]->to_int() == static_cast<static_cast<ALObject::int_type>>('\r') );
+        CHECK ( res[0]->to_int() == static_cast<ALObject::int_type>('\r') );
     }
 
 
@@ -276,6 +277,8 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
 
 TEST_CASE("Parser Test [string literas]", "[parser]")
 {
+    using namespace alisp;
+    
     alisp::env::Environment env;
     alisp::eval::Evaluator eval(env);
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
@@ -388,12 +391,12 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
     }
 
     SECTION ("strings [13]") {
-        input = R"raw("Hmm:\U1001F1")raw";
+        input = R"raw("Hmm:\U001001F0")raw";
         res = pars.parse(&input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
-        CHECK ( res[0]->to_string().compare("Hmm:\U1001B1") == 0 );
+        CHECK ( res[0]->to_string().compare("Hmm:\U001001F0") == 0 );
     }
     
 }
