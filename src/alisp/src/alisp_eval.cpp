@@ -20,6 +20,7 @@ void Evaluator::put_argument(ALObject* param, ALObject* arg)
 {
     this->env.put(param, arg);
 }
+
 template<bool evaluation>
 void Evaluator::handle_argument_bindings(ALObject* params, ALObject* args)
 {
