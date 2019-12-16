@@ -234,7 +234,7 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
         CHECK ( res[0]->to_int() == 97 );        
     }
     
-    SECTION ("char [2]") {
+    SECTION ("char [3]") {
         input = "?\n";
         res = pars.parse(&input, "__TEST__");
 
@@ -242,6 +242,35 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
         CHECK ( res[0]->is_int() );
         CHECK ( res[0]->to_int() == 10 );
     }
+
+    SECTION ("char [4]") {
+        input = "\\";
+        res = pars.parse(&input, "__TEST__");
+
+        CHECK ( std::size(res) == 1 );
+        CHECK ( res[0]->is_int() );
+        CHECK ( res[0]->to_int() == 92 );
+    }
+
+    SECTION ("char [5]") {
+        input = "\'";
+        res = pars.parse(&input, "__TEST__");
+
+        CHECK ( std::size(res) == 1 );
+        CHECK ( res[0]->is_int() );
+        CHECK ( res[0]->to_int() == 39 );
+    }
+
+    SECTION ("char [6]") {
+        input = "\r";
+        res = pars.parse(&input, "__TEST__");
+
+        CHECK ( std::size(res) == 1 );
+        CHECK ( res[0]->is_int() );
+        CHECK ( res[0]->to_int() == static_cast<static_cast<ALObject::int_type>>('\r') );
+    }
+
+
 
 }
 
