@@ -96,7 +96,7 @@ ALObject* Ffunction(ALObject* obj, env::Environment*, eval::Evaluator*)
 ALObject* Fif(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<2>(obj);
-
+    
     if (is_truthy(evl->eval(obj->i(0)))) {
         return evl->eval(obj->i(1));
     } else if (obj->length() == 3) {
