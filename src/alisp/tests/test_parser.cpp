@@ -263,7 +263,6 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
         CHECK ( res[0]->to_string().compare("string") == 0 );
     }
 
-    
     SECTION ("strings [2]") {
         input = R"raw("At:\u0040")raw";
         res = pars.parse(&input, "__TEST__");
@@ -273,7 +272,6 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
         CHECK ( res[0]->to_string().compare("At:@") == 0 );
     }
 
-    
     SECTION ("strings [3]") {
         input = R"raw("Hmm:\077")raw";
         res = pars.parse(&input, "__TEST__");
@@ -291,6 +289,42 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
         CHECK ( res[0]->is_string() );
         CHECK ( res[0]->to_string().compare("Hmm:O") == 0 );
     }
+
+    SECTION ("strings [5]") {
+        input = R"raw("Hmm:\n")raw";
+        res = pars.parse(&input, "__TEST__");
+
+        CHECK ( std::size(res) == 1 );
+        CHECK ( res[0]->is_string() );
+        CHECK ( res[0]->to_string().compare("Hmm:\n") == 0 );
+    }
+    
+    SECTION ("strings [6]") {
+        input = R"raw("Hmm:\t")raw";
+        res = pars.parse(&input, "__TEST__");
+
+        CHECK ( std::size(res) == 1 );
+        CHECK ( res[0]->is_string() );
+        CHECK ( res[0]->to_string().compare("Hmm:\t") == 0 );
+    }
+    
+    SECTION ("strings [7]") {
+        input = R"raw("Hmm:\\")raw";
+        res = pars.parse(&input, "__TEST__");
+
+        CHECK ( std::size(res) == 1 );
+        CHECK ( res[0]->is_string() );
+        CHECK ( res[0]->to_string().compare("Hmm:\\") == 0 );
+    }
+
+    SECTION ("strings [8]") {
+        input = R"raw("Hmm:\"")raw";
+        res = pars.parse(&input, "__TEST__");
+
+        CHECK ( std::size(res) == 1 );
+        CHECK ( res[0]->is_string() );
+        CHECK ( res[0]->to_string().compare("Hmm:\"") == 0 );}
+    
 }
 
 TEST_CASE("Parser Test [symbols]", "[parser]")

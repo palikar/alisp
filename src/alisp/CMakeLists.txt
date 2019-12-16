@@ -27,7 +27,6 @@ target_link_libraries(alisp_language
     alisp_util
     clara::clara
     rang::rang
-    alisp_util
     Threads::Threads
     fmt::fmt
     spdlog::spdlog
