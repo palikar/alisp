@@ -352,7 +352,49 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
-        CHECK ( res[0]->to_string().compare("Hmm:\"") == 0 );}
+        CHECK ( res[0]->to_string().compare("Hmm:\"") == 0 );
+    }
+
+    SECTION ("strings [9]") {
+        input = R"raw("Hmm:\u0400")raw";
+        res = pars.parse(&input, "__TEST__");
+
+        CHECK ( std::size(res) == 1 );
+        CHECK ( res[0]->is_string() );
+        CHECK ( res[0]->to_string().compare("Hmm:\u0400") == 0 );
+    }
+
+    SECTION ("strings [10]") {
+        input = R"raw("Hmm:\u1400")raw";
+        res = pars.parse(&input, "__TEST__");
+
+        CHECK ( std::size(res) == 1 );
+        CHECK ( res[0]->is_string() );
+        CHECK ( res[0]->to_string().compare("Hmm:\u1400") == 0 );
+    }
+
+    SECTION ("strings [11]") {
+        input = R"raw("Hmm:\u1040")raw";
+        res = pars.parse(&input, "__TEST__");
+
+        CHECK ( std::size(res) == 1 );
+        CHECK ( res[0]->is_string() );
+        CHECK ( res[0]->to_string().compare("Hmm:\u1040") == 0 );
+    }
+
+    SECTION ("strings [12]") {
+        input = R"raw("Hmm:\uD802")raw";
+        CHECK_THROWS ( res = pars.parse(&input, "__TEST__") );
+    }
+
+    SECTION ("strings [13]") {
+        input = R"raw("Hmm:\U1001F1")raw";
+        res = pars.parse(&input, "__TEST__");
+
+        CHECK ( std::size(res) == 1 );
+        CHECK ( res[0]->is_string() );
+        CHECK ( res[0]->to_string().compare("Hmm:\U1001B1") == 0 );
+    }
     
 }
 
