@@ -118,4 +118,7 @@ DEFUN(leq, "<=");
 DEFUN(eq, "==");
 DEFUN(neq, "!=");
 
+DEFUN(leftshift, "<<");
+DEFUN(rightshift, ">>");
+
 }

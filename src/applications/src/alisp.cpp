@@ -152,9 +152,11 @@ void eval_statement(const std::string& command)
     } catch (alisp::parse_exception& p_exc) {
         std::cout << rang::fg::red << "Parser error:\n" << rang::fg::reset;
         std::cout << p_exc.what() << "\n";
+        exit(1);
     } catch (alisp::environment_error& p_exc) {
         std::cout << rang::fg::red << "Environment error:\n" << rang::fg::reset;
         std::cout << p_exc.what() << "\n";
+        exit(1);
     }
 
 
@@ -190,9 +192,11 @@ void eval_file(const std::filesystem::path& t_path)
         } catch (alisp::parse_exception& p_exc) {
             std::cout << rang::fg::red << "Parser error:\n" << rang::fg::reset;
             std::cout << p_exc.what() << "\n";
+            exit(1);
         } catch (alisp::environment_error& p_exc) {
             std::cout << rang::fg::red << "Environment error:\n" << rang::fg::reset;
             std::cout << p_exc.what() << "\n";
+            exit(1);
         }
 
 
