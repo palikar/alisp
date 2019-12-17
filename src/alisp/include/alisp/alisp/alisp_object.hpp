@@ -199,9 +199,36 @@ struct pattern_entry {
 };
 
 template<typename Check, typename Call>
-pattern_entry<Check, Call> operator>(match<Check> t_match, Call && callable)
+pattern_entry<Check, Call> operator>>=(match<Check> t_match, Call && callable)
 {
     return pattern_entry(t_match.m_fun, callable);
+}
+
+template<typename Callalble_In_1, typename Callalble_In_2>
+auto operator||(match<Callalble_In_1> t_match_lhs, match<Callalble_In_2> t_match_rhs)
+{
+    return detail::match(
+        [t_rhs=std::move(t_match_rhs),
+         t_lhs=std::move(t_match_lhs)](ALObject* obj)->bool {
+            return t_rhs.m_fun(obj) || t_lhs.m_fun(obj); });
+}
+
+
+template<typename Callalble_In_1, typename Callalble_In_2>
+auto operator&&(detail::match<Callalble_In_1> t_match_lhs, detail::match<Callalble_In_2> t_match_rhs)
+{
+    return detail::match(
+        [t_rhs=std::move(t_match_rhs),
+         t_lhs=std::move(t_match_lhs)](ALObject* obj)->bool {
+            return t_rhs.m_fun(obj) && t_lhs.m_fun(obj); });
+}
+
+template<typename Callalble_In_1>
+auto operator!(match<Callalble_In_1> t_match)
+{
+    return detail::match(
+        [t_match=std::move(t_match)](ALObject* obj)->bool {
+            return !t_match.m_fun(obj); });
 }
 
 
@@ -209,8 +236,8 @@ template<size_t N, class ... Matches, class ... Checks>
 void visit_match_impl([[maybe_unused]] ALObject* obj, [[maybe_unused]] std::tuple<pattern_entry<Checks, Matches>...> patterns){
 
     if constexpr (N >= sizeof...(Checks)) {
-            return;
-        } else {
+        return;
+    } else {
         if (std::get<N>(patterns).check(obj)) {
             std::get<N>(patterns).call(obj);
         } else{
@@ -226,11 +253,34 @@ void visit_match(ALObject* obj, std::tuple<pattern_entry<Checks, Matches>...> pa
 
 }
 
-
-inline auto type(ALObjectType t_type){
+inline auto type(ALObjectType t_type) {
     return detail::match(
         [t_t=std::move(t_type)](ALObject* obj)->bool {
             return  obj->type() == t_t;});
+}
+
+inline auto is_function(){
+    return detail::match(
+        [](ALObject* obj)->bool {
+            return  obj->check_function_flag(); });
+}
+
+inline auto is_macro(){
+    return detail::match(
+        [](ALObject* obj)->bool {
+            return  obj->check_macro_flag(); });
+}
+
+inline auto is_char(){
+    return detail::match(
+        [](ALObject* obj)->bool {
+            return  obj->check_char_flag(); });
+}
+
+inline auto is_const(){
+    return detail::match(
+        [](ALObject* obj)->bool {
+            return  obj->check_const_flag(); });
 }
 
 template <class ... Matches, class ... Checks >

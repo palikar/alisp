@@ -21,13 +21,14 @@ ALObject* Fprint(ALObject* t_obj, env::Environment*, eval::Evaluator* eval)
     for (auto child : t_obj->children())
     {
         auto val = eval->eval(child);
+        
         make_visit(val,
-                   type(ALObjectType::INT_VALUE ) >  [](ALObject* obj) { std::cout << obj->to_int(); },
-                   type(ALObjectType::REAL_VALUE ) >  [](ALObject* obj) { std::cout << obj->to_real(); },
-                   type(ALObjectType::STRING_VALUE ) >  [](ALObject* obj) { std::cout << obj->to_string(); },
-                   type(ALObjectType::SYMBOL ) >  [](ALObject* obj) { std::cout << obj->to_string(); }
+                   type(ALObjectType::INT_VALUE ) >>=  [](ALObject* obj) { std::cout << obj->to_int(); },
+                   type(ALObjectType::REAL_VALUE ) >>=  [](ALObject* obj) { std::cout << obj->to_real(); },
+                   type(ALObjectType::STRING_VALUE ) >>=  [](ALObject* obj) { std::cout << obj->to_string(); },
+                   type(ALObjectType::SYMBOL ) >>=  [](ALObject* obj) { std::cout << obj->to_string(); }
             );
-
+        
     }    
     
     return Qt;
