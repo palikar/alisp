@@ -1,6 +1,6 @@
 (if (psym 'a) "this is sym")
 
-(if (pstr "str") "this is str")
+(if (pstring "str") "this is str")
 
 (if (pint 42) "this is int")
 

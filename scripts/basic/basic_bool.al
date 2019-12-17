@@ -8,4 +8,4 @@
 (unless (or 'nil 't) (println "true"))
 (unless (or 'nil 'nil) (println "false"))
 
-(when (not (and 'nil 'nil))) "true")
+(when (not (and 'nil 'nil)) (println "true"))

@@ -8,7 +8,8 @@
 (println string-var)
 (println "This is variable" string-var)
 
+(defvar sym "the value of sym")
 (dump 'sym)
 (dump sym)
 (dump "sym")
-(dump ("sym" sym))
+(dump '("sym" sym))
