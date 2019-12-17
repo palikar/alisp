@@ -117,37 +117,50 @@ void Environment::dump() const
     cout << format("+{:-^48}+", "Environment") << '\n';
 
     size_t frame_index = 0;
+    const auto stack_size = std::size(m_stack.stacks);
     
-    // auto stack_size = std::size(m_stack.stacks);
     for (auto& frame : m_stack.stacks) {
         cout << format("|{:^48}|", format("Frame {}", frame_index)) << '\n';
-        cout << format("+{:-^48}+", "") << '\n'; 
+        cout << format("|{:^48}|", "") << '\n'; 
+
+        cout << format("+{:-^10}+", "");
+        cout << format("{:-^37}+", "") << '\n';
 
         size_t scope_index = 0;
+        
         for (auto& scope : frame) {
 
+            if (scope_index != 0) {
+                cout << format("+{:-^10}+", "");
+                cout << format("{:-^37}+", "") << '\n';
+            }
+            
             cout << format("|{:<10}|", format("Scope {}", scope_index));
-            cout << format("{:<38}|", "") << '\n';
-            cout << format("+{:-^48}+", "") << '\n';
+            cout << format("{:<37}|", "") << '\n';
+            
+            cout << format("+{:-^10}+", "");
+            cout << format("{:-^37}+", "") << '\n';
 
             for (auto& [sym, val] : scope) {
                 cout << format("|{:<10}|", "");
-                cout << format("{:<38}|", "") << '\n';
                 
+                std::cout << format("{:<37}|", sym) << '\n';
             }
-            
+
             ++scope_index;
         }
-
         
+        if (frame_index != stack_size-1) {
+            cout << format("+{:-^10}+", "");
+            cout << format("{:-^37}+", "") << '\n';
+        }
         
-
-        // if (frame_index != stack_size-1) { cout << format("+{:-^48}+", "") << '\n'; }
         ++frame_index;
     }
     
 
-    cout << format("+{:-^48}+", "Environment") << '\n';
+    cout << format("+{:-^10}+", "");
+    cout << format("{:-^37}+", "") << '\n';
 }
 
 }
