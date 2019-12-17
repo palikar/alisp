@@ -10,6 +10,8 @@
 
 #include "alisp/utility/macros.hpp"
 
+#include <fmt/format.h>
+
 
 namespace alisp
 {
@@ -104,6 +106,48 @@ void Environment::define_macro(const ALObject* t_sym, ALObject* t_params, ALObje
         
     scope.insert({name, new_fun});
     
+}
+
+
+void Environment::dump() const
+{
+    using namespace fmt;
+    using namespace std;
+
+    cout << format("+{:-^48}+", "Environment") << '\n';
+
+    size_t frame_index = 0;
+    
+    // auto stack_size = std::size(m_stack.stacks);
+    for (auto& frame : m_stack.stacks) {
+        cout << format("|{:^48}|", format("Frame {}", frame_index)) << '\n';
+        cout << format("+{:-^48}+", "") << '\n'; 
+
+        size_t scope_index = 0;
+        for (auto& scope : frame) {
+
+            cout << format("|{:<10}|", format("Scope {}", scope_index));
+            cout << format("{:<38}|", "") << '\n';
+            cout << format("+{:-^48}+", "") << '\n';
+
+            for (auto& [sym, val] : scope) {
+                cout << format("|{:<10}|", "");
+                cout << format("{:<38}|", "") << '\n';
+                
+            }
+            
+            ++scope_index;
+        }
+
+        
+        
+
+        // if (frame_index != stack_size-1) { cout << format("+{:-^48}+", "") << '\n'; }
+        ++frame_index;
+    }
+    
+
+    cout << format("+{:-^48}+", "Environment") << '\n';
 }
 
 }

@@ -512,3 +512,22 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
     SECTION ( "mapc" ) {}
 
 }
+
+
+TEST_CASE("Evaluator Test [function call]", "[eval]")
+{
+    using namespace alisp;
+
+    env::Environment env;
+    eval::Evaluator eval(env);
+    parser::ALParser<alisp::env::Environment> pars(env);
+    
+    std::string input{"(defun fun (a &optional b &rest c) a) (fun 42)"};
+    auto par_res = pars.parse(&input, "__TEST__");
+    
+    eval.eval(par_res[0]);
+    auto res = eval.eval(par_res[1]);
+        
+    CHECK ( res->is_int() );
+    CHECK ( res->to_int() == 42 );
+}

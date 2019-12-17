@@ -152,6 +152,8 @@ class Environment
 
     auto& get_stack_trace() { return m_stack_trace; }
 
+    void dump() const;
+
 
 };
 

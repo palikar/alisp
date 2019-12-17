@@ -66,6 +66,7 @@ DEFUN(exit, "exit");
 DEFUN(print, "print");
 DEFUN(println, "println");
 DEFUN(dump, "dump");
+DEFUN(dumpstack, "dumpstack");
 
 /*  _     _     _        */
 /* | |   (_)___| |_ ___  */

@@ -47,4 +47,12 @@ ALObject* Fdump(ALObject* t_obj, env::Environment*, eval::Evaluator* eval)
     return Qt;
 }
 
+
+ALObject* Fdumpstack(ALObject*, env::Environment* env, eval::Evaluator*)
+{
+    env->dump();
+    return Qt;
+}
+
+
 }
