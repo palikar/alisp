@@ -158,6 +158,7 @@ inline std::string dump(ALObject* obj)
           {
               str << dump(ob);
           }
+          str.seekp(-1, std::ios_base::end);
           str << ") ";
           break;
     }

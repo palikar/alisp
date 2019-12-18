@@ -77,6 +77,15 @@ DEFUN(dumpstack, "dumpstack");
 
 DEFUN(mapc, "mapc");
 
+DEFUN(car, "car");
+DEFUN(cons, "cons");
+
+DEFUN(head, "head");
+DEFUN(last, "last");
+DEFUN(init, "init");
+DEFUN(tail, "tail");
+DEFUN(put, "put");
+
 /*  ____               _ _           _             */
 /* |  _ \ _ __ ___  __| (_) ___ __ _| |_ ___  ___  */
 /* | |_) | '__/ _ \/ _` | |/ __/ _` | __/ _ \/ __| */

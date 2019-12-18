@@ -30,8 +30,6 @@ ALObject* Fmapc(ALObject* obj, env::Environment*, eval::Evaluator* eval)
     return Qt;
 }
 
-
-
 ALObject* Fcar(ALObject* obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<1>(obj);
@@ -82,13 +80,11 @@ ALObject* Fput(ALObject* obj, env::Environment*, eval::Evaluator* eval)
     assert_size<2>(obj);
     auto list = eval->eval(obj->i(0));
     assert_list(list);
-    auto element = eval->eval(obj->i(2));
+    auto element = eval->eval(obj->i(1));
     
     list->children().push_back(element);
     
     return list;
 }
-
-
 
 }
