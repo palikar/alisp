@@ -169,7 +169,7 @@ ALObject* Evaluator::eval(ALObject* obj)
 
               
           } catch (...) {
-
+              
               // tracer.dump()
               throw;
           }

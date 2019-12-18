@@ -74,12 +74,10 @@ class Environment
 
   private:
     detail::CellStack m_stack;
-    std::vector<std::string> m_stack_trace;
     size_t m_call_depth = 0;
 
-    // auto scan(const ALObject* t_sym)
-    // {}
-
+    std::vector<std::string> m_stack_trace;
+    
 
   public:
 
@@ -149,10 +147,14 @@ class Environment
     bool in_function() { return m_call_depth != 0;}
 
     bool in_root() { return (!in_function()) && (std::size(m_stack.root_frame()) == 1); }
-
+    
     auto& get_stack_trace() { return m_stack_trace; }
 
     void dump() const;
+    void callstack_dump() const;
+
+    void trace_call(std::string t_trace) { m_stack_trace.push_back(std::move(trace)); }
+    void trace_unwind() { m_stack_trace.pop_back(); }
 
 
 };
@@ -160,6 +162,25 @@ class Environment
 
 namespace detail
 {
+
+struct CallTracer
+{
+  public:
+
+    explicit CallTracer(Environment& t_env, std::string t_trace) : m_env(t_env) { m_env.trace_call(std::move(t_trace)); }
+    ~CallTracer() { m_env.trace_unwind(); }
+
+    CallTracer(FunctionCall &&) = default;
+    CallTracer& operator=(FunctionCall &&) = default;
+    CallTracer(const FunctionCall &) = delete;
+    CallTracer& operator=(const FunctionCall &) = delete;
+
+    // TODO: trace here
+
+  private:
+    Environment& m_env;
+
+};
 
 struct FunctionCall
 {
@@ -195,6 +216,8 @@ struct ScopePushPop
   private:
     Environment& m_env;
 };
+
+CallTracer
 
 }
 

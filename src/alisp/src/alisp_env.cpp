@@ -108,7 +108,6 @@ void Environment::define_macro(const ALObject* t_sym, ALObject* t_params, ALObje
     
 }
 
-
 void Environment::dump() const
 {
     using namespace fmt;
@@ -161,6 +160,12 @@ void Environment::dump() const
 
     cout << format("+{:-^10}+", "");
     cout << format("{:-^37}+", "") << '\n';
+}
+
+
+void callstack_dump() const {
+
+    
 }
 
 }
