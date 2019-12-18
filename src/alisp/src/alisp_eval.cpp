@@ -145,24 +145,24 @@ ALObject* Evaluator::eval(ALObject* obj)
               throw std::runtime_error("Head of a list must be bound to function");
           }
           
-          // CallTracer tracer{};
+          // (obj->i(0) func->get_function().first) (fun-1 param1 param2 &opt)
+
+          env::detail::CallTracer tracer{env};
+          
           try {
-
+                  
               if (func->check_prime_flag()) {
-              
-                  // TODO: Trace the stack here
-                  return func->get_prime()(splice(obj, 1), &env, this);
-              
+                  tracer.function_name(dump(func), true);
+                  
+                  return func->get_prime()(splice(obj, 1), &env, this);              
               } else if (func->check_macro_flag()) {
-
+                  tracer.function_name(dump(func));
                   env::detail::FunctionCall fc{env};
-                  // TODO: Trace the stack here
                   return eval(apply_function(func, splice(obj, 1)));
               
               } else {
-              
+                  tracer.function_name(dump(func));
                   env::detail::FunctionCall fc{env};
-                  // TODO: Trace the stack here
                   return eval_function(func, splice(obj, 1));
               
               }
@@ -188,7 +188,9 @@ ALObject* Evaluator::eval(ALObject* obj)
 ALObject* Evaluator::eval_function(ALObject* func, ALObject* args)
 {
     auto[params, body] = func->get_function();
-    handle_argument_bindings(params, args);
+    handle_argument_bindings(params, args);    
+    
+    
     return eval_list(this, body, 0);
 }
 

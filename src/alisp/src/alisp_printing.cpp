@@ -57,7 +57,7 @@ ALObject* Fdumpstack(ALObject*, env::Environment* env, eval::Evaluator*)
 }
 
 
-ALObject* Fcalldumpstack(ALObject*, env::Environment* env, eval::Evaluator*)
+ALObject* Fdumpcallstack(ALObject*, env::Environment* env, eval::Evaluator*)
 {
     env->callstack_dump();
     return Qt;

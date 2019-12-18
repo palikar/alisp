@@ -163,9 +163,21 @@ void Environment::dump() const
 }
 
 
-void callstack_dump() const {
+void Environment::callstack_dump() const {
 
+    using namespace fmt;
+    using namespace std;
+
+    cout << format("+{:-^48}+", "Call stack") << '\n';
     
+    for (auto& call : utility::reverse(m_stack_trace) ) {
+
+        cout << format("|{:<48}|", call) << '\n';
+
+        
+    }
+    
+    cout << format("+{:-^48}+", "") << '\n';
 }
 
 }

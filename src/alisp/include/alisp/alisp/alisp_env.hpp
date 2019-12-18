@@ -153,7 +153,7 @@ class Environment
     void dump() const;
     void callstack_dump() const;
 
-    void trace_call(std::string t_trace) { m_stack_trace.push_back(std::move(trace)); }
+    void trace_call(std::string t_trace) { m_stack_trace.push_back(std::move(t_trace)); }
     void trace_unwind() { m_stack_trace.pop_back(); }
 
 
@@ -165,15 +165,44 @@ namespace detail
 
 struct CallTracer
 {
+  private:
+    std::string m_function;
+    std::string m_args;
+    bool m_is_prime = false;
+    
   public:
 
-    explicit CallTracer(Environment& t_env, std::string t_trace) : m_env(t_env) { m_env.trace_call(std::move(t_trace)); }
+    explicit CallTracer(Environment& t_env) : m_env(t_env) {
+
+
+
+    }
+
     ~CallTracer() { m_env.trace_unwind(); }
 
-    CallTracer(FunctionCall &&) = default;
-    CallTracer& operator=(FunctionCall &&) = default;
-    CallTracer(const FunctionCall &) = delete;
-    CallTracer& operator=(const FunctionCall &) = delete;
+
+    void function_name (std::string t_func, bool t_is_prime = false) {
+        m_is_prime = t_is_prime;
+        m_function = std::move(t_func);
+    }
+
+    void function_args (std::string t_args) {
+        m_args = std::move(t_args);
+
+        if (m_is_prime) {
+            m_env.trace_call("->" + m_function);
+        } else {
+            m_env.trace_call("(" + m_function + " " + m_args + ")");
+        }
+        
+    }
+    
+    
+
+    CallTracer(CallTracer &&) = default;
+    CallTracer& operator=(CallTracer &&) = default;
+    CallTracer(const CallTracer &) = delete;
+    CallTracer& operator=(const CallTracer &) = delete;
 
     // TODO: trace here
 
@@ -216,8 +245,6 @@ struct ScopePushPop
   private:
     Environment& m_env;
 };
-
-CallTracer
 
 }
 
