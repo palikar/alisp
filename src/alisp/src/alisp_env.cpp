@@ -170,9 +170,14 @@ void Environment::callstack_dump() const {
 
     cout << format("+{:-^48}+", "Call stack") << '\n';
     
-    for (auto& call : utility::reverse(m_stack_trace) ) {
+    for (auto& [fun, prime] : utility::reverse(m_stack_trace) ) {
 
-        cout << format("|{:<48}|", call) << '\n';
+
+        if (prime) {
+            cout << format("|{:<46}{:>}|", fun, "<-") << '\n';
+        } else {
+            cout << format("|{:<48}|", fun) << '\n';
+        }
 
         
     }

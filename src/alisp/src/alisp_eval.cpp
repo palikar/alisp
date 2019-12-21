@@ -148,20 +148,18 @@ ALObject* Evaluator::eval(ALObject* obj)
           // (obj->i(0) func->get_function().first) (fun-1 param1 param2 &opt)
 
           env::detail::CallTracer tracer{env};
+          tracer.function_name(obj->i(0)->to_string(), func->check_prime_flag());
           
           try {
                   
               if (func->check_prime_flag()) {
-                  tracer.function_name(dump(func), true);
-                  
-                  return func->get_prime()(splice(obj, 1), &env, this);              
+                  return func->get_prime()(splice(obj, 1), &env, this);
               } else if (func->check_macro_flag()) {
-                  tracer.function_name(dump(func));
                   env::detail::FunctionCall fc{env};
+                  
                   return eval(apply_function(func, splice(obj, 1)));
               
               } else {
-                  tracer.function_name(dump(func));
                   env::detail::FunctionCall fc{env};
                   return eval_function(func, splice(obj, 1));
               
@@ -170,7 +168,7 @@ ALObject* Evaluator::eval(ALObject* obj)
               
           } catch (...) {
               
-              // tracer.dump()
+              tracer.dump();
               throw;
           }
 
@@ -189,8 +187,6 @@ ALObject* Evaluator::eval_function(ALObject* func, ALObject* args)
 {
     auto[params, body] = func->get_function();
     handle_argument_bindings(params, args);    
-    
-    
     return eval_list(this, body, 0);
 }
 
