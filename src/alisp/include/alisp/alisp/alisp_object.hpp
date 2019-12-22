@@ -451,7 +451,8 @@ inline const auto BIT_INV = [](ALObject* t_obj) { return ~t_obj->to_int();};
 inline bool equal(ALObject* t_lhs, ALObject* t_rhs);
 
 
-inline bool list_equal(ALObject* t_lhs, ALObject* t_rhs) {
+inline bool list_equal(ALObject* t_lhs, ALObject* t_rhs)
+{
 
     auto& children_1 = t_lhs->children();
     auto& children_2 = t_rhs->children();
@@ -463,9 +464,7 @@ inline bool list_equal(ALObject* t_lhs, ALObject* t_rhs) {
         if (! equal(children_1[index], children_2[index])) return false;
     }
 
-
-    
-    return false;
+    return true;
 }
 
 
@@ -475,22 +474,31 @@ inline bool real_equal(ALObject* t_lhs, ALObject* t_rhs)
 }
 
 
-inline bool equal(ALObject* t_lhs, ALObject* t_rhs) {
-
+inline bool equal(ALObject* t_lhs, ALObject* t_rhs)
+{
+    
     if ( t_lhs->type() != t_rhs->type()) { return false; }
-
-    make_visit(t_lhs,
-               type( ALObjectType::INT_VALUE )    >>=  [t_rhs](ALObject* t_obj) { return t_obj->to_int() == t_rhs->to_int(); },
-               type( ALObjectType::REAL_VALUE )   >>=  [t_rhs](ALObject* t_obj) { return real_equal(t_obj, t_rhs); },
-               type( ALObjectType::STRING_VALUE ) >>=  [t_rhs](ALObject* t_obj) { return t_obj->to_string().compare(t_rhs->to_string()) == 0; },
-               type( ALObjectType::LIST )       >>=  [t_rhs](ALObject* t_obj) { return list_equal(t_obj, t_rhs); }
-        );
-
-
-
-
-    return false;
+    
+    return  make_visit(t_lhs,
+                       type ( ALObjectType::SYMBOL ) or
+                       type( ALObjectType::STRING_VALUE ) >>=  [t_rhs](ALObject* t_obj)  { return t_obj->to_string().compare(t_rhs->to_string()) == 0; },
+                       type( ALObjectType::INT_VALUE )    >>=  [t_rhs](ALObject* t_obj) { return t_obj->to_int() == t_rhs->to_int(); },
+                       type( ALObjectType::REAL_VALUE )   >>=  [t_rhs](ALObject* t_obj){ return real_equal(t_obj, t_rhs); },
+                       type( ALObjectType::LIST )         >>=  [t_rhs](ALObject* t_obj){ return list_equal(t_obj, t_rhs); },
+                       any_pattern()                      >>=  [](ALObject*){ return false; });
 }
 
+inline bool eq(ALObject* t_lhs, ALObject* t_rhs)
+{
+    if ( t_lhs->type() != t_rhs->type()) { return false; }
+    
+    return make_visit(t_lhs,
+                      type( ALObjectType::INT_VALUE )    >>=  [t_rhs](ALObject* t_obj) { return t_obj->to_int() == t_rhs->to_int(); },
+                      type( ALObjectType::REAL_VALUE )   >>=  [t_rhs](ALObject* t_obj) { return real_equal(t_obj, t_rhs); },
+                      type( ALObjectType::STRING_VALUE ) >>=  [t_rhs](ALObject* t_obj) { return t_obj->to_string().compare(t_rhs->to_string()) == 0; },
+                      type ( ALObjectType::SYMBOL ) or
+                      type( ALObjectType::LIST )         >>=  [t_rhs](ALObject* t_obj) { return t_rhs == t_obj; });
+    
+}
 
 }

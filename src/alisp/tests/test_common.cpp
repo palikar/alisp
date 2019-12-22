@@ -25,7 +25,7 @@ TEST_CASE("Common Test [make]", "[common]")
         CHECK( make_object(42)->is_int() );
         CHECK( make_object(42.32)->is_real() );
         CHECK( make_object(1,2,3,4,5)->is_list() );
-        
+
         CHECK( make_symbol("sym")->is_sym() );
         CHECK( make_int(12)->is_int() );
         CHECK( make_double(12.12)->is_real() );
@@ -48,20 +48,20 @@ TEST_CASE("Common Test [util]", "[common]")
         CHECK( obj->is_list() );
         CHECK( obj->length() ==  4);
         CHECK( obj->i(0)->is_int() );
-        CHECK( obj->i(0)->to_int() == 2 );        
+        CHECK( obj->i(0)->to_int() == 2 );
     }
 
     SECTION ( "splice[2]" ) {
         auto obj = splice(make_object(1,2,3,4,5), 1, 4);
-        
+
         CHECK( obj->is_list() );
         CHECK( obj->length() ==  3);
         CHECK( obj->i(0)->is_int() );
-        CHECK( obj->i(0)->to_int() == 2 );        
+        CHECK( obj->i(0)->to_int() == 2 );
     }
 
     SECTION ( "falsey" ) {
-        
+
         CHECK( is_falsy(make_object("")));
         CHECK( is_falsy(make_object(std::vector<ALObject*>{})));
         CHECK( is_falsy(make_object(0)));
@@ -91,9 +91,9 @@ TEST_CASE("Common Test [util]", "[common]")
         CHECK( pint(make_object(42)) );
         CHECK( preal(make_object(42.32)) );
         CHECK( plist(make_object(1,3,4,5)));
-        
+
     }
-    
+
 }
 
 
@@ -103,36 +103,36 @@ TEST_CASE("Common Test [pattern matching]", "[common]")
 
     SECTION ("strings") {
         CHECK_THROWS ( make_visit(make_object("string"),
-                                  type(ALObjectType::INT_VALUE ) >  [](ALObject*) {},
-                                  type(ALObjectType::REAL_VALUE ) >  [](ALObject*) {},
-                                  type(ALObjectType::STRING_VALUE ) >  [](ALObject*) { throw "exc"; },
-                                  type(ALObjectType::SYMBOL ) >  [](ALObject*) {}
+                                  type(ALObjectType::INT_VALUE ) >>=  [](ALObject*) {},
+                                  type(ALObjectType::REAL_VALUE ) >>=  [](ALObject*) {},
+                                  type(ALObjectType::STRING_VALUE ) >>=  [](ALObject*) { throw "exc"; },
+                                  type(ALObjectType::SYMBOL ) >>=  [](ALObject*) {}
                            ) );
     }
-    
+
     SECTION ("int") {
         CHECK_THROWS ( make_visit(make_object(1),
-                                  type(ALObjectType::INT_VALUE ) >  [](ALObject*) { throw "exc"; },
-                                  type(ALObjectType::REAL_VALUE ) >  [](ALObject*) {},
-                                  type(ALObjectType::STRING_VALUE ) >  [](ALObject*) {},
+                                  type(ALObjectType::INT_VALUE ) >>=  [](ALObject*) { throw "exc"; },
+                                  type(ALObjectType::REAL_VALUE ) >>=  [](ALObject*) {},
+                                  type(ALObjectType::STRING_VALUE ) >>=  [](ALObject*) {},
                                   type(ALObjectType::SYMBOL ) >  [](ALObject*) {}
                            ) );
     }
 
     SECTION ("strings") {
         CHECK_THROWS ( make_visit(make_object(1.3),
-                                  type(ALObjectType::INT_VALUE ) >  [](ALObject*) {},
-                                  type(ALObjectType::REAL_VALUE ) >  [](ALObject*)  { throw "exc"; },
-                                  type(ALObjectType::STRING_VALUE ) >  [](ALObject*) {},
-                                  type(ALObjectType::SYMBOL ) >  [](ALObject*) {}
+                                  type(ALObjectType::INT_VALUE ) >>=  [](ALObject*) {},
+                                  type(ALObjectType::REAL_VALUE ) >>=  [](ALObject*)  { throw "exc"; },
+                                  type(ALObjectType::STRING_VALUE ) >>=  [](ALObject*) {},
+                                  type(ALObjectType::SYMBOL ) >>=  [](ALObject*) {}
                            ) );
     }
 
     SECTION ("sym") {
         CHECK_THROWS ( make_visit(make_symbol("sym"),
-                                  type(ALObjectType::INT_VALUE ) >  [](ALObject*) {},
-                                  type(ALObjectType::REAL_VALUE ) >  [](ALObject*)  {},
-                                  type(ALObjectType::STRING_VALUE ) >  [](ALObject*) {},
+                                  type(ALObjectType::INT_VALUE ) >>=  [](ALObject*) {},
+                                  type(ALObjectType::REAL_VALUE ) >>=  [](ALObject*)  {},
+                                  type(ALObjectType::STRING_VALUE ) >>=  [](ALObject*) {},
                                   type(ALObjectType::SYMBOL ) >  [](ALObject*) { throw "exc"; }
                            ) );
     }
@@ -145,6 +145,69 @@ TEST_CASE("Common Test [pattern matching]", "[common]")
                                   type(ALObjectType::LIST ) >  [](ALObject*) { throw "exc"; },
                                   type(ALObjectType::SYMBOL ) >  [](ALObject*) {}
                            ) );
-    }    
+    }
+
+}
+
+
+TEST_CASE("Common Test [equal]", "[equal]")
+{
+    using namespace alisp;
+
+
+    SECTION ( "simple equal" ) {
+
+        CHECK( equal(make_object("string"), make_object("string")) );
+        CHECK( !equal(make_object("string"), make_object("string-1")) );
+
+        CHECK( equal(make_object(1), make_object(1)) );
+        CHECK( equal(make_object(12), make_object(12)) );
+
+        CHECK( equal(make_object(1.1), make_object(1.1)) );
+        CHECK( !equal(make_object(12.1), make_object(12.5)) );
+
+
+        CHECK( equal(make_symbol("foo"), make_symbol("foo")) );
+        CHECK( !equal(make_symbol("foo"), make_symbol("bar")) );
+    }
+
+    SECTION ( "list equal" ) {
+
+        CHECK( !equal(make_object("string", 12), make_object("string")) );
+        CHECK( equal(make_object("string", 12), make_object("string", 12)) );
+
+        CHECK( equal(make_object("string", 12, 2.3), make_object("string", 12, 2.3)) );
+
+        CHECK( !equal(make_object("string", 12, make_object(1,2,3)), make_object("string", 12, 2.3)) );
+        CHECK( equal(make_object("string", 12, make_object(1,2,3)), make_object("string", 12, make_object(1,2,3))) );
+
+    }
+
+
+    SECTION ( "simple eq" ) {
+
+        CHECK( eq(make_object("string"), make_object("string")) );
+        CHECK( !eq(make_object("string"), make_object("string-1")) );
+
+        CHECK( eq(make_object(1), make_object(1)) );
+        CHECK( eq(make_object(12), make_object(12)) );
+
+        CHECK( eq(make_object(1.1), make_object(1.1)) );
+        CHECK( !eq(make_object(12.1), make_object(12.5)) );
+
+
+        auto foo = make_symbol("foo");
+        CHECK( !eq(make_symbol("foo"), make_symbol("foo")) );
+        CHECK( eq(foo, foo) );
+
+        CHECK( !eq(make_object("string", 12, make_object(1,2,3)), make_object("string", 12, 2.3)) );
+        CHECK( !eq(make_object("string", 12, make_object(1,2,3)), make_object("string", 12, make_object(1,2,3))) );
+
+        auto l = make_object("string", 12, make_object(1,2,3));
+        CHECK( eq(l, l) );
+        
+        
+    }
+
 
 }

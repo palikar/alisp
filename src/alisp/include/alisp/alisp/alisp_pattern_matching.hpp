@@ -42,11 +42,17 @@ struct pattern_entry {
     pattern_entry(Check check, Call call) :
         m_check(check),  m_call(call){}
     bool check(ALObject* obj){ return m_check(obj);}
-    void call(ALObject* obj){ m_call(obj);}
+    auto call(ALObject* obj){ return m_call(obj);}
 };
 
 template<typename Check, typename Call>
 pattern_entry<Check, Call> operator>>=(match<Check> t_match, Call && callable)
+{
+    return pattern_entry(t_match.m_fun, callable);
+}
+
+template<typename Check, typename Call>
+pattern_entry<Check, Call> operator>(match<Check> t_match, Call && callable)
 {
     return pattern_entry(t_match.m_fun, callable);
 }
@@ -80,22 +86,29 @@ auto operator!(match<Callalble_In_1> t_match)
 
 
 template<size_t N, class ... Matches, class ... Checks>
-void visit_match_impl([[maybe_unused]] ALObject* obj, [[maybe_unused]] std::tuple<pattern_entry<Checks, Matches>...> patterns){
+auto visit_match_impl([[maybe_unused]] ALObject* obj, [[maybe_unused]] std::tuple<pattern_entry<Checks, Matches>...> patterns) -> std::common_type_t<std::invoke_result_t<Matches, ALObject*> ...>{
+
 
     if constexpr (N >= sizeof...(Checks)) {
-        return;
+
+        if constexpr (std::is_void_v<std::common_type_t<std::invoke_result_t<Matches, ALObject*> ...>>) {
+            return;
+        } else {
+            return std::common_type_t<std::invoke_result_t<Matches, ALObject*> ...>{};
+        }
+        
     } else {
         if (std::get<N>(patterns).check(obj)) {
-            std::get<N>(patterns).call(obj);
+            return std::get<N>(patterns).call(obj);
         } else{
-            visit_match_impl<N+1>(obj, patterns);
+            return visit_match_impl<N+1>(obj, patterns);
         }
     }
 }
 
 template <class ... Matches, class ... Checks >
-void visit_match(ALObject* obj, std::tuple<pattern_entry<Checks, Matches>...> patterns ){
-    visit_match_impl<0>(obj, patterns);
+auto visit_match(ALObject* obj, std::tuple<pattern_entry<Checks, Matches>...> patterns ){
+    return visit_match_impl<0>(obj, patterns);
 }
 
 }
@@ -131,9 +144,13 @@ inline auto is_const(){
             return  obj->check_const_flag(); });
 }
 
+inline auto any_pattern() {
+    return detail::match( [](ALObject*)->bool { return  true; });
+}
+
 template <class ... Matches, class ... Checks >
-inline void make_visit (ALObject* obj, detail::pattern_entry<Matches, Checks> ... entries){
-    visit_match(obj, std::tuple(entries ...));
+inline auto make_visit (ALObject* obj, detail::pattern_entry<Matches, Checks> ... entries){
+    return visit_match(obj, std::tuple(entries ...));
 }
 
 
