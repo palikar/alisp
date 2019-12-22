@@ -133,6 +133,7 @@ class Environment
     void call_function()
     {
         ++m_call_depth;
+        if (m_call_depth > MAX_FUNCTION_CALL_DEPTH) { throw std::runtime_error("Maximum function calldepth reached!"); }
         m_stack.push_frame();
     }
 

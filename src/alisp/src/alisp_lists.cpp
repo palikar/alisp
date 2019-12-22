@@ -75,7 +75,7 @@ ALObject* Finit(ALObject* obj, env::Environment*, eval::Evaluator* eval)
 }
 
 
-ALObject* Fput(ALObject* obj, env::Environment*, eval::Evaluator* eval)
+ALObject* Fpush(ALObject* obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<2>(obj);
     auto list = eval->eval(obj->i(0));
@@ -85,6 +85,41 @@ ALObject* Fput(ALObject* obj, env::Environment*, eval::Evaluator* eval)
     list->children().push_back(element);
     
     return list;
+}
+
+
+//inplace
+ALObject* Fdelete(ALObject* obj, env::Environment*, eval::Evaluator* eval)
+{
+    assert_size<2>(obj);
+    auto list = eval->eval(obj->i(0));
+    assert_list(list);
+    auto element = eval->eval(obj->i(1));
+    
+    auto& children = list->children();
+
+    children.erase(std::remove_if(std::begin(children), std::end(children),
+                                  [element](ALObject* t_obj){ return equal(element, t_obj); }));
+    
+    return list;
+}
+
+
+//return copy
+ALObject* Fremove(ALObject* obj, env::Environment*, eval::Evaluator* eval)
+{
+    assert_size<2>(obj);
+    auto list = eval->eval(obj->i(0));
+    assert_list(list);
+    auto element = eval->eval(obj->i(1));
+    auto& children = list->children();
+    ALObject::list_type new_children;
+    new_children.reserve(std::size(children));
+
+    std::copy_if(std::begin(children), std::end(children), std::back_inserter(new_children),
+                 [element](ALObject* t_obj){ return !equal(element, t_obj); });
+    
+    return make_object(new_children);
 }
 
 }

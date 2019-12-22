@@ -14,5 +14,16 @@
 (mapc dump (init '("a" "b" "c")))
 
 
-(dump (put '("a" "b" "c") "d" ))
-(dump (put '("a" "b" "c") 52 ))
+(dump (push '("a" "b" "c") "d" ))
+(dump (push '("a" "b" "c") 52 ))
+
+
+(dump (delete '("a" "b" "c") "a" ))
+(dump (delete '("a" "b" "c" 123 ) 123))
+(dump (delete '(a b c ) 'b))
+
+(dump (remove '("a" "b" "c") "a" ))
+(dump (remove '("a" "b" "c" 123 ) 123))
+(dump (remove '(a b c ) 'b))
+
+

@@ -22,6 +22,10 @@ DEFVAR(Qnil, "nil");
 DEFSYM(Qoptional, "&optional");
 DEFSYM(Qrest, "&rest");
 
+DEFSYM(Qbackquote, "`");
+DEFSYM(Qcomma, ",");
+DEFSYM(Qcomma_at, ",@");
+
 
 
 
@@ -85,7 +89,9 @@ DEFUN(head, "head");
 DEFUN(last, "last");
 DEFUN(init, "init");
 DEFUN(tail, "tail");
-DEFUN(put, "put");
+DEFUN(push, "push");
+DEFUN(delete, "delete");
+DEFUN(remove, "remove");
 
 /*  ____               _ _           _             */
 /* |  _ \ _ __ ___  __| (_) ___ __ _| |_ ___  ___  */

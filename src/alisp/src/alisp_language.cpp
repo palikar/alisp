@@ -267,4 +267,32 @@ ALObject* Fexit(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return Qnil;
 }
 
+
+
+
+
+
+
+ALObject* Fbackquote(ALObject* obj, env::Environment*, eval::Evaluator* eval)
+{
+    assert_size<1>(obj);
+    if (!plist(obj->i(0))) { return obj->i(0); }
+
+    ALObject::list_type new_elements;
+
+    for (auto el : obj->children()) {
+        if (!plist(el)) { new_elements.push_back(el); }
+
+        if (el->i(0) == Qbackquote) {
+            new_elements.push_back(eval->eval(splice(el, 1)));
+        }
+    }
+
+
+    return make_object(new_elements);
+}
+
+
+
+
 }

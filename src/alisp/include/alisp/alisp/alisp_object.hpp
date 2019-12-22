@@ -502,3 +502,4 @@ inline bool eq(ALObject* t_lhs, ALObject* t_rhs)
 }
 
 }
+

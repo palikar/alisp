@@ -48,7 +48,7 @@ void Evaluator::handle_argument_bindings(ALObject* params, ALObject* args)
             }
         }();
 
-    
+
 
     auto next_argument = std::begin(eval_args->children());
     auto next_param = std::begin(params->children());
@@ -125,6 +125,8 @@ void Evaluator::handle_argument_bindings(ALObject* params, ALObject* args)
 
 ALObject* Evaluator::eval(ALObject* obj)
 {
+    detail::EvalDepthTrack{*this};
+
     if (is_falsy(obj)) return obj;
 
     switch (obj->type()) {
@@ -141,52 +143,52 @@ ALObject* Evaluator::eval(ALObject* obj)
       case ALObjectType::LIST : {
 
           auto func = env.find(obj->i(0));
-          if ( !func->check_function_flag() ) { 
+          if ( !func->check_function_flag() ) {
               throw std::runtime_error("Head of a list must be bound to function");
-          }
-          
-          // (obj->i(0) func->get_function().first) (fun-1 param1 param2 &opt)
+           }
 
-          env::detail::CallTracer tracer{env};
-          tracer.function_name(obj->i(0)->to_string(), func->check_prime_flag());
-          
-          try {
-                  
-              if (func->check_prime_flag()) {
-                  return func->get_prime()(splice(obj, 1), &env, this);
-              } else if (func->check_macro_flag()) {
-                  env::detail::FunctionCall fc{env};
-                  
-                  return eval(apply_function(func, splice(obj, 1)));
-              
-              } else {
-                  env::detail::FunctionCall fc{env};
-                  return eval_function(func, splice(obj, 1));
-              
-              }
+           // (obj->i(0) func->get_function().first) (fun-1 param1 param2 &opt)
 
-              
-          } catch (...) {
-              
-              tracer.dump();
-              throw;
-          }
+           env::detail::CallTracer tracer{env};
+           tracer.function_name(obj->i(0)->to_string(), func->check_prime_flag());
 
-          
-          break;
-      }
+           try {
 
-      default: break;
-    }
+               if (func->check_prime_flag()) {
+                   return func->get_prime()(splice(obj, 1), &env, this);
+               } else if (func->check_macro_flag()) {
+                   env::detail::FunctionCall fc{env};
+
+                   return eval(apply_function(func, splice(obj, 1)));
+
+               } else {
+                   env::detail::FunctionCall fc{env};
+                   return eval_function(func, splice(obj, 1));
+
+               }
 
 
-    return nullptr;
+           } catch (...) {
+
+               tracer.dump();
+               throw;
+           }
+
+
+           break;
+       }
+
+       default: break;
+     }
+
+
+     return nullptr;
 }
 
 ALObject* Evaluator::eval_function(ALObject* func, ALObject* args)
 {
     auto[params, body] = func->get_function();
-    handle_argument_bindings(params, args);    
+    handle_argument_bindings(params, args);
     return eval_list(this, body, 0);
 }
 

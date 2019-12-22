@@ -12,6 +12,9 @@
 namespace alisp
 {
 
+inline constexpr size_t MAX_EAVALUATION_DEPTH = 256;
+inline constexpr size_t MAX_FUNCTION_CALL_DEPTH = 128;
+
 enum class ALObjectType
 {
 
