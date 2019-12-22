@@ -11,13 +11,13 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_env.hpp"
 #include "alisp/alisp/alisp_declarations.hpp"
-
+#include "alisp/alisp/alisp_pattern_matching.hpp"
 #include "alisp/utility.hpp"
 
 
 namespace alisp
 {
-                                         
+
 /*   ____                _   _               _          _                 */
 /*  / ___|_ __ ___  __ _| |_(_) ___  _ __   | |__   ___| |_ __  _ __ ___  */
 /* | |   | '__/ _ \/ _` | __| |/ _ \| '_ \  | '_ \ / _ \ | '_ \| '__/ __| */
@@ -46,7 +46,7 @@ struct ALObjectHelper
         return new ALObject(a);
     }
 
-    
+
     static ALObject* get(const char* a){
         return new ALObject(std::string(a));
     }
@@ -124,7 +124,7 @@ inline auto splice(ALObject* t_obj, std::vector<ALObject>::difference_type start
     if (begin_it > end_it) {
         return  Qnil;
     }
-    
+
     const auto new_child = std::vector<ALObject*>(begin_it, end_it);
     return make_object(new_child);
 }
@@ -296,12 +296,12 @@ inline ALObject* eval_transform (eval::Evaluator* evl, ALObject* t_obj, size_t t
     auto end_it = std::end(objects);
 
     std::vector<ALObject*> new_child;
-    
+
     while (start_it != end_it) {
         new_child.push_back(evl->eval(*start_it));
         start_it = std::next(start_it);
     }
-    
+
     return make_object(new_child);
 }
 
@@ -310,7 +310,7 @@ inline ALObject* eval_transform (eval::Evaluator* evl, ALObject* t_obj, size_t t
 /* |  _ \ / _ \ / _ \| | | | | | __| | / __| */
 /* | |_) | (_) | (_) | | | |_| | |_| | \__ \ */
 /* |____/ \___/ \___/|_|  \__,_|\__|_|_|___/ */
-                                         
+
 
 
 inline bool is_falsy(ALObject* obj)
@@ -323,7 +323,7 @@ inline bool is_falsy(ALObject* obj)
     if(obj->type() == ALObjectType::REAL_VALUE) return obj->to_real() == 0.0;
 
     return false;
-				
+
 }
 
 inline bool is_truthy(ALObject* obj)
@@ -419,7 +419,7 @@ inline const auto OR_OBJ_FUN = [](bool t_acc, ALObject* t_obj) {return t_acc or 
 /* | |\/| |/ _` | __| '_ \  | | | | __| | / __| */
 /* | |  | | (_| | |_| | | | | |_| | |_| | \__ \ */
 /* |_|  |_|\__,_|\__|_| |_|  \__,_|\__|_|_|___/ */
-                                            
+
 
 
 inline const auto ADD_OBJ_FUN = [](int64_t t_acc, ALObject* t_obj) {return t_acc + t_obj->to_int();};
@@ -439,6 +439,58 @@ inline const auto BIT_OR = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->
 inline const auto BIT_AND = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() & t_rhs->to_int();};
 inline const auto BIT_XOR = [](ALObject* t_lhs, ALObject* t_rhs) { return t_lhs->to_int() ^ t_rhs->to_int();};
 inline const auto BIT_INV = [](ALObject* t_obj) { return ~t_obj->to_int();};
+
+
+/*  _____                  _ _ _          */
+/* | ____|__ _ _   _  __ _| (_) |_ _   _  */
+/* |  _| / _` | | | |/ _` | | | __| | | | */
+/* | |__| (_| | |_| | (_| | | | |_| |_| | */
+/* |_____\__, |\__,_|\__,_|_|_|\__|\__, | */
+/*          |_|                    |___/  */
+
+inline bool equal(ALObject* t_lhs, ALObject* t_rhs);
+
+
+inline bool list_equal(ALObject* t_lhs, ALObject* t_rhs) {
+
+    auto& children_1 = t_lhs->children();
+    auto& children_2 = t_rhs->children();
+
+    if (std::size(children_1) != std::size(children_2) ) { return false; }
+
+    size_t index = 0;
+    for (index = 0; index < std::size(children_1); ++index) {
+        if (! equal(children_1[index], children_2[index])) return false;
+    }
+
+
+    
+    return false;
+}
+
+
+inline bool real_equal(ALObject* t_lhs, ALObject* t_rhs)
+{
+    return t_lhs->to_real() == t_rhs->to_real();
+}
+
+
+inline bool equal(ALObject* t_lhs, ALObject* t_rhs) {
+
+    if ( t_lhs->type() != t_rhs->type()) { return false; }
+
+    make_visit(t_lhs,
+               type( ALObjectType::INT_VALUE )    >>=  [t_rhs](ALObject* t_obj) { return t_obj->to_int() == t_rhs->to_int(); },
+               type( ALObjectType::REAL_VALUE )   >>=  [t_rhs](ALObject* t_obj) { return real_equal(t_obj, t_rhs); },
+               type( ALObjectType::STRING_VALUE ) >>=  [t_rhs](ALObject* t_obj) { return t_obj->to_string().compare(t_rhs->to_string()) == 0; },
+               type( ALObjectType::LIST )       >>=  [t_rhs](ALObject* t_obj) { return list_equal(t_obj, t_rhs); }
+        );
+
+
+
+
+    return false;
+}
 
 
 }
