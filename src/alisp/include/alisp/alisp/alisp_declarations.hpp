@@ -55,7 +55,7 @@ DEFUN(letx, "let*");
 DEFUN(let, "let");
 DEFUN(funcall, "funcall");
 
-DEFUN(backquote, "Qbackquote");
+DEFUN(backquote, "backquote");
 
 DEFUN(signal, "signal");
 DEFUN(exit, "exit");

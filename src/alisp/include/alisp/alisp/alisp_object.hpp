@@ -33,37 +33,43 @@ struct ALObjectHelper
 
     template<typename T>
     static auto get(T a) -> typename  std::enable_if_t<std::is_integral_v<T>, ALObject*> {
+        const auto val = static_cast<ALObject::int_type>(a); 
+        auto obj = new ALObject(val);
 
-        return new ALObject(static_cast<ALObject::int_type>(a));
+        if (0 <= val && val <= 127) { obj->set_char_flag(); }
+        
+        return obj;
     }
+
 
     template<typename T>
     static auto get(T a) -> typename std::enable_if_t<std::is_floating_point_v<T>, ALObject*> {
         return new ALObject(static_cast<ALObject::real_type>(a));
     }
 
-    static ALObject* get(std::string a){
-        return new ALObject(a);
-    }
-
-
-    static ALObject* get(const char* a){
+    
+    template<typename T>
+    static auto get(T a) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObject*> {
         return new ALObject(std::string(a));
     }
 
+    template<typename T>
+    static auto get(T a, bool) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObject*> {
+        return new ALObject(std::string(a), true);
+    }
 
-    static ALObject* get(std::vector<ALObject*> vec_objs)
-    {
+
+    static auto get(std::vector<ALObject*> vec_objs) {
         return new ALObject(vec_objs);
     }
 
 
-    static ALObject* get(ALObject* obj){
+    static auto get(ALObject* obj) {
         return obj;
     }
 
     template<typename ...T>
-    static ALObject* get(T... objs){
+    static auto get(T... objs) {
         std::vector<ALObject*> vec_objs;
         vec_objs.reserve(sizeof...(objs));
         (vec_objs.push_back(ALObjectHelper::get(objs)), ...);
@@ -80,10 +86,12 @@ inline auto make_object(T && ... args)
     return detail::ALObjectHelper::get(std::forward<T>(args) ...);
 }
 
-inline auto make_symbol(std::string name)
+template<typename T>
+inline auto make_symbol(T name)
 {
-    auto obj = new ALObject(name, true);
-    return obj;
+    static_assert(std::is_constructible_v<std::string, T>, "Name must be string like type.");
+    
+    return detail::ALObjectHelper::get(name, true);
 }
 
 template<typename T>
@@ -109,7 +117,7 @@ inline auto make_string(std::string value)
 
 inline auto make_list(ALObject* obj)
 {
-    return new ALObject({obj});
+    return detail::ALObjectHelper::get(std::vector{obj});
 }
 
 inline auto splice(ALObject* t_obj, std::vector<ALObject>::difference_type start_index,

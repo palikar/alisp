@@ -661,7 +661,7 @@ TEST_CASE("Parser Test [comma, at, backqoute]", "[parser]")
         CHECK ( res[0]->i(0)->is_sym() );
         CHECK ( res[0]->i(1)->is_list() );
 
-        CHECK ( res[0]->i(0)->to_string().compare("`") == 0 );
+        CHECK ( res[0]->i(0)->to_string().compare("backquote") == 0 );
         CHECK ( res[0]->i(1)->is_list() );
     }
 

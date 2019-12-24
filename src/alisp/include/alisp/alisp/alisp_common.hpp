@@ -167,7 +167,7 @@ class ALObject
     }
 
     data_type& data() { return m_data;}
-
+    
     auto get_prime() { return reinterpret_cast<Prim::func_type>(children()[0]); }
     auto make_prime(Prim::func_type func) {
         set_function_flag();
@@ -176,7 +176,7 @@ class ALObject
         std::get<list_type>(m_data).push_back(fn);
         return this;
     }
-
+    
     auto get_function(){ return std::pair(i(0), i(1)); }
     
     //     7    6    5    4    3    2   1     0
@@ -193,8 +193,6 @@ class ALObject
 
     struct AlObjectFlags
     {
-      public:
-
         constexpr static std::uint32_t BIND_TYPE = 0x00000001;
         constexpr static std::uint32_t TYPE =      0x0000000E;
         constexpr static std::uint32_t LOC =       0x00000FF0;
@@ -223,10 +221,8 @@ class ALObject
     bool check_const_flag()    const { return (m_flags & AlObjectFlags::CONST) > 0; }
     bool check_char_flag()     const { return (m_flags & AlObjectFlags::CHAR) > 0; }
     
-
     void set_location(std::uint_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
     auto get_location() { return ((m_flags & AlObjectFlags::LOC) >> 4);}
-
 
     auto begin() { return std::begin(children()); }
     auto end() { return std::end(children()); }
@@ -238,8 +234,8 @@ class ALObject
         oss << "(ALObject<" << alobject_type_to_string(type()) << "> ";
         switch (type()) {
           case ALObjectType::INT_VALUE :
-              oss << to_int() << "< #o" << std::oct << to_int() << " " << "#x" << std::hex << to_int() << std::dec;
-              if (check_char_flag())  {oss << "?" <<  char(to_int()); }
+              oss << to_int() << " <#o" << std::oct << to_int() << " " << "#x" << std::hex << to_int() << std::dec;
+              if (check_char_flag())  {oss << " ?" <<  char(to_int()); }
               oss << ">";
               break;
           case ALObjectType::REAL_VALUE :
@@ -252,7 +248,9 @@ class ALObject
               oss << '\"' << to_string() << '\"' ;
               break;
           case ALObjectType::LIST :
-              oss << " fun ";
+              if (check_prime_flag()) oss << "*prime*";
+              else if (check_macro_flag()) oss << "*macro*";
+              else if (check_function_flag()) oss << "*func*";
               break;
         }
         
@@ -262,8 +260,6 @@ class ALObject
         return oss.str();
 
     }
-
-
     
   private:
     data_type m_data;
