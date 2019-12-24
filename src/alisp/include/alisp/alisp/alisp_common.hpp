@@ -7,7 +7,8 @@
 #include <iterator>
 #include <bitset>
 #include <cstdint>
-
+#include <utility>
+#include <memory>
 
 
 namespace alisp
@@ -50,18 +51,24 @@ class Evaluator;
 
 
 class ALObject;
+// using ALObjectPtr = std::shared_ptr<ALObject>;
+using ALObjectPtr = ALObject*;
+
+
 struct Prim
 {
-    using func_type = ALObject* (*)(ALObject* obj, env::Environment* env, eval::Evaluator* eval);
-    ALObject *(*function)(ALObject* obj, env::Environment* env, eval::Evaluator* eval);
+    using func_type = ALObjectPtr (*)(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval);
+    ALObjectPtr (*function)(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval);
 };
 
 
-class ALObject
+
+
+class ALObject : public std::enable_shared_from_this<ALObject>
 {
   public:
 
-    using list_type = std::vector<ALObject*>;
+    using list_type = std::vector<ALObjectPtr>;
     using int_type = int64_t;
     using real_type = double;
     using string_type = std::string;
@@ -92,7 +99,7 @@ class ALObject
         }
     }
 
-    
+
     template<typename Type>
     Type as() const
     {
@@ -106,7 +113,7 @@ class ALObject
     ALObject(double value) : m_data(value), m_type(ALObjectType::REAL_VALUE){}
     ALObject(int64_t value) : m_data(value), m_type(ALObjectType::INT_VALUE){}
     ALObject(std::string value, bool symbol=false) : m_data(value), m_type(symbol ? ALObjectType::SYMBOL : ALObjectType::STRING_VALUE){}
-    ALObject(std::vector<ALObject*> value) : m_data(std::move(value)), m_type(ALObjectType::LIST){}
+    ALObject(std::vector<ALObjectPtr> value) : m_data(std::move(value)), m_type(ALObjectType::LIST){}
 
     ALObjectType type() const {return m_type;}
     bool is_int() const { return m_type == ALObjectType::INT_VALUE; }
@@ -114,12 +121,13 @@ class ALObject
     bool is_real() const { return m_type == ALObjectType::REAL_VALUE; }
     bool is_list() const { return m_type == ALObjectType::LIST; }
     bool is_sym() const { return m_type == ALObjectType::SYMBOL; }
-    
-    ALObject* i(const size_t index){
+
+    ALObjectPtr i(const size_t index){
         return children()[index];
     }
     auto length() noexcept {
-        return visit_or<list_type>( [](const auto& vec){ return std::size(vec); }, [](){ return size_t(0); });
+        return visit_or<list_type>( [](const auto& vec){ return std::size(vec); },
+                                    [](){ return list_type::size_type(0); });
     }
     list_type& children() {
         check<list_type>();
@@ -129,7 +137,7 @@ class ALObject
         check<list_type>();
         return std::get<list_type>(m_data);
     }
-    
+
 
     string_type to_string() const {
         check<string_type>();
@@ -162,23 +170,23 @@ class ALObject
         check<string_type>();
         m_data = std::move(val);
     }
-    void add(ALObject* new_child){
+    void add(ALObjectPtr new_child){
         children().push_back(new_child);
     }
 
     data_type& data() { return m_data;}
-    
+
     auto get_prime() { return reinterpret_cast<Prim::func_type>(children()[0]); }
     auto make_prime(Prim::func_type func) {
         set_function_flag();
         set_prime_flag();
-        auto fn = reinterpret_cast<ALObject*>(reinterpret_cast<void *&>(func));
+        auto fn = reinterpret_cast<ALObjectPtr>(reinterpret_cast<void *&>(func));
         std::get<list_type>(m_data).push_back(fn);
         return this;
     }
-    
+
     auto get_function(){ return std::pair(i(0), i(1)); }
-    
+
     //     7    6    5    4    3    2   1     0
     //   0000 0000 0000 0000 0000 0000 0000 0000
     //   0000 0000 0000 0000 0000 0000 0000 0001 - BIND_TYPE
@@ -220,7 +228,7 @@ class ALObject
     bool check_macro_flag()    const { return (m_flags & AlObjectFlags::MACRO) > 0; }
     bool check_const_flag()    const { return (m_flags & AlObjectFlags::CONST) > 0; }
     bool check_char_flag()     const { return (m_flags & AlObjectFlags::CHAR) > 0; }
-    
+
     void set_location(std::uint_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
     auto get_location() { return ((m_flags & AlObjectFlags::LOC) >> 4);}
 
@@ -253,19 +261,19 @@ class ALObject
               else if (check_function_flag()) oss << "*func*";
               break;
         }
-        
+
         if (check_const_flag()) { oss << "<c>";}
         oss << ")";
-        
+
         return oss.str();
 
     }
-    
+
   private:
     data_type m_data;
     const ALObjectType m_type;
     std::uint_fast32_t m_flags = 0;
-    
+
 };
 
 
@@ -290,7 +298,7 @@ class ParserBase
     ParserBase &operator=(ParserBase&&) = delete;
     ParserBase &operator=(const ParserBase&&) = delete;
     virtual ~ParserBase() = default;
-    virtual std::vector<ALObject*> parse(const std::string* input, std::string file_name) = 0;
+    virtual std::vector<ALObjectPtr> parse(const std::string* input, std::string file_name) = 0;
 
 };
 

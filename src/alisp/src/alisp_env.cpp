@@ -19,7 +19,7 @@ namespace alisp
 namespace env
 {
 
-ALObject* Environment::find(const ALObject* t_sym)
+ALObjectPtr Environment::find(const ALObjectPtr t_sym)
 {
         
     const auto name = t_sym->to_string();
@@ -36,7 +36,7 @@ ALObject* Environment::find(const ALObject* t_sym)
     throw environment_error("\tUnbounded Symbol: " + name);
 }
 
-void Environment::update(const ALObject* t_sym, ALObject* t_value)
+void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
 {
     const auto name = t_sym->to_string();
 
@@ -56,7 +56,7 @@ void Environment::update(const ALObject* t_sym, ALObject* t_value)
     throw environment_error("\tUnbounded Symbol: " + name);
 }
 
-void Environment::put(const ALObject* t_sym, ALObject* t_val)
+void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
 {
     auto& scope = m_stack.current_scope();
     auto name = t_sym->to_string();
@@ -66,7 +66,7 @@ void Environment::put(const ALObject* t_sym, ALObject* t_val)
     scope.insert({name, t_val});
 }
 
-void Environment::define_variable(const ALObject* t_sym, ALObject* t_value)
+void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value)
 {
     auto& scope = m_stack.root_scope();
     auto name = t_sym->to_string();
@@ -77,7 +77,7 @@ void Environment::define_variable(const ALObject* t_sym, ALObject* t_value)
         
 }
 
-void Environment::define_function(const ALObject* t_sym, ALObject* t_params, ALObject* t_body)
+void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body)
 {
         
     auto& scope = m_stack.root_scope();
@@ -92,7 +92,7 @@ void Environment::define_function(const ALObject* t_sym, ALObject* t_params, ALO
     
 }
 
-void Environment::define_macro(const ALObject* t_sym, ALObject* t_params, ALObject* t_body)
+void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body)
 {
         
     auto& scope = m_stack.root_scope();

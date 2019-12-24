@@ -63,7 +63,7 @@ TEST_CASE("Common Test [util]", "[common]")
     SECTION ( "falsey" ) {
 
         CHECK( is_falsy(make_object("")));
-        CHECK( is_falsy(make_object(std::vector<ALObject*>{})));
+        CHECK( is_falsy(make_object(std::vector<ALObjectPtr>{})));
         CHECK( is_falsy(make_object(0)));
 
     }
@@ -103,47 +103,47 @@ TEST_CASE("Common Test [pattern matching]", "[common]")
 
     SECTION ("strings") {
         CHECK_THROWS ( make_visit(make_object("string"),
-                                  type(ALObjectType::INT_VALUE ) >>=  [](ALObject*) {},
-                                  type(ALObjectType::REAL_VALUE ) >>=  [](ALObject*) {},
-                                  type(ALObjectType::STRING_VALUE ) >>=  [](ALObject*) { throw "exc"; },
-                                  type(ALObjectType::SYMBOL ) >>=  [](ALObject*) {}
+                                  type(ALObjectType::INT_VALUE ) >>=  [](ALObjectPtr) {},
+                                  type(ALObjectType::REAL_VALUE ) >>=  [](ALObjectPtr) {},
+                                  type(ALObjectType::STRING_VALUE ) >>=  [](ALObjectPtr) { throw "exc"; },
+                                  type(ALObjectType::SYMBOL ) >>=  [](ALObjectPtr) {}
                            ) );
     }
 
     SECTION ("int") {
         CHECK_THROWS ( make_visit(make_object(1),
-                                  type(ALObjectType::INT_VALUE ) >>=  [](ALObject*) { throw "exc"; },
-                                  type(ALObjectType::REAL_VALUE ) >>=  [](ALObject*) {},
-                                  type(ALObjectType::STRING_VALUE ) >>=  [](ALObject*) {},
-                                  type(ALObjectType::SYMBOL ) >  [](ALObject*) {}
+                                  type(ALObjectType::INT_VALUE ) >>=  [](ALObjectPtr) { throw "exc"; },
+                                  type(ALObjectType::REAL_VALUE ) >>=  [](ALObjectPtr) {},
+                                  type(ALObjectType::STRING_VALUE ) >>=  [](ALObjectPtr) {},
+                                  type(ALObjectType::SYMBOL ) >  [](ALObjectPtr) {}
                            ) );
     }
 
     SECTION ("strings") {
         CHECK_THROWS ( make_visit(make_object(1.3),
-                                  type(ALObjectType::INT_VALUE ) >>=  [](ALObject*) {},
-                                  type(ALObjectType::REAL_VALUE ) >>=  [](ALObject*)  { throw "exc"; },
-                                  type(ALObjectType::STRING_VALUE ) >>=  [](ALObject*) {},
-                                  type(ALObjectType::SYMBOL ) >>=  [](ALObject*) {}
+                                  type(ALObjectType::INT_VALUE ) >>=  [](ALObjectPtr) {},
+                                  type(ALObjectType::REAL_VALUE ) >>=  [](ALObjectPtr)  { throw "exc"; },
+                                  type(ALObjectType::STRING_VALUE ) >>=  [](ALObjectPtr) {},
+                                  type(ALObjectType::SYMBOL ) >>=  [](ALObjectPtr) {}
                            ) );
     }
 
     SECTION ("sym") {
         CHECK_THROWS ( make_visit(make_symbol("sym"),
-                                  type(ALObjectType::INT_VALUE ) >>=  [](ALObject*) {},
-                                  type(ALObjectType::REAL_VALUE ) >>=  [](ALObject*)  {},
-                                  type(ALObjectType::STRING_VALUE ) >>=  [](ALObject*) {},
-                                  type(ALObjectType::SYMBOL ) >  [](ALObject*) { throw "exc"; }
+                                  type(ALObjectType::INT_VALUE ) >>=  [](ALObjectPtr) {},
+                                  type(ALObjectType::REAL_VALUE ) >>=  [](ALObjectPtr)  {},
+                                  type(ALObjectType::STRING_VALUE ) >>=  [](ALObjectPtr) {},
+                                  type(ALObjectType::SYMBOL ) >  [](ALObjectPtr) { throw "exc"; }
                            ) );
     }
 
     SECTION ("list") {
         CHECK_THROWS ( make_visit(make_object(1, 2, 3),
-                                  type(ALObjectType::INT_VALUE ) >  [](ALObject*) {},
-                                  type(ALObjectType::REAL_VALUE ) >  [](ALObject*)  {},
-                                  type(ALObjectType::STRING_VALUE ) >  [](ALObject*) {},
-                                  type(ALObjectType::LIST ) >  [](ALObject*) { throw "exc"; },
-                                  type(ALObjectType::SYMBOL ) >  [](ALObject*) {}
+                                  type(ALObjectType::INT_VALUE ) >  [](ALObjectPtr) {},
+                                  type(ALObjectType::REAL_VALUE ) >  [](ALObjectPtr)  {},
+                                  type(ALObjectType::STRING_VALUE ) >  [](ALObjectPtr) {},
+                                  type(ALObjectType::LIST ) >  [](ALObjectPtr) { throw "exc"; },
+                                  type(ALObjectType::SYMBOL ) >  [](ALObjectPtr) {}
                            ) );
     }
 

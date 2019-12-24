@@ -31,14 +31,14 @@ class environment_error : public std::runtime_error
 namespace env
 {
 
-extern ALObject* intern(const std::string& name);
+extern ALObjectPtr intern(const std::string& name);
 
 namespace detail
 {
 
 struct CellStack {
   public:
-    using Scope = std::unordered_map<std::string, ALObject*>;
+    using Scope = std::unordered_map<std::string, ALObjectPtr>;
     using StackFrame = std::vector<Scope>;
     using Stack = std::vector<StackFrame>;
 
@@ -68,7 +68,7 @@ class Environment
 {
 
   public:
-    static inline std::unordered_map<std::string, ALObject*> g_symbol_table;
+    static inline std::unordered_map<std::string, ALObjectPtr> g_symbol_table;
     static inline std::unordered_map<std::string, ALObject> g_global_symbol_table;
     static inline std::unordered_map<std::string, ALObject> g_prime_values;
 
@@ -87,7 +87,7 @@ class Environment
     }
 
 
-    ALObject* find(const ALObject* t_sym);
+    ALObjectPtr find(const ALObjectPtr t_sym);
 
 
     /**
@@ -97,11 +97,11 @@ class Environment
      *
      * @return
      */
-    void define_variable(const ALObject* t_sym, ALObject* t_value);
+    void define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value);
 
-    void define_function(const ALObject* t_sym, ALObject* t_params, ALObject* t_body);
+    void define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
     
-    void define_macro(const ALObject* t_sym, ALObject* t_params, ALObject* t_body);
+    void define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
 
 
     /**
@@ -110,14 +110,14 @@ class Environment
      * @param t_sym
      * @param t_cell
      */
-    void put(const ALObject* t_sym, ALObject* t_val);
+    void put(const ALObjectPtr t_sym, ALObjectPtr t_val);
     /** 
      * Used by setq to update the value of a cell
      *
      * @param t_sym 
      * @param t_value 
      */
-    void update(const ALObject* t_sym, ALObject* t_value);
+    void update(const ALObjectPtr t_sym, ALObjectPtr t_value);
 
 
     void new_scope()

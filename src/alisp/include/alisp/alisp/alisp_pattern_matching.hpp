@@ -41,8 +41,8 @@ struct pattern_entry {
   public:
     pattern_entry(Check check, Call call) :
         m_check(check),  m_call(call){}
-    bool check(ALObject* obj){ return m_check(obj);}
-    auto call(ALObject* obj){ return m_call(obj);}
+    bool check(ALObjectPtr obj){ return m_check(obj);}
+    auto call(ALObjectPtr obj){ return m_call(obj);}
 };
 
 template<typename Check, typename Call>
@@ -62,7 +62,7 @@ auto operator||(match<Callalble_In_1> t_match_lhs, match<Callalble_In_2> t_match
 {
     return detail::match(
         [t_rhs=std::move(t_match_rhs),
-         t_lhs=std::move(t_match_lhs)](ALObject* obj)->bool {
+         t_lhs=std::move(t_match_lhs)](ALObjectPtr obj)->bool {
             return t_rhs.m_fun(obj) || t_lhs.m_fun(obj); });
 }
 
@@ -72,7 +72,7 @@ auto operator&&(detail::match<Callalble_In_1> t_match_lhs, detail::match<Callalb
 {
     return detail::match(
         [t_rhs=std::move(t_match_rhs),
-         t_lhs=std::move(t_match_lhs)](ALObject* obj)->bool {
+         t_lhs=std::move(t_match_lhs)](ALObjectPtr obj)->bool {
             return t_rhs.m_fun(obj) && t_lhs.m_fun(obj); });
 }
 
@@ -80,21 +80,21 @@ template<typename Callalble_In_1>
 auto operator!(match<Callalble_In_1> t_match)
 {
     return detail::match(
-        [t_match=std::move(t_match)](ALObject* obj)->bool {
+        [t_match=std::move(t_match)](ALObjectPtr obj)->bool {
             return !t_match.m_fun(obj); });
 }
 
 
 template<size_t N, class ... Matches, class ... Checks>
-auto visit_match_impl([[maybe_unused]] ALObject* obj, [[maybe_unused]] std::tuple<pattern_entry<Checks, Matches>...> patterns) -> std::common_type_t<std::invoke_result_t<Matches, ALObject*> ...>{
+auto visit_match_impl([[maybe_unused]] ALObjectPtr obj, [[maybe_unused]] std::tuple<pattern_entry<Checks, Matches>...> patterns) -> std::common_type_t<std::invoke_result_t<Matches, ALObjectPtr> ...>{
 
 
     if constexpr (N >= sizeof...(Checks)) {
 
-        if constexpr (std::is_void_v<std::common_type_t<std::invoke_result_t<Matches, ALObject*> ...>>) {
+        if constexpr (std::is_void_v<std::common_type_t<std::invoke_result_t<Matches, ALObjectPtr> ...>>) {
             return;
         } else {
-            return std::common_type_t<std::invoke_result_t<Matches, ALObject*> ...>{};
+            return std::common_type_t<std::invoke_result_t<Matches, ALObjectPtr> ...>{};
         }
         
     } else {
@@ -107,7 +107,7 @@ auto visit_match_impl([[maybe_unused]] ALObject* obj, [[maybe_unused]] std::tupl
 }
 
 template <class ... Matches, class ... Checks >
-auto visit_match(ALObject* obj, std::tuple<pattern_entry<Checks, Matches>...> patterns ){
+auto visit_match(ALObjectPtr obj, std::tuple<pattern_entry<Checks, Matches>...> patterns ){
     return visit_match_impl<0>(obj, patterns);
 }
 
@@ -116,40 +116,40 @@ auto visit_match(ALObject* obj, std::tuple<pattern_entry<Checks, Matches>...> pa
 
 inline auto type(ALObjectType t_type) {
     return detail::match(
-        [t_t=std::move(t_type)](ALObject* obj)->bool {
+        [t_t=std::move(t_type)](ALObjectPtr obj)->bool {
             return  obj->type() == t_t;});
 }
 
 inline auto is_function(){
     return detail::match(
-        [](ALObject* obj)->bool {
+        [](ALObjectPtr obj)->bool {
             return  obj->check_function_flag(); });
 }
 
 inline auto is_macro(){
     return detail::match(
-        [](ALObject* obj)->bool {
+        [](ALObjectPtr obj)->bool {
             return  obj->check_macro_flag(); });
 }
 
 inline auto is_char(){
     return detail::match(
-        [](ALObject* obj)->bool {
+        [](ALObjectPtr obj)->bool {
             return  obj->check_char_flag(); });
 }
 
 inline auto is_const(){
     return detail::match(
-        [](ALObject* obj)->bool {
+        [](ALObjectPtr obj)->bool {
             return  obj->check_const_flag(); });
 }
 
 inline auto any_pattern() {
-    return detail::match( [](ALObject*)->bool { return  true; });
+    return detail::match( [](ALObjectPtr)->bool { return  true; });
 }
 
 template <class ... Matches, class ... Checks >
-inline auto make_visit (ALObject* obj, detail::pattern_entry<Matches, Checks> ... entries){
+inline auto make_visit (ALObjectPtr obj, detail::pattern_entry<Matches, Checks> ... entries){
     return visit_match(obj, std::tuple(entries ...));
 }
 

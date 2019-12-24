@@ -12,14 +12,14 @@
 
 
 #define DEFUN(name, sym)                                                \
-    extern ALObject* F##name (ALObject*, env::Environment*, eval::Evaluator*); \
+    extern ALObjectPtr F##name (ALObjectPtr, env::Environment*, eval::Evaluator*); \
     inline auto Q##name = &env::Environment::g_global_symbol_table.insert({sym, ALObject(sym, true)}).first->second; \
     inline auto P##name = env::Environment::g_prime_values.insert({sym, *ALObject(ALObject::list_type{}).make_prime(&F##name)})
 
 
     
 #define APP_FUNCTION_(NAME, FUN, TYPE)                                  \
-    ALObject* NAME(ALObject* obj, env::Environment*, eval::Evaluator* evl) \
+    ALObjectPtr NAME(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl) \
     {                                                                   \
         assert_size<0>(obj);                                            \
         assert_number(obj->i(0));                                       \
