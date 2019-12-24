@@ -146,6 +146,7 @@ void eval_statement(const std::string& command)
 
             auto eval_res = eval.eval(p);
             if (opts.eval_debug) std::cout << "DEUBG[EVAL]: " << alisp::dump(eval_res) << "\n";
+            std::cout << *eval_res << "\n";
 
         }
 

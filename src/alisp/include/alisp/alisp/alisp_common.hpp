@@ -168,38 +168,6 @@ class ALObject
 
     data_type& data() { return m_data;}
 
-    std::string pretty_print() const{
-        std::ostringstream oss;
-        oss << "(ALObject<" << alobject_type_to_string(type()) << " ";
-
-
-        switch (type()) {
-          case ALObjectType::INT_VALUE :
-              oss << to_int();
-              break;
-          case ALObjectType::REAL_VALUE :
-              oss << to_real();
-              break;
-          case ALObjectType::SYMBOL:
-              oss << to_string() ;
-              break;
-          case ALObjectType::STRING_VALUE :
-              oss << '\"' << to_string() << '\"' ;
-              break;
-
-          case ALObjectType::LIST :
-              oss << '\"' << to_string() << '\"' ;
-              break;
-        }
-
-        oss << "> )";
-        
-        return oss.str();
-
-    }
-
-
-    
     auto get_prime() { return reinterpret_cast<Prim::func_type>(children()[0]); }
     auto make_prime(Prim::func_type func) {
         set_function_flag();
@@ -249,11 +217,11 @@ class ALObject
     void reset_const_flag() { m_flags &= ~AlObjectFlags::CONST; }
     void reset_char_flag() { m_flags &= ~AlObjectFlags::CHAR; }
 
-    bool check_function_flag() { return (m_flags & AlObjectFlags::FUN) > 0; }
-    bool check_prime_flag() { return (m_flags & AlObjectFlags::PRIME) > 0; }
-    bool check_macro_flag() { return (m_flags & AlObjectFlags::MACRO) > 0; }
-    bool check_const_flag() { return (m_flags & AlObjectFlags::CONST) > 0; }
-    bool check_char_flag() { return (m_flags & AlObjectFlags::CHAR) > 0; }
+    bool check_function_flag() const { return (m_flags & AlObjectFlags::FUN) > 0; }
+    bool check_prime_flag()    const { return (m_flags & AlObjectFlags::PRIME) > 0; }
+    bool check_macro_flag()    const { return (m_flags & AlObjectFlags::MACRO) > 0; }
+    bool check_const_flag()    const { return (m_flags & AlObjectFlags::CONST) > 0; }
+    bool check_char_flag()     const { return (m_flags & AlObjectFlags::CHAR) > 0; }
     
 
     void set_location(std::uint_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
@@ -265,6 +233,37 @@ class ALObject
     auto cbegin() const { return std::cbegin(children()); }
     auto cend() const { return std::cend(children()); }
 
+    std::string pretty_print() const {
+        std::ostringstream oss;
+        oss << "(ALObject<" << alobject_type_to_string(type()) << "> ";
+        switch (type()) {
+          case ALObjectType::INT_VALUE :
+              oss << to_int() << "< #o" << std::oct << to_int() << " " << "#x" << std::hex << to_int() << std::dec;
+              if (check_char_flag())  {oss << "?" <<  char(to_int()); }
+              oss << ">";
+              break;
+          case ALObjectType::REAL_VALUE :
+              oss << to_real();
+              break;
+          case ALObjectType::SYMBOL:
+              oss << to_string() ;
+              break;
+          case ALObjectType::STRING_VALUE :
+              oss << '\"' << to_string() << '\"' ;
+              break;
+          case ALObjectType::LIST :
+              oss << " fun ";
+              break;
+        }
+        
+        if (check_const_flag()) { oss << "<c>";}
+        oss << ")";
+        
+        return oss.str();
+
+    }
+
+
     
   private:
     data_type m_data;
@@ -274,18 +273,12 @@ class ALObject
 };
 
 
-std::ostream& operator<<(std::ostream& os, const ALObject* t_obj)
+inline std::ostream& operator<<(std::ostream& os, const ALObject& t_obj)
 {
-    os << t_obj->pretty_print();
+    os << t_obj.pretty_print();
     return os;
 }
 
-inline std::string to_string(const ALObject* t_obj)
-{
-    std::ostringstream ss;
-    ss << t_obj;
-    return ss.str();
-}
 
 
 namespace parser
