@@ -155,3 +155,17 @@ inline auto make_visit (ALObject* obj, detail::pattern_entry<Matches, Checks> ..
 
 
 }
+
+
+
+
+template<typename T>
+inline auto default_return()
+{
+    static_assert(std::is_default_constructible_v<T>, "The type must be default constructable");
+    if constexpr (std::is_void_v<T>) {
+        return;
+    } else {
+        return T{};
+    }
+}

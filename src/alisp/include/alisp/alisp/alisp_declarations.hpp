@@ -22,7 +22,7 @@ DEFVAR(Qnil, "nil");
 DEFSYM(Qoptional, "&optional");
 DEFSYM(Qrest, "&rest");
 
-DEFSYM(Qbackquote, "`");
+// DEFSYM(Qbackquote, "`");
 DEFSYM(Qcomma, ",");
 DEFSYM(Qcomma_at, ",@");
 
@@ -55,6 +55,8 @@ DEFUN(progn, "progn");
 DEFUN(letx, "let*");
 DEFUN(let, "let");
 DEFUN(funcall, "funcall");
+
+DEFUN(backquote, "Qbackquote");
 
 DEFUN(signal, "signal");
 DEFUN(exit, "exit");

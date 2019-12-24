@@ -780,7 +780,7 @@ class ALParser : public ParserBase
         skip_whitespace();
         auto obj = parse_next();
         if (!obj) { PARSE_ERROR("Expected expression after \'`\'"); }
-        return make_object(make_symbol("`"), obj);
+        return make_object(Qbackquote, obj);
     }
 
     ALObject* parse_function_quote()
@@ -935,12 +935,12 @@ class ALParser : public ParserBase
             skip_whitespace();
             auto obj = parse_next();
             if ( !obj ) { PARSE_ERROR("Expected expression after \'@,\'"); }
-            return make_object(make_symbol(",@"), obj);
+            return make_object(Qcomma_at, obj);
         } else {
             skip_whitespace();
             auto obj = parse_next();
             if ( !obj ) { PARSE_ERROR("Expected expression after \',\'"); }
-            return make_object(make_symbol(","), obj);
+            return make_object(Qcomma, obj);
         }
     }
 
