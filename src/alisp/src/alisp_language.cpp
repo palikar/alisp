@@ -14,6 +14,48 @@
 namespace alisp
 {
 
+namespace detail
+{
+
+static ALObject* handle_backquote_list(ALObject* obj, eval::Evaluator* eval)
+{
+    if (not plist(obj)) { return obj; }
+
+    if (obj->i(0) == Qcomma) {
+        return eval->eval(obj->i(1));
+    }
+    
+    ALObject::list_type new_elements;
+
+
+    for (auto el : obj->children()) {
+
+        if (!plist(el)) {
+            new_elements.push_back(el);
+            continue;
+        }
+
+        if (el->i(0) == Qcomma_at) {
+            auto new_list =  eval->eval(el->i(1));
+            if (plist(new_list)) {
+                new_elements.insert(new_elements.end(),
+                                    std::begin(new_list->children()),
+                                    std::end(new_list->children()));
+            } else {
+                new_elements.push_back(new_list);
+            }
+            continue;
+        }
+        
+        new_elements.push_back(handle_backquote_list(el, eval));        
+        
+    }
+    
+    return make_object(new_elements);
+}
+
+}
+
 ALObject* Fdefvar(ALObject* obj, env::Environment* env, eval::Evaluator* eval)
 {
     assert_size<2>(obj);
@@ -91,6 +133,13 @@ ALObject* Ffunction(ALObject* obj, env::Environment*, eval::Evaluator*)
 {
     assert_size<1>(obj);
     return obj->i(0);
+}
+
+ALObject* Fbackquote(ALObject* obj, env::Environment*, eval::Evaluator* eval)
+{
+    assert_size<1>(obj);
+    if (! plist(obj->i(0))) { return obj->i(0); }
+    return detail::handle_backquote_list(obj->i(0), eval);
 }
 
 ALObject* Fif(ALObject* obj, env::Environment*, eval::Evaluator* evl)
@@ -266,57 +315,5 @@ ALObject* Fexit(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     exit(static_cast<int>(val->to_int()));
     return Qnil;
 }
-
-
-
-
-
-static ALObject* handle_backquote_list(ALObject* obj, eval::Evaluator* eval)
-{
-    if (not plist(obj)) { return obj; }
-
-    if (obj->i(0) == Qcomma) {
-        return eval->eval(obj->i(1));
-    }
-    
-    ALObject::list_type new_elements;
-
-
-    for (auto el : obj->children()) {
-
-        if (!plist(el)) {
-            new_elements.push_back(el);
-            continue;
-        }
-
-        if (el->i(0) == Qcomma_at) {
-            auto new_list =  eval->eval(el->i(1));
-            if (plist(new_list)) {
-                new_elements.insert(new_elements.end(),
-                                    std::begin(new_list->children()),
-                                    std::end(new_list->children()));
-            } else {
-                new_elements.push_back(new_list);
-            }
-            continue;
-        }
-        
-        new_elements.push_back(handle_backquote_list(el, eval));        
-        
-    }
-    
-    return make_object(new_elements);
-}
-
-
-
-ALObject* Fbackquote(ALObject* obj, env::Environment*, eval::Evaluator* eval)
-{
-    assert_size<1>(obj);
-    if (! plist(obj->i(0))) { return obj->i(0); }
-    return handle_backquote_list(obj->i(0), eval);
-}
-
-
 
 }

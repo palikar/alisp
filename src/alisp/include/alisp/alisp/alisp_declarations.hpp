@@ -22,7 +22,6 @@ DEFVAR(Qnil, "nil");
 DEFSYM(Qoptional, "&optional");
 DEFSYM(Qrest, "&rest");
 
-// DEFSYM(Qbackquote, "`");
 DEFSYM(Qcomma, ",");
 DEFSYM(Qcomma_at, ",@");
 

@@ -9,6 +9,7 @@
 #include <cstdint>
 
 
+
 namespace alisp
 {
 
@@ -30,12 +31,6 @@ constexpr const char* alobject_type_to_string(ALObjectType type){
     return names[static_cast<int>(type)];
 }
 
-enum class ValueType
-{
-    PLAIN,
-    SEXP,
-    CALLABLE
-};
 
 class alobject_error : public std::runtime_error
 {
@@ -46,16 +41,13 @@ class alobject_error : public std::runtime_error
 
 
 
-namespace env
-{
+namespace env {
 class Environment;
 }
-
-
-namespace eval
-{
+namespace eval {
 class Evaluator;
 }
+
 
 class ALObject;
 struct Prim
@@ -178,8 +170,32 @@ class ALObject
 
     std::string pretty_print() const{
         std::ostringstream oss;
-        oss << "(ALObject<" << alobject_type_to_string(type()) << "> )";
+        oss << "(ALObject<" << alobject_type_to_string(type()) << " ";
+
+
+        switch (type()) {
+          case ALObjectType::INT_VALUE :
+              oss << to_int();
+              break;
+          case ALObjectType::REAL_VALUE :
+              oss << to_real();
+              break;
+          case ALObjectType::SYMBOL:
+              oss << to_string() ;
+              break;
+          case ALObjectType::STRING_VALUE :
+              oss << '\"' << to_string() << '\"' ;
+              break;
+
+          case ALObjectType::LIST :
+              oss << '\"' << to_string() << '\"' ;
+              break;
+        }
+
+        oss << "> )";
+        
         return oss.str();
+
     }
 
 
@@ -256,6 +272,20 @@ class ALObject
     std::uint_fast32_t m_flags = 0;
     
 };
+
+
+std::ostream& operator<<(std::ostream& os, const ALObject* t_obj)
+{
+    os << t_obj->pretty_print();
+    return os;
+}
+
+inline std::string to_string(const ALObject* t_obj)
+{
+    std::ostringstream ss;
+    ss << t_obj;
+    return ss.str();
+}
 
 
 namespace parser
