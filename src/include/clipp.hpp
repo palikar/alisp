@@ -47,6 +47,11 @@
 #include <functional>
 
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif    
+
 /*************************************************************************//**
  *
  * @brief primary namespace
@@ -7019,6 +7024,10 @@ void print(OStream& os, const group& g, int level)
 
 } // namespace debug
 } //namespace clipp
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #endif
 

@@ -3,7 +3,7 @@
 #include <fstream>
 #include <filesystem>
 
-#include <clara.hpp>
+#include <clipp.hpp>
 #include <fmt/format.h>
 #include <rang.hpp>
 
@@ -60,58 +60,64 @@ int main(int argc, char *argv[])
 
     
 
-    using clara::Opt;
-    using clara::Arg;
-    using clara::Args;
-    using clara::Help;
+    auto cli = (
+        //option with required value
+        clipp::option("-v", "--version"),
+        clipp::option("-h", "--help")
+        );
 
-    bool showHelp{ false };
+    // using clara::Opt;
+    // using clara::Arg;
+    // using clara::Args;
+    // using clara::Help;
 
-
-    auto cli = Help(showHelp)
-        | Opt(opts.version)["-v"]["--version"]("Show the version of alisp")
-        | Opt(opts.eval, "string")["-e"]["--eval"]("Input to evaluate")
-        | Opt(opts.parse_debug)["-d"]["--parse-debug"]("Debug output from the parser")
-        | Opt(opts.eval_debug)["-l"]["--eval-debug"]("Debug output from the evaluator")
-        | Opt(opts.interactive)["-i"]["--iteractive"]("Start interactive mode after file evaluation")
-        | Arg(opts.input, "file")("Input file");
+    // bool showHelp{ false };
 
 
-    const auto result = cli.parse(Args(argc, argv));
-
-    if (!result) {
-        std::cerr << "Error in command line: " << result.errorMessage() << '\n';
-    }
-
-    if (showHelp) {
-        std::cout << cli << '\n';
-        exit(1);
-    }
-
-    if (opts.version) {
-
-        std::cout << fmt::format("ALisp {}.{}.{}", alisp::version_major, alisp::version_minor, alisp::version_patch) << '\n';
-        exit(0);
-    }
-
-    if(!opts.input.empty()){
-        auto file_path = std::filesystem::path{opts.input};
-        if (!std::filesystem::is_regular_file(file_path)){
-            exit(1);
-        }
-
-        eval_file(file_path);
-        if (opts.interactive) interactive();
-        exit(0);
-    }
+    // auto cli = Help(showHelp)
+    //     | Opt(opts.version)["-v"]["--version"]("Show the version of alisp")
+    //     | Opt(opts.eval, "string")["-e"]["--eval"]("Input to evaluate")
+    //     | Opt(opts.parse_debug)["-d"]["--parse-debug"]("Debug output from the parser")
+    //     | Opt(opts.eval_debug)["-l"]["--eval-debug"]("Debug output from the evaluator")
+    //     | Opt(opts.interactive)["-i"]["--iteractive"]("Start interactive mode after file evaluation")
+    //     | Arg(opts.input, "file")("Input file");
 
 
-    if(!opts.eval.empty()){
-        eval_statement(opts.eval);
-        exit(0);;
-    }
+    // const auto result = cli.parse(Args(argc, argv));
 
-    interactive();
+    // if (!result) {
+    //     std::cerr << "Error in command line: " << result.errorMessage() << '\n';
+    // }
+
+    // if (showHelp) {
+    //     std::cout << cli << '\n';
+    //     exit(1);
+    // }
+
+    // if (opts.version) {
+
+    //     std::cout << fmt::format("ALisp {}.{}.{}", alisp::version_major, alisp::version_minor, alisp::version_patch) << '\n';
+    //     exit(0);
+    // }
+
+    // if(!opts.input.empty()){
+    //     auto file_path = std::filesystem::path{opts.input};
+    //     if (!std::filesystem::is_regular_file(file_path)){
+    //         exit(1);
+    //     }
+
+    //     eval_file(file_path);
+    //     if (opts.interactive) interactive();
+    //     exit(0);
+    // }
+
+
+    // if(!opts.eval.empty()){
+    //     eval_statement(opts.eval);
+    //     exit(0);;
+    // }
+
+    // interactive();
 
     return 0;
 }
