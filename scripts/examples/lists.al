@@ -27,4 +27,9 @@
 (dump (remove '(a b c ) 'b))
 
 
-(dump (nth '(0 1 2 3 4 5 6 7) 6))
+(defun list-example()
+  (let (a b (c 10))
+    (when 't
+      (dump (nth '(0 1 2 3 4 5 6 7) 10)))))
+
+(list-example)

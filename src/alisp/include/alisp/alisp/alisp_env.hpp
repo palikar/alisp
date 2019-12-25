@@ -9,6 +9,7 @@
 #include "alisp/alisp/alisp_macros.hpp"
 
 #include "alisp/utility/helpers.hpp"
+#include "alisp/utility/macros.hpp"
 
 
 namespace alisp::eval
@@ -76,8 +77,7 @@ class Environment
     detail::CellStack m_stack;
     size_t m_call_depth = 0;
 
-    std::vector<std::tuple<std::string, bool>> m_stack_trace; // name, is_prime
-    
+    std::vector<std::tuple<std::string, bool>> m_stack_trace; // name, is_prime    
 
   public:
 
@@ -149,14 +149,13 @@ class Environment
 
     bool in_root() { return (!in_function()) && (std::size(m_stack.root_frame()) == 1); }
     
-    auto& get_stack_trace() { return m_stack_trace; }
-
     void dump() const;
+
+
     void callstack_dump() const;
-
     void trace_call(std::string t_trace, bool is_prime = false) { m_stack_trace.push_back({std::move(t_trace), is_prime}); }
-    void trace_unwind() { m_stack_trace.pop_back(); }
-
+    void trace_unwind() { if (!std::empty(m_stack_trace)) { m_stack_trace.pop_back(); } }
+    auto get_stack_trace() -> auto& { return m_stack_trace; } 
 
 };
 
@@ -186,7 +185,16 @@ struct CallTracer
         m_env.trace_call("(" + m_function + ")", t_is_prime);
     }
 
-    void dump() { m_env.callstack_dump(); }
+    void dump() {
+        
+        if ( ALISP_UNLIKELY( !std::empty(m_env.get_stack_trace()) )) {
+            m_env.callstack_dump();
+            m_env.get_stack_trace().clear();
+        } else {
+            return;
+        }
+        
+    }
     
     
 
