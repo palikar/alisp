@@ -176,12 +176,19 @@ class ALObject : public std::enable_shared_from_this<ALObject>
 
     data_type& data() { return m_data;}
 
-    auto get_prime() { return reinterpret_cast<Prim::func_type>(children()[0].get()); }
+    auto get_prime() { return m_prime; }
+
     auto make_prime(Prim::func_type func) {
         set_function_flag();
         set_prime_flag();
-        auto fn = std::shared_ptr<ALObject>(reinterpret_cast<ALObject*>(reinterpret_cast<void *&>(func)));
-        std::get<list_type>(m_data).push_back(fn);
+
+        m_prime  = func;
+        // // auto fn = std::shared_ptr<ALObject>();
+        // auto fn = reinterpret_cast<ALObjectPtr*>(reinterpret_cast<void *&>(func));
+        // // auto ptr = ALObjectPtr(fn, [](ALObject*){});
+        // // std::get<list_type>(m_data).push_back(std::move(ptr));
+        // std::get<list_type>(m_data).push_back(*fn);
+        
         return shared_from_this();
     }
 
@@ -273,6 +280,7 @@ class ALObject : public std::enable_shared_from_this<ALObject>
     data_type m_data;
     const ALObjectType m_type;
     std::uint_fast32_t m_flags = 0;
+    Prim::func_type m_prime = nullptr;
 
 };
 

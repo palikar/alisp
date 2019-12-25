@@ -8,15 +8,14 @@
     inline auto var = env::Environment::g_global_symbol_table.insert({sym_name, make_symbol(sym_name)}).first->second
 
 #define DEFVAR(var, sym_name)                                           \
-    inline auto var = env::Environment::g_global_symbol_table.insert({sym_name, make_symbol(sym_name)}).first->second
-
-// inline auto V_ ## var = env::Environment::g_prime_values.insert({sym_name, ALObject(ALObject::list_type{var})})
+    inline auto var = env::Environment::g_global_symbol_table.insert({sym_name, make_symbol(sym_name)}).first->second; \
+    inline auto V_ ## var = env::Environment::g_prime_values.insert({sym_name, make_object(ALObject::list_type{var})})
 
 
 #define DEFUN(name, sym)                                                \
     extern ALObjectPtr F##name (ALObjectPtr, env::Environment*, eval::Evaluator*); \
-    inline auto Q##name = &env::Environment::g_global_symbol_table.insert({sym, make_symbol(sym)}).first->second; \
-    inline auto P##name = env::Environment::g_prime_values.insert({sym, make_object(ALObject::list_type{})->make_prime(&F##name)})
+    inline auto Q##name = env::Environment::g_global_symbol_table.insert({sym, make_symbol(sym)}).first->second; \
+    inline auto P##name = env::Environment::g_prime_values.insert({sym, make_object(ALObject::list_type{})->make_prime(&F##name)}).first->second
 
 
     
