@@ -147,35 +147,34 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
               throw std::runtime_error("Head of a list must be bound to function");
            }
 
-           // (obj->i(0) func->get_function().first) (fun-1 param1 param2 &opt)
 
-           env::detail::CallTracer tracer{env};
-           tracer.function_name(obj->i(0)->to_string(), func->check_prime_flag());
+          env::detail::CallTracer tracer{env};
+          tracer.function_name(obj->i(0)->to_string(), func->check_prime_flag());
 
-           try {
+          try {
 
-               if (func->check_prime_flag()) {
-                   return func->get_prime()(splice(obj, 1), &env, this);
-               } else if (func->check_macro_flag()) {
-                   env::detail::FunctionCall fc{env};
+              if (func->check_prime_flag()) {
+                  return func->get_prime()(splice(obj, 1), &env, this);
+              } else if (func->check_macro_flag()) {
+                  env::detail::FunctionCall fc{env};
 
-                   return eval(apply_function(func, splice(obj, 1)));
+                  return eval(apply_function(func, splice(obj, 1)));
 
-               } else {
-                   env::detail::FunctionCall fc{env};
-                   return eval_function(func, splice(obj, 1));
+              } else {
+                  env::detail::FunctionCall fc{env};
+                  return eval_function(func, splice(obj, 1));
 
-               }
-
-
-           } catch (...) {
-
-               tracer.dump();
-               throw;
-           }
+              }
 
 
-           break;
+          } catch (...) {
+
+              tracer.dump();
+              throw;
+          }
+
+
+          break;
        }
 
        default: break;

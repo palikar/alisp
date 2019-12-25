@@ -27,11 +27,11 @@ option(ENABLE_CPPCHECK "Enable testing with cppcheck" FALSE)
 option(SIMPLE_BUILD "Build the project as minimally as possible" FALSE)
 option(BUILD_DOC "Build the project's documentation" FALSE)
 option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
-option(ELF_LOGGING "Use elf as a hashing function" FALSE)
-option(JENKINS_LOGGING "Use jenkins one at a time as a hashing function" FALSE)
+option(ELF_HASHING "Use elf as a hashing function" FALSE)
+option(JENKINS_HASHING "Use jenkins one at a time as a hashing function" FALSE)
 option(DEBUG_LOGGING "Enabling debug logging" FALSE)
-
 option(BUILD_EXAMPLES "Enable targets for running the example scripts" FALSE)
+option(MANUAL_MEMORY "Use raw pointers instead of smart ones" FALSE)
 
 
 #######################################################################
@@ -234,11 +234,18 @@ if(JENKINS_HASHING)
     target_compile_definitions(project_options INTERFACE -DJENKINS_HASHING)
 endif(JENKINS_HASHING)
 
+if(MANUAL_MEMORY)
+    target_compile_definitions(project_options INTERFACE -DUSE_MANUAL_MEMORY)
+endif(MANUAL_MEMORY)
 
 
-set(AL_VERSION_MAJOR 1)
-set(AL_VERSION_MINOR 0)
-set(AL_VERSION_PATCH 0)
+
+file(READ "${PROJECT_SOURCE_DIR}/version" VERSION NEWLINE_CONSUME)
+string(REPLACE "\n" "" VERSION "${VERSION}")
+string(REPLACE "." ";" VERSION_LIST ${VERSION})
+list(GET VERSION_LIST 0 AL_VERSION_MAJOR)
+list(GET VERSION_LIST 1 AL_VERSION_MINOR)
+list(GET VERSION_LIST 2 AL_VERSION_PATCH)
 set(AL_VERSION ${AL_VERSION_MAJOR}.${AL_VERSION_MINOR}.${AL_VERSION_PATCH})
 
 configure_file (
@@ -333,8 +340,10 @@ message("Simple build:     \t ${SIMPLE_BUILD}")
 message("Jenkins Hashing:  \t ${JENKINS_HASHING}")
 message("Elf Hashing:      \t ${ELF_HASHING}")
 message("Debug Logging:    \t ${DEBUG_LOGGING}")
+message("Build exampls:    \t ${BUILD_EXAMPLES}")
+message("Manual Memory:    \t ${MANUAL_MEMORY}")
 message("------------------------------------------")
-message("Version:        \t ")
+message("Version:          \t ${AL_VERSION}")
 message("########################################")
 
 
