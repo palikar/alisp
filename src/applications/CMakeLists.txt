@@ -14,14 +14,10 @@ target_link_libraries(alisp
     project_options
     project_warnings
     PUBLIC
-    Threads::Threads
-    fmt::fmt
-    spdlog::spdlog
-    readline
-    clara::clara
     alisp_util
     alisp_language
-    )
+    fmt::fmt
+    readline)
 
 
 

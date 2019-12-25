@@ -6,12 +6,11 @@ target_include_directories(${PROJECT_NAME}_common_test
     PRIVATE ../src
     )
 
-    target_link_libraries(${PROJECT_NAME}_common_test
-        PRIVATE
-	project_options
+target_link_libraries(${PROJECT_NAME}_common_test
+    PRIVATE
+    project_options
     project_warnings
-	PUBLIC
-	Catch2::Catch2)
+    PUBLIC)
 
 
 include(CTest)

@@ -58,7 +58,7 @@ Options opts{};
 int main(int argc, char *argv[])
 {
 
-    alisp::logging::init_logging();
+    
 
     using clara::Opt;
     using clara::Arg;

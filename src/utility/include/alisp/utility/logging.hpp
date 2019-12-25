@@ -1,12 +1,4 @@
 #pragma once
-
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/rotating_file_sink.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/null_sink.h>
-#include <fmt/time.h>
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -19,12 +11,6 @@ namespace alisp::logging
 {
 
 
-    spdlog::logger* get_main_logger();
-    spdlog::logger* get_dev_logger();
-    
-    void init_logging(bool debug = false);
-
-    std::string get_time_str();
 }
 
 

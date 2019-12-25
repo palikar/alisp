@@ -159,6 +159,7 @@ conan_basic_setup()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 if(ENABLE_TESTING)
+    include(Catch)
     enable_testing()
     
     if(ONLY_COVERAGE OR ENABLE_COVERAGE)
@@ -188,34 +189,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 
 
-if(CONAN_CATCH2_ROOT_DEBUG)
-    include(${CONAN_CATCH2_ROOT_DEBUG}/lib/cmake/Catch2/Catch.cmake)
-else()
-    include(${CONAN_CATCH2_ROOT}/lib/cmake/Catch2/Catch.cmake)
-endif()
-find_package(Catch2 REQUIRED)
-
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 find_package(fmt)
-
-find_package(spdlog)
-
-set(OpenGL_GL_PREFERENCE GLVND)
-find_package(OpenGL)
-
-
-find_package(clara)
-
-
-find_package(rang)
-
-
-
-
-
 
 #######################################################################
 #######################################################################
@@ -254,6 +232,7 @@ configure_file (
     )
 
 include_directories("${PROJECT_BINARY_DIR}/src/include")
+include_directories("${PROJECT_SOURCE_DIR}/src/include")
 
 install (FILES
     "${PROJECT_BINARY_DIR}/src/include/${PROJECT_NAME}/config.hpp"
@@ -347,29 +326,4 @@ message("Version:          \t ${AL_VERSION}")
 message("########################################")
 
 
-
-
-####################################################
-##############    Available Targets   ##############
-####################################################
-# Catch2::Catch2 
-####################################################
-# absl::base
-# absl::algorithm
-# absl::debugging
-# absl::flat_hash_map
-# absl::memory
-# absl::meta
-# absl::numeric
-# absl::strings
-# absl::synchronization
-# absl::time
-# absl::utility
-####################################################
-# Threads:::fmt
-####################################################
-# spdlog::spdlog
-####################################################
-# imgui
-####################################################
 

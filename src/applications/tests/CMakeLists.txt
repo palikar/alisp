@@ -10,8 +10,7 @@ target_link_libraries(alisp_applications_test
     PRIVATE
     project_options
     project_warnings
-    PUBLIC
-    Catch2::Catch2)
+    PUBLIC)
 
 
 include(CTest)

@@ -17,7 +17,6 @@ target_link_libraries(alisp_util
     PUBLIC
     Threads::Threads
     fmt::fmt
-    spdlog::spdlog
     )
 
 

@@ -25,11 +25,7 @@ target_link_libraries(alisp_language
     project_warnings
     PUBLIC
     alisp_util
-    clara::clara
-    rang::rang
-    Threads::Threads
     fmt::fmt
-    spdlog::spdlog
     )
 
 

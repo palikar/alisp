@@ -33,12 +33,7 @@ target_link_libraries(alisp_language_test
     project_options
     project_warnings
     PUBLIC
-    alisp_util
-    rang::rang
-    Threads::Threads
-    fmt::fmt
-    spdlog::spdlog
-    Catch2::Catch2)
+    alisp_util)
 
 
 
