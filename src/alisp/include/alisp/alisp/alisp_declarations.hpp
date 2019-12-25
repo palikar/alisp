@@ -89,6 +89,8 @@ DEFUN(tail, "tail");
 DEFUN(push, "push");
 DEFUN(delete, "delete");
 DEFUN(remove, "remove");
+DEFUN(nth, "nth");
+
 
 /*  ____               _ _           _             */
 /* |  _ \ _ __ ___  __| (_) ___ __ _| |_ ___  ___  */

@@ -88,6 +88,22 @@ ALObjectPtr Fpush(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 }
 
 
+ALObjectPtr Fnth(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+{
+    assert_size<2>(obj);
+    auto list = eval->eval(obj->i(0));
+    assert_list(list);
+    auto index = eval->eval(obj->i(1));
+    assert_int(index);
+
+    if (static_cast<ALObject::list_type::size_type>(index->to_int()) >= std::size(list->children())){
+        throw std::runtime_error("Index out of bound!");
+    }
+    
+    return list->i(static_cast<ALObject::list_type::size_type>(index->to_int()));
+}
+
+
 //inplace
 ALObjectPtr Fdelete(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {

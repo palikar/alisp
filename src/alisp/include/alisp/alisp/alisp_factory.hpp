@@ -58,13 +58,11 @@ struct ALObjectHelper
         return init_ptr(obj);
     }
 
-
     template<typename T>
     static auto get(T a) -> typename std::enable_if_t<std::is_floating_point_v<T>, ALObjectPtr> {
         return init_ptr(new ALObject(static_cast<ALObject::real_type>(a)));
     }
 
-    
     template<typename T>
     static auto get(T a) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr> {
         return init_ptr(new ALObject(std::string(a)));
@@ -75,11 +73,9 @@ struct ALObjectHelper
         return init_ptr(new ALObject(std::string(a), true));
     }
 
-
     static auto get(std::vector<ALObjectPtr> vec_objs) {
         return init_ptr(new ALObject(vec_objs));
     }
-
 
     static auto get(ALObjectPtr obj) -> ALObjectPtr {
         return obj;
