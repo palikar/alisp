@@ -30,6 +30,24 @@ namespace detail
 struct ALObjectHelper
 {
 
+  private:
+
+    template<typename T>
+    static auto init_ptr(T && val) {
+        if constexpr (USING_SHARED){
+            return std::shared_ptr<ALObject>(val);
+        } else {
+            return val;
+        }
+    }
+
+    template<typename T>
+    static auto allocate_ptr(T &&) {
+        return nullptr;
+    }
+
+  public:
+
     template<typename T>
     static auto get(T a) -> typename  std::enable_if_t<std::is_integral_v<T>, ALObjectPtr> {
         const auto val = static_cast<ALObject::int_type>(a); 
@@ -37,29 +55,29 @@ struct ALObjectHelper
 
         if (0 <= val && val <= 127) { obj->set_char_flag(); }
         
-        return std::shared_ptr<ALObject>(obj);
+        return init_ptr(obj);
     }
 
 
     template<typename T>
     static auto get(T a) -> typename std::enable_if_t<std::is_floating_point_v<T>, ALObjectPtr> {
-        return std::shared_ptr<ALObject>(new ALObject(static_cast<ALObject::real_type>(a)));
+        return init_ptr(new ALObject(static_cast<ALObject::real_type>(a)));
     }
 
     
     template<typename T>
     static auto get(T a) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr> {
-        return std::shared_ptr<ALObject>(new ALObject(std::string(a)));
+        return init_ptr(new ALObject(std::string(a)));
     }
 
     template<typename T>
     static auto get(T a, bool) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr> {
-        return std::shared_ptr<ALObject>(new ALObject(std::string(a), true));
+        return init_ptr(new ALObject(std::string(a), true));
     }
 
 
     static auto get(std::vector<ALObjectPtr> vec_objs) {
-        return std::shared_ptr<ALObject>(new ALObject(vec_objs));
+        return init_ptr(new ALObject(vec_objs));
     }
 
 
@@ -74,7 +92,7 @@ struct ALObjectHelper
 
         (vec_objs.push_back(ALObjectHelper::get(objs)), ...);
 
-        return std::shared_ptr<ALObject>(new ALObject(vec_objs));
+        return init_ptr(new ALObject(vec_objs));
     }
 
 };

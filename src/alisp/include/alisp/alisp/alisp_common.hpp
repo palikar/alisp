@@ -10,6 +10,7 @@
 #include <utility>
 #include <memory>
 
+#include "alisp/utility/meta.hpp"
 
 namespace alisp
 {
@@ -50,10 +51,15 @@ class Evaluator;
 }
 
 
-class ALObject;
-using ALObjectPtr = std::shared_ptr<ALObject>;
-// using ALObjectPtr = ALObject*;
 
+class ALObject;
+#ifdef USE_MANUAL_MEMORY
+using ALObjectPtr = ALObject*;
+#else
+using ALObjectPtr = std::shared_ptr<ALObject>;
+#endif
+
+static constexpr bool USING_SHARED = utility::is_shared_ptr_v<ALObjectPtr>;
 
 struct Prim
 {
@@ -61,10 +67,7 @@ struct Prim
     ALObjectPtr (*function)(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval);
 };
 
-
-
-
-class ALObject : public std::enable_shared_from_this<ALObject>
+class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from_this<ALObject>, utility::empty_base>
 {
   public:
 
@@ -181,15 +184,17 @@ class ALObject : public std::enable_shared_from_this<ALObject>
     auto make_prime(Prim::func_type func) {
         set_function_flag();
         set_prime_flag();
-
         m_prime  = func;
-        // // auto fn = std::shared_ptr<ALObject>();
         // auto fn = reinterpret_cast<ALObjectPtr*>(reinterpret_cast<void *&>(func));
-        // // auto ptr = ALObjectPtr(fn, [](ALObject*){});
-        // // std::get<list_type>(m_data).push_back(std::move(ptr));
         // std::get<list_type>(m_data).push_back(*fn);
+
+        if constexpr (USING_SHARED) {
+            return shared_from_this();
+        }
+        else {
+            return this;
+        }
         
-        return shared_from_this();
     }
 
     auto get_function(){ return std::pair(i(0), i(1)); }
@@ -277,10 +282,12 @@ class ALObject : public std::enable_shared_from_this<ALObject>
         }
 
   private:
+
     data_type m_data;
+    Prim::func_type m_prime = nullptr;
+     
     const ALObjectType m_type;
     std::uint_fast32_t m_flags = 0;
-    Prim::func_type m_prime = nullptr;
 
 };
 
