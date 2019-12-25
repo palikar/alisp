@@ -69,8 +69,8 @@ class Environment
 
   public:
     static inline std::unordered_map<std::string, ALObjectPtr> g_symbol_table;
-    static inline std::unordered_map<std::string, ALObject> g_global_symbol_table;
-    static inline std::unordered_map<std::string, ALObject> g_prime_values;
+    static inline std::unordered_map<std::string, ALObjectPtr> g_global_symbol_table;
+    static inline std::unordered_map<std::string, ALObjectPtr> g_prime_values;
 
   private:
     detail::CellStack m_stack;

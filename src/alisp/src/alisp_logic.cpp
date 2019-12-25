@@ -16,21 +16,21 @@ namespace alisp
 
 
 
-ALObject* Fand(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fand(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     auto eval_obj = eval_transform(evl, obj);
     bool sum = reduce<false>(evl, eval_obj, AND_OBJ_FUN, true);
     return sum ? Qt : Qnil;
 }
 
-ALObject* For(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr For(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     auto eval_obj = eval_transform(evl, obj);
     bool sum = reduce<false>(evl, eval_obj, OR_OBJ_FUN, false);
     return sum ? Qt : Qnil;
 }
 
-ALObject* Fnot(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fnot(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_size<1>(obj);
     

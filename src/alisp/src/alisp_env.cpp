@@ -29,7 +29,7 @@ ALObjectPtr Environment::find(const ALObjectPtr t_sym)
         if (scope.count(name)) { return scope.at(name); };
     }
         
-    if (g_prime_values.count(name)) { return &g_prime_values.at(name) ;}
+    if (g_prime_values.count(name)) { return g_prime_values.at(name) ;}
 
     if (m_stack.root_scope().count(name)) { return m_stack.root_scope().at(name); };
 

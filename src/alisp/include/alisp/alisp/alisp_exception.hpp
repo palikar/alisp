@@ -11,17 +11,17 @@ namespace alisp
 struct signal_exception : public std::runtime_error
 {
 
-    signal_exception(ALObject* sym, ALObject* list) :
+    signal_exception(ALObjectPtr sym, ALObjectPtr list) :
         runtime_error(format(sym, list)), m_sym(sym), m_list(list)
     {
         
     }
 
   private:
-    ALObject* m_sym;
-    ALObject* m_list;
+    ALObjectPtr m_sym;
+    ALObjectPtr m_list;
 
-    static std::string format(ALObject* sym, ALObject* list){
+    static std::string format(ALObjectPtr sym, ALObjectPtr list){
         std::ostringstream ss;
         ss << "Signal error <" << dump(sym) << "> :";
         ss << dump(list);

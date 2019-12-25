@@ -11,7 +11,7 @@ ALObjectPtr env::intern(const std::string& name)
     
     if(env::Environment::g_global_symbol_table.count(name))
     {
-        return &env::Environment::g_global_symbol_table.at(name);
+        return env::Environment::g_global_symbol_table.at(name);
         
     }
 

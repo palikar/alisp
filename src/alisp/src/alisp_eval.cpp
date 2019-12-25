@@ -16,13 +16,13 @@ namespace eval
 Evaluator::Evaluator(env::Environment &env_) : env(env_) {}
 
 
-void Evaluator::put_argument(ALObject* param, ALObject* arg)
+void Evaluator::put_argument(ALObjectPtr param, ALObjectPtr arg)
 {
     this->env.put(param, arg);
 }
 
 template<bool evaluation>
-void Evaluator::handle_argument_bindings(ALObject* params, ALObject* args)
+void Evaluator::handle_argument_bindings(ALObjectPtr params, ALObjectPtr args)
 {
 
     if (params->length() == 0 && args->length() != 0)
@@ -123,7 +123,7 @@ void Evaluator::handle_argument_bindings(ALObject* params, ALObject* args)
 
 }
 
-ALObject* Evaluator::eval(ALObject* obj)
+ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 {
     detail::EvalDepthTrack{*this};
 
@@ -185,21 +185,21 @@ ALObject* Evaluator::eval(ALObject* obj)
      return nullptr;
 }
 
-ALObject* Evaluator::eval_function(ALObject* func, ALObject* args)
+ALObjectPtr Evaluator::eval_function(ALObjectPtr func, ALObjectPtr args)
 {
     auto[params, body] = func->get_function();
     handle_argument_bindings(params, args);
     return eval_list(this, body, 0);
 }
 
-ALObject* Evaluator::apply_function(ALObject* func, ALObject* args)
+ALObjectPtr Evaluator::apply_function(ALObjectPtr func, ALObjectPtr args)
 {
     auto[params, body] = func->get_function();
     handle_argument_bindings<false>(params, args);
     return eval_list(this, body, 0);
 }
 
-ALObject* Evaluator::handle_lambda(ALObject* func, ALObject* args)
+ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
 {
     auto obj = func;
     if(psym(func))

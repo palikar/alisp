@@ -21,15 +21,15 @@ class Evaluator
   public:
     Evaluator(env::Environment &env_);
 
-    ALObject* eval(ALObject* obj);
-    ALObject* eval_function(ALObject* func, ALObject* args);
-    ALObject* apply_function(ALObject* func, ALObject* args);
-    ALObject* handle_lambda(ALObject* func, ALObject* args);
+    ALObjectPtr eval(ALObjectPtr obj);
+    ALObjectPtr eval_function(ALObjectPtr func, ALObjectPtr args);
+    ALObjectPtr apply_function(ALObjectPtr func, ALObjectPtr args);
+    ALObjectPtr handle_lambda(ALObjectPtr func, ALObjectPtr args);
     
 
     template<bool evaluation = true>
-    void handle_argument_bindings(ALObject* params, ALObject* args);
-    void put_argument(ALObject* param, ALObject* arg);
+    void handle_argument_bindings(ALObjectPtr params, ALObjectPtr args);
+    void put_argument(ALObjectPtr param, ALObjectPtr arg);
 
     void new_evaluation() {
         ++m_eval_depth;

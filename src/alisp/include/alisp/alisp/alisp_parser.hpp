@@ -694,7 +694,7 @@ class ALParser : public ParserBase
     }
 
     template<int base>
-    ALObject* parse_integer()
+    ALObjectPtr parse_integer()
     {
         WholeNumberParser<ALObject::int_type, base> parser;
 
@@ -707,7 +707,7 @@ class ALParser : public ParserBase
         return make_int(parser.get_num());
     }
 
-    ALObject* parse_real()
+    ALObjectPtr parse_real()
     {
         RealNumberParser<ALObject::real_type> parser;
 
@@ -720,7 +720,7 @@ class ALParser : public ParserBase
         return make_double(parser.get_num());
     }
 
-    ALObject* parse_id()
+    ALObjectPtr parse_id()
     {
         auto temp = this->position;
         while(this->position.has_more() && char_in_alphabet(*this->position, detail::id_alphabet))
@@ -740,7 +740,7 @@ class ALParser : public ParserBase
         return env::intern(std::string(word));
     }
 
-    ALObject* parse_string()
+    ALObjectPtr parse_string()
     {
         if(*this->position != '\"') {PARSE_ERROR("Invalid string literal.");}
         ++this->position;
@@ -763,7 +763,7 @@ class ALParser : public ParserBase
 
     }
 
-    ALObject* parse_quote()
+    ALObjectPtr parse_quote()
     {
         if (!check_char('\'')) { PARSE_ERROR("Expected \'"); }
         ++position;
@@ -773,7 +773,7 @@ class ALParser : public ParserBase
         return make_object(make_symbol("quote"), obj);
     }
 
-    ALObject* parse_backquote()
+    ALObjectPtr parse_backquote()
     {
         if (!check_char('`')) { PARSE_ERROR("Expected \'`\'"); }
         ++position;
@@ -783,7 +783,7 @@ class ALParser : public ParserBase
         return make_object(Qbackquote, obj);
     }
 
-    ALObject* parse_function_quote()
+    ALObjectPtr parse_function_quote()
     {
         skip_whitespace();
         auto obj = parse_next();
@@ -791,7 +791,7 @@ class ALParser : public ParserBase
         return make_object(Qfunction, obj);
     }
 
-    ALObject* parse_question()
+    ALObjectPtr parse_question()
     {
         if (!check_char('?')) { PARSE_ERROR("Expected \'?\'"); }
         ++position;
@@ -850,7 +850,7 @@ class ALParser : public ParserBase
 
     }
 
-    ALObject* parse_hashtag()
+    ALObjectPtr parse_hashtag()
     {
         if (!check_char('#')) { PARSE_ERROR("Expected \'#\'"); }
         ++position;
@@ -880,7 +880,7 @@ class ALParser : public ParserBase
 
     }
 
-    ALObject* parse_list()
+    ALObjectPtr parse_list()
     {
         // TODO : check char here
         if (!check_char('(')) { PARSE_ERROR("Malformed list. Missing openning parentheses."); }
@@ -893,7 +893,7 @@ class ALParser : public ParserBase
             return Qnil;
         }
 
-        std::vector<ALObject*> objs;
+        std::vector<ALObjectPtr> objs;
         while(true){
 
             auto next_obj = parse_next();
@@ -925,7 +925,7 @@ class ALParser : public ParserBase
 
     }
 
-    ALObject* parse_comma()
+    ALObjectPtr parse_comma()
     {
         if (!check_char(',')) { PARSE_ERROR("Expected comma"); }
 
@@ -944,7 +944,7 @@ class ALParser : public ParserBase
         }
     }
 
-    ALObject* parse_next()
+    ALObjectPtr parse_next()
     {
         detail::DepthTracker dt{depth};
         if (depth > detail::MAX_DEPTH && detail::MAX_DEPTH != 0) {
@@ -982,9 +982,9 @@ class ALParser : public ParserBase
 
   public:
 
-    std::vector<ALObject*> parse(const std::string* input, std::string file_name) override
+    std::vector<ALObjectPtr> parse(const std::string* input, std::string file_name) override
     {
-        std::vector<ALObject*> objects;
+        std::vector<ALObjectPtr> objects;
 
         const auto begin = input->empty() ? nullptr : &input->front();
         const auto end = begin == nullptr ? nullptr : begin + input->size();

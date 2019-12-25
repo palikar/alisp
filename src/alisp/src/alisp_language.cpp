@@ -17,7 +17,7 @@ namespace alisp
 namespace detail
 {
 
-static ALObject* handle_backquote_list(ALObject* obj, eval::Evaluator* eval)
+static ALObjectPtr handle_backquote_list(ALObjectPtr obj, eval::Evaluator* eval)
 {
     if (not plist(obj)) { return obj; }
 
@@ -56,7 +56,7 @@ static ALObject* handle_backquote_list(ALObject* obj, eval::Evaluator* eval)
 
 }
 
-ALObject* Fdefvar(ALObject* obj, env::Environment* env, eval::Evaluator* eval)
+ALObjectPtr Fdefvar(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval)
 {
     assert_size<2>(obj);
     assert_symbol(obj->i(0));
@@ -66,7 +66,7 @@ ALObject* Fdefvar(ALObject* obj, env::Environment* env, eval::Evaluator* eval)
     return Qt;
 }
 
-ALObject* Fdefun(ALObject* obj, env::Environment* env, eval::Evaluator*)
+ALObjectPtr Fdefun(ALObjectPtr obj, env::Environment* env, eval::Evaluator*)
 {
     assert_min_size<2>(obj);
     assert_symbol(obj->i(0));
@@ -77,7 +77,7 @@ ALObject* Fdefun(ALObject* obj, env::Environment* env, eval::Evaluator*)
     return Qt;
 }
 
-ALObject* Fdefmacro(ALObject* obj, env::Environment* env, eval::Evaluator*)
+ALObjectPtr Fdefmacro(ALObjectPtr obj, env::Environment* env, eval::Evaluator*)
 {
     assert_min_size<2>(obj);
     assert_symbol(obj->i(0));
@@ -88,7 +88,7 @@ ALObject* Fdefmacro(ALObject* obj, env::Environment* env, eval::Evaluator*)
     return Qt;
 }
 
-ALObject* Flambda(ALObject* obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Flambda(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
 {
     assert_min_size<1>(obj);
     assert_list(obj->i(0));
@@ -100,7 +100,7 @@ ALObject* Flambda(ALObject* obj, env::Environment*, eval::Evaluator*)
     return new_lambda;
 }
 
-ALObject* Fsetq(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
+ALObjectPtr Fsetq(ALObjectPtr obj, env::Environment* env, eval::Evaluator* evl)
 {
     assert_size<2>(obj);
     assert_symbol(obj->i(0));
@@ -111,7 +111,7 @@ ALObject* Fsetq(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
 
 }
 
-ALObject* Fset(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
+ALObjectPtr Fset(ALObjectPtr obj, env::Environment* env, eval::Evaluator* evl)
 {
     assert_size<2>(obj);
 
@@ -124,26 +124,26 @@ ALObject* Fset(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
     return Qt;
 }
 
-ALObject* Fquote(ALObject* obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Fquote(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
 {
     assert_size<1>(obj);
     return obj->i(0);
 }
 
-ALObject* Ffunction(ALObject* obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Ffunction(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
 {
     assert_size<1>(obj);
     return obj->i(0);
 }
 
-ALObject* Fbackquote(ALObject* obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fbackquote(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<1>(obj);
     if (! plist(obj->i(0))) { return obj->i(0); }
     return detail::handle_backquote_list(obj->i(0), eval);
 }
 
-ALObject* Fif(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fif(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<2>(obj);
 
@@ -156,7 +156,7 @@ ALObject* Fif(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     }
 }
 
-ALObject* Fwhile(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fwhile(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<1>(obj);
 
@@ -166,7 +166,7 @@ ALObject* Fwhile(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return Qt;
 }
 
-ALObject* Fwhen(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fwhen(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<2>(obj);
 
@@ -176,7 +176,7 @@ ALObject* Fwhen(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return Qnil;
 }
 
-ALObject* Funless(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Funless(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<2>(obj);
 
@@ -186,7 +186,7 @@ ALObject* Funless(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return Qnil;
 }
 
-ALObject* Fdolist(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
+ALObjectPtr Fdolist(ALObjectPtr obj, env::Environment* env, eval::Evaluator* evl)
 {
 
     assert_min_size<1>(obj);
@@ -210,7 +210,7 @@ ALObject* Fdolist(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
 
 }
 
-ALObject* Fcond(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fcond(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_list(obj);
 
@@ -224,7 +224,7 @@ ALObject* Fcond(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return Qnil;
 }
 
-ALObject* Fsignal(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fsignal(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_size<2>(obj);
 
@@ -239,7 +239,7 @@ ALObject* Fsignal(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return Qt;
 }
 
-ALObject* Ffuncall(ALObject* obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Ffuncall(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_min_size<1>(obj);
 
@@ -251,19 +251,19 @@ ALObject* Ffuncall(ALObject* obj, env::Environment*, eval::Evaluator* eval)
 
 }
 
-ALObject* Fprogn(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fprogn(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     return eval_list(evl, obj, 1);
 }
 
-ALObject* Flet(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
+ALObjectPtr Flet(ALObjectPtr obj, env::Environment* env, eval::Evaluator* evl)
 {
     assert_min_size<1>(obj);
     assert_list(obj->i(0));
 
     auto varlist = obj->i(0);
 
-    std::vector<std::pair<ALObject*,ALObject*>> cells;
+    std::vector<std::pair<ALObjectPtr,ALObjectPtr>> cells;
     cells.reserve(std::size(varlist->children()));
 
     for (auto var : varlist->children()) {
@@ -285,7 +285,7 @@ ALObject* Flet(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
     return eval_list(evl, obj, 1);
 }
 
-ALObject* Fletx(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
+ALObjectPtr Fletx(ALObjectPtr obj, env::Environment* env, eval::Evaluator* evl)
 {
     assert_min_size<1>(obj);
     assert_list(obj->i(0));
@@ -308,7 +308,7 @@ ALObject* Fletx(ALObject* obj, env::Environment* env, eval::Evaluator* evl)
     return eval_list(evl, obj, 1);
 }
 
-ALObject* Fexit(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fexit(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_size<1>(obj);
     auto val = evl->eval(obj->i(0));

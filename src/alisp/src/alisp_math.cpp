@@ -16,7 +16,7 @@ namespace alisp
 
 
 
-ALObject* Fmultiply(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fmultiply(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     auto eval_obj = eval_transform(evl, obj);
 
@@ -32,7 +32,7 @@ ALObject* Fmultiply(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return Qnil;
 }
 
-ALObject* Fplus(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fplus(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     auto eval_obj = eval_transform(evl, obj);
 
@@ -49,7 +49,7 @@ ALObject* Fplus(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 
 }
 
-ALObject* Fminus(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fminus(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     auto eval_obj = eval_transform(evl, obj);
 
@@ -66,7 +66,7 @@ ALObject* Fminus(ALObject* obj, env::Environment*, eval::Evaluator* evl)
 
 }
 
-ALObject* Fdev(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fdev(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     auto eval_obj = eval_transform(evl, obj);
 
@@ -82,7 +82,7 @@ ALObject* Fdev(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return Qnil;
 }
 
-ALObject* Fleftshift(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fleftshift(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     
     auto lhs = evl->eval(obj->i(0));
@@ -94,7 +94,7 @@ ALObject* Fleftshift(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return make_int(SHIFT_LEFT(lhs, rhs));
 }
 
-ALObject* Frightshift(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Frightshift(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     auto lhs = evl->eval(obj->i(0));
     auto rhs = evl->eval(obj->i(1));
@@ -103,7 +103,7 @@ ALObject* Frightshift(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     return make_int(SHIFT_RIGHT(lhs, rhs));
 }
 
-ALObject* Flt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Flt(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<0>(obj);
     
@@ -117,7 +117,7 @@ ALObject* Flt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     else { return Qnil; };
 }
 
-ALObject* Fleq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fleq(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<0>(obj);
     
@@ -131,7 +131,7 @@ ALObject* Fleq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     else return Qnil;
 }
 
-ALObject* Fgt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fgt(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<0>(obj);
     
@@ -145,7 +145,7 @@ ALObject* Fgt(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     else return Qnil;
 }
 
-ALObject* Fgeq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fgeq(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<0>(obj);
     
@@ -159,7 +159,7 @@ ALObject* Fgeq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     else return Qnil;
 }
 
-ALObject* Feq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Feq(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<0>(obj);
     
@@ -173,7 +173,7 @@ ALObject* Feq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
     else return Qnil;
 }
 
-ALObject* Fneq(ALObject* obj, env::Environment*, eval::Evaluator* evl)
+ALObjectPtr Fneq(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_min_size<0>(obj);
     

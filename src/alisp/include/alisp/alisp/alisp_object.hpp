@@ -6,119 +6,19 @@
 #include <variant>
 #include <vector>
 #include <iterator>
+#include <memory>
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_env.hpp"
-#include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_pattern_matching.hpp"
+#include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/utility.hpp"
 
 
 namespace alisp
 {
 
-/*   ____                _   _               _          _                 */
-/*  / ___|_ __ ___  __ _| |_(_) ___  _ __   | |__   ___| |_ __  _ __ ___  */
-/* | |   | '__/ _ \/ _` | __| |/ _ \| '_ \  | '_ \ / _ \ | '_ \| '__/ __| */
-/* | |___| | |  __/ (_| | |_| | (_) | | | | | | | |  __/ | |_) | |  \__ \ */
-/*  \____|_|  \___|\__,_|\__|_|\___/|_| |_| |_| |_|\___|_| .__/|_|  |___/ */
-/*                                                       |_|   */
-
-namespace detail
-{
-
-struct ALObjectHelper
-{
-
-    template<typename T>
-    static auto get(T a) -> typename  std::enable_if_t<std::is_integral_v<T>, ALObjectPtr> {
-        const auto val = static_cast<ALObject::int_type>(a); 
-        auto obj = new ALObject(val);
-
-        if (0 <= val && val <= 127) { obj->set_char_flag(); }
-        
-        return obj;
-    }
-
-
-    template<typename T>
-    static auto get(T a) -> typename std::enable_if_t<std::is_floating_point_v<T>, ALObjectPtr> {
-        return new ALObject(static_cast<ALObject::real_type>(a));
-    }
-
-    
-    template<typename T>
-    static auto get(T a) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr> {
-        return new ALObject(std::string(a));
-    }
-
-    template<typename T>
-    static auto get(T a, bool) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr> {
-        return new ALObject(std::string(a), true);
-    }
-
-
-    static auto get(std::vector<ALObjectPtr> vec_objs) {
-        return new ALObject(vec_objs);
-    }
-
-
-    static auto get(ALObjectPtr obj) {
-        return obj;
-    }
-
-    template<typename ...T>
-    static auto get(T... objs) {
-        std::vector<ALObjectPtr> vec_objs;
-        vec_objs.reserve(sizeof...(objs));
-        (vec_objs.push_back(ALObjectHelper::get(objs)), ...);
-        return new ALObject(vec_objs);
-    }
-
-};
-
-}
-
-template<typename ... T>
-inline auto make_object(T && ... args)
-{
-    return detail::ALObjectHelper::get(std::forward<T>(args) ...);
-}
-
-template<typename T>
-inline auto make_symbol(T name)
-{
-    static_assert(std::is_constructible_v<std::string, T>, "Name must be string like type.");
-    
-    return detail::ALObjectHelper::get(name, true);
-}
-
-template<typename T>
-inline auto make_int(T value)
-{
-    static_assert(std::is_integral_v<T>, "Value must be of integer type");
-
-    auto obj = make_object(static_cast<ALObject::int_type>(value));
-    return obj;
-}
-
-template<typename T>
-inline auto make_double(T value)
-{
-    static_assert(std::is_arithmetic_v<T>, "Value must be of real type");
-    return make_object(static_cast<double>(value));
-}
-
-inline auto make_string(std::string value)
-{
-    return make_object(value);
-}
-
-inline auto make_list(ALObjectPtr obj)
-{
-    return detail::ALObjectHelper::get(std::vector{obj});
-}
 
 inline auto splice(ALObjectPtr t_obj, std::vector<ALObject>::difference_type start_index,
                    std::vector<ALObject>::difference_type end_index = -1){
@@ -133,7 +33,7 @@ inline auto splice(ALObjectPtr t_obj, std::vector<ALObject>::difference_type sta
         return  Qnil;
     }
 
-    const auto new_child = std::vector<ALObjectPtr>(begin_it, end_it);
+    auto new_child = std::vector<ALObjectPtr>(begin_it, end_it);
     return make_object(new_child);
 }
 
