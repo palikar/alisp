@@ -1,8 +1,7 @@
-build_release|-DCMAKE_BUILD_TYPE=Release -DBUILD_DOC=ON|-j4 all
+build_release|-DCMAKE_BUILD_TYPE=Release -DBUILD_DOC=ON|-j4
 build_debug|-DCMAKE_BUILD_TYPE=Debug|-j4
-build_unittests|-DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DBUILD_EXAMPLES=ON|-j4 test
-build_examples|-DCMAKE_BUILD_TYPE=Debug -DBUILD_EXAMPLES=ON|-j4
+build_unittests|-DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DBUILD_EXAMPLES=ON|-j4 test test_examples
+build_examples|-DCMAKE_BUILD_TYPE=Debug -DBUILD_EXAMPLES=ON|-j4 test_examples
 build_coverage|-DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DENABLE_COVERAGE=ON|-j4 test alisp_coverage_html
 build_checks|-DCMAKE_BUILD_TYPE=Debug -DENABLE_CLANG_TIDY=ON -DENABLE_CPPCHECK=ON |-j4
-
-build_valgrind|-DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON|-j4
+build_valgrind|-DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DVALGRIND_CHECKS=ON|-j4 valgrind_checks
