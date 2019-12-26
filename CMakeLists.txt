@@ -216,6 +216,10 @@ if(MANUAL_MEMORY)
     target_compile_definitions(project_options INTERFACE -DUSE_MANUAL_MEMORY)
 endif(MANUAL_MEMORY)
 
+if(DEBUG_LOGGING)
+    target_compile_definitions(project_options INTERFACE -DDEUBG_LOGGING)
+endif(DEBUG_LOGGING)
+
 
 
 file(READ "${PROJECT_SOURCE_DIR}/version" VERSION NEWLINE_CONSUME)
@@ -324,6 +328,3 @@ message("Manual Memory:    \t ${MANUAL_MEMORY}")
 message("------------------------------------------")
 message("Version:          \t ${AL_VERSION}")
 message("########################################")
-
-
-
