@@ -46,10 +46,14 @@ struct Options
 {
     std::string eval{""};
     std::string input{""};
-    bool parse_debug;
-    bool eval_debug;
-    bool version;
-    bool interactive;
+
+    std::vector<std::string> args;
+
+    bool parse_debug{false};
+    bool eval_debug{false};
+    bool version{false};
+    bool interactive{false};
+    bool show_help{false};
 };
 
 Options opts{};
@@ -60,33 +64,64 @@ int main(int argc, char *argv[])
 
     alisp::logging::init_logging();
 
-    AL_INFO("Hello from debug");
-    
-
     auto cli = (
-        //option with required value
-        clipp::option("-v", "--version"),
-        clipp::option("-h", "--help")
+        
+        opts.version      << clipp::option("-v", "--version")                             % "Show the version and build information of the current executable",
+        opts.show_help    << clipp::option("-h", "--help")                                % "Print help information",
+        opts.interactive  << clipp::option("-i", "--interactive")                         % "Start interactive mode after file evaluation",
+        opts.eval         << clipp::option("-e", "--eval") & clipp::value("expr")         % "Input string to evaluate",
+        opts.parse_debug  << clipp::option("-d", "--parse-debug")                         % "Debug output from the parser",
+        opts.eval_debug   << clipp::option("-l", "--eval-debug")                          % "Debug output from the evaluator",
+
+        (opts.input       << clipp::opt_value("file")      % "Input file") &
+        (opts.args        << clipp::opt_values("args")     % "Args")
+
         );
 
-    // using clara::Opt;
-    // using clara::Arg;
-    // using clara::Args;
-    // using clara::Help;
 
-    // bool showHelp{ false };
+    
+    
+    auto fmt = clipp::doc_formatting{}
+    .first_column(8)                           //left border column for text body
+         .doc_column(20)                            //column where parameter docstring starts
+         .last_column(80)                          //right border column for text body
+         .indent_size(2)                            //indent of documentation lines for children of a documented group
+         .line_spacing(0)                           //number of empty lines after single documentation lines
+         .paragraph_spacing(1)                      //number of empty lines before and after paragraphs
+         .flag_separator(", ")                      //between flags of the same parameter
+         .param_separator(" ")                      //between parameters 
+         .group_separator(" ")                      //between groups (in usage)
+         .alternative_param_separator("|")          //between alternative flags 
+         .alternative_group_separator(" | ")        //between alternative groups 
+         .surround_group("(", ")")                  //surround groups with these 
+         .surround_alternatives("(", ")")           //surround group of alternatives with these
+         .surround_alternative_flags("", "")        //surround alternative flags with these
+         .surround_joinable("(", ")")               //surround group of joinable flags with these
+         .surround_optional("[", "]")               //surround optional parameters with these
+         .surround_repeat("", "...")                //surround repeatable parameters with these
+         .empty_label("")                           //used if parameter has no flags and no label
+         .max_flags_per_param_in_usage(1)           //max. # of flags per parameter in usage
+         .max_flags_per_param_in_doc(32)            //max. # of flags per parameter in detailed documentation
+         .split_alternatives(true)                  //split usage into several lines for large alternatives
+         .alternatives_min_split_size(3)            //min. # of parameters for separate usage line
+         .merge_alternative_flags_with_common_prefix(false)  //-ab(cdxy|xy) instead of -abcdxy|-abxy
+         .ignore_newline_chars(false);
+
+    // std::cout << "Usage:\n" << clipp::usage_lines(cli, "progname", fmt)
+    //           << "\nOptions:\n" << clipp::documentation(cli, fmt) << '\n';
+
+    // std::cout << clipp::make_man_page(cli, "progname", fmt)
+    //     .prepend_section("DESCRIPTION", "The alisp programming language.")
+    //     .append_section("LICENSE", "GPLv3");
+
+    clipp::parse(argc, argv, cli);    //excludes argv[0]
+
+    
+    
+    
 
 
-    // auto cli = Help(showHelp)
-    //     | Opt(opts.version)["-v"]["--version"]("Show the version of alisp")
-    //     | Opt(opts.eval, "string")["-e"]["--eval"]("Input to evaluate")
-    //     | Opt(opts.parse_debug)["-d"]["--parse-debug"]("Debug output from the parser")
-    //     | Opt(opts.eval_debug)["-l"]["--eval-debug"]("Debug output from the evaluator")
-    //     | Opt(opts.interactive)["-i"]["--iteractive"]("Start interactive mode after file evaluation")
-    //     | Arg(opts.input, "file")("Input file");
-
-
-    // const auto result = cli.parse(Args(argc, argv));
+// const auto result = cli.parse(Args(argc, argv));
 
     // if (!result) {
     //     std::cerr << "Error in command line: " << result.errorMessage() << '\n';
