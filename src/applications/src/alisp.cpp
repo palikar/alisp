@@ -23,7 +23,7 @@
 
 
 
-void eval_statement(const std::string& command);
+void eval_statement(std::string& command);
 void interactive();
 void eval_file(const std::filesystem::path& t_path);
 
@@ -141,26 +141,26 @@ int main(int argc, char *argv[])
     // }
 
     
+    if(!opts.input.empty()){
+        auto file_path = std::filesystem::path{opts.input};
+        if (!std::filesystem::is_regular_file(file_path)){
+            std::cerr << '\"' <<file_path << "\" is not a file." << "\n";
+            exit(1);
+        }
+        
+        eval_file(file_path);
+        if (opts.interactive) { interactive(); }
+
+        exit(0);
+    }
 
 
-    // if(!opts.input.empty()){
-    //     auto file_path = std::filesystem::path{opts.input};
-    //     if (!std::filesystem::is_regular_file(file_path)){
-    //         exit(1);
-    //     }
+    if(!opts.eval.empty()){
+        eval_statement(opts.eval);
+        exit(0);;
+    }
 
-    //     eval_file(file_path);
-    //     if (opts.interactive) interactive();
-    //     exit(0);
-    // }
-
-
-    // if(!opts.eval.empty()){
-    //     eval_statement(opts.eval);
-    //     exit(0);;
-    // }
-
-    // interactive();
+    interactive();
 
     return 0;
 }
@@ -185,10 +185,10 @@ void interactive()
 }
 
 
-void eval_statement(const std::string& command)
+void eval_statement(std::string& command)
 {
     try {
-        auto parse_res = pars.parse(&command, "__EVAL__");
+        auto parse_res = pars.parse(command, "__EVAL__");
 
         for (auto p : parse_res ) {
             if (opts.parse_debug) std::cout << "DEUBG[PARSER]: " << alisp::dump(p) << "\n";
@@ -202,11 +202,9 @@ void eval_statement(const std::string& command)
     } catch (alisp::parse_exception& p_exc) {
         std::cout << rang::fg::red << "Parser error:\n" << rang::fg::reset;
         std::cout << p_exc.what() << "\n";
-        exit(1);
     } catch (alisp::environment_error& p_exc) {
         std::cout << rang::fg::red << "Environment error:\n" << rang::fg::reset;
         std::cout << p_exc.what() << "\n";
-        exit(1);
     }
 
 
@@ -228,7 +226,7 @@ void eval_file(const std::filesystem::path& t_path)
 
         std::string command{ begin(data), end(data) };
         try {
-            auto parse_res = pars.parse(&command, std::filesystem::absolute(t_path));
+            auto parse_res = pars.parse(command, std::filesystem::absolute(t_path));
 
             for (auto p : parse_res ) {
 
@@ -251,6 +249,5 @@ void eval_file(const std::filesystem::path& t_path)
 
 
     }
-
 
 }

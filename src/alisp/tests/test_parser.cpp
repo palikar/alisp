@@ -20,7 +20,7 @@ TEST_CASE("Parser Test [simple list]", "[parser]")
 
 
     std::string input{"(println 12)"};
-    auto res = pars.parse(&input, "__TEST__");
+    auto res = pars.parse(input, "__TEST__");
 
     CHECK ( std::size(res) == 1 );
     CHECK ( res[0]->is_list() );
@@ -39,7 +39,7 @@ TEST_CASE("Parser Test [int literals]", "[parser]")
 
 
         std::string input{"12"};
-        auto res = pars.parse(&input, "__TEST__");
+        auto res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
@@ -54,7 +54,7 @@ TEST_CASE("Parser Test [int literals]", "[parser]")
 
 
         std::string input{"-12"};
-        auto res = pars.parse(&input, "__TEST__");
+        auto res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
@@ -72,7 +72,7 @@ TEST_CASE("Parser Test [double literals]", "[parser]")
         alisp::parser::ALParser<alisp::env::Environment> pars(env);
         
         std::string input{"-1.12"};
-        auto res = pars.parse(&input, "__TEST__");
+        auto res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_real() );
@@ -86,7 +86,7 @@ TEST_CASE("Parser Test [double literals]", "[parser]")
 
 
         std::string input{"-1.12e1"};
-        auto res = pars.parse(&input, "__TEST__");
+        auto res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_real() );
@@ -101,7 +101,7 @@ TEST_CASE("Parser Test [double literals]", "[parser]")
 
 
         std::string input{"1.12e-1"};
-        auto res = pars.parse(&input, "__TEST__");
+        auto res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_real() );
@@ -116,7 +116,7 @@ TEST_CASE("Parser Test [double literals]", "[parser]")
 
 
         std::string input{"1.12e1"};
-        auto res = pars.parse(&input, "__TEST__");
+        auto res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_real() );
@@ -131,7 +131,7 @@ TEST_CASE("Parser Test [double literals]", "[parser]")
 
 
         std::string input{"12.12"};
-        auto res = pars.parse(&input, "__TEST__");
+        auto res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_real() );
@@ -148,13 +148,13 @@ TEST_CASE("Parser Test [number literals]", "[parser]")
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
 
     std::string input{"#b0010"};
-    auto res = pars.parse(&input, "__TEST__");
+    auto res = pars.parse(input, "__TEST__");
 
 
     SECTION("Binary [0]"){
 
         input = "#b0010";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
 
         CHECK ( std::size(res) == 1 );
@@ -166,7 +166,7 @@ TEST_CASE("Parser Test [number literals]", "[parser]")
     
     SECTION("Binary [1]"){
         input = "#b1010";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
@@ -175,7 +175,7 @@ TEST_CASE("Parser Test [number literals]", "[parser]")
 
     SECTION("Binary [2]"){
         input = "#b11010";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
@@ -185,7 +185,7 @@ TEST_CASE("Parser Test [number literals]", "[parser]")
     SECTION("Octal [1]"){
 
         input = "#o007";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
@@ -197,7 +197,7 @@ TEST_CASE("Parser Test [number literals]", "[parser]")
     SECTION("Hex [1]"){
 
         input = "#x00F";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
@@ -215,11 +215,11 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
 
     std::string input{"#b0010"};
-    auto res = pars.parse(&input, "__TEST__");
+    auto res = pars.parse(input, "__TEST__");
     
     SECTION ("char [1]") {
         input = "?A";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
@@ -228,7 +228,7 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
 
     SECTION ("char [2]") {
         input = "?a";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
@@ -237,7 +237,7 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
     
     SECTION ("char [3]") {
         input = "?\n";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
@@ -246,7 +246,7 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
 
     SECTION ("char [4]") {
         input = "?\\\\";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
@@ -255,7 +255,7 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
 
     SECTION ("char [5]") {
         input = "?\\'";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
@@ -264,7 +264,7 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
 
     SECTION ("char [6]") {
         input = "?\\r";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_int() );
@@ -284,11 +284,11 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
 
     std::string input{"#b0010"};
-    auto res = pars.parse(&input, "__TEST__");
+    auto res = pars.parse(input, "__TEST__");
     
     SECTION ("strings [1]") {
         input = R"raw("string")raw";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
@@ -297,7 +297,7 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
 
     SECTION ("strings [2]") {
         input = R"raw("At:\u0040")raw";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
@@ -306,7 +306,7 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
 
     SECTION ("strings [3]") {
         input = R"raw("Hmm:\077")raw";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
@@ -315,7 +315,7 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
 
     SECTION ("strings [4]") {
         input = R"raw("Hmm:\x4F")raw";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
@@ -324,7 +324,7 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
 
     SECTION ("strings [5]") {
         input = R"raw("Hmm:\n")raw";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
@@ -333,7 +333,7 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
     
     SECTION ("strings [6]") {
         input = R"raw("Hmm:\t")raw";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
@@ -342,7 +342,7 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
     
     SECTION ("strings [7]") {
         input = R"raw("Hmm:\\")raw";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
@@ -351,7 +351,7 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
 
     SECTION ("strings [8]") {
         input = R"raw("Hmm:\"")raw";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
@@ -360,7 +360,7 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
 
     SECTION ("strings [9]") {
         input = R"raw("Hmm:\u0400")raw";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
@@ -369,7 +369,7 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
 
     SECTION ("strings [10]") {
         input = R"raw("Hmm:\u1400")raw";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
@@ -378,7 +378,7 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
 
     SECTION ("strings [11]") {
         input = R"raw("Hmm:\u1040")raw";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
@@ -387,12 +387,12 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
 
     SECTION ("strings [12]") {
         input = R"raw("Hmm:\uD802")raw";
-        CHECK_THROWS ( res = pars.parse(&input, "__TEST__") );
+        CHECK_THROWS ( res = pars.parse(input, "__TEST__") );
     }
 
     SECTION ("strings [13]") {
         input = R"raw("Hmm:\U001001F0")raw";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_string() );
@@ -408,12 +408,12 @@ TEST_CASE("Parser Test [symbols]", "[parser]")
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
 
     std::string input{"#b0010"};
-    auto res = pars.parse(&input, "__TEST__");
+    auto res = pars.parse(input, "__TEST__");
     
     SECTION ("symbol [1]") {
         std::string sym{"sym"};
         input = sym;
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_sym() );
@@ -423,7 +423,7 @@ TEST_CASE("Parser Test [symbols]", "[parser]")
     SECTION ("symbol [2]") {
         std::string sym{"sym++sym"};
         input = sym;
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_sym() );
@@ -433,7 +433,7 @@ TEST_CASE("Parser Test [symbols]", "[parser]")
     SECTION ("symbol [3]") {
         std::string sym{"--sym"};
         input = sym;
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_sym() );
@@ -443,7 +443,7 @@ TEST_CASE("Parser Test [symbols]", "[parser]")
     SECTION ("symbol [4]") {
         std::string sym{"_sym_12_sym"};
         input = sym;
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_sym() );
@@ -453,7 +453,7 @@ TEST_CASE("Parser Test [symbols]", "[parser]")
     SECTION ("symbol [5]") {
         std::string sym{"sym?sym"};
         input = sym;
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_sym() );
@@ -463,7 +463,7 @@ TEST_CASE("Parser Test [symbols]", "[parser]")
     SECTION ("symbol [6]") {
         std::string sym{"sym@sym"};
         input = sym;
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_sym() );
@@ -473,7 +473,7 @@ TEST_CASE("Parser Test [symbols]", "[parser]")
     SECTION ("symbol [7]") {
         std::string sym{"sym&sym"};
         input = sym;
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_sym() );
@@ -483,7 +483,7 @@ TEST_CASE("Parser Test [symbols]", "[parser]")
     SECTION ("symbol [8]") {
         std::string sym{"<symsym>"};
         input = sym;
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_sym() );
@@ -493,7 +493,7 @@ TEST_CASE("Parser Test [symbols]", "[parser]")
     SECTION ("symbol [9]") {
         std::string sym{"++"};
         input = sym;
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_sym() );
@@ -503,7 +503,7 @@ TEST_CASE("Parser Test [symbols]", "[parser]")
     SECTION ("symbol [10]") {
         std::string sym{"-"};
         input = sym;
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_sym() );
@@ -519,12 +519,12 @@ TEST_CASE("Parser Test [quote]", "[parser]")
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
 
     std::string input{"#b0010"};
-    auto res = pars.parse(&input, "__TEST__");
+    auto res = pars.parse(input, "__TEST__");
     
     SECTION ("quote [1]") {
 
         input = "\'(sym sym)";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_list() );
@@ -536,7 +536,7 @@ TEST_CASE("Parser Test [quote]", "[parser]")
     SECTION ("quote [2]") {
 
         input = "\'sym";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
         
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_list() );
@@ -549,7 +549,7 @@ TEST_CASE("Parser Test [quote]", "[parser]")
     SECTION ("quote [3]") {
 
         input = "\'(1 2 3)";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_list() );
@@ -568,12 +568,12 @@ TEST_CASE("Parser Test [list]", "[parser]")
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
 
     std::string input{"#b0010"};
-    auto res = pars.parse(&input, "__TEST__");
+    auto res = pars.parse(input, "__TEST__");
 
     SECTION ("list [1]") {
 
         input = "(sym (nil 12 (inner (more innter (most inner)))))";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_list() );
@@ -598,7 +598,7 @@ TEST_CASE("Parser Test [list]", "[parser]")
     SECTION ("list [2]") {
 
         input = "()";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_sym() );
@@ -614,12 +614,12 @@ TEST_CASE("Parser Test [comma, at, backqoute]", "[parser]")
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
 
     std::string input{"#b0010"};
-    auto res = pars.parse(&input, "__TEST__");
+    auto res = pars.parse(input, "__TEST__");
 
     SECTION ("comma [1]") {
 
         input = ",(a b v)";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_list() );
@@ -635,7 +635,7 @@ TEST_CASE("Parser Test [comma, at, backqoute]", "[parser]")
     SECTION ("comma [2]") {
 
         input = ",@(a b v)";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_list() );
@@ -652,7 +652,7 @@ TEST_CASE("Parser Test [comma, at, backqoute]", "[parser]")
     SECTION ("comma [3]") {
 
         input = "`(a b v)";
-        res = pars.parse(&input, "__TEST__");
+        res = pars.parse(input, "__TEST__");
 
         CHECK ( std::size(res) == 1 );
         CHECK ( res[0]->is_list() );

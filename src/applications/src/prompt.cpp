@@ -1,12 +1,17 @@
 #include "alisp/applications/prompt.hpp"
 
 
+#ifdef READLINE_AVAILABLE
 #include <readline/readline.h>
 #include <readline/history.h>
+#endif
 
 
 namespace alisp::prompt
 {
+
+
+#ifdef READLINE_AVAILABLE
 
 std::vector<std::string> matches;
 size_t match_index = 0;
@@ -52,8 +57,6 @@ void init()
     using_history();
 }
 
-	
-
 std::string repl(const std::string& prompt)
 {
     char* buf;
@@ -69,5 +72,24 @@ std::string repl(const std::string& prompt)
     }
     return std::string{""};
 }
+
+
+#else
+
+
+void init(){}
+
+std::string repl(const std::string& prompt)
+{
+    std::string retval;
+    std::cout << prompt;
+    std::getline(std::cin, retval);
+    return std::cin.eof() ? nullptr : retval;
+}
+
+
+#endif
+
+
 
 }

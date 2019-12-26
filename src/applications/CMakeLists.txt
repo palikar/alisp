@@ -17,7 +17,7 @@ target_link_libraries(alisp
     alisp_util
     alisp_language
     fmt::fmt
-    readline)
+    ${READLINE_LIB})
 
 
 

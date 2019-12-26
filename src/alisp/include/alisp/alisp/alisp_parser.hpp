@@ -137,7 +137,7 @@ class parse_exception : public std::runtime_error
 }
 
 
-#define PARSE_ERROR(MSG) do{throw parse_exception(MSG, FileLocation{position.col, position.line, *m_file}, *m_input);}while(0)
+#define PARSE_ERROR(MSG) do{throw parse_exception(MSG, FileLocation{position.col, position.line, *m_file}, m_input);}while(0)
 
 namespace parser
 {
@@ -151,7 +151,7 @@ class ALParser : public ParserBase
     detail::Position position;
     size_t depth;
     std::shared_ptr<std::string> m_file;
-    const std::string* m_input;
+    std::string m_input;
 
     Environment& env;
 
@@ -227,7 +227,7 @@ class ALParser : public ParserBase
   public:
 
 
-    ALParser(Environment& env_) : env(env_)
+    ALParser(Environment& env_) : m_input(""), env(env_)
     {
     }
 
@@ -982,15 +982,16 @@ class ALParser : public ParserBase
 
   public:
 
-    std::vector<ALObjectPtr> parse(const std::string* input, std::string file_name) override
+    std::vector<ALObjectPtr> parse(std::string& input, std::string file_name) override
     {
         std::vector<ALObjectPtr> objects;
 
-        const auto begin = input->empty() ? nullptr : &input->front();
-        const auto end = begin == nullptr ? nullptr : begin + input->size();
+        const auto begin = input.empty() ? nullptr : &input.front();
+        const auto end = begin == nullptr ? nullptr : begin + input.size();
         this->position = detail::Position(begin, end);
 
         m_file = std::make_shared<std::string>(std::move(file_name));
+
         m_input = input;
 
         depth = 0;
@@ -1004,7 +1005,7 @@ class ALParser : public ParserBase
             }
         }
 
-        return objects;
+    return objects;
 
     }
 

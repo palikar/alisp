@@ -188,6 +188,22 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 #######################################################################
 
 
+if(NOT MINGW)
+    find_library(READLINE_LIBRARY NAMES readline PATH /usr/lib /usr/local/lib /opt/local/lib)
+endif()
+
+
+message(STATUS "Detecting readline support")
+if(READLINE_LIBRARY)
+    message(STATUS "Found: ${READLINE_LIBRARY}")
+    set(READLINE_LIB readline)
+    add_definitions(/DREADLINE_AVAILABLE)
+else()
+    message(STATUS "Not Found")
+    set(READLINE_LIB)
+    set(READLINE_FLAG)
+endif()
+
 
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
