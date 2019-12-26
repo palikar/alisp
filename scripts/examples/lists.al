@@ -30,6 +30,6 @@
 (defun list-example()
   (let (a b (c 10))
     (when 't
-      (dump (nth '(0 1 2 3 4 5 6 7) 10)))))
+      (dump (nth '(0 1 2 3 4 5 6 7) 7)))))
 
 (list-example)

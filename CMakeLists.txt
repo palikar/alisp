@@ -32,6 +32,7 @@ option(JENKINS_HASHING "Use jenkins one at a time as a hashing function" FALSE)
 option(DEBUG_LOGGING "Enabling debug logging" FALSE)
 option(BUILD_EXAMPLES "Enable targets for running the example scripts" FALSE)
 option(MANUAL_MEMORY "Use raw pointers instead of smart ones" FALSE)
+option(VALGRIND_CHECKS "Enable Valgrind tools to perform checks on the application " FALSE)
 
 
 #######################################################################
@@ -236,8 +237,6 @@ if(DEBUG_LOGGING)
     target_compile_definitions(project_options INTERFACE -DDEUBG_LOGGING)
 endif(DEBUG_LOGGING)
 
-
-
 file(READ "${PROJECT_SOURCE_DIR}/version" VERSION NEWLINE_CONSUME)
 string(REPLACE "\n" "" VERSION "${VERSION}")
 string(REPLACE "." ";" VERSION_LIST ${VERSION})
@@ -316,9 +315,47 @@ if(BUILD_EXAMPLES)
         USES_TERMINAL
         )
     
-    add_custom_target(test_examples ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/scripts_results alisp)
+    add_custom_target(test_examples DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/scripts_results alisp)
 
 endif(BUILD_EXAMPLES)
+
+if(VALGRIND_CHECKS)
+    
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/valgrind_massif.out
+        COMMAND valgrind --tool=massif --log-file=valgrind_massif.out ./bin/alisp_language_test
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        USES_TERMINAL)
+
+
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/valgrind_leaks.out
+        COMMAND valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=valgrind_leaks.out ./bin/alisp_language_test 
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        USES_TERMINAL)
+
+
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/valgrind_memcheck.out
+        COMMAND valgrind  --tool=memcheck --log-file=valgrind_memcheck.out ./bin/alisp_language_test 
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        USES_TERMINAL)
+
+
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/valgrind_callgrind.out
+        COMMAND valgrind  --tool=callgrind  --log-file=valgrind_callgrind.out ./bin/alisp_language_test 
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        USES_TERMINAL)
+
+
+    add_custom_target(valgrind_checks DEPENDS alisp alisp_language_test
+        ${CMAKE_CURRENT_BINARY_DIR}/valgrind_leaks.out
+        ${CMAKE_CURRENT_BINARY_DIR}/valgrind_callgrind.out
+        ${CMAKE_CURRENT_BINARY_DIR}/valgrind_memcheck.out
+        ${CMAKE_CURRENT_BINARY_DIR}/valgrind_massif.out)
+
+endif(VALGRIND_CHECKS)
 
 
 message("#########################################")
@@ -335,6 +372,7 @@ message("Shared libs:      \t ${BUILD_SHARED_LIBS}")
 message("Build libcpp:     \t ${LIBCPP}")
 message("CCache executable:\t ${CCACHE}")
 message("Building doc:     \t ${BUILD_DOC}")
+message("Valgrind Checks:  \t ${VALGRIND_CHECKS}")
 message("Simple build:     \t ${SIMPLE_BUILD}")
 message("Jenkins Hashing:  \t ${JENKINS_HASHING}")
 message("Elf Hashing:      \t ${ELF_HASHING}")

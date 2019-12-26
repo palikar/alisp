@@ -90,7 +90,6 @@ size_t Position::remaining() const noexcept {
 
 namespace parser {
 
-
 }
 
 
