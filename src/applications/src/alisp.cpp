@@ -58,6 +58,9 @@ Options opts{};
 int main(int argc, char *argv[])
 {
 
+    alisp::logging::init_logging();
+
+    AL_INFO("Hello from debug");
     
 
     auto cli = (

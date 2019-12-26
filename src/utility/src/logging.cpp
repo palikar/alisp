@@ -1,28 +1,15 @@
-#include <memory>
-#include <string>
-#include <vector>
-#include <iterator>
-
-#include "alisp/config.hpp"
-
+#include "alisp/utility/logging.hpp"
 
 namespace alisp::logging
 {
 
-#if CONSOLE_LOGGING
+void init_logging([[maybe_unused]] bool debug,  [[maybe_unused]] bool stand) {
 
+#ifdef DEUBG_LOGGING
+    LOGGER = standard_logger(debug, stand);
 #endif
-        
-        
-#if FILE_LOGGING
+}
 
-#endif
-
-
-#if DEBUG_LOGGING
-
-#endif
-        
 }
 
 
