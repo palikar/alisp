@@ -107,36 +107,41 @@ int main(int argc, char *argv[])
          .merge_alternative_flags_with_common_prefix(false)  //-ab(cdxy|xy) instead of -abcdxy|-abxy
          .ignore_newline_chars(false);
 
-    // std::cout << "Usage:\n" << clipp::usage_lines(cli, "progname", fmt)
-    //           << "\nOptions:\n" << clipp::documentation(cli, fmt) << '\n';
+    auto res = clipp::parse(argc, argv, cli);
 
-    // std::cout << clipp::make_man_page(cli, "progname", fmt)
-    //     .prepend_section("DESCRIPTION", "The alisp programming language.")
-    //     .append_section("LICENSE", "GPLv3");
-
-    clipp::parse(argc, argv, cli);    //excludes argv[0]
-
-    
-    
+    if(res.any_bad_repeat() or res.any_blocked() or res.any_conflict()) {
+        std::cout << "Usage:\n" << clipp::usage_lines(cli, "progname", fmt) << "\n";
+        exit(1);
+    }    
     
 
+    if (opts.show_help) {
+        std::cout << clipp::make_man_page(cli, "progname", fmt)
+            .prepend_section("DESCRIPTION", "The alisp programming language.")
+            .append_section("LICENSE", "GPLv3");
+        exit(0);
+    }
 
-// const auto result = cli.parse(Args(argc, argv));
+    if (opts.version) {
+        std::cout << alisp::get_build_info();
+        exit(0);
+    }
 
-    // if (!result) {
-    //     std::cerr << "Error in command line: " << result.errorMessage() << '\n';
+
+    // std::cout << "File:" << opts.input << "\n";
+    // std::cout << "Eval:" << opts.eval << "\n";
+    // std::cout << "Parse debug:" << opts.parse_debug << "\n";
+    // std::cout << "Eval debug:" << opts.eval_debug << "\n";
+    // std::cout << "Interactive:" << opts.interactive << "\n";
+    // std::cout << "Help:" << opts.show_help << "\n";
+    // std::cout << "Version:" << opts.version << "\n";
+
+    // for (auto& it : opts.args) {
+    //     std::cout << "arg: "  << it << "\n";
     // }
 
-    // if (showHelp) {
-    //     std::cout << cli << '\n';
-    //     exit(1);
-    // }
+    
 
-    // if (opts.version) {
-
-    //     std::cout << fmt::format("ALisp {}.{}.{}", alisp::version_major, alisp::version_minor, alisp::version_patch) << '\n';
-    //     exit(0);
-    // }
 
     // if(!opts.input.empty()){
     //     auto file_path = std::filesystem::path{opts.input};

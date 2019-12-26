@@ -26,7 +26,7 @@
 #endif
 
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 #define ALISP_DEBUG true
 #else
 #define ALISP_DEBUG false
