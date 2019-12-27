@@ -509,7 +509,145 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
     eval::Evaluator eval(env);
     parser::ALParser<alisp::env::Environment> pars(env);
 
-    SECTION ( "mapc" ) {}
+    SECTION ( "mapc" ) {
+        std::string input{"(mapc (lambda (x) (+ 1 x)) '(1 2 3 4))"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        auto res = eval.eval(par_res[0]);
+        
+        CHECK ( is_truthy(res) );
+
+        // CHECK ( res->is_list() );
+        // CHECK ( res->i(0)->is_int() );
+        // CHECK ( res->i(1)->is_int() );
+        // CHECK ( res->i(2)->is_int() );
+        // CHECK ( res->i(3)->is_int() );
+
+        // CHECK ( res->i(0)->to_int() == 2 );
+        // CHECK ( res->i(1)->to_int() == 3 );
+        // CHECK ( res->i(2)->to_int() == 4 );
+        // CHECK ( res->i(3)->to_int() == 5 );
+    }
+
+    SECTION ( "car" ) {
+        std::string input{"(car '(1 2 3 4))"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        auto res = eval.eval(par_res[0]);
+        CHECK ( res->is_int() );
+        CHECK ( res->to_int() == 1);
+    }
+
+    
+    SECTION ( "head" ) {
+        std::string input{"(head '(1 2 3 4))"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        auto res = eval.eval(par_res[0]);
+        CHECK ( res->is_int() );
+        CHECK ( res->to_int() == 1);
+    }
+
+    SECTION ( "last" ) {
+        std::string input{"(last '(1 2 3 4))"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        auto res = eval.eval(par_res[0]);
+        CHECK ( res->is_int() );
+        CHECK ( res->to_int() == 4);
+    }
+
+    
+    SECTION ( "cons" ) {
+        std::string input{"(cons '(1 2 3 4))"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        auto res = eval.eval(par_res[0]);
+        CHECK ( res->is_list() );
+        CHECK ( res->i(0)->to_int() == 2);
+        CHECK ( res->i(1)->to_int() == 3);
+
+        CHECK ( res->length() == 3);
+    }
+
+    SECTION ( "tail" ) {
+        std::string input{"(tail '(1 2 3 4))"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        auto res = eval.eval(par_res[0]);
+        CHECK ( res->is_list() );
+        CHECK ( res->i(0)->to_int() == 2);
+        CHECK ( res->i(1)->to_int() == 3);
+
+        CHECK ( res->length() == 3);
+    }
+
+    SECTION ( "init" ) {
+        std::string input{"(init '(1 2 3 4))"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        auto res = eval.eval(par_res[0]);
+        CHECK ( res->is_list() );
+        CHECK ( res->i(0)->to_int() == 1);
+        CHECK ( res->i(1)->to_int() == 2);
+        CHECK ( res->i(2)->to_int() == 3);
+
+        CHECK ( res->length() == 3);
+    }
+
+    SECTION ( "nth" ) {
+        std::string input{"(nth '(1 2 3 4) 1)"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        auto res = eval.eval(par_res[0]);
+        
+        CHECK ( res->is_int() );
+        CHECK ( res->to_int() == 2);
+    }
+
+    SECTION ( "push" ) {
+        std::string input{"(push '(1 2 3 4) 5)"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        auto res = eval.eval(par_res[0]);
+        CHECK ( res->is_list() );
+        CHECK ( res->length() == 5);
+
+        CHECK ( res->i(0)->to_int() == 1);
+        CHECK ( res->i(1)->to_int() == 2);
+        CHECK ( res->i(2)->to_int() == 3);
+        CHECK ( res->i(3)->to_int() == 4);
+        CHECK ( res->i(4)->to_int() == 5);
+    }
+    
+    SECTION ( "remove" ) {
+        std::string input{"(remove '(1 2 3 4) 3)"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        auto res = eval.eval(par_res[0]);
+        CHECK ( res->is_list() );
+        CHECK ( res->length() == 3);
+
+        CHECK ( res->i(0)->to_int() == 1);
+        CHECK ( res->i(1)->to_int() == 2);
+        CHECK ( res->i(2)->to_int() == 4);
+    }
+
+    SECTION ( "delete" ) {
+        std::string input{"(delete '(1 2 3 4) 3)"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        auto res = eval.eval(par_res[0]);
+        CHECK ( res->is_list() );
+        CHECK ( res->length() == 3);
+
+        CHECK ( res->i(0)->to_int() == 1);
+        CHECK ( res->i(1)->to_int() == 2);
+        CHECK ( res->i(2)->to_int() == 4);
+    }
+
+
+
 
 }
 
@@ -531,3 +669,4 @@ TEST_CASE("Evaluator Test [function call]", "[eval]")
     CHECK ( res->is_int() );
     CHECK ( res->to_int() == 42 );
 }
+

@@ -206,3 +206,43 @@ TEST_CASE("Environment Test [update]", "[env]")
     CHECK ( env.find(make_symbol("var"))->to_real() == 314.42_a );
     
 }
+
+
+TEST_CASE("Environment Test [dumping]", "[env]")
+{
+
+    using namespace alisp;
+    env::Environment env;
+    eval::Evaluator eval(env);
+
+    env.put(make_symbol("var"), make_int(42));
+    env.update(make_symbol("var"), make_int(314));
+    env.update(make_symbol("var"), make_double(314.42));
+    env.put(make_symbol("var-2"), make_int(442));
+    env.define_variable(make_symbol("var-3"), make_int(442));
+    env.define_variable(make_symbol("var-4"), make_int(442));
+
+    std::cout.setstate(std::ios_base::failbit);
+
+    CHECK_NOTHROW( env.dump() );
+    CHECK_NOTHROW( env.callstack_dump() );
+
+    env.trace_call("let");
+    env.trace_call("when");
+    env.trace_call("if");
+    env.trace_call("while");
+    
+    CHECK_NOTHROW( env.dump() );
+    CHECK_NOTHROW( env.callstack_dump() );
+
+    env.trace_unwind();
+    env.trace_unwind();
+    env.trace_unwind();
+    env.trace_unwind();
+
+    CHECK_NOTHROW( env.dump() );
+    CHECK_NOTHROW( env.callstack_dump() );
+    
+    std::cout.clear();
+    
+}

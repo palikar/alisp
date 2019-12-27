@@ -167,6 +167,8 @@ if(ENABLE_TESTING)
 
         include(CodeCoverage)
 
+        set(COVERAGE_GCOVR_EXCLUDES "${PROJECT_SOURCE_DIR}/libs/include/*" "${PROJECT_SOURCE_DIR}/libs/include/catch2/*")
+
         setup_target_for_coverage_gcovr_html(
             NAME alisp_coverage_html
             EXECUTABLE ./bin/alisp_language_test
