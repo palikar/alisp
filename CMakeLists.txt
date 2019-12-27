@@ -252,6 +252,7 @@ configure_file (
 
 include_directories("${PROJECT_BINARY_DIR}/src/include")
 include_directories("${PROJECT_SOURCE_DIR}/src/include")
+include_directories("${PROJECT_SOURCE_DIR}/libs/include")
 
 install (FILES
     "${PROJECT_BINARY_DIR}/src/include/${PROJECT_NAME}/config.hpp"
