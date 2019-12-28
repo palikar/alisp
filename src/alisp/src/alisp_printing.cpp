@@ -52,7 +52,7 @@ ALObjectPtr Fdump(ALObjectPtr t_obj, env::Environment*, eval::Evaluator* eval)
 
 ALObjectPtr Fdumpstack(ALObjectPtr, env::Environment* env, eval::Evaluator*)
 {
-    env->dump();
+    env->stack_dump();
     return Qt;
 }
 

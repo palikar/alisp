@@ -224,7 +224,7 @@ TEST_CASE("Environment Test [dumping]", "[env]")
 
     std::cout.setstate(std::ios_base::failbit);
 
-    CHECK_NOTHROW( env.dump() );
+    CHECK_NOTHROW( env.stack_dump() );
     CHECK_NOTHROW( env.callstack_dump() );
 
     env.trace_call("let");
@@ -232,7 +232,7 @@ TEST_CASE("Environment Test [dumping]", "[env]")
     env.trace_call("if");
     env.trace_call("while");
     
-    CHECK_NOTHROW( env.dump() );
+    CHECK_NOTHROW( env.stack_dump() );
     CHECK_NOTHROW( env.callstack_dump() );
 
     env.trace_unwind();
@@ -240,7 +240,7 @@ TEST_CASE("Environment Test [dumping]", "[env]")
     env.trace_unwind();
     env.trace_unwind();
 
-    CHECK_NOTHROW( env.dump() );
+    CHECK_NOTHROW( env.stack_dump() );
     CHECK_NOTHROW( env.callstack_dump() );
     
     std::cout.clear();

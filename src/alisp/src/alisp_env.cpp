@@ -62,7 +62,7 @@ void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
     auto& scope = m_stack.current_scope();
     auto name = t_sym->to_string();
 
-    if (scope.count(name)) { throw environment_error("Variable alredy exists");}
+    if (scope.count(name)) { throw environment_error("Variable alredy exists: "  + name);}
 
     scope.insert({name, t_val});
 }
@@ -72,7 +72,7 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value)
     auto& scope = m_stack.root_scope();
     auto name = t_sym->to_string();
 
-    if (scope.count(name)) { throw environment_error("Variable alredy exists");}
+    if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name);}
 
     scope.insert({name, t_value});
         
@@ -84,7 +84,7 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
     auto& scope = m_stack.root_scope();
     auto name = t_sym->to_string();
 
-    if (scope.count(name)) { throw environment_error("Function alredy exists");}
+    if (scope.count(name)) { throw environment_error("Function alredy exists: " + name);}
 
     auto new_fun = make_object(t_params, t_body);
     new_fun->set_function_flag();
@@ -99,7 +99,7 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
     auto& scope = m_stack.root_scope();
     auto name = t_sym->to_string();
 
-    if (scope.count(name)) { throw environment_error("Function alredy exists");}
+    if (scope.count(name)) { throw environment_error("Function alredy exists: " + name);}
 
     auto new_fun = make_object(t_params, t_body);
     new_fun->set_function_flag();
@@ -109,7 +109,7 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
     
 }
 
-void Environment::dump() const
+void Environment::stack_dump() const
 {
     using namespace fmt;
     using namespace std;
@@ -163,8 +163,8 @@ void Environment::dump() const
     cout << format("{:-^37}+", "") << '\n';
 }
 
-
-void Environment::callstack_dump() const {
+void Environment::callstack_dump() const
+{
 
     using namespace fmt;
     using namespace std;

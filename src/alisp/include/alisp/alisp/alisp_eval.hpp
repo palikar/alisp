@@ -4,6 +4,8 @@
 
 
 
+
+
 namespace alisp
 {
 
@@ -31,13 +33,8 @@ class Evaluator
     void handle_argument_bindings(ALObjectPtr params, ALObjectPtr args);
     void put_argument(ALObjectPtr param, ALObjectPtr arg);
 
-    void new_evaluation() {
-        ++m_eval_depth;
-        if (m_eval_depth > MAX_EAVALUATION_DEPTH) { throw std::runtime_error("Maximum evaluation depth reached!"); }
-    }
-    
-    void end_evaluation() { --m_eval_depth; }
-
+    void new_evaluation();
+    void end_evaluation();
     
 };
 

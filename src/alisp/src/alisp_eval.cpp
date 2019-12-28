@@ -1,6 +1,7 @@
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_env.hpp"
+#include "alisp/alisp/alisp_exception.hpp"
 
 #include "alisp/utility.hpp"
 
@@ -11,6 +12,14 @@ namespace alisp
 
 namespace eval
 {
+
+
+void Evaluator::new_evaluation() {
+    ++m_eval_depth;
+    if (m_eval_depth > MAX_EAVALUATION_DEPTH) { throw eval_error("Maximum evaluation depth reached!"); }
+}
+
+void Evaluator::end_evaluation() { --m_eval_depth; }
 
 
 Evaluator::Evaluator(env::Environment &env_) : env(env_) {}
@@ -27,14 +36,12 @@ void Evaluator::handle_argument_bindings(ALObjectPtr params, ALObjectPtr args)
 
     if (params->length() == 0 && args->length() != 0)
     {
-        // TODO: Better error here
-        throw std::runtime_error("Arguments do not match");
+        throw argument_error("Argument\'s lengths do not match.");
     }
 
     if (args->length() != 0 && params->length() == 0 )
     {
-        // TODO: Better error here
-        throw std::runtime_error("Arguments do not match");
+        throw argument_error("Argument\'s lengths do not match.");
     }
 
     if (args->length() == 0 && params->length() == 0 ) { return; }
@@ -92,8 +99,7 @@ void Evaluator::handle_argument_bindings(ALObjectPtr params, ALObjectPtr args)
              }
              else if(!opt)
              {
-                 // TODO: Better error here
-                 throw std::runtime_error("Arguments do not match");
+                 throw argument_error("The function do not accept optional arguments.");
              }
              else
              {
@@ -111,14 +117,12 @@ void Evaluator::handle_argument_bindings(ALObjectPtr params, ALObjectPtr args)
 
     if ( prev_opt_or_rest )
     {
-        // TODO: Better error here
-        throw std::runtime_error("Arguments do not match");
+        throw argument_error("Parameters end with &optional or &rest.");
     }
 
     if (index < arg_cnt)
     {
-        // TODO: Better error here
-        throw std::runtime_error("Arguments do not match");
+        throw argument_error("Not enough argument for the function.");
     }
 
 }
@@ -144,8 +148,8 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
           auto func = env.find(obj->i(0));
           if ( !func->check_function_flag() ) {
-              throw std::runtime_error("Head of a list must be bound to function");
-           }
+              throw eval_error("Head of a list must be bound to function");
+          }
 
 
           env::detail::CallTracer tracer{env};
@@ -177,8 +181,9 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
           break;
        }
 
-       default: break;
-     }
+       default:
+           eval_error("Unknown object typee");
+    }
 
 
      return nullptr;
@@ -204,6 +209,10 @@ ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
     if(psym(func))
     {
         obj = eval(func);
+    }
+
+    if (!obj->check_function_flag()) {
+        throw eval_error("Cannon apply a non function object.");
     }
 
     env::detail::FunctionCall fc{env};

@@ -7,6 +7,7 @@
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_macros.hpp"
+#include "alisp/alisp/alisp_exception.hpp"
 
 #include "alisp/utility/helpers.hpp"
 #include "alisp/utility/macros.hpp"
@@ -125,7 +126,7 @@ class Environment
     void call_function()
     {
         ++m_call_depth;
-        if (m_call_depth > MAX_FUNCTION_CALL_DEPTH) { throw std::runtime_error("Maximum function calldepth reached!"); }
+        if (m_call_depth > MAX_FUNCTION_CALL_DEPTH) { throw environment_error("Maximum function calldepth reached!"); }
         m_stack.push_frame();
     }
 
@@ -141,7 +142,7 @@ class Environment
 
     bool in_root() { return (!in_function()) && (std::size(m_stack.root_frame()) == 1); }
     
-    void dump() const;
+    void stack_dump() const;
 
 
     void callstack_dump() const;
