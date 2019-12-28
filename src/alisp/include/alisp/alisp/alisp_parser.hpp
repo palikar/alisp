@@ -341,7 +341,8 @@ class ALParser : public ParserBase
         string_type octal_matches;
         string_type hex_matches;
 
-        StringParser(string_type& t_str) : m_str(t_str) {}
+        StringParser(string_type& t_str) :
+            m_str(t_str)  {}
 
         
         void process_hex()
@@ -721,7 +722,12 @@ class ALParser : public ParserBase
         while(this->position.has_more() && ( *this->position != '\"' or escaped ))
         {
             escaped = *this->position == '\\' and !escaped;
-            parser.parse(*position);
+            try {
+                parser.parse(*position);
+            } catch (std::runtime_error& p_exce) {
+                PARSE_ERROR( p_exce.what() );
+
+            }
             ++position;
         }
 

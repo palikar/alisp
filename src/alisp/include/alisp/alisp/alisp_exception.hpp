@@ -188,25 +188,27 @@ void handle_errors_lippincott(){
     } catch (parse_exception& p_exc) {
         std::cout << rang::fg::red << "Unhandeled parser signal: <"
                   << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name()  << ">\n" << rang::fg::reset;
-        std::cout << p_exc.what() << "\n";
+        std::cout << '\t' << p_exc.what() << "\n";
     } catch (environment_error& p_exc) {
         std::cout << rang::fg::red << "Unhandeled environment signal:<"
                   << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name()  << ">\n" << rang::fg::reset;
-        std::cout << p_exc.what() << "\n";
+        std::cout << '\t' << p_exc.what() << "\n";
     } catch (eval_error& p_exc) {
         std::cout << rang::fg::red << "Unhandeled evaluation signal:<"
                   << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name()  << ">\n" << rang::fg::reset;
-        std::cout << p_exc.what() << "\n";
+        std::cout << '\t' << p_exc.what() << "\n";
     } catch (signal_exception& p_exc) {
         std::cout << rang::fg::red << "Unhandeled user signal:<"
                   << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name()  << ">\n" << rang::fg::reset;
-        std::cout << p_exc.what() << "\n";
+        std::cout << '\t' << p_exc.what() << "\n";
     }  catch (argument_error& p_exc) {
         std::cout << rang::fg::red << "Invalid Arguments error:<"
                   << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name()  << ">\n" << rang::fg::reset;
-        std::cout << p_exc.what() << "\n";
-    }
-    
+        std::cout << '\t' << p_exc.what() << "\n";
+    }  catch (alobject_error& p_exc) {
+        std::cout << rang::fg::red << "ALObject exception. This is not normal. Report bug or something.\n" << rang::fg::reset;
+        std::cout << '\t' << p_exc.what() << "\n";
+    }    
 
     if constexpr (should_exit) { exit(1); }
 
