@@ -196,19 +196,12 @@ void eval_statement(std::string& command)
             auto eval_res = eval.eval(p);
             if (opts.eval_debug) std::cout << "DEUBG[EVAL]: " << alisp::dump(eval_res) << "\n";
             std::cout << *eval_res << "\n";
-
         }
-
-    } catch (alisp::parse_exception& p_exc) {
-        std::cout << rang::fg::red << "Parser error:\n" << rang::fg::reset;
-        std::cout << p_exc.what() << "\n";
-    } catch (alisp::environment_error& p_exc) {
-        std::cout << rang::fg::red << "Environment error:\n" << rang::fg::reset;
-        std::cout << p_exc.what() << "\n";
+        
+    }catch (...) {
+        alisp::handle_errors_lippincott();
     }
-
-
-
+    
 }
 
 
@@ -236,15 +229,8 @@ void eval_file(const std::filesystem::path& t_path)
                 if (opts.eval_debug) std::cout << "DEUBG[EVAL]: " << alisp::dump(eval_res) << "\n";
 
             }
-
-        } catch (alisp::parse_exception& p_exc) {
-            std::cout << rang::fg::red << "Parser error:\n" << rang::fg::reset;
-            std::cout << p_exc.what() << "\n";
-            exit(1);
-        } catch (alisp::environment_error& p_exc) {
-            std::cout << rang::fg::red << "Environment error:\n" << rang::fg::reset;
-            std::cout << p_exc.what() << "\n";
-            exit(1);
+        } catch (...) {
+            alisp::handle_errors_lippincott<true>();
         }
 
 

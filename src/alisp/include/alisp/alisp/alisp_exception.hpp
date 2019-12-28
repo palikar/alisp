@@ -4,30 +4,39 @@
 #include "alisp/alisp/alisp_object.hpp"
 
 
+#include <fmt/format.h>
+#include <rang.hpp>
+
 namespace alisp
 {
 
 
 enum class SignalTag {
     UNKNOWN,
-
     PARSER,
     EVAL,
     INVALID_ARGUMENTS,
     ENV,
-    USER
-    
+    USER,
+    FLOW_CONTROL,
+
 };
+
+
+constexpr const char* signal_tag_to_string( SignalTag type){
+    constexpr const char* const names[] = {"unknown", "parser", "eval", "invalid_arguments", "env", "user"};
+    return names[static_cast<int>(type)];
+}
 
 
 struct al_exception : public std::runtime_error
 {
     al_exception(std::string what, SignalTag tag) : runtime_error(what), m_tag(tag) {}
-    
+
 
     SignalTag tag() const { return m_tag; }
     const std::string& name() const { return m_signal_name; }
-    
+
   protected:
     SignalTag m_tag;
     std::string m_signal_name;
@@ -110,9 +119,48 @@ class eval_error : public al_exception
     eval_error(const std::string& t_why) : al_exception(t_why, SignalTag::EVAL) {
         m_signal_name = "eval-signal";
     }
-
 };
 
 
+class argument_error : public al_exception
+{
+  public:
+    argument_error(const std::string& t_why) : al_exception(t_why, SignalTag::INVALID_ARGUMENTS) {
+        m_signal_name = "eval-signal";
+    }
+};
+
+
+template<bool should_exit = false>
+void handle_errors_lippincott(){
+
+    try {
+        throw;
+    } catch (parse_exception& p_exc) {
+        std::cout << rang::fg::red << "Unhandeled parser signal: <"
+                  << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name()  << ">\n" << rang::fg::reset;
+        std::cout << p_exc.what() << "\n";
+    } catch (environment_error& p_exc) {
+        std::cout << rang::fg::red << "Unhandeled environment signal:<"
+                  << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name()  << ">\n" << rang::fg::reset;
+        std::cout << p_exc.what() << "\n";
+    } catch (eval_error& p_exc) {
+        std::cout << rang::fg::red << "Unhandeled evaluation signal:<"
+                  << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name()  << ">\n" << rang::fg::reset;
+        std::cout << p_exc.what() << "\n";
+    } catch (signal_exception& p_exc) {
+        std::cout << rang::fg::red << "Unhandeled user signal:<"
+                  << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name()  << ">\n" << rang::fg::reset;
+        std::cout << p_exc.what() << "\n";
+    }  catch (argument_error& p_exc) {
+        std::cout << rang::fg::red << "Invalid Arguments error:<"
+                  << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name()  << ">\n" << rang::fg::reset;
+        std::cout << p_exc.what() << "\n";
+    }
+    
+
+    if constexpr (should_exit) { exit(1); }
+
+}
 
 }
