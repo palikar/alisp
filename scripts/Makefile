@@ -14,7 +14,7 @@ SHELL=/bin/sh
 
 basic_scripts=basic_bool.al basic_comments.al  basic_cond.al  basic_constant.al  basic_defun.al  basic_dump.al  basic_funcall.al  basic_if.al  basic_let.al  basic_loops.al  basic_mapc.al  basic_math.al  basic_predicates.al  basic_print.al  basic_progn.al  basic_quote.al  basic_set.al  basic_setq.al  basic_string_literals.al  basic_unless.al  basic_when.al basic_lambda.al
 
-example_scripts=scope.al backquote.al callstack_dump.al env_dump.al lists.al
+example_scripts=scope.al backquote.al callstack_dump.al env_dump.al lists.al big_example.al
 
 all : basic examples
 .PHONY : all
