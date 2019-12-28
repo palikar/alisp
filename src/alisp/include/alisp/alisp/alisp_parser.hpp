@@ -16,6 +16,7 @@
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_env.hpp"
+#include "alisp/alisp/alisp_exception.hpp"
 
 #include "alisp/utility.hpp"
 
@@ -100,38 +101,6 @@ constexpr size_t MAX_DEPTH = 256;
 namespace
 {
 
-class parse_exception : public std::runtime_error
-{
-  public:
-
-    parse_exception(const std::string& t_why, const FileLocation& t_where, const std::string& t_input) :
-        runtime_error(format(t_why, t_where, t_input))
-    {}
-
-
-  private:
-    static std::string format(const std::string& t_why, const FileLocation& t_where, const std::string& t_input)
-    {
-        const static int LINE_CONTEXT = 1;
-        std::ostringstream ss;
-
-        ss << "\t" << "In file \'" << t_where.file << '\'' << ": " << "line: " << t_where.line << ", col: " << t_where.col << '\n';
-        ss << "\t" << t_why << "\n";
-
-        auto lines = utility::split(t_input, '\n');
-
-        auto start_index = static_cast<int>(t_where.line) - LINE_CONTEXT < 0 ? 0 : static_cast<int>(t_where.line) - LINE_CONTEXT;
-        auto end_index = (static_cast<int>(t_where.line) + LINE_CONTEXT) > static_cast<int>(std::size(lines)) ?
-            static_cast<int>(std::size(lines)) : static_cast<int>(std::size(lines)) + LINE_CONTEXT;
-
-        for (auto i = static_cast<size_t>(start_index); i < static_cast<size_t>(end_index); ++i) {
-            ss << "\t" <<  i << " |" << "\t" << lines[i] << "\n";
-        }
-
-        return ss.str();
-    }
-
-};
 
 
 }

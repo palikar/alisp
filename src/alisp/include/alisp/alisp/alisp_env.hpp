@@ -11,7 +11,6 @@
 #include "alisp/utility/helpers.hpp"
 #include "alisp/utility/macros.hpp"
 
-
 namespace alisp::eval
 {
 class Evaluator;
@@ -20,13 +19,6 @@ class Evaluator;
 namespace alisp
 {
 
-
-class environment_error : public std::runtime_error
-{
-  public:
-    environment_error(const std::string& t_why) : runtime_error(t_why){}
-
-};
 
 
 namespace env
