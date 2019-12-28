@@ -29,6 +29,14 @@ constexpr const char* signal_tag_to_string( SignalTag type){
 }
 
 
+/*  _____                          */
+/* | ____|_ __ _ __ ___  _ __ ___  */
+/* |  _| | '__| '__/ _ \| '__/ __| */
+/* | |___| |  | | | (_) | |  \__ \ */
+/* |_____|_|  |_|  \___/|_|  |___/ */
+                               
+
+
 struct al_exception : public std::runtime_error
 {
     al_exception(std::string what, SignalTag tag) : runtime_error(what), m_tag(tag) {}
@@ -67,7 +75,7 @@ struct signal_exception : public al_exception
 };
 
 
-class parse_exception : public al_exception
+struct parse_exception : public al_exception
 {
   public:
 
@@ -103,7 +111,7 @@ class parse_exception : public al_exception
 };
 
 
-class environment_error : public al_exception
+struct environment_error : public al_exception
 {
   public:
     environment_error(const std::string& t_why) : al_exception(t_why, SignalTag::ENV) {
@@ -113,7 +121,7 @@ class environment_error : public al_exception
 };
 
 
-class eval_error : public al_exception
+struct eval_error : public al_exception
 {
   public:
     eval_error(const std::string& t_why) : al_exception(t_why, SignalTag::EVAL) {
@@ -122,13 +130,52 @@ class eval_error : public al_exception
 };
 
 
-class argument_error : public al_exception
+struct argument_error : public al_exception
 {
   public:
     argument_error(const std::string& t_why) : al_exception(t_why, SignalTag::INVALID_ARGUMENTS) {
         m_signal_name = "eval-signal";
     }
 };
+
+
+/*  _____ _                  ____            _             _  */
+/* |  ___| | _____      __  / ___|___  _ __ | |_ _ __ ___ | | */
+/* | |_  | |/ _ \ \ /\ / / | |   / _ \| '_ \| __| '__/ _ \| | */
+/* |  _| | | (_) \ V  V /  | |__| (_) | | | | |_| | | (_) | | */
+/* |_|   |_|\___/ \_/\_/    \____\___/|_| |_|\__|_|  \___/|_| */
+
+
+
+struct al_continue : public al_exception
+{
+  public:
+    al_continue() : al_exception("", SignalTag::FLOW_CONTROL) {}
+};
+
+struct al_break : public al_exception
+{
+  public:
+    al_break() : al_exception("", SignalTag::FLOW_CONTROL) {}
+};
+
+struct al_return  : public al_exception
+{
+  public:
+    al_return(ALObjectPtr value) : al_exception("", SignalTag::FLOW_CONTROL), m_value(value) {}
+
+    ALObjectPtr value() { return m_value; }
+  private:
+    ALObjectPtr m_value;
+};
+
+
+
+/*  _   _ _   _ _  */
+/* | | | | |_(_) | */
+/* | | | | __| | | */
+/* | |_| | |_| | | */
+/*  \___/ \__|_|_| */
 
 
 template<bool should_exit = false>
