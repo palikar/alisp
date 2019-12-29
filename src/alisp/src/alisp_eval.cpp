@@ -162,8 +162,9 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
               }
 
 
+          }catch (al_return&) {
+              throw;
           } catch (...) {
-
               tracer.dump();
               throw;
           }
@@ -184,9 +185,14 @@ ALObjectPtr Evaluator::eval_function(ALObjectPtr func, ALObjectPtr args)
 {
     auto[params, body] = func->get_function();
     auto eval_args = eval_transform(this, args);
-    env::detail::FunctionCall fc{env};
-    handle_argument_bindings(params, eval_args);
-    return eval_list(this, body, 0);
+    try {
+        env::detail::FunctionCall fc{env};
+        handle_argument_bindings(params, eval_args);
+        return eval_list(this, body, 0);
+    } catch (al_return& ret){
+        return  ret.value();
+    }
+    
 }
 
 ALObjectPtr Evaluator::apply_function(ALObjectPtr func, ALObjectPtr args)

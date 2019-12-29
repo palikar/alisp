@@ -317,4 +317,13 @@ ALObjectPtr Fexit(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
     return Qnil;
 }
 
+
+ALObjectPtr Freturn(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
+{
+    assert_size<1>(obj);
+    auto val = evl->eval(obj->i(0));
+    throw al_return(val);
+    return Qnil;
+}
+
 }

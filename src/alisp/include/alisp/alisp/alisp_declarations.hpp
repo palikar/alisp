@@ -56,6 +56,7 @@ DEFUN(let, "let");
 DEFUN(funcall, "funcall");
 DEFUN(backquote, "backquote");
 DEFUN(signal, "signal");
+DEFUN(return, "return");
 DEFUN(exit, "exit");
 
 // /*  ____       _       _   _              */
