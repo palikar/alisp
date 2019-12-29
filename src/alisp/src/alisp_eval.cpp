@@ -46,19 +46,12 @@ void Evaluator::handle_argument_bindings(ALObjectPtr params, ALObjectPtr args)
 
     if (args->length() == 0 && params->length() == 0 ) { return; }
 
-    auto eval_args =
-        [&](){
-            if constexpr (evaluation) {
-                return eval_transform(this, args);
-            } else {
-                return args;
-            }
-        }();
 
-
-
+    auto eval_args = args;
+    
     auto next_argument = std::begin(eval_args->children());
     auto next_param = std::begin(params->children());
+
 
     auto end_param = std::end(params->children());
 
@@ -165,9 +158,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
                   return eval(apply_function(func, splice(obj, 1)));
 
               } else {
-                  env::detail::FunctionCall fc{env};
                   return eval_function(func, splice(obj, 1));
-
               }
 
 
@@ -192,7 +183,9 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 ALObjectPtr Evaluator::eval_function(ALObjectPtr func, ALObjectPtr args)
 {
     auto[params, body] = func->get_function();
-    handle_argument_bindings(params, args);
+    auto eval_args = eval_transform(this, args);
+    env::detail::FunctionCall fc{env};
+    handle_argument_bindings(params, eval_args);
     return eval_list(this, body, 0);
 }
 

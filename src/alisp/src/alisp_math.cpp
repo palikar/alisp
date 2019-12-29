@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_env.hpp"
@@ -185,6 +186,36 @@ ALObjectPtr Fneq(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 
     if (one->to_real() != two->to_real()) return Qt;
     else return Qnil;
+}
+
+
+
+ALObjectPtr Fmod(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
+{
+    assert_size<2>(obj);
+    
+    const auto one = evl->eval(obj->i(0));
+    const auto two = evl->eval(obj->i(1));
+
+    assert_int(one);
+    assert_int(two);
+
+    auto res = one->to_int() % two->to_int();
+
+    return make_object(res);
+}
+
+ALObjectPtr Fpow(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
+{
+    assert_size<2>(obj);
+    
+    const auto one = evl->eval(obj->i(0));
+    const auto two = evl->eval(obj->i(1));
+
+    assert_number(one);
+    assert_number(two);
+
+    return make_object(std::pow(one->to_real(), two->to_real()));
 }
 
 

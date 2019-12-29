@@ -136,6 +136,8 @@ DEFUN(lt, "<");
 DEFUN(leq, "<=");
 DEFUN(eq, "==");
 DEFUN(neq, "!=");
+DEFUN(mod, "mod");
+DEFUN(pow, "pow");
 
 DEFUN(leftshift, "<<");
 DEFUN(rightshift, ">>");

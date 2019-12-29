@@ -139,7 +139,7 @@ ALObjectPtr Fremove(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 }
 
 
-ALObjectPtr Frange(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval)
+ALObjectPtr Frange(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<2>(obj);
 
