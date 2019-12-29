@@ -301,6 +301,41 @@ inline std::ostream& operator<<(std::ostream& os, const ALObject& t_obj)
     return os;
 }
 
+inline std::string dump(ALObjectPtr obj)
+{
+    std::ostringstream str;
+
+    switch(obj->type())
+    {
+      case ALObjectType::INT_VALUE:
+          str << obj->to_int() << " ";
+          break;
+
+      case ALObjectType::REAL_VALUE:
+          str << obj->to_real() << " ";
+          break;
+
+      case ALObjectType::STRING_VALUE:
+          str << "\"" << obj->to_string() << "\"" << " ";
+          break;
+
+      case ALObjectType::SYMBOL:
+          str << obj->to_string() << " ";
+          break;
+
+      case ALObjectType::LIST:
+          str << "(";
+          for (auto ob : obj->children())
+          {
+              str << dump(ob);
+          }
+          str.seekp(-1, std::ios_base::end);
+          str << ") ";
+          break;
+    }
+
+    return str.str();
+}
 
 
 namespace parser
