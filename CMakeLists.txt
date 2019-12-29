@@ -7,6 +7,7 @@ project(alisp LANGUAGES CXX)
 include(cmake/safeguards.cmake)
 
 include(GNUInstallDirs)
+include(FindUnixCommands)
 
 
 #######################################################################
@@ -367,20 +368,32 @@ if (RUN_PERFORMANCE_TESTS)
     file(GLOB PERFORMANCE_TESTS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/performance_tests/ ${CMAKE_CURRENT_SOURCE_DIR}/performance_tests/*.al)
     list(SORT PERFORMANCE_TESTS)
 
-    
+    set(PERFORMANCE_TESTS_FILES "")
+
     foreach(filename ${PERFORMANCE_TESTS})
         message(STATUS "Adding performance test ${filename}")
-        add_test(NAME performance.${filename}
-            COMMAND /usr/bin/time ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp ${CMAKE_CURRENT_SOURCE_DIR}/performance_tests/${filename} > performance.${filename}.out
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            )        
-        list(APPEND TESTS performance.${filename})
-    endforeach()
-    
 
-    set_property(TEST ${TESTS}
-        PROPERTY ENVIRONMENT
-        )
+        add_test(NAME performance.${filename}
+            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp ${CMAKE_CURRENT_SOURCE_DIR}/performance_tests/${filename}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            )
+        
+        add_custom_command(
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/performance.${filename}.out
+            COMMAND time -o ${CMAKE_CURRENT_BINARY_DIR}/performance.${filename}.out ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp ${CMAKE_CURRENT_SOURCE_DIR}/performance_tests/${filename}
+            VERBATIM
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            )
+        
+        list(APPEND PERFORMANCE_TESTS_FILES ${CMAKE_CURRENT_BINARY_DIR}/performance.${filename}.out)
+        list(APPEND TESTS performance.${filename})        
+    endforeach()    
+
+    
+    add_custom_target(performance_check DEPENDS alisp alisp_language_test
+        ${PERFORMANCE_TESTS_FILES})
+    
+    # set_property(TEST ${TESTS} PROPERTY ENVIRONMENT)
 
     
 endif()

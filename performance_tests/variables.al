@@ -7,3 +7,4 @@
 
 (defvar n 100000)
 (variables-test n)
+(println "Variables")
