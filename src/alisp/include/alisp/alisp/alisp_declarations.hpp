@@ -90,6 +90,7 @@ DEFUN(push, "push");
 DEFUN(delete, "delete");
 DEFUN(remove, "remove");
 DEFUN(nth, "nth");
+DEFUN(range, "range");
 
 
 /*  ____               _ _           _             */

@@ -138,4 +138,24 @@ ALObjectPtr Fremove(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     return make_object(new_children);
 }
 
+
+ALObjectPtr Frange(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval)
+{
+    assert_size<2>(obj);
+
+    auto start = eval->eval(obj->i(0));
+    auto end = eval->eval(obj->i(1));
+
+    assert_int(start);
+    assert_int(end);
+
+    ALObject::list_type nums;
+    for (auto i = start->to_int(); i < end->to_int(); ++i) {
+        nums.push_back(make_int(i));
+    }
+    
+    return make_object(nums);
+}
+
+
 }

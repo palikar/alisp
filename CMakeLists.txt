@@ -34,6 +34,7 @@ option(DEBUG_LOGGING "Enabling debug logging" FALSE)
 option(BUILD_EXAMPLES "Enable targets for running the example scripts" FALSE)
 option(MANUAL_MEMORY "Use raw pointers instead of smart ones" FALSE)
 option(VALGRIND_CHECKS "Enable Valgrind tools to perform checks on the application " FALSE)
+option(RUN_PERFORMANCE_TESTS "Build support for the performance tests" FALSE)
 
 
 #######################################################################
@@ -393,9 +394,6 @@ if (RUN_PERFORMANCE_TESTS)
     add_custom_target(performance_check DEPENDS alisp alisp_language_test
         ${PERFORMANCE_TESTS_FILES})
     
-    # set_property(TEST ${TESTS} PROPERTY ENVIRONMENT)
-
-    
 endif()
 
 
@@ -421,6 +419,7 @@ message("Elf Hashing:      \t ${ELF_HASHING}")
 message("Debug Logging:    \t ${DEBUG_LOGGING}")
 message("Build exampls:    \t ${BUILD_EXAMPLES}")
 message("Manual Memory:    \t ${MANUAL_MEMORY}")
+message("Performance tests:\t ${RUN_PERFORMANCE_TESTS}")
 message("------------------------------------------")
 message("Version:          \t ${AL_VERSION}")
 message("########################################")
