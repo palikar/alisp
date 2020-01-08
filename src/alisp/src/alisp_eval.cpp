@@ -158,7 +158,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
                   return eval(apply_function(func, splice(obj, 1)));
 
               } else {
-                  return eval_function(func, splice(obj, 1));
+                  return eval_function(func, splice_temp(obj, 1));
               }
 
 

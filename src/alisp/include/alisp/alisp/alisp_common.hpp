@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "alisp/utility/meta.hpp"
+#include "alisp/utility/vector_view.hpp"
 
 namespace alisp
 {
@@ -75,11 +76,12 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
   public:
 
     using list_type = std::vector<ALObjectPtr>;
+    using view_type = utility::vector_view<ALObjectPtr>;
     using int_type = int64_t;
     using real_type = double;
     using string_type = std::string;
 
-    using data_type = std::variant<int_type, real_type, string_type, list_type>;
+    using data_type = std::variant<int_type, real_type, string_type, list_type, view_type>;
 
   private:
 
@@ -119,7 +121,9 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     ALObject(real_type value) : m_data(value), m_type(ALObjectType::REAL_VALUE){}
     ALObject(int_type value) : m_data(value), m_type(ALObjectType::INT_VALUE){}
     ALObject(string_type value, bool symbol=false) : m_data(value), m_type(symbol ? ALObjectType::SYMBOL : ALObjectType::STRING_VALUE){}
+
     ALObject(list_type value) : m_data(std::move(value)), m_type(ALObjectType::LIST){}
+    ALObject(list_type::iterator value_1, list_type::iterator value_2) : m_data(view_type(value_1, value_2)), m_type(ALObjectType::LIST){}
 
     ALObjectType type() const {return m_type;}
     bool is_int() const { return m_type == ALObjectType::INT_VALUE; }
@@ -129,12 +133,20 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     bool is_sym() const { return m_type == ALObjectType::SYMBOL; }
 
     ALObjectPtr i(const size_t index){
+        if (auto ch = std::get_if<view_type>(&m_data); ch) {
+            return (*ch)[index];
+        }
         return children()[index];
     }
     auto length() noexcept {
+        if (auto ch = std::get_if<view_type>(&m_data); ch) {
+            return (*ch).size();
+        }
+
         return visit_or<list_type>( [](const auto& vec){ return std::size(vec); },
                                     [](){ return list_type::size_type(0); });
     }
+
     list_type& children() {
         check<list_type>();
         return std::get<list_type>(m_data);
@@ -177,6 +189,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         m_data = std::move(val);
     }
     void add(ALObjectPtr new_child){
+
         children().push_back(new_child);
     }
 
@@ -197,11 +210,11 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         else {
             return this;
         }
-        
+
     }
 
     auto get_function(){ return std::pair(i(0), i(1)); }
-    
+
     //     7    6    5    4    3    2   1     0
     //   0000 0000 0000 0000 0000 0000 0000 0000
     //   0000 0000 0000 0000 0000 0000 0000 0001 - BIND_TYPE
@@ -213,72 +226,73 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     //   0000 0000 0000 0000 1000 0000 0000 0000 - IS_MACRO
     //   0000 0000 0000 0001 0000 0000 0000 0000 - CONST
     //   0000 0000 0000 0010 0000 0000 0000 0000 - CHAR
+    //   0000 0000 0000 0100 0000 0000 0000 0000 - TEMP_OBJECT
 
-        struct AlObjectFlags
-        {
-            constexpr static std::uint32_t BIND_TYPE = 0x00000001;
-            constexpr static std::uint32_t TYPE =      0x0000000E;
-            constexpr static std::uint32_t LOC =       0x00000FF0;
-            constexpr static std::uint32_t PRIME =     0x00002000;
-            constexpr static std::uint32_t FUN =       0x00004000;
-            constexpr static std::uint32_t MACRO =     0x00008000;
-            constexpr static std::uint32_t CONST =     0x00010000;
-            constexpr static std::uint32_t CHAR =      0x00020000;
-        };
+    struct AlObjectFlags
+    {
+        constexpr static std::uint32_t BIND_TYPE = 0x00000001;
+        constexpr static std::uint32_t TYPE =      0x0000000E;
+        constexpr static std::uint32_t LOC =       0x00000FF0;
+        constexpr static std::uint32_t PRIME =     0x00002000;
+        constexpr static std::uint32_t FUN =       0x00004000;
+        constexpr static std::uint32_t MACRO =     0x00008000;
+        constexpr static std::uint32_t CONST =     0x00010000;
+        constexpr static std::uint32_t CHAR =      0x00020000;
+    };
 
-        void set_function_flag() { m_flags |= AlObjectFlags::FUN; }
-        void set_prime_flag() { m_flags |= AlObjectFlags::PRIME; }
-        void set_macro_flag() { m_flags |= AlObjectFlags::MACRO; }
-        void set_const_flag() { m_flags |= AlObjectFlags::CONST; }
-        void set_char_flag() { m_flags |= AlObjectFlags::CHAR; }
+    void set_function_flag() { m_flags |= AlObjectFlags::FUN; }
+    void set_prime_flag() { m_flags |= AlObjectFlags::PRIME; }
+    void set_macro_flag() { m_flags |= AlObjectFlags::MACRO; }
+    void set_const_flag() { m_flags |= AlObjectFlags::CONST; }
+    void set_char_flag() { m_flags |= AlObjectFlags::CHAR; }
 
-        void reset_function_flag() { m_flags &= ~AlObjectFlags::FUN; }
-        void reset_prime_flag() { m_flags &= ~AlObjectFlags::PRIME; }
-        void reset_macro_flag() { m_flags &= ~AlObjectFlags::MACRO; }
-        void reset_const_flag() { m_flags &= ~AlObjectFlags::CONST; }
-        void reset_char_flag() { m_flags &= ~AlObjectFlags::CHAR; }
+    void reset_function_flag() { m_flags &= ~AlObjectFlags::FUN; }
+    void reset_prime_flag() { m_flags &= ~AlObjectFlags::PRIME; }
+    void reset_macro_flag() { m_flags &= ~AlObjectFlags::MACRO; }
+    void reset_const_flag() { m_flags &= ~AlObjectFlags::CONST; }
+    void reset_char_flag() { m_flags &= ~AlObjectFlags::CHAR; }
 
-        bool check_function_flag() const { return (m_flags & AlObjectFlags::FUN) > 0; }
-        bool check_prime_flag()    const { return (m_flags & AlObjectFlags::PRIME) > 0; }
-        bool check_macro_flag()    const { return (m_flags & AlObjectFlags::MACRO) > 0; }
-        bool check_const_flag()    const { return (m_flags & AlObjectFlags::CONST) > 0; }
-        bool check_char_flag()     const { return (m_flags & AlObjectFlags::CHAR) > 0; }
+    bool check_function_flag() const { return (m_flags & AlObjectFlags::FUN) > 0; }
+    bool check_prime_flag()    const { return (m_flags & AlObjectFlags::PRIME) > 0; }
+    bool check_macro_flag()    const { return (m_flags & AlObjectFlags::MACRO) > 0; }
+    bool check_const_flag()    const { return (m_flags & AlObjectFlags::CONST) > 0; }
+    bool check_char_flag()     const { return (m_flags & AlObjectFlags::CHAR) > 0; }
 
-        void set_location(std::uint_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
-        auto get_location() { return ((m_flags & AlObjectFlags::LOC) >> 4);}
+    void set_location(std::uint_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
+    auto get_location() { return ((m_flags & AlObjectFlags::LOC) >> 4);}
 
-        auto begin() { return std::begin(children()); }
-        auto end() { return std::end(children()); }
-        auto cbegin() const { return std::cbegin(children()); }
-        auto cend() const { return std::cend(children()); }
+    auto begin() { return std::begin(children()); }
+    auto end() { return std::end(children()); }
+    auto cbegin() const { return std::cbegin(children()); }
+    auto cend() const { return std::cend(children()); }
 
-        std::string pretty_print() const {
-            std::ostringstream oss;
-            oss << "(ALObject<" << alobject_type_to_string(type()) << "> ";
-            switch (type()) {
-              case ALObjectType::INT_VALUE :
-                  oss << to_int() << " <#o" << std::oct << to_int() << " " << "#x" << std::hex << to_int() << std::dec;
-                  if (check_char_flag())  {oss << " ?" <<  char(to_int()); }
-                  oss << ">";
-                  break;
-              case ALObjectType::REAL_VALUE :
-                  oss << to_real();
-                  break;
-              case ALObjectType::SYMBOL:
-                  oss << to_string() ;
-                  break;
-              case ALObjectType::STRING_VALUE :
-                  oss << '\"' << to_string() << '\"' ;
-                  break;
-              case ALObjectType::LIST :
-                  if (check_prime_flag()) oss << "*prime*";
-                  else if (check_macro_flag()) oss << "*macro*";
-                  else if (check_function_flag()) oss << "*func*";
-                  break;
-            }
+    std::string pretty_print() const {
+        std::ostringstream oss;
+        oss << "(ALObject<" << alobject_type_to_string(type()) << "> ";
+        switch (type()) {
+          case ALObjectType::INT_VALUE :
+              oss << to_int() << " <#o" << std::oct << to_int() << " " << "#x" << std::hex << to_int() << std::dec;
+              if (check_char_flag())  {oss << " ?" <<  char(to_int()); }
+              oss << ">";
+              break;
+          case ALObjectType::REAL_VALUE :
+              oss << to_real();
+              break;
+          case ALObjectType::SYMBOL:
+              oss << to_string() ;
+              break;
+          case ALObjectType::STRING_VALUE :
+              oss << '\"' << to_string() << '\"' ;
+              break;
+          case ALObjectType::LIST :
+              if (check_prime_flag()) oss << "*prime*";
+              else if (check_macro_flag()) oss << "*macro*";
+              else if (check_function_flag()) oss << "*func*";
+              break;
+        }
 
-            if (check_const_flag()) { oss << "<c>";}
-            oss << ")";
+        if (check_const_flag()) { oss << "<c>";}
+        oss << ")";
 
             return oss.str();
 
@@ -288,7 +302,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
 
     data_type m_data;
     Prim::func_type m_prime = nullptr;
-     
+
     const ALObjectType m_type;
     std::uint_fast32_t m_flags = 0;
 
@@ -325,7 +339,7 @@ inline std::string dump(ALObjectPtr obj)
 
       case ALObjectType::LIST:
           str << "(";
-          for (auto ob : obj->children())
+          for (auto ob : *obj)
           {
               str << dump(ob);
           }

@@ -37,6 +37,22 @@ inline auto splice(ALObjectPtr t_obj, std::vector<ALObject>::difference_type sta
     return make_object(new_child);
 }
 
+inline auto splice_temp(ALObjectPtr t_obj, std::vector<ALObject>::difference_type start_index,
+                        std::vector<ALObject>::difference_type end_index = -1){
+
+    const auto size = static_cast<std::vector<ALObject>::difference_type>(std::size(t_obj->children()));
+    const auto end_move = end_index == -1 ? size : end_index;
+
+    auto begin_it = std::next(std::begin(t_obj->children()),  start_index);
+    auto end_it = std::next(std::begin(t_obj->children()), end_move);
+
+    if (begin_it > end_it) {
+        return  Qnil;
+    }
+    
+    return make_object(begin_it, end_it);
+}
+
 
 /*  _     _     _    */
 /* | |   (_)___| |_  */
