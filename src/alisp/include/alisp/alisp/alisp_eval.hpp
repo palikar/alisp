@@ -2,17 +2,11 @@
 
 #include "alisp/alisp/alisp_common.hpp"
 
-
-
-
-
 namespace alisp
 {
 
 namespace eval
 {
-
-
 
 class Evaluator
 {
@@ -38,9 +32,11 @@ class Evaluator
     
 };
 
-namespace detail {
+namespace detail
+{
 
-class EvalDepthTrack {
+class EvalDepthTrack
+{
   public:
 
     explicit EvalDepthTrack(Evaluator& t_eval) : m_eval(t_eval) {m_eval.new_evaluation();}
@@ -58,7 +54,6 @@ class EvalDepthTrack {
 
 }
 
-
-
 }
+
 }
