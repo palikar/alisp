@@ -37,6 +37,9 @@ option(VALGRIND_CHECKS "Enable Valgrind tools to perform checks on the applicati
 option(RUN_PERFORMANCE_TESTS "Build support for the performance tests" FALSE)
 
 
+set(TIME_CHECK_SAMPLES 10 CACHE STRING "How many time to perform the timing check") 
+
+
 #######################################################################
 #######################################################################
 
@@ -396,12 +399,12 @@ if (RUN_PERFORMANCE_TESTS)
 
 
     add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/timing_chekcs.txt
-        COMMAND seq 2 | xargs -I -- ctest | grep -i "total test time" | grep "\\d+\\.\\d+" -P -o | xargs -I {} -- echo -n {}, | tee -a ${CMAKE_CURRENT_BINARY_DIR}/timing_chekcs.txt > /dev/null
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/timing_checks.txt
+        COMMAND seq ${TIME_CHECK_SAMPLES} | xargs -I -- ctest | grep -i "total test time" | grep "\\d+\\.\\d+" -P -o | xargs -I {} -- echo -n {}, | tee -a ${CMAKE_CURRENT_BINARY_DIR}/timing_checks.txt > /dev/null
         VERBATIM
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-    add_custom_target(timing_check DEPENDS alisp ${CMAKE_CURRENT_BINARY_DIR}/timing_chekcs.txt)
+    add_custom_target(timing_check DEPENDS alisp ${CMAKE_CURRENT_BINARY_DIR}/timing_checks.txt)
 
     
 endif()

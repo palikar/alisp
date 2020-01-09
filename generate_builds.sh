@@ -2,6 +2,7 @@
 
 DIR=$(dirname "$(readlink -f "$0")")
 
+BUILDS_FILE=$1
 
 while IFS= read -r line; do
 
@@ -17,4 +18,4 @@ while IFS= read -r line; do
     make ${MAKE_ARGS} &> make_output.txt
     cd - &> /dev/null || exit
 
-done < ${DIR}/configs_builds.txt
+done < ${DIR}/${BUILDS_FILE}
