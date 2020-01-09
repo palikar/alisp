@@ -59,11 +59,13 @@ class Evaluator;
 class ALObject;
 #ifdef USE_MANUAL_MEMORY
 using ALObjectPtr = ALObject*;
+static constexpr bool USING_SHARED = false;
 #else
 using ALObjectPtr = std::shared_ptr<ALObject>;
+static constexpr bool USING_SHARED = true;
 #endif
 
-static constexpr bool USING_SHARED = utility::is_shared_ptr_v<ALObjectPtr>;
+
 
 struct Prim
 {
@@ -216,8 +218,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
 
         if constexpr (USING_SHARED) {
             return shared_from_this();
-        }
-        else {
+        } else {
             return this;
         }
 
@@ -350,6 +351,12 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
 
     const ALObjectType m_type;
     std::uint_fast32_t m_flags = 0;
+
+    
+#ifdef USE_MANUAL_MEMORY
+    ALObjectPtr shared_from_this() { return this; }
+#endif
+
 
 };
 

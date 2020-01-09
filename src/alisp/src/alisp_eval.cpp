@@ -2,6 +2,7 @@
 #include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_env.hpp"
 #include "alisp/alisp/alisp_exception.hpp"
+#include "alisp/alisp/alisp_factory.hpp"
 
 #include "alisp/utility.hpp"
 

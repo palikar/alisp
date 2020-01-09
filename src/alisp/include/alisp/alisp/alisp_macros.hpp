@@ -34,4 +34,4 @@
 
 #define STACK_ALLOC_OBJECT(NAME, PTR, ...)                              \
     ALObject NAME(__VA_ARGS__);                                         \
-    auto PTR = std::shared_ptr<ALObject>(&eval_obj, [](ALObject *) {})
+    auto PTR = ::alisp::detail::ALObjectHelper::init_ptr_temp(&NAME)

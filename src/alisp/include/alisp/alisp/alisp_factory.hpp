@@ -30,7 +30,7 @@ namespace detail
 struct ALObjectHelper
 {
 
-  private:
+  public:
 
     template<typename T>
     static auto init_ptr(T && val) {
@@ -40,6 +40,17 @@ struct ALObjectHelper
             return val;
         }
     }
+
+    
+    template<typename T>
+    static auto init_ptr_temp(T && val) {
+        if constexpr (USING_SHARED){
+            return std::shared_ptr<ALObject>(val, [](ALObject *) {});
+        } else {
+            return val;
+        }
+    }
+
 
     template<typename T>
     static auto allocate_ptr(T &&) {

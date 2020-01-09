@@ -1,0 +1,4 @@
+time_build_r_mm|-DCMAKE_BUILD_TYPE=Release -DMANUAL_MEMORY=ON|-j4 test
+time_build_d_mm|-DCMAKE_BUILD_TYPE=Debug -DMANUAL_MEMORY=ON|-j4 test
+time_build_r_am|-DCMAKE_BUILD_TYPE=Release -DMANUAL_MEMORY=OFF|-j4 test
+time_build_d_am|-DCMAKE_BUILD_TYPE=Debug -DMANUAL_MEMORY=OFF|-j4 test

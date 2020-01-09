@@ -375,13 +375,13 @@ if (RUN_PERFORMANCE_TESTS)
         message(STATUS "Adding performance test ${filename}")
 
         add_test(NAME performance.${filename}
-            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp ${CMAKE_CURRENT_SOURCE_DIR}/performance_tests/${filename}
+            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp ${CMAKE_CURRENT_SOURCE_DIR}/performance_tests/${filename} > /dev/null
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             )
         
         add_custom_command(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/performance.${filename}.out
-            COMMAND time -o ${CMAKE_CURRENT_BINARY_DIR}/performance.${filename}.out ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp ${CMAKE_CURRENT_SOURCE_DIR}/performance_tests/${filename}
+            COMMAND time -o ${CMAKE_CURRENT_BINARY_DIR}/performance.${filename}.out ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp ${CMAKE_CURRENT_SOURCE_DIR}/performance_tests/${filename} > /dev/null
             VERBATIM
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             )
@@ -393,6 +393,16 @@ if (RUN_PERFORMANCE_TESTS)
     
     add_custom_target(performance_check DEPENDS alisp alisp_language_test
         ${PERFORMANCE_TESTS_FILES})
+
+
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/timing_chekcs.txt
+        COMMAND seq 2 | xargs -I -- ctest | grep -i "total test time" | grep "\\d+\\.\\d+" -P -o | xargs -I {} -- echo -n {}, | tee -a ${CMAKE_CURRENT_BINARY_DIR}/timing_chekcs.txt > /dev/null
+        VERBATIM
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+    add_custom_target(timing_check DEPENDS alisp ${CMAKE_CURRENT_BINARY_DIR}/timing_chekcs.txt)
+
     
 endif()
 
