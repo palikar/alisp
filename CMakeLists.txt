@@ -400,7 +400,7 @@ if (RUN_PERFORMANCE_TESTS)
 
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/timing_checks.txt
-        COMMAND seq ${TIME_CHECK_SAMPLES} | xargs -I -- ctest | grep -i "total test time" | grep "\\d+\\.\\d+" -P -o | xargs -I {} -- echo -n {}, | tee -a ${CMAKE_CURRENT_BINARY_DIR}/timing_checks.txt > /dev/null
+        COMMAND seq ${TIME_CHECK_SAMPLES} | xargs -I -- ctest -R "performance\\." | grep -i "total test time" | grep "\\d+\\.\\d+" -P -o | xargs -I {} -- echo -n {}, | tee -a ${CMAKE_CURRENT_BINARY_DIR}/timing_checks.txt > /dev/null
         VERBATIM
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
