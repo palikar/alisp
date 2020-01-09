@@ -6,6 +6,9 @@
 #include <utility>
 
 
+#include "alisp/utility/vector_view.hpp"
+
+
 namespace alisp::utility
 {
 
@@ -20,5 +23,28 @@ constexpr auto slice(T && t_iterable,
     auto end_it = std::prev(std::end(t_iterable), t_end < 0 ? -t_end - 1 : size - t_end - 1);
     return std::make_pair(start_it, end_it);
 }
+
+template<typename T>
+auto slice_vec(std::vector<T>& t_vec,
+               typename std::iterator_traits<decltype(std::begin(t_vec))>::difference_type t_start = 0,
+               typename std::iterator_traits<decltype(std::begin(t_vec))>::difference_type t_end = -1)
+{
+    auto [beg, end] = slice(t_vec, t_start, t_end);
+    return std::vector<T>(beg, end);
+
+}
+
+
+template<typename T>
+auto slice_view(std::vector<T>& t_vec,
+               typename std::iterator_traits<decltype(std::begin(t_vec))>::difference_type t_start = 0,
+               typename std::iterator_traits<decltype(std::begin(t_vec))>::difference_type t_end = -1)
+{
+    auto [beg, end] = slice(t_vec, t_start, t_end);
+    return vector_view<T>(beg, end);
+
+}
+
+
 
 }

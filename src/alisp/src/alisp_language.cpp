@@ -28,7 +28,7 @@ static ALObjectPtr handle_backquote_list(ALObjectPtr obj, eval::Evaluator* eval)
     ALObject::list_type new_elements;
 
 
-    for (auto el : obj->children()) {
+    for (auto el : *obj) {
 
         if (!plist(el)) {
             new_elements.push_back(el);
@@ -93,10 +93,10 @@ ALObjectPtr Flambda(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
     assert_min_size<1>(obj);
     assert_list(obj->i(0));
 
-    // auto new_lambda = make_object(obj->i(0), splice(obj, 1));
-    auto new_lambda = obj;
+    auto new_lambda = make_object(obj->i(0), splice(obj, 1));
+    // auto new_lambda = obj;
     new_lambda->set_function_flag();
-
+    
     return new_lambda;
 }
 
@@ -214,7 +214,7 @@ ALObjectPtr Fcond(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_list(obj);
 
-    for (auto condition : obj->children())
+    for (auto condition : *obj)
     {
         if (is_truthy(evl->eval(condition->i(0))))
         {

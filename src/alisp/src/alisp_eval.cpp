@@ -49,11 +49,11 @@ void Evaluator::handle_argument_bindings(ALObjectPtr params, ALObjectPtr args)
 
     auto eval_args = args;
     
-    auto next_argument = std::begin(eval_args->children());
-    auto next_param = std::begin(params->children());
+    auto next_argument = std::begin(*eval_args);
+    auto next_param = std::begin(*params);
 
 
-    auto end_param = std::end(params->children());
+    auto end_param = std::end(*params);
 
     auto arg_cnt = static_cast<ALObject::list_type::difference_type>(args->length());
 
@@ -150,15 +150,21 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
           try {
 
-              if (func->check_prime_flag()) {
+              if (func->check_prime_flag()) {                  
+
+                  // STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
+                  
                   return func->get_prime()(splice(obj, 1), &env, this);
               } else if (func->check_macro_flag()) {
                   env::detail::FunctionCall fc{env};
 
+                  // STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
+                  
                   return eval(apply_function(func, splice(obj, 1)));
-
               } else {
-                  return eval_function(func, splice_temp(obj, 1));
+                  // STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
+                  
+                  return eval_function(func, splice(obj, 1));
               }
 
 
@@ -209,9 +215,9 @@ ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
     {
         obj = eval(func);
     }
-
+    
     if (!obj->check_function_flag()) {
-        throw eval_error("Cannon apply a non function object.");
+        throw eval_error("Cannot apply a non function object.");
     }
 
     env::detail::FunctionCall fc{env};

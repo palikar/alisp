@@ -19,7 +19,7 @@ ALObjectPtr Fprint(ALObjectPtr t_obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_min_size<1>(t_obj);
 
-    for (auto child : t_obj->children())
+    for (auto child : *t_obj)
     {
         auto val = eval->eval(child);
         

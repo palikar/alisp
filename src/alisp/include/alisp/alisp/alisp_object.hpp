@@ -23,11 +23,11 @@ namespace alisp
 inline auto splice(ALObjectPtr t_obj, std::vector<ALObject>::difference_type start_index,
                    std::vector<ALObject>::difference_type end_index = -1){
 
-    const auto size = static_cast<std::vector<ALObject>::difference_type>(std::size(t_obj->children()));
+    const auto size = static_cast<std::vector<ALObject>::difference_type>(std::size(*t_obj));
     const auto end_move = end_index == -1 ? size : end_index;
 
-    auto begin_it = std::next(std::begin(t_obj->children()),  start_index);
-    auto end_it = std::next(std::begin(t_obj->children()), end_move);
+    auto begin_it = std::next(std::begin(*t_obj),  start_index);
+    auto end_it = std::next(std::begin(*t_obj), end_move);
 
     if (begin_it > end_it) {
         return  Qnil;
@@ -40,11 +40,11 @@ inline auto splice(ALObjectPtr t_obj, std::vector<ALObject>::difference_type sta
 inline auto splice_temp(ALObjectPtr t_obj, std::vector<ALObject>::difference_type start_index,
                         std::vector<ALObject>::difference_type end_index = -1){
 
-    const auto size = static_cast<std::vector<ALObject>::difference_type>(std::size(t_obj->children()));
+    const auto size = static_cast<std::vector<ALObject>::difference_type>(std::size(*t_obj));
     const auto end_move = end_index == -1 ? size : end_index;
 
-    auto begin_it = std::next(std::begin(t_obj->children()),  start_index);
-    auto end_it = std::next(std::begin(t_obj->children()), end_move);
+    auto begin_it = std::next(std::begin(*t_obj),  start_index);
+    auto end_it = std::next(std::begin(*t_obj), end_move);
 
     if (begin_it > end_it) {
         return  Qnil;
@@ -69,7 +69,7 @@ inline auto splice_temp(ALObjectPtr t_obj, std::vector<ALObject>::difference_typ
 
 
 inline ALObjectPtr eval_list (eval::Evaluator* evl, ALObjectPtr t_obj, size_t t_offset = 0) {
-    auto objects = t_obj->children();
+    auto& objects = *t_obj;
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
     auto start_it = std::next(std::begin(objects), hops);
     auto end_it = std::prev(std::end(objects));
@@ -84,7 +84,7 @@ inline ALObjectPtr eval_list (eval::Evaluator* evl, ALObjectPtr t_obj, size_t t_
 template<size_t N>
 inline ALObjectPtr eval_list_n (eval::Evaluator* evl, ALObjectPtr t_obj, size_t t_offset = 0) {
 
-    auto objects = t_obj->children();
+    auto& objects = *t_obj;
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
     constexpr auto return_hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(N);
 
@@ -118,7 +118,7 @@ inline ALObjectPtr eval_list_2 (eval::Evaluator* evl, ALObjectPtr t_obj, size_t 
 template<bool eval, typename Callable>
 inline auto apply (eval::Evaluator* evl, ALObjectPtr t_obj, Callable t_fun, size_t t_offset = 0){
 
-    auto objects = t_obj->children();
+    auto& objects = *t_obj;
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
 
     auto start_it = std::next(std::begin(objects), hops);
@@ -144,7 +144,7 @@ inline auto apply (eval::Evaluator* evl, ALObjectPtr t_obj, Callable t_fun, size
 template<bool eval, typename Callable, typename StartType>
 inline StartType reduce ([[maybe_unused]]eval::Evaluator* evl, ALObjectPtr t_obj, Callable && t_fun, StartType t_start, size_t t_offset = 0)
 {
-    auto objects = t_obj->children();
+    auto& objects = *t_obj;
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
 
     auto start_it = std::next(std::begin(objects), hops);
@@ -176,7 +176,7 @@ inline StartType reduce ([[maybe_unused]]eval::Evaluator* evl, ALObjectPtr t_obj
 
 inline ALObjectPtr eval_transform (eval::Evaluator* evl, ALObjectPtr t_obj, size_t t_offset = 0)
 {
-    auto objects = t_obj->children();
+    auto& objects = *t_obj;
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
     auto start_it = std::next(std::begin(objects), hops);
     auto end_it = std::end(objects);
@@ -220,7 +220,7 @@ inline bool is_truthy(ALObjectPtr obj)
 inline bool are_objects_numbers(ALObjectPtr obj)
 {
     if (!obj->is_list()) { return obj->is_int() && obj->is_real(); }
-    for (auto child : obj->children()) {
+    for (auto child : *obj) {
         if (!(child->is_int() || child->is_real())) return false;
     }
     return true;
@@ -229,7 +229,7 @@ inline bool are_objects_numbers(ALObjectPtr obj)
 inline bool are_objects_int(ALObjectPtr obj)
 {
     if (!obj->is_list()) { return obj->is_int(); }
-    for (auto child : obj->children()) {
+    for (auto child : *obj) {
         if (!child->is_int()) return false;
     }
     return true;
@@ -238,7 +238,7 @@ inline bool are_objects_int(ALObjectPtr obj)
 inline bool are_objects_real(ALObjectPtr obj)
 {
     if (!obj->is_list()) { return obj->is_real(); }
-    for (auto child : obj->children()) {
+    for (auto child : *obj) {
         if (!child->is_real()) return false;
     }
     return true;
@@ -247,7 +247,7 @@ inline bool are_objects_real(ALObjectPtr obj)
 inline bool are_objects_string(ALObjectPtr obj)
 {
     if (!obj->is_list()) { return obj->is_string(); }
-    for (auto child : obj->children()) {
+    for (auto child : *obj) {
         if (!child->is_string()) return false;
     }
     return true;
@@ -255,12 +255,12 @@ inline bool are_objects_string(ALObjectPtr obj)
 
 inline bool min_list_elements(ALObjectPtr obj, size_t t_element_cnt)
 {
-    return obj->is_list() && std::size(obj->children()) >= t_element_cnt;
+    return obj->is_list() && std::size(*obj) >= t_element_cnt;
 }
 
 inline bool max_list_elements(ALObjectPtr obj, size_t t_element_cnt)
 {
-    return obj->is_list() && std::size(obj->children()) <= t_element_cnt;
+    return obj->is_list() && std::size(*obj) <= t_element_cnt;
 }
 
 inline bool psym(ALObjectPtr obj)
@@ -340,8 +340,8 @@ inline bool equal(ALObjectPtr t_lhs, ALObjectPtr t_rhs);
 inline bool list_equal(ALObjectPtr t_lhs, ALObjectPtr t_rhs)
 {
 
-    auto& children_1 = t_lhs->children();
-    auto& children_2 = t_rhs->children();
+    auto& children_1 = *t_lhs;
+    auto& children_2 = *t_rhs;
 
     if (std::size(children_1) != std::size(children_2) ) { return false; }
 

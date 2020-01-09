@@ -100,7 +100,10 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     void check() const
     {
         if (!std::get_if<Type>(&m_data)) {
-            if constexpr (std::is_same_v<Type, list_type>) throw alobject_error("Not a list object.");
+            if constexpr (std::is_same_v<Type, list_type>) {
+                if (check_temp_flag()) return;
+                throw alobject_error("Not a list object.");
+            }
             if constexpr (std::is_same_v<Type, string_type>) throw alobject_error("Not a string object.");
             if constexpr (std::is_same_v<Type, real_type>) throw alobject_error("Not a real object.");
             if constexpr (std::is_same_v<Type, int_type>) throw alobject_error("Not a int object.");
@@ -123,7 +126,9 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     ALObject(string_type value, bool symbol=false) : m_data(value), m_type(symbol ? ALObjectType::SYMBOL : ALObjectType::STRING_VALUE){}
 
     ALObject(list_type value) : m_data(std::move(value)), m_type(ALObjectType::LIST){}
-    ALObject(list_type::iterator value_1, list_type::iterator value_2) : m_data(view_type(value_1, value_2)), m_type(ALObjectType::LIST){}
+
+    ALObject(view_type value) : m_data(std::move(value)), m_type(ALObjectType::LIST){set_temp_flag();}
+    ALObject(list_type::iterator value_1, list_type::iterator value_2) : m_data(view_type(value_1, value_2)), m_type(ALObjectType::LIST){set_temp_flag();}
 
     ALObjectType type() const {return m_type;}
     bool is_int() const { return m_type == ALObjectType::INT_VALUE; }
@@ -133,26 +138,31 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     bool is_sym() const { return m_type == ALObjectType::SYMBOL; }
 
     ALObjectPtr i(const size_t index){
-        if (auto ch = std::get_if<view_type>(&m_data); ch) {
-            return (*ch)[index];
+        if (check_temp_flag()) {
+            return std::get<view_type>(m_data)[index];
         }
         return children()[index];
     }
-    auto length() noexcept {
-        if (auto ch = std::get_if<view_type>(&m_data); ch) {
-            return (*ch).size();
+    ALObjectPtr operator[](const size_t index) { return i(index); }
+
+    auto length() const noexcept {
+        if (check_temp_flag()) {
+            return std::get<view_type>(m_data).size();
         }
 
         return visit_or<list_type>( [](const auto& vec){ return std::size(vec); },
                                     [](){ return list_type::size_type(0); });
     }
+    auto size() const {return length();}
 
     list_type& children() {
         check<list_type>();
+        if (check_temp_flag()) throw alobject_error("Accesing the children elements of a temporary object.");
         return std::get<list_type>(m_data);
     }
     const list_type& children() const {
         check<list_type>();
+        if (check_temp_flag()) throw alobject_error("Accesing the children elements of a temporary object.");
         return std::get<list_type>(m_data);
     }
 
@@ -238,33 +248,68 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         constexpr static std::uint32_t MACRO =     0x00008000;
         constexpr static std::uint32_t CONST =     0x00010000;
         constexpr static std::uint32_t CHAR =      0x00020000;
+        constexpr static std::uint32_t TEMP =      0x00040000;
     };
 
-    void set_function_flag() { m_flags |= AlObjectFlags::FUN; }
-    void set_prime_flag() { m_flags |= AlObjectFlags::PRIME; }
-    void set_macro_flag() { m_flags |= AlObjectFlags::MACRO; }
-    void set_const_flag() { m_flags |= AlObjectFlags::CONST; }
-    void set_char_flag() { m_flags |= AlObjectFlags::CHAR; }
+    inline void set_function_flag() { m_flags |= AlObjectFlags::FUN;   }
+    inline void set_prime_flag()    { m_flags |= AlObjectFlags::PRIME; }
+    inline void set_macro_flag()    { m_flags |= AlObjectFlags::MACRO; }
+    inline void set_const_flag()    { m_flags |= AlObjectFlags::CONST; }
+    inline void set_char_flag()     { m_flags |= AlObjectFlags::CHAR;  }
+    inline void set_temp_flag()     { m_flags |= AlObjectFlags::TEMP;  }
 
-    void reset_function_flag() { m_flags &= ~AlObjectFlags::FUN; }
-    void reset_prime_flag() { m_flags &= ~AlObjectFlags::PRIME; }
-    void reset_macro_flag() { m_flags &= ~AlObjectFlags::MACRO; }
-    void reset_const_flag() { m_flags &= ~AlObjectFlags::CONST; }
-    void reset_char_flag() { m_flags &= ~AlObjectFlags::CHAR; }
+    inline void reset_function_flag() { m_flags &= ~AlObjectFlags::FUN;   }
+    inline void reset_prime_flag()    { m_flags &= ~AlObjectFlags::PRIME; }
+    inline void reset_macro_flag()    { m_flags &= ~AlObjectFlags::MACRO; }
+    inline void reset_const_flag()    { m_flags &= ~AlObjectFlags::CONST; }
+    inline void reset_char_flag()     { m_flags &= ~AlObjectFlags::CHAR;  }
+    inline void reset_temp_flag()     { m_flags &= ~AlObjectFlags::TEMP;  }
 
-    bool check_function_flag() const { return (m_flags & AlObjectFlags::FUN) > 0; }
-    bool check_prime_flag()    const { return (m_flags & AlObjectFlags::PRIME) > 0; }
-    bool check_macro_flag()    const { return (m_flags & AlObjectFlags::MACRO) > 0; }
-    bool check_const_flag()    const { return (m_flags & AlObjectFlags::CONST) > 0; }
-    bool check_char_flag()     const { return (m_flags & AlObjectFlags::CHAR) > 0; }
+    inline bool check_function_flag() const { return (m_flags & AlObjectFlags::FUN) > 0;   }
+    inline bool check_prime_flag()    const { return (m_flags & AlObjectFlags::PRIME) > 0; }
+    inline bool check_macro_flag()    const { return (m_flags & AlObjectFlags::MACRO) > 0; }
+    inline bool check_const_flag()    const { return (m_flags & AlObjectFlags::CONST) > 0; }
+    inline bool check_char_flag()     const { return (m_flags & AlObjectFlags::CHAR) > 0;  }
+    inline bool check_temp_flag()     const { return (m_flags & AlObjectFlags::TEMP) > 0;  }
 
     void set_location(std::uint_fast16_t loc) { m_flags &= (~AlObjectFlags::LOC) | (loc << 4); }
     auto get_location() { return ((m_flags & AlObjectFlags::LOC) >> 4);}
 
-    auto begin() { return std::begin(children()); }
-    auto end() { return std::end(children()); }
-    auto cbegin() const { return std::cbegin(children()); }
-    auto cend() const { return std::cend(children()); }
+    auto begin()
+    {
+        if (check_temp_flag()) {
+            return std::get<view_type>(m_data).begin();
+        }        
+        return std::begin(children());
+    }
+
+    auto end()
+    {
+        if (check_temp_flag()) {
+            return std::get<view_type>(m_data).end();
+        }
+        return std::end(children());
+    }
+
+    auto cbegin() const
+    {
+
+        if (check_temp_flag()) {
+            return std::get<view_type>(m_data).begin();
+        }
+
+        return std::cbegin(children());
+
+    }
+
+    auto cend() const
+    {
+        if (check_temp_flag()) {
+            return std::get<view_type>(m_data).end();
+        }
+        return std::cend(children());
+
+    }
 
     std::string pretty_print() const {
         std::ostringstream oss;
@@ -294,9 +339,9 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         if (check_const_flag()) { oss << "<c>";}
         oss << ")";
 
-            return oss.str();
+        return oss.str();
 
-        }
+    }
 
   private:
 

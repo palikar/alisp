@@ -29,4 +29,9 @@
 
 
 #define REAL_APP_FUNCTION(NAME, FUN) APP_FUNCTION_(NAME, FUN, real)
+
 #define INT_APP_FUNCTION(NAME, FUN) APP_FUNCTION_(NAME, FUN, int)
+
+#define STACK_ALLOC_OBJECT(NAME, PTR, ...)                              \
+    ALObject NAME(__VA_ARGS__);                                         \
+    auto PTR = std::shared_ptr<ALObject>(&eval_obj, [](ALObject *) {})
