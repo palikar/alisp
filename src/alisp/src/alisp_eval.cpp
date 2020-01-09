@@ -152,19 +152,19 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
               if (func->check_prime_flag()) {                  
 
-                  // STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
+                  STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
                   
-                  return func->get_prime()(splice(obj, 1), &env, this);
+                  return func->get_prime()(eval_ptr, &env, this);
               } else if (func->check_macro_flag()) {
                   env::detail::FunctionCall fc{env};
 
-                  // STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
+                  STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
                   
-                  return eval(apply_function(func, splice(obj, 1)));
+                  return eval(apply_function(func, eval_ptr));
               } else {
-                  // STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
+                  STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
                   
-                  return eval_function(func, splice(obj, 1));
+                  return eval_function(func, eval_ptr);
               }
 
 
