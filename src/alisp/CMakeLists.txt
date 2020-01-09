@@ -10,7 +10,8 @@ add_library(alisp_language
     src/alisp_math.cpp
     src/alisp_predicates.cpp
     src/alisp_printing.cpp
-
+    src/alisp_engine.cpp
+    
     )
 
 

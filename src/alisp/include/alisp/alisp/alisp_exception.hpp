@@ -179,7 +179,6 @@ struct al_return  : public al_exception
 /* | |_| | |_| | | */
 /*  \___/ \__|_|_| */
 
-
 template<bool should_exit = false>
 void handle_errors_lippincott(){
 

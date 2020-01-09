@@ -16,15 +16,12 @@
 #include "alisp/alisp/alisp_parser.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_env.hpp"
-
-
-
-
+#include "alisp/alisp/alisp_engine.hpp"
 
 
 
 void eval_statement(std::string& command);
-void interactive();
+void interactive(alisp::LanguageEngine& alisp_engine);
 void eval_file(const std::filesystem::path& t_path);
 
 bool env_bool(const char* t_name)
@@ -135,10 +132,11 @@ int main(int argc, char *argv[])
     // std::cout << "Interactive:" << opts.interactive << "\n";
     // std::cout << "Help:" << opts.show_help << "\n";
     // std::cout << "Version:" << opts.version << "\n";
-
     // for (auto& it : opts.args) {
     //     std::cout << "arg: "  << it << "\n";
     // }
+
+    alisp::LanguageEngine alisp_engine;
 
     
     if(!opts.input.empty()){
@@ -148,7 +146,7 @@ int main(int argc, char *argv[])
             exit(1);
         }
         
-        eval_file(file_path);
+        alisp_engine.eval_file(file_path);
         if (opts.interactive) { interactive(); }
 
         exit(0);
@@ -156,22 +154,17 @@ int main(int argc, char *argv[])
 
 
     if(!opts.eval.empty()){
-        eval_statement(opts.eval);
+        alisp_engine.eval_statement(opts.eval);
         exit(0);;
     }
 
-    interactive();
+    interactive(alisp_engine);
 
     return 0;
 }
 
 
-
-alisp::env::Environment env;
-alisp::eval::Evaluator eval(env);
-alisp::parser::ALParser<alisp::env::Environment> pars(env);
-
-void interactive()
+void interactive(alisp::LanguageEngine& alisp_engine)
 {
 
     std::cout << alisp::get_build_info();
@@ -179,61 +172,7 @@ void interactive()
 
     while(true){
         auto command = alisp::prompt::repl(">>> ");
-        eval_statement(command);
+        alisp_engine.eval_statement(command);
 
     }
-}
-
-
-void eval_statement(std::string& command)
-{
-    try {
-        auto parse_res = pars.parse(command, "__EVAL__");
-
-        for (auto p : parse_res ) {
-            if (opts.parse_debug) std::cout << "DEUBG[PARSER]: " << alisp::dump(p) << "\n";
-
-            auto eval_res = eval.eval(p);
-            if (opts.eval_debug) std::cout << "DEUBG[EVAL]: " << alisp::dump(eval_res) << "\n";
-            std::cout << *eval_res << "\n";
-        }
-        
-    }catch (...) {
-        alisp::handle_errors_lippincott();
-    }
-    
-}
-
-
-void eval_file(const std::filesystem::path& t_path)
-{
-
-
-    if (std::ifstream ifs{ t_path, std::ios::binary }; ifs.good()) {
-        const auto file_size = ifs.seekg(0, std::ios_base::end).tellg();
-        ifs.seekg(0);
-        std::vector<char> data;
-        data.resize(static_cast<std::size_t>(file_size));
-        ifs.read(data.data(), file_size);
-
-
-        std::string command{ begin(data), end(data) };
-        try {
-            auto parse_res = pars.parse(command, std::filesystem::absolute(t_path));
-
-            for (auto p : parse_res ) {
-
-                if (opts.parse_debug) std::cout << "DEUBG[PARSER]: " << alisp::dump(p) << "\n";
-
-                auto eval_res = eval.eval(p);
-                if (opts.eval_debug) std::cout << "DEUBG[EVAL]: " << alisp::dump(eval_res) << "\n";
-
-            }
-        } catch (...) {
-            alisp::handle_errors_lippincott<true>();
-        }
-
-
-    }
-
 }
