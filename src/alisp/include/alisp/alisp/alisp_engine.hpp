@@ -19,6 +19,8 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_parser.hpp"
 
+#include "alisp/utility/files.hpp"
+
 
 namespace alisp
 {
@@ -49,7 +51,7 @@ class LanguageEngine
   private:
 
     env::Environment m_environment;
-    parser::ALParser<env::Environment> m_parser;
+    std::shared_ptr<parser::ALParser<env::Environment>> m_parser;
     eval::Evaluator m_evaluator;
 
     std::vector<EngineSettings> m_settings;
@@ -74,54 +76,6 @@ class LanguageEngine
 
   public:
 
-    static bool skip_bom(std::ifstream &infile)
-    {
-        size_t bytes_needed = 3;
-        char buffer[3];
-
-        memset(buffer, '\0', bytes_needed);
-
-        infile.read(buffer, static_cast<std::streamsize>(bytes_needed));
-
-        if ((buffer[0] == '\xef')
-            && (buffer[1] == '\xbb')
-            && (buffer[2] == '\xbf')) {
-
-            infile.seekg(3);
-            return true;
-        }
-
-        infile.seekg(0);
-
-        return false;
-    }
-
-    static std::string load_file(const std::string &t_filename)
-    {
-        std::ifstream infile(t_filename.c_str(), std::ios::in | std::ios::ate | std::ios::binary );
-
-        if (!infile.is_open()) {}
-
-        auto size = infile.tellg();
-        infile.seekg(0, std::ios::beg);
-
-        assert(size >= 0);
-
-        if (skip_bom(infile)) {
-            size-=3;
-            assert(size >= 0);
-        }
-
-        if (size == std::streampos(0))
-        {
-            return std::string();
-        } else {
-            std::vector<char> v(static_cast<size_t>(size));
-            infile.read(&v[0], static_cast<std::streamsize>(size));
-            return std::string(v.begin(), v.end());
-        }
-    }
-
     static bool env_bool(const char* t_name)
     {
         return getenv(t_name) != nullptr;
@@ -138,7 +92,8 @@ class LanguageEngine
 
 
     LanguageEngine(std::vector<EngineSettings> t_setting = {}) :
-        m_environment(), m_parser(m_environment), m_evaluator(m_environment),
+        m_environment(), m_parser(std::make_shared<parser::ALParser<env::Environment>>(m_environment)),
+        m_evaluator(m_environment, m_parser),
         m_settings(t_setting)
     {
         init_system();
@@ -164,7 +119,7 @@ class LanguageEngine
     void eval_file(const std::filesystem::path& t_path)
     {
         try {
-            auto file_content = load_file(t_path);
+            auto file_content = utility::load_file(t_path);
             do_eval(file_content, t_path);
         }catch (...) {
             handle_errors_lippincott<true>();

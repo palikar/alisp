@@ -32,7 +32,7 @@ ALObjectPtr Environment::find(const ALObjectPtr t_sym)
         
     if (g_prime_values.count(name)) { return g_prime_values.at(name) ;}
 
-    if (m_stack.root_scope().count(name)) { return m_stack.root_scope().at(name); };
+    if (m_active_module->root_scope().count(name)) { return m_active_module->root_scope().at(name); };
 
     throw environment_error("\tUnbounded Symbol: " + name);
 }
@@ -49,8 +49,8 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
         };
     }
         
-    if (m_stack.root_scope().count(name)) {
-        m_stack.root_scope().at(name) = t_value;
+    if (m_active_module->root_scope().count(name)) {
+        m_active_module->root_scope().at(name) = t_value;
         return;
     };
 
@@ -69,7 +69,7 @@ void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
 
 void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value)
 {
-    auto& scope = m_stack.root_scope();
+    auto& scope = m_active_module->root_scope();
     auto name = t_sym->to_string();
 
     if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name);}
@@ -81,7 +81,7 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value)
 void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body)
 {
         
-    auto& scope = m_stack.root_scope();
+    auto& scope = m_active_module->root_scope();
     auto name = t_sym->to_string();
 
     if (scope.count(name)) { throw environment_error("Function alredy exists: " + name);}
@@ -96,7 +96,7 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
 void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body)
 {
         
-    auto& scope = m_stack.root_scope();
+    auto& scope = m_active_module->root_scope();
     auto name = t_sym->to_string();
 
     if (scope.count(name)) { throw environment_error("Function alredy exists: " + name);}

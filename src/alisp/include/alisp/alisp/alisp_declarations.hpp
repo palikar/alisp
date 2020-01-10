@@ -16,8 +16,13 @@ namespace alisp
 /*  \____\___/|_| |_|___/\__\__,_|_| |_|\__|___/ */
                                              
 
-DEFVAR(Qt, "t");
-DEFVAR(Qnil, "nil");
+DEFVAR(Qt, Vt, "t",
+       make_object(ALObject::list_type{Qt}));
+DEFVAR(Qnil, Vnil, "nil",
+       make_object(ALObject::list_type{Qnil}));
+
+DEFVAR(Qmodpaths, Vmodpaths, "modpaths",
+       make_list(make_string("")));
 
 DEFSYM(Qoptional, "&optional");
 DEFSYM(Qrest, "&rest");
@@ -36,6 +41,7 @@ DEFSYM(Qcomma_at, ",@");
 // /*                   |___/             |___/                                                          */
 
 
+DEFUN(import, "import");
 DEFUN(defun, "defun");
 DEFUN(defmacro, "defmacro");
 DEFUN(defvar, "defvar");

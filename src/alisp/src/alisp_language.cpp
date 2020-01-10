@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <filesystem>
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_env.hpp"
@@ -54,6 +55,32 @@ static ALObjectPtr handle_backquote_list(ALObjectPtr obj, eval::Evaluator* eval)
     return make_object(new_elements);
 }
 
+}
+
+ALObjectPtr Fimport(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval)
+{
+    namespace fs = std::filesystem;
+    assert_size<1>(obj);
+
+    auto mod_name = eval->eval(obj->i(0));
+
+    assert_symbol(mod_name);
+
+    if (env->module_loaded(mod_name->to_string())) { return Qnil; }
+
+    env->define_module(mod_name);
+    
+    for (auto& path : *Vmodpaths) {
+        auto mod_file = fs::path(path->to_string()) / fs::path(mod_name->to_string());
+        if(!fs::exists(mod_file)) { continue; }
+
+        
+        
+
+        return Qt;
+    }
+
+    return Qnil;
 }
 
 ALObjectPtr Fdefvar(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval)
@@ -316,7 +343,6 @@ ALObjectPtr Fexit(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
     exit(static_cast<int>(val->to_int()));
     return Qnil;
 }
-
 
 ALObjectPtr Freturn(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {

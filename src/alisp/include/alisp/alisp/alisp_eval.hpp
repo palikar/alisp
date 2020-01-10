@@ -13,9 +13,12 @@ class Evaluator
   private:
     env::Environment &env;
     size_t m_eval_depth = 0;
+    std::shared_ptr<parser::ParserBase> m_parser;
 
   public:
-    Evaluator(env::Environment &env_);
+    Evaluator(env::Environment &env_, std::shared_ptr<parser::ParserBase> t_parser);
+
+    void eval_file(const std::string& t_file);
 
     ALObjectPtr eval(ALObjectPtr obj);
     ALObjectPtr eval_function(ALObjectPtr func, ALObjectPtr args);

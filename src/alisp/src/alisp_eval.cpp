@@ -23,7 +23,8 @@ void Evaluator::new_evaluation() {
 void Evaluator::end_evaluation() { --m_eval_depth; }
 
 
-Evaluator::Evaluator(env::Environment &env_) : env(env_) {}
+Evaluator::Evaluator(env::Environment &env_, std::shared_ptr<parser::ParserBase> t_parser)
+    : env(env_), m_parser(std::move(t_parser)) {}
 
 
 void Evaluator::put_argument(ALObjectPtr param, ALObjectPtr arg)
@@ -230,6 +231,22 @@ ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
 
 }
 
+void Evaluator::eval_file(const std::string& t_file)
+{
+    try {
+        auto file_content = utility::load_file(t_file);
+
+        // auto parse_result = (file_content, t_file);
+
+        // for (auto sexp : parse_result ) {
+        //     eval(sexp);
+        // }
+        
+    }catch (...) {
+        handle_errors_lippincott<true>();
+    }
+    
+}
 
 }
 

@@ -7,9 +7,9 @@
 #define DEFSYM(var, sym_name)                                           \
     inline auto var = env::Environment::g_global_symbol_table.insert({sym_name, make_symbol(sym_name)}).first->second
 
-#define DEFVAR(var, sym_name)                                           \
-    inline auto var = env::Environment::g_global_symbol_table.insert({sym_name, make_symbol(sym_name)}).first->second; \
-    inline auto V_ ## var = env::Environment::g_prime_values.insert({sym_name, make_object(ALObject::list_type{var})})
+#define DEFVAR(sym, var, sym_name, ...)                                 \
+    inline auto sym = env::Environment::g_global_symbol_table.insert({sym_name, make_symbol(sym_name)}).first->second; \
+    inline auto var = env::Environment::g_prime_values.insert({sym_name, __VA_ARGS__}).first->second
 
 
 #define DEFUN(name, sym)                                                \

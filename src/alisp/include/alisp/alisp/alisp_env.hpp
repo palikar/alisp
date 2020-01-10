@@ -47,7 +47,7 @@ struct CellStack
     void push_scope() { stacks.back().emplace_back(); }
     void pop_scope() { stacks.back().pop_back(); }
 
-    Scope& root_scope(){ return stacks.front().front(); }
+    // Scope& root_scope(){ return stacks.front().front(); }
     StackFrame& root_frame(){ return stacks.front() ;}
 
     StackFrame& current_frame(){ return stacks.back() ;}
@@ -70,7 +70,10 @@ class Module
     Module(std::string t_name) : m_name(std::move(t_name)) {}
 
     detail::CellStack::Scope& root_scope() { return m_root_scope; }
+
     const std::string& name() { return m_name; }
+
+    void add_module(std::shared_ptr<Module> t_module) { m_modules.insert({t_module->name(), t_module}); }
 
 };
 
@@ -86,7 +89,7 @@ class Environment
     private:
       detail::CellStack m_stack;
       std::unordered_map<std::string, std::shared_ptr<Module>> m_modules;
-      std::weak_ptr<Module> m_active_module;
+      std::shared_ptr<Module> m_active_module;
 
       size_t m_call_depth = 0;
 
@@ -111,11 +114,17 @@ class Environment
       
       void define_module(ALObjectPtr t_sym)
       {
-          // create the new module
-          // put it in the modules of the current module AND in the globals
-          // change the current module the new module
+          auto new_mod = std::make_shared<Module>(t_sym->to_string());
+          m_active_module->add_module(new_mod);
+          m_modules.insert({new_mod->name(), new_mod});
+          m_active_module = std::move(new_mod);
       }
 
+
+      bool module_loaded(const std::string& t_module_name)
+      {
+          return m_modules.count(t_module_name) != 0;
+      }
 
       ALObjectPtr find(const ALObjectPtr t_sym);
 
