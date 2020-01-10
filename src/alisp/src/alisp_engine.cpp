@@ -1,5 +1,3 @@
-#pragma once
-
 #include "alisp/alisp/alisp_engine.hpp"
 
 

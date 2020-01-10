@@ -20,24 +20,7 @@
 
 
 
-void eval_statement(std::string& command);
 void interactive(alisp::LanguageEngine& alisp_engine);
-void eval_file(const std::filesystem::path& t_path);
-
-bool env_bool(const char* t_name)
-{
-    return getenv(t_name) != nullptr;
-}
-
-std::string env_string(const char* t_name)
-{
-    if (env_bool(t_name)){
-        return std::string{getenv(t_name)};
-    }
-    return {};
-}
-
-
 
 struct Options
 {
@@ -62,7 +45,7 @@ int main(int argc, char *argv[])
     alisp::logging::init_logging();
 
     auto cli = (
-        
+
         opts.version      << clipp::option("-v", "--version")                             % "Show the version and build information of the current executable",
         opts.show_help    << clipp::option("-h", "--help")                                % "Print help information",
         opts.interactive  << clipp::option("-i", "--interactive")                         % "Start interactive mode after file evaluation",
@@ -76,21 +59,21 @@ int main(int argc, char *argv[])
         );
 
 
-    
-    
+
+
     auto fmt = clipp::doc_formatting{}
-    .first_column(8)                           //left border column for text body
+    .first_column(8)                                //left border column for text body
          .doc_column(20)                            //column where parameter docstring starts
-         .last_column(80)                          //right border column for text body
+         .last_column(80)                           //right border column for text body
          .indent_size(2)                            //indent of documentation lines for children of a documented group
          .line_spacing(0)                           //number of empty lines after single documentation lines
          .paragraph_spacing(1)                      //number of empty lines before and after paragraphs
          .flag_separator(", ")                      //between flags of the same parameter
-         .param_separator(" ")                      //between parameters 
+         .param_separator(" ")                      //between parameters
          .group_separator(" ")                      //between groups (in usage)
-         .alternative_param_separator("|")          //between alternative flags 
-         .alternative_group_separator(" | ")        //between alternative groups 
-         .surround_group("(", ")")                  //surround groups with these 
+         .alternative_param_separator("|")          //between alternative flags
+         .alternative_group_separator(" | ")        //between alternative groups
+         .surround_group("(", ")")                  //surround groups with these
          .surround_alternatives("(", ")")           //surround group of alternatives with these
          .surround_alternative_flags("", "")        //surround alternative flags with these
          .surround_joinable("(", ")")               //surround group of joinable flags with these
@@ -109,8 +92,8 @@ int main(int argc, char *argv[])
     if(res.any_bad_repeat() or res.any_blocked() or res.any_conflict()) {
         std::cout << "Usage:\n" << clipp::usage_lines(cli, "progname", fmt) << "\n";
         exit(1);
-    }    
-    
+    }
+
 
     if (opts.show_help) {
         std::cout << clipp::make_man_page(cli, "progname", fmt)
@@ -136,18 +119,23 @@ int main(int argc, char *argv[])
     //     std::cout << "arg: "  << it << "\n";
     // }
 
-    alisp::LanguageEngine alisp_engine;
+    std::vector<alisp::EngineSettings> settings;
 
-    
+    if (opts.eval_debug) settings.push_back(alisp::EngineSettings::EVAL_DEBUG);
+    if (opts.parse_debug) settings.push_back(alisp::EngineSettings::PARSER_DEBUG);
+
+    alisp::LanguageEngine alisp_engine(settings);
+
+
     if(!opts.input.empty()){
         auto file_path = std::filesystem::path{opts.input};
         if (!std::filesystem::is_regular_file(file_path)){
             std::cerr << '\"' <<file_path << "\" is not a file." << "\n";
             exit(1);
         }
-        
+
         alisp_engine.eval_file(file_path);
-        if (opts.interactive) { interactive(); }
+        if (opts.interactive) { interactive(alisp_engine); }
 
         exit(0);
     }
