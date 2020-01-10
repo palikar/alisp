@@ -30,7 +30,8 @@ extern ALObjectPtr intern(const std::string& name);
 namespace detail
 {
 
-struct CellStack {
+struct CellStack
+{
   public:
     using Scope = std::unordered_map<std::string, ALObjectPtr>;
     using StackFrame = std::vector<Scope>;
@@ -57,98 +58,117 @@ struct CellStack {
 
 }
 
+class Module
+{
+  private:
+    detail::CellStack::Scope m_root_scope;
+    std::string m_name;
+
+  public:
+
+    Module(std::string t_name) : m_name(std::move(t_name)) {}
+
+    detail::CellStack::Scope& root_scope() { return m_root_scope; }
+    const std::string& name() { return m_name; }
+
+};
+
 
 class Environment
-{
+  {
 
-  public:
-    static inline std::unordered_map<std::string, ALObjectPtr> g_symbol_table;
-    static inline std::unordered_map<std::string, ALObjectPtr> g_global_symbol_table;
-    static inline std::unordered_map<std::string, ALObjectPtr> g_prime_values;
+    public:
+      static inline std::unordered_map<std::string, ALObjectPtr> g_symbol_table;
+      static inline std::unordered_map<std::string, ALObjectPtr> g_global_symbol_table;
+      static inline std::unordered_map<std::string, ALObjectPtr> g_prime_values;
 
-  private:
-    detail::CellStack m_stack;
-    size_t m_call_depth = 0;
+    private:
+      detail::CellStack m_stack;
+      std::unordered_map<std::string, std::unique_ptr<Module>> m_modules;
+      Module* m_active_module;
 
-    std::vector<std::tuple<std::string, bool>> m_stack_trace; // name, is_prime    
+      size_t m_call_depth = 0;
 
-  public:
+      std::vector<std::tuple<std::string, bool>> m_stack_trace; // name, is_prime
 
-    Environment() : m_stack()
-    {
-        m_call_depth = 0;
-    }
+    public:
 
-
-    ALObjectPtr find(const ALObjectPtr t_sym);
-
-
-    /**
-     * Defines global variabe. This is used by defvar and defconst
-     *
-     * @param t_sym
-     *
-     * @return
-     */
-    void define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value);
-
-    void define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
-    
-    void define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
+      Environment() : m_stack()
+      {
+          m_call_depth = 0;
+          m_active_module = (m_modules.insert({"--main--", std::make_unique<Module>("--main--")}).first->second).get();
+      }
 
 
-    /**
-     * Puts a local variable on the current scope. This is used by let and let*.
-     *
-     * @param t_sym
-     * @param t_cell
-     */
-    void put(const ALObjectPtr t_sym, ALObjectPtr t_val);
-    /** 
-     * Used by setq to update the value of a cell
-     *
-     * @param t_sym 
-     * @param t_value 
-     */
-    void update(const ALObjectPtr t_sym, ALObjectPtr t_value);
+      ALObjectPtr find(const ALObjectPtr t_sym);
 
 
-    void new_scope()
-    {
-        m_stack.push_scope();
-    }
+      /**
+       * Defines global variabe. This is used by defvar and defconst
+       *
+       * @param t_sym
+       *
+       * @return
+       */
+      void define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value);
 
-    void destroy_scope()
-    {
-        m_stack.pop_scope();
-    }
+      void define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
 
-    void call_function()
-    {
-        ++m_call_depth;
-        if (m_call_depth > MAX_FUNCTION_CALL_DEPTH) { throw environment_error("Maximum function calldepth reached!"); }
-        m_stack.push_frame();
-    }
-
-    void finish_function()
-    {
-        --m_call_depth;
-        m_stack.pop_frame();
-    }
-
-    size_t call_depth() { return m_call_depth; }
-
-    bool in_function() { return m_call_depth != 0;}
-
-    bool in_root() { return (!in_function()) && (std::size(m_stack.root_frame()) == 1); }
-    
-    void stack_dump() const;
+      void define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
 
 
-    void callstack_dump() const;
-    void trace_call(std::string t_trace, bool is_prime = false) { m_stack_trace.push_back({std::move(t_trace), is_prime}); }
-    void trace_unwind() { if (!std::empty(m_stack_trace)) { m_stack_trace.pop_back(); } }
-    auto get_stack_trace() -> auto& { return m_stack_trace; } 
+      /**
+       * Puts a local variable on the current scope. This is used by let and let*.
+       *
+       * @param t_sym
+       * @param t_cell
+       */
+      void put(const ALObjectPtr t_sym, ALObjectPtr t_val);
+      /**
+       * Used by setq to update the value of a cell
+       *
+       * @param t_sym
+       * @param t_value
+       */
+      void update(const ALObjectPtr t_sym, ALObjectPtr t_value);
+
+
+      void new_scope()
+      {
+          m_stack.push_scope();
+      }
+
+      void destroy_scope()
+      {
+          m_stack.pop_scope();
+      }
+
+      void call_function()
+      {
+          ++m_call_depth;
+          if (m_call_depth > MAX_FUNCTION_CALL_DEPTH) { throw environment_error("Maximum function calldepth reached!"); }
+          m_stack.push_frame();
+      }
+
+      void finish_function()
+      {
+          --m_call_depth;
+          m_stack.pop_frame();
+      }
+
+      size_t call_depth() { return m_call_depth; }
+
+      bool in_function() { return m_call_depth != 0;}
+
+      bool in_root() { return (!in_function()) && (std::size(m_stack.root_frame()) == 1); }
+
+      void stack_dump() const;
+
+
+      void callstack_dump() const;
+      void trace_call(std::string t_trace, bool is_prime = false) { m_stack_trace.push_back({std::move(t_trace), is_prime}); }
+      void trace_unwind() { if (!std::empty(m_stack_trace)) { m_stack_trace.pop_back(); } }
+      auto get_stack_trace() -> auto& { return m_stack_trace; }
 
 };
 
@@ -162,7 +182,7 @@ struct CallTracer
     std::string m_function;
     std::string m_args;
     bool m_is_prime = false;
-    
+
   public:
 
     explicit CallTracer(Environment& t_env) : m_env(t_env) { }
@@ -179,17 +199,17 @@ struct CallTracer
     }
 
     void dump() {
-        
+
         if ( ALISP_UNLIKELY( !std::empty(m_env.get_stack_trace()) )) {
             m_env.callstack_dump();
             m_env.get_stack_trace().clear();
         } else {
             return;
         }
-        
+
     }
-    
-    
+
+
 
     CallTracer(CallTracer &&) = default;
     CallTracer& operator=(CallTracer &&) = default;
@@ -244,15 +264,3 @@ struct ScopePushPop
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
- 
