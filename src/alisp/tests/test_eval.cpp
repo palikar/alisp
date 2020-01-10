@@ -18,8 +18,9 @@ TEST_CASE("Evaluator Test [simple]", "[eval]")
     using namespace alisp;
 
     env::Environment env;
-    eval::Evaluator eval(env);
-    parser::ALParser<alisp::env::Environment> pars(env);
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto& pars = *p;
+    eval::Evaluator eval(env, p);
 
     SECTION ("int") {
         std::string input{"42"};
@@ -62,9 +63,9 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
     using namespace alisp;
 
     env::Environment env;
-    eval::Evaluator eval(env);
-    parser::ALParser<alisp::env::Environment> pars(env);
-
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto& pars = *p;
+    eval::Evaluator eval(env, p);
     std::cout.setstate(std::ios_base::failbit);
     
     SECTION ( "defun" ) {
@@ -246,8 +247,9 @@ TEST_CASE("Evaluator Test [math]", "[eval]")
     using namespace alisp;
 
     env::Environment env;
-    eval::Evaluator eval(env);
-    parser::ALParser<alisp::env::Environment> pars(env);
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto& pars = *p;
+    eval::Evaluator eval(env, p);
 
     SECTION ( "+" ) {
         std::string input{"(+ 10 10)"};
@@ -380,8 +382,9 @@ TEST_CASE("Evaluator Test [printing]", "[eval]")
     using namespace alisp;
 
     env::Environment env;
-    eval::Evaluator eval(env);
-    parser::ALParser<alisp::env::Environment> pars(env);
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto& pars = *p;
+    eval::Evaluator eval(env, p);
 
     std::cout.setstate(std::ios_base::failbit);
     
@@ -431,8 +434,9 @@ TEST_CASE("Evaluator Test [logic]", "[eval]")
     using namespace alisp;
 
     env::Environment env;
-    eval::Evaluator eval(env);
-    parser::ALParser<alisp::env::Environment> pars(env);
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto& pars = *p;
+    eval::Evaluator eval(env, p);
 
     SECTION ( "or" ) {
         std::string input{"(or t nil)"};
@@ -463,8 +467,9 @@ TEST_CASE("Evaluator Test [predicates]", "[eval]")
     using namespace alisp;
 
     env::Environment env;
-    eval::Evaluator eval(env);
-    parser::ALParser<alisp::env::Environment> pars(env);
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto& pars = *p;
+    eval::Evaluator eval(env, p);
 
 
     SECTION ( "pfunction" ) {
@@ -506,8 +511,9 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
     using namespace alisp;
 
     env::Environment env;
-    eval::Evaluator eval(env);
-    parser::ALParser<alisp::env::Environment> pars(env);
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto& pars = *p;
+    eval::Evaluator eval(env, p);
 
     SECTION ( "mapc" ) {
         std::string input{"(mapc (lambda (x) (+ 1 x)) '(1 2 3 4))"};
@@ -657,8 +663,9 @@ TEST_CASE("Evaluator Test [function call]", "[eval]")
     using namespace alisp;
 
     env::Environment env;
-    eval::Evaluator eval(env);
-    parser::ALParser<alisp::env::Environment> pars(env);
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto& pars = *p;
+    eval::Evaluator eval(env, p);
     
     std::string input{"(defun fun (a &optional b &rest c) a) (fun 42)"};
     auto par_res = pars.parse(input, "__TEST__");

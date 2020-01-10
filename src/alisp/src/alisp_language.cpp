@@ -68,15 +68,18 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eva
 
     if (env->module_loaded(mod_name->to_string())) { return Qnil; }
 
-    env->define_module(mod_name);
+    env->define_module(mod_name->to_string());
+    env::detail::ModuleChange mc{*env, mod_name->to_string()};
     
     for (auto& path : *Vmodpaths) {
-        auto mod_file = fs::path(path->to_string()) / fs::path(mod_name->to_string());
+        auto mod_file = fs::path(path->to_string()) / fs::path(mod_name->to_string() + ".al");
+
         if(!fs::exists(mod_file)) { continue; }
 
-        
-        
+        eval->eval_file(mod_file);
 
+        env->import_root_scope(mod_name->to_string(), mc.old_module());
+        
         return Qt;
     }
 

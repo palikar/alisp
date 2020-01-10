@@ -233,19 +233,11 @@ ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
 
 void Evaluator::eval_file(const std::string& t_file)
 {
-    try {
-        auto file_content = utility::load_file(t_file);
+    auto file_content = utility::load_file(t_file);
 
-        // auto parse_result = (file_content, t_file);
+    auto parse_result = m_parser->parse(file_content, t_file);
 
-        // for (auto sexp : parse_result ) {
-        //     eval(sexp);
-        // }
-        
-    }catch (...) {
-        handle_errors_lippincott<true>();
-    }
-    
+    for (auto sexp : parse_result ) { eval(sexp); }        
 }
 
 }

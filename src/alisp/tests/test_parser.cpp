@@ -15,8 +15,8 @@ using namespace Catch::literals;
 TEST_CASE("Parser Test [simple list]", "[parser]")
 {
     alisp::env::Environment env;
-    alisp::eval::Evaluator eval(env);
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
+
 
 
     std::string input{"(println 12)"};
@@ -34,9 +34,8 @@ TEST_CASE("Parser Test [int literals]", "[parser]")
     SECTION ("int [1]") {
         
         alisp::env::Environment env;
-        alisp::eval::Evaluator eval(env);
         alisp::parser::ALParser<alisp::env::Environment> pars(env);
-
+        
 
         std::string input{"12"};
         auto res = pars.parse(input, "__TEST__");
@@ -49,8 +48,8 @@ TEST_CASE("Parser Test [int literals]", "[parser]")
     SECTION ("int [2]") {
         
         alisp::env::Environment env;
-        alisp::eval::Evaluator eval(env);
         alisp::parser::ALParser<alisp::env::Environment> pars(env);
+        
 
 
         std::string input{"-12"};
@@ -68,8 +67,8 @@ TEST_CASE("Parser Test [double literals]", "[parser]")
 
     SECTION ("double [1]") {
         alisp::env::Environment env;
-        alisp::eval::Evaluator eval(env);
         alisp::parser::ALParser<alisp::env::Environment> pars(env);
+        
         
         std::string input{"-1.12"};
         auto res = pars.parse(input, "__TEST__");
@@ -81,8 +80,8 @@ TEST_CASE("Parser Test [double literals]", "[parser]")
 
     SECTION ("double [2]") {
         alisp::env::Environment env;
-        alisp::eval::Evaluator eval(env);
         alisp::parser::ALParser<alisp::env::Environment> pars(env);
+        
 
 
         std::string input{"-1.12e1"};
@@ -96,8 +95,8 @@ TEST_CASE("Parser Test [double literals]", "[parser]")
     SECTION ("double [3]") {
         
         alisp::env::Environment env;
-        alisp::eval::Evaluator eval(env);
         alisp::parser::ALParser<alisp::env::Environment> pars(env);
+        
 
 
         std::string input{"1.12e-1"};
@@ -111,8 +110,8 @@ TEST_CASE("Parser Test [double literals]", "[parser]")
     SECTION ("double [4]") {
         
         alisp::env::Environment env;
-        alisp::eval::Evaluator eval(env);
         alisp::parser::ALParser<alisp::env::Environment> pars(env);
+        
 
 
         std::string input{"1.12e1"};
@@ -126,8 +125,8 @@ TEST_CASE("Parser Test [double literals]", "[parser]")
     SECTION ("double [5]") {
         
         alisp::env::Environment env;
-        alisp::eval::Evaluator eval(env);
         alisp::parser::ALParser<alisp::env::Environment> pars(env);
+        
 
 
         std::string input{"12.12"};
@@ -144,8 +143,8 @@ TEST_CASE("Parser Test [double literals]", "[parser]")
 TEST_CASE("Parser Test [number literals]", "[parser]")
 {
     alisp::env::Environment env;
-    alisp::eval::Evaluator eval(env);
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
+    
 
     std::string input{"#b0010"};
     auto res = pars.parse(input, "__TEST__");
@@ -211,8 +210,8 @@ TEST_CASE("Parser Test [char literas]", "[parser]")
 {
     using namespace alisp;
     alisp::env::Environment env;
-    alisp::eval::Evaluator eval(env);
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
+    
 
     std::string input{"#b0010"};
     auto res = pars.parse(input, "__TEST__");
@@ -280,8 +279,8 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
     using namespace alisp;
     
     alisp::env::Environment env;
-    alisp::eval::Evaluator eval(env);
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
+    
 
     std::string input{"#b0010"};
     auto res = pars.parse(input, "__TEST__");
@@ -404,8 +403,8 @@ TEST_CASE("Parser Test [string literas]", "[parser]")
 TEST_CASE("Parser Test [symbols]", "[parser]")
 {
     alisp::env::Environment env;
-    alisp::eval::Evaluator eval(env);
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
+    
 
     std::string input{"#b0010"};
     auto res = pars.parse(input, "__TEST__");
@@ -515,8 +514,8 @@ TEST_CASE("Parser Test [symbols]", "[parser]")
 TEST_CASE("Parser Test [quote]", "[parser]")
 {
     alisp::env::Environment env;
-    alisp::eval::Evaluator eval(env);
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
+    
 
     std::string input{"#b0010"};
     auto res = pars.parse(input, "__TEST__");
@@ -564,8 +563,8 @@ TEST_CASE("Parser Test [quote]", "[parser]")
 TEST_CASE("Parser Test [list]", "[parser]")
 {
     alisp::env::Environment env;
-    alisp::eval::Evaluator eval(env);
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
+    
 
     std::string input{"#b0010"};
     auto res = pars.parse(input, "__TEST__");
@@ -610,8 +609,8 @@ TEST_CASE("Parser Test [list]", "[parser]")
 TEST_CASE("Parser Test [comma, at, backqoute]", "[parser]")
 {
     alisp::env::Environment env;
-    alisp::eval::Evaluator eval(env);
     alisp::parser::ALParser<alisp::env::Environment> pars(env);
+    
 
     std::string input{"#b0010"};
     auto res = pars.parse(input, "__TEST__");

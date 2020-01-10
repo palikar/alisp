@@ -63,7 +63,7 @@ class LanguageEngine
 
     void do_eval(std::string& t_input, const std::string& t_file)
     {
-        auto parse_result = m_parser.parse(t_input, t_file);
+        auto parse_result = m_parser->parse(t_input, t_file);
 
         for (auto sexp : parse_result ) {
             if (check(EngineSettings::PARSER_DEBUG)) std::cout << "DEUBG[EVAL]: " << alisp::dump(sexp) << "\n";

@@ -79,104 +79,117 @@ class Module
 
 
 class Environment
-  {
+{
 
-    public:
-      static inline std::unordered_map<std::string, ALObjectPtr> g_symbol_table;
-      static inline std::unordered_map<std::string, ALObjectPtr> g_global_symbol_table;
-      static inline std::unordered_map<std::string, ALObjectPtr> g_prime_values;
+  public:
+    static inline std::unordered_map<std::string, ALObjectPtr> g_symbol_table;
+    static inline std::unordered_map<std::string, ALObjectPtr> g_global_symbol_table;
+    static inline std::unordered_map<std::string, ALObjectPtr> g_prime_values;
 
-    private:
-      detail::CellStack m_stack;
-      std::unordered_map<std::string, std::shared_ptr<Module>> m_modules;
-      std::shared_ptr<Module> m_active_module;
+  private:
+    detail::CellStack m_stack;
+    std::unordered_map<std::string, std::shared_ptr<Module>> m_modules;
+    std::shared_ptr<Module> m_active_module;
 
-      size_t m_call_depth = 0;
+    size_t m_call_depth = 0;
 
-      std::vector<std::tuple<std::string, bool>> m_stack_trace; // name, is_prime
+    std::vector<std::tuple<std::string, bool>> m_stack_trace; // name, is_prime
 
-    public:
+  public:
 
-      Environment() : m_stack()
+    Environment() : m_stack()
       {
           m_call_depth = 0;
           m_active_module = (m_modules.insert({"--main--", std::make_shared<Module>("--main--")}).first->second);
       }
 
-      void load_module(ALObjectPtr t_sym, bool t_all, const std::string& t_file_name, const std::string& t_as, ALObjectPtr t_remap)
-      {
-          // check if the module is loaded
-          // read the file in
-          // parse it
-          // evaluate it
-          // copy the wanted symbols to the current root scope
-      }
+    // void load_module(ALObjectPtr t_sym, bool t_all, const std::string& t_file_name, const std::string& t_as, ALObjectPtr t_remap)
+    // {
+    //     // check if the module is loaded
+    //     // read the file in
+    //     // parse it
+    //     // evaluate it
+    //     // copy the wanted symbols to the current root scope
+    // }
       
-      void define_module(ALObjectPtr t_sym)
-      {
-          auto new_mod = std::make_shared<Module>(t_sym->to_string());
-          m_active_module->add_module(new_mod);
-          m_modules.insert({new_mod->name(), new_mod});
-          m_active_module = std::move(new_mod);
-      }
+    void define_module(const std::string t_name)
+    {
+        auto new_mod = std::make_shared<Module>(t_name);
+        m_active_module->add_module(new_mod);
+        m_modules.insert({new_mod->name(), new_mod});
+    }
+
+    void activate_module(const std::string t_name)
+    {
+        m_active_module = m_modules.at(t_name);
+    }
+
+    const std::string& current_module()
+    {
+        return m_active_module->name();
+    }
+    
+    bool module_loaded(const std::string& t_module_name)
+    {
+        return m_modules.count(t_module_name) != 0;
+    }
+
+    void import_root_scope(const std::string& t_from, const std::string& t_to)
+    {
+        m_modules.at(t_to) = m_modules.at(t_from);
+    }
+
+    ALObjectPtr find(const ALObjectPtr t_sym);
+
+    void define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value);
+
+    void define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
+
+    void define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
 
 
-      bool module_loaded(const std::string& t_module_name)
-      {
-          return m_modules.count(t_module_name) != 0;
-      }
-
-      ALObjectPtr find(const ALObjectPtr t_sym);
-
-      void define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value);
-
-      void define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
-
-      void define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
-
-
-      void put(const ALObjectPtr t_sym, ALObjectPtr t_val);
+    void put(const ALObjectPtr t_sym, ALObjectPtr t_val);
 
       
-      void update(const ALObjectPtr t_sym, ALObjectPtr t_value);
+    void update(const ALObjectPtr t_sym, ALObjectPtr t_value);
 
 
-      void new_scope()
-      {
-          m_stack.push_scope();
-      }
+    void new_scope()
+    {
+        m_stack.push_scope();
+    }
 
-      void destroy_scope()
-      {
-          m_stack.pop_scope();
-      }
+    void destroy_scope()
+    {
+        m_stack.pop_scope();
+    }
 
-      void call_function()
-      {
-          ++m_call_depth;
-          if (m_call_depth > MAX_FUNCTION_CALL_DEPTH) { throw environment_error("Maximum function calldepth reached!"); }
-          m_stack.push_frame();
-      }
+    void call_function()
+    {
+        ++m_call_depth;
+        if (m_call_depth > MAX_FUNCTION_CALL_DEPTH) { throw environment_error("Maximum function calldepth reached!"); }
+        m_stack.push_frame();
+    }
 
-      void finish_function()
-      {
-          --m_call_depth;
-          m_stack.pop_frame();
-      }
+    void finish_function()
+    {
+        --m_call_depth;
+        m_stack.pop_frame();
+    }
 
-      size_t call_depth() { return m_call_depth; }
+    size_t call_depth() { return m_call_depth; }
 
-      bool in_function() { return m_call_depth != 0;}
+    bool in_function() { return m_call_depth != 0;}
 
-      bool in_root() { return (!in_function()) && (std::size(m_stack.root_frame()) == 1); }
+    bool in_root() { return (!in_function()) && (std::size(m_stack.root_frame()) == 1); }
 
-      void stack_dump() const;
+    void stack_dump() const;
 
 
-      void callstack_dump() const;
-      void trace_call(std::string t_trace, bool is_prime = false) { m_stack_trace.push_back({std::move(t_trace), is_prime}); }
-      void trace_unwind() { if (!std::empty(m_stack_trace)) { m_stack_trace.pop_back(); } }
-      auto get_stack_trace() -> auto& { return m_stack_trace; }
+    void callstack_dump() const;
+    void trace_call(std::string t_trace, bool is_prime = false) { m_stack_trace.push_back({std::move(t_trace), is_prime}); }
+    void trace_unwind() { if (!std::empty(m_stack_trace)) { m_stack_trace.pop_back(); } }
+    auto get_stack_trace() -> auto& { return m_stack_trace; }
 
 };
 
@@ -264,6 +277,28 @@ struct ScopePushPop
 
   private:
     Environment& m_env;
+};
+
+struct ModuleChange
+{
+  private:
+    
+    Environment& m_env;
+    const std::string& m_prev_mod;
+    
+  public:
+
+    ModuleChange(Environment& t_env, const std::string& t_module) :
+        m_env(t_env), m_prev_mod(m_env.current_module()) { m_env.activate_module(t_module); }
+    
+    ~ModuleChange() {m_env.activate_module(m_prev_mod);}
+    ModuleChange(ModuleChange &&) = default;
+    ModuleChange& operator=(ModuleChange &&) = default;
+    ModuleChange(const ModuleChange &) = delete;
+    ModuleChange& operator=(const ModuleChange  &) = delete;
+
+    const std::string& old_module() const { return m_prev_mod; } 
+
 };
 
 }

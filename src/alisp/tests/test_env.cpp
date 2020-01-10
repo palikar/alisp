@@ -18,7 +18,7 @@ TEST_CASE("Environment Test [define_var]", "[env]")
 
     using namespace alisp;
     env::Environment env;
-    eval::Evaluator eval(env);
+    eval::Evaluator eval(env, nullptr);
 
     SECTION ("int") {
         
@@ -64,7 +64,7 @@ TEST_CASE("Environment Test [define_function, define_macro]", "[env]")
 
     using namespace alisp;
     env::Environment env;
-    eval::Evaluator eval(env);
+    eval::Evaluator eval(env, nullptr);
 
     SECTION ("simple") {
 
@@ -104,7 +104,7 @@ TEST_CASE("Environment Test [put]", "[env]")
 
     using namespace alisp;
     env::Environment env;
-    eval::Evaluator eval(env);
+    eval::Evaluator eval(env, nullptr);
 
     env.define_variable(make_symbol("new-int-var"), make_int(314));
     
@@ -136,7 +136,7 @@ TEST_CASE("Environment Test [util]", "[env]")
 
     using namespace alisp;
     env::Environment env;
-    eval::Evaluator eval(env);
+    eval::Evaluator eval(env, nullptr);
 
     SECTION ("in funciton") {
 
@@ -194,7 +194,7 @@ TEST_CASE("Environment Test [update]", "[env]")
 
     using namespace alisp;
     env::Environment env;
-    eval::Evaluator eval(env);
+    eval::Evaluator eval(env, nullptr);
 
     env.put(make_symbol("var"), make_int(42));
     CHECK ( env.find(make_symbol("var"))->to_int() == 42 );
@@ -213,7 +213,7 @@ TEST_CASE("Environment Test [dumping]", "[env]")
 
     using namespace alisp;
     env::Environment env;
-    eval::Evaluator eval(env);
+    eval::Evaluator eval(env, nullptr);
 
     env.put(make_symbol("var"), make_int(42));
     env.update(make_symbol("var"), make_int(314));
