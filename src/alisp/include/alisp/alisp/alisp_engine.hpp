@@ -49,8 +49,8 @@ class LanguageEngine
   private:
 
     env::Environment m_environment;
-    eval::Evaluator m_evaluator;
     parser::ALParser<env::Environment> m_parser;
+    eval::Evaluator m_evaluator;
 
     std::vector<EngineSettings> m_settings;
 
@@ -138,8 +138,8 @@ class LanguageEngine
 
 
     LanguageEngine(std::vector<EngineSettings> t_setting = {}) :
-        m_environment(), m_evaluator(m_environment),
-        m_parser(m_environment), m_settings(t_setting)
+        m_environment(), m_parser(m_environment), m_evaluator(m_environment),
+        m_settings(t_setting)
     {
         init_system();
     }

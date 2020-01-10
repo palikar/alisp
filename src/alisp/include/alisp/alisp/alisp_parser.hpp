@@ -154,6 +154,7 @@ class ALParser : public ParserBase
         for ( size_t c = 'A' ; c <= 'Z' ; ++c ) {set_alphabet(alph, detail::id_alphabet, c);}
         for ( size_t c = '0' ; c <= '9' ; ++c ) {set_alphabet(alph, detail::id_alphabet, c);}
 
+        set_alphabet(alph, detail::id_alphabet, '.');
         set_alphabet(alph, detail::id_alphabet, '-');
         set_alphabet(alph, detail::id_alphabet, '_');
         set_alphabet(alph, detail::id_alphabet, '+');

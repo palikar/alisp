@@ -62,6 +62,7 @@ class Module
 {
   private:
     detail::CellStack::Scope m_root_scope;
+    std::unordered_map<std::string, std::shared_ptr<Module>> m_modules;
     std::string m_name;
 
   public:
@@ -84,8 +85,8 @@ class Environment
 
     private:
       detail::CellStack m_stack;
-      std::unordered_map<std::string, std::unique_ptr<Module>> m_modules;
-      Module* m_active_module;
+      std::unordered_map<std::string, std::shared_ptr<Module>> m_modules;
+      std::weak_ptr<Module> m_active_module;
 
       size_t m_call_depth = 0;
 
@@ -96,20 +97,28 @@ class Environment
       Environment() : m_stack()
       {
           m_call_depth = 0;
-          m_active_module = (m_modules.insert({"--main--", std::make_unique<Module>("--main--")}).first->second).get();
+          m_active_module = (m_modules.insert({"--main--", std::make_shared<Module>("--main--")}).first->second);
+      }
+
+      void load_module(ALObjectPtr t_sym, bool t_all, const std::string& t_file_name, const std::string& t_as, ALObjectPtr t_remap)
+      {
+          // check if the module is loaded
+          // read the file in
+          // parse it
+          // evaluate it
+          // copy the wanted symbols to the current root scope
+      }
+      
+      void define_module(ALObjectPtr t_sym)
+      {
+          // create the new module
+          // put it in the modules of the current module AND in the globals
+          // change the current module the new module
       }
 
 
       ALObjectPtr find(const ALObjectPtr t_sym);
 
-
-      /**
-       * Defines global variabe. This is used by defvar and defconst
-       *
-       * @param t_sym
-       *
-       * @return
-       */
       void define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value);
 
       void define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
@@ -117,19 +126,9 @@ class Environment
       void define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
 
 
-      /**
-       * Puts a local variable on the current scope. This is used by let and let*.
-       *
-       * @param t_sym
-       * @param t_cell
-       */
       void put(const ALObjectPtr t_sym, ALObjectPtr t_val);
-      /**
-       * Used by setq to update the value of a cell
-       *
-       * @param t_sym
-       * @param t_value
-       */
+
+      
       void update(const ALObjectPtr t_sym, ALObjectPtr t_value);
 
 
