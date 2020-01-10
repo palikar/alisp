@@ -233,9 +233,52 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
         CHECK ( res->to_int() == 10 );
     }
 
-    SECTION ( "signal" ) {}
-
     SECTION ( "exit" ) {}
+
+
+    SECTION ( "backqoute [1]" ) {
+        std::string input{R"raw(`(1 2 (3 4) 5))raw"};
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        CHECK ( res->is_list() );
+        CHECK ( res->length() == 4);
+
+        CHECK ( res->i(0)->to_int() == 1);
+        CHECK ( res->i(1)->to_int() == 2);
+        CHECK ( res->i(2)->is_list() );
+        CHECK ( res->i(3)->to_int() == 5);
+
+    }
+
+
+    SECTION ( "backqoute [2]" ) {
+        std::string input{R"raw(`(1 2 ,@'(3 4) 5))raw"};
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        CHECK ( res->is_list() );
+        CHECK ( res->length() == 5);
+
+        CHECK ( res->i(0)->to_int() == 1);
+        CHECK ( res->i(1)->to_int() == 2);
+        CHECK ( res->i(2)->to_int() == 3);
+        CHECK ( res->i(3)->to_int() == 4);
+        CHECK ( res->i(4)->to_int() == 5);
+    }
+
+    
+    SECTION ( "backqoute [3]" ) {
+        std::string input{R"raw(`(1 2 ,'(3 4) 5))raw"};
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        CHECK ( res->is_list() );
+        CHECK ( res->length() == 4);
+
+        CHECK ( res->i(0)->to_int() == 1);
+        CHECK ( res->i(1)->to_int() == 2);
+        CHECK ( res->i(2)->is_list() );
+        CHECK ( res->i(3)->to_int() == 5);
+
+    }
 
     std::cout.clear();
 
@@ -282,6 +325,20 @@ TEST_CASE("Evaluator Test [math]", "[eval]")
         CHECK ( res->to_int() == 100 );
     }
 
+    SECTION ( "pow" ) {
+
+        std::string input{"(pow 2 4)"};
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        CHECK ( res->to_real() == 16 );
+    }    
+    SECTION ( "mod" ) {
+
+        std::string input{"(mod 10 3)"};
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        CHECK ( res->to_int() == 1 );
+    }
 
     SECTION ( "+ real" ) {
         std::string input{"(+ 10 10.4)"};
@@ -421,6 +478,15 @@ TEST_CASE("Evaluator Test [printing]", "[eval]")
         eval.eval(pars.parse(input, "__TEST__")[0]);
 
         input = "(dump 1.2)";
+        eval.eval(pars.parse(input, "__TEST__")[0]);
+    }
+
+
+    SECTION ( "dumpcallstack,dumpstack" ) {
+        std::string input{"(dumpstack)"};
+        eval.eval(pars.parse(input, "__TEST__")[0]);
+        
+        input = "(dumpcallstack)";
         eval.eval(pars.parse(input, "__TEST__")[0]);
     }
 
@@ -650,6 +716,26 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
         CHECK ( res->i(0)->to_int() == 1);
         CHECK ( res->i(1)->to_int() == 2);
         CHECK ( res->i(2)->to_int() == 4);
+    }
+
+    
+    SECTION ( "range" ) {
+        std::string input{"(range 1 10)"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        auto res = eval.eval(par_res[0]);
+        CHECK ( res->is_list() );
+        CHECK ( res->length() == 9);
+
+        CHECK ( res->i(0)->to_int() == 1);
+        CHECK ( res->i(1)->to_int() == 2);
+        CHECK ( res->i(2)->to_int() == 3);
+        CHECK ( res->i(3)->to_int() == 4);
+        CHECK ( res->i(4)->to_int() == 5);
+        CHECK ( res->i(5)->to_int() == 6);
+        CHECK ( res->i(6)->to_int() == 7);
+        CHECK ( res->i(7)->to_int() == 8);
+        CHECK ( res->i(8)->to_int() == 9);
     }
 
 
