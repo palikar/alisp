@@ -61,7 +61,7 @@ class LanguageEngine
         return std::find(std::begin(m_settings), std::end(m_settings), t_setting) != std::end(m_settings);
     }
 
-    void do_eval(std::string& t_input, const std::string& t_file)
+    void do_eval(std::string& t_input, const std::string& t_file, bool t_print_res = false)
     {
         auto parse_result = m_parser->parse(t_input, t_file);
 
@@ -69,7 +69,7 @@ class LanguageEngine
             if (check(EngineSettings::PARSER_DEBUG)) std::cout << "DEUBG[EVAL]: " << alisp::dump(sexp) << "\n";
             auto eval_result = m_evaluator.eval(sexp);
             if (check(EngineSettings::EVAL_DEBUG)) std::cout << "DEUBG[PARSER]: " << alisp::dump(eval_result) << "\n";
-            std::cout << *eval_result << "\n";
+            if (t_print_res) { std::cout << *eval_result << "\n"; }
         }
     }
 
@@ -108,7 +108,7 @@ class LanguageEngine
     void eval_statement(std::string& command)
     {
         try {
-            do_eval(command, "__EVAL__");
+            do_eval(command, "__EVAL__", true);
         }catch (...) {
             handle_errors_lippincott<false>();
         }

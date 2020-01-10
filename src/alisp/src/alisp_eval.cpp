@@ -141,12 +141,12 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
       case ALObjectType::LIST : {
 
-          auto func = env.find(obj->i(0));
+          auto func = eval(obj->i(0));
           if ( !func->check_function_flag() ) {
               throw eval_error("Head of a list must be bound to function");
           }
-
-
+          
+          
           env::detail::CallTracer tracer{env};
           tracer.function_name(obj->i(0)->to_string(), func->check_prime_flag());
 
@@ -158,7 +158,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
                   
                   return func->get_prime()(eval_ptr, &env, this);
               } else if (func->check_macro_flag()) {
-                  env::detail::FunctionCall fc{env};
+                  env::detail::FunctionCall fc{env, func};
 
                   STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
                   
@@ -194,7 +194,7 @@ ALObjectPtr Evaluator::eval_function(ALObjectPtr func, ALObjectPtr args)
     auto[params, body] = func->get_function();
     auto eval_args = eval_transform(this, args);
     try {
-        env::detail::FunctionCall fc{env};
+        env::detail::FunctionCall fc{env, func};
         handle_argument_bindings(params, eval_args);
         return eval_list(this, body, 0);
     } catch (al_return& ret){
@@ -222,7 +222,7 @@ ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
         throw eval_error("Cannot apply a non function object.");
     }
 
-    env::detail::FunctionCall fc{env};
+    env::detail::FunctionCall fc{env, func};
     if (obj->check_prime_flag()) {
         return obj->get_prime()(args, &env, this);
     } else {

@@ -74,6 +74,8 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value)
 
     if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name);}
 
+    t_value->set_prop("--module--", make_string(m_active_module->name()));
+
     scope.insert({name, t_value});
         
 }
@@ -88,6 +90,7 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
 
     auto new_fun = make_object(t_params, t_body);
     new_fun->set_function_flag();
+    new_fun->set_prop("--module--", make_string(m_active_module->name()));
         
     scope.insert({name, new_fun});
     
@@ -104,6 +107,7 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
     auto new_fun = make_object(t_params, t_body);
     new_fun->set_function_flag();
     new_fun->set_macro_flag();
+    new_fun->set_prop("--module--", make_string(m_active_module->name()));
         
     scope.insert({name, new_fun});
     

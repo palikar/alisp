@@ -75,6 +75,8 @@ class Module
 
     void add_module(std::shared_ptr<Module> t_module) { m_modules.insert({t_module->name(), t_module}); }
 
+    detail::CellStack::Scope& get_root() { return m_root_scope; }
+
 };
 
 
@@ -89,7 +91,7 @@ class Environment
   private:
     detail::CellStack m_stack;
     std::unordered_map<std::string, std::shared_ptr<Module>> m_modules;
-    std::shared_ptr<Module> m_active_module;
+    Module* m_active_module;
 
     size_t m_call_depth = 0;
 
@@ -98,30 +100,23 @@ class Environment
   public:
 
     Environment() : m_stack()
-      {
-          m_call_depth = 0;
-          m_active_module = (m_modules.insert({"--main--", std::make_shared<Module>("--main--")}).first->second);
-      }
-
-    // void load_module(ALObjectPtr t_sym, bool t_all, const std::string& t_file_name, const std::string& t_as, ALObjectPtr t_remap)
-    // {
-    //     // check if the module is loaded
-    //     // read the file in
-    //     // parse it
-    //     // evaluate it
-    //     // copy the wanted symbols to the current root scope
-    // }
+    {
+        m_call_depth = 0;
+        m_active_module = (m_modules.insert({"--main--", std::make_shared<Module>("--main--")}).first->second.get());
+    }
+    
       
     void define_module(const std::string t_name)
     {
         auto new_mod = std::make_shared<Module>(t_name);
         m_active_module->add_module(new_mod);
-        m_modules.insert({new_mod->name(), new_mod});
+        m_modules.insert({t_name, new_mod});
     }
 
     void activate_module(const std::string t_name)
     {
-        m_active_module = m_modules.at(t_name);
+        
+        m_active_module = m_modules.at(t_name).get();
     }
 
     const std::string& current_module()
@@ -136,7 +131,19 @@ class Environment
 
     void import_root_scope(const std::string& t_from, const std::string& t_to)
     {
-        m_modules.at(t_to) = m_modules.at(t_from);
+        auto& from_root = m_modules.at(t_from)->get_root();
+        auto& to_root = m_modules.at(t_to)->get_root();
+        
+        for (auto& [name, sym] : from_root) {
+            if (!sym->prop_exists("--module--") ){
+                continue;
+            }            
+            if (sym->get_prop("--module--")->to_string().compare(t_from) == 0 ) {
+                to_root.insert({name, sym});
+            }
+        }
+
+        // m_modules.at(t_to)->get_root() = m_modules.at(t_from)->get_root();
     }
 
     ALObjectPtr find(const ALObjectPtr t_sym);
@@ -147,12 +154,9 @@ class Environment
 
     void define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
 
-
     void put(const ALObjectPtr t_sym, ALObjectPtr t_val);
-
       
     void update(const ALObjectPtr t_sym, ALObjectPtr t_value);
-
 
     void new_scope()
     {
@@ -185,10 +189,12 @@ class Environment
 
     void stack_dump() const;
 
-
     void callstack_dump() const;
+    
     void trace_call(std::string t_trace, bool is_prime = false) { m_stack_trace.push_back({std::move(t_trace), is_prime}); }
+    
     void trace_unwind() { if (!std::empty(m_stack_trace)) { m_stack_trace.pop_back(); } }
+    
     auto get_stack_trace() -> auto& { return m_stack_trace; }
 
 };
@@ -248,8 +254,25 @@ struct FunctionCall
 {
   public:
 
-    explicit FunctionCall(Environment& t_env) : m_env(t_env) {m_env.call_function();}
-    ~FunctionCall() {m_env.finish_function();}
+    explicit FunctionCall(Environment& t_env, ALObjectPtr t_func) : m_env(t_env)
+    {
+        m_env.call_function();
+        
+        if (t_func->prop_exists("--module--")) {
+            auto func_module = t_func->get_prop("--module--")->to_string();
+            if (m_env.current_module().compare(func_module) != 0) {
+                m_prev_mod = m_env.current_module();
+                t_env.activate_module(func_module);
+            }
+            
+        }
+
+    }
+    ~FunctionCall() {
+        if(!m_prev_mod.empty()) { m_env.activate_module(m_prev_mod); }
+        m_env.finish_function();
+
+    }
 
     FunctionCall(FunctionCall &&) = default;
     FunctionCall& operator=(FunctionCall &&) = default;
@@ -260,6 +283,7 @@ struct FunctionCall
 
   private:
     Environment& m_env;
+    std::string m_prev_mod;
 
 };
 
@@ -289,9 +313,18 @@ struct ModuleChange
   public:
 
     ModuleChange(Environment& t_env, const std::string& t_module) :
-        m_env(t_env), m_prev_mod(m_env.current_module()) { m_env.activate_module(t_module); }
+        m_env(t_env), m_prev_mod(m_env.current_module())
+    {
+
+        m_env.activate_module(t_module);
+    }
     
-    ~ModuleChange() {m_env.activate_module(m_prev_mod);}
+    ~ModuleChange()
+    {
+        m_env.activate_module(m_prev_mod);
+        
+    }
+
     ModuleChange(ModuleChange &&) = default;
     ModuleChange& operator=(ModuleChange &&) = default;
     ModuleChange(const ModuleChange &) = delete;

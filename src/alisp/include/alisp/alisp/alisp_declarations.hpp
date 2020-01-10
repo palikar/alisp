@@ -22,7 +22,7 @@ DEFVAR(Qnil, Vnil, "nil",
        make_object(ALObject::list_type{Qnil}));
 
 DEFVAR(Qmodpaths, Vmodpaths, "modpaths",
-       make_object("", "/home/arnaud/code/alisp/scripts/libs/", ""));
+       make_object("", "/home/arnaud/code/alisp/scripts/libs/", "/home/arnaud/temp/alisp/scripts/libs/"));
 
 DEFSYM(Qoptional, "&optional");
 DEFSYM(Qrest, "&rest");

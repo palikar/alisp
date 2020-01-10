@@ -5,10 +5,10 @@
 #include <variant>
 #include <vector>
 #include <iterator>
-#include <bitset>
 #include <cstdint>
 #include <utility>
 #include <memory>
+#include <unordered_map>
 
 #include "alisp/utility/meta.hpp"
 #include "alisp/utility/vector_view.hpp"
@@ -312,7 +312,27 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
 
     }
 
-    std::string pretty_print() const {
+    ALObjectPtr get_prop(const std::string& t_name)
+    {
+        auto search = m_props.find(t_name);
+        if (search != m_props.end()) {
+            return search->second;
+        }
+        return nullptr;
+    }
+
+    void set_prop(const std::string& t_name, ALObjectPtr t_value)
+    {
+        m_props.insert({t_name, std::move(t_value)});
+    }
+
+    bool prop_exists(const std::string& t_name)
+    {
+        return m_props.count(t_name) != 0;
+    }
+    
+    std::string pretty_print() const
+    {
         std::ostringstream oss;
         oss << "(ALObject<" << alobject_type_to_string(type()) << "> ";
         switch (type()) {
@@ -348,9 +368,9 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
 
     data_type m_data;
     Prim::func_type m_prime = nullptr;
-
     const ALObjectType m_type;
     std::uint_fast32_t m_flags = 0;
+    std::unordered_map<std::string, ALObjectPtr> m_props;
 
     
 #ifdef USE_MANUAL_MEMORY

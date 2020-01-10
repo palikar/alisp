@@ -1,17 +1,10 @@
-(defmod 'math)
-
+(import 'format)
 
 (defvar PI 3.14159265)
 
 (defun sin-new (number)
+  (format "hello from sin")
   (+ 10 number))
 
 
-:math.pi -> (modref 'math 'PI)
-
-
-(modref 'math (modref 'smid 's-plus))
-
-
-math.smid.pi ->  (modref math smid s-plus)
 

@@ -69,6 +69,7 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eva
     if (env->module_loaded(mod_name->to_string())) { return Qnil; }
 
     env->define_module(mod_name->to_string());
+    
     env::detail::ModuleChange mc{*env, mod_name->to_string()};
     
     for (auto& path : *Vmodpaths) {
