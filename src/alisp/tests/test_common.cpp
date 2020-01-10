@@ -211,3 +211,31 @@ TEST_CASE("Common Test [equal]", "[equal]")
 
 
 }
+
+
+TEST_CASE("Common Test [print]", "[common]")
+{
+    using namespace alisp;
+
+
+    SECTION ( "simple pritty print" ) {
+
+        std::cout.setstate(std::ios_base::failbit);
+
+        CHECK_NOTHROW( std::cout << make_string("string"));
+        CHECK_NOTHROW( std::cout << make_int(12));
+        CHECK_NOTHROW( std::cout << make_double(12.32));
+        CHECK_NOTHROW( std::cout << make_symbol("sym"));
+        CHECK_NOTHROW( std::cout << make_list(make_string("asd")));
+
+        
+        CHECK_NOTHROW( std::cout << *make_string("string"));
+        CHECK_NOTHROW( std::cout << *make_int(12));
+        CHECK_NOTHROW( std::cout << *make_double(12.32));
+        CHECK_NOTHROW( std::cout << *make_symbol("sym"));
+        CHECK_NOTHROW( std::cout << *make_list(make_string("asd")));
+
+
+        std::cout.clear();
+    }
+}

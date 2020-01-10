@@ -387,6 +387,12 @@ inline std::ostream& operator<<(std::ostream& os, const ALObject& t_obj)
     return os;
 }
 
+inline std::ostream& operator<<(std::ostream& os, const ALObjectPtr t_obj)
+{
+    os << t_obj->pretty_print();
+    return os;
+}
+
 inline std::string dump(ALObjectPtr obj)
 {
     std::ostringstream str;

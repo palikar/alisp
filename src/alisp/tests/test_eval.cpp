@@ -677,3 +677,86 @@ TEST_CASE("Evaluator Test [function call]", "[eval]")
     CHECK ( res->to_int() == 42 );
 }
 
+
+
+TEST_CASE("Evaluator Test [exception]", "[eval]")
+{
+    using namespace alisp;
+
+    env::Environment env;
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto& pars = *p;
+    eval::Evaluator eval(env, p);
+
+    SECTION ( "signal" ) {
+        std::cout.setstate(std::ios_base::failbit);
+        
+        std::string input{"(signal 'siggy (\"this is sick\"))"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        CHECK_THROWS ( eval.eval(par_res[0]) );
+
+        std::cout.clear();
+    }
+
+    
+    SECTION ( "args [1]" ) {
+        std::cout.setstate(std::ios_base::failbit);
+        
+        std::string input{"(defun fun (a) (signal 'siggy (\"this is sick\"))) (fun 42 42)"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        eval.eval(par_res[0]);
+        
+        CHECK_THROWS ( eval.eval(par_res[1]) );
+
+        std::cout.clear();
+    }
+
+    
+    
+    SECTION ( "args [2]" ) {
+        std::cout.setstate(std::ios_base::failbit);
+        
+        std::string input{"(defun fun (a &optional b) (signal 'siggy (\"this is sick\"))) (fun 42 42 42)"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        eval.eval(par_res[0]);
+        
+        CHECK_THROWS ( eval.eval(par_res[1]) );
+
+        std::cout.clear();
+    }
+
+    
+    SECTION ( "eval" ) {
+        std::cout.setstate(std::ios_base::failbit);
+        
+        std::string input{"(defun fun (a) (signal 'siggy (\"this is sick\"))) (\"asd\" 42 42)"};
+        auto par_res = pars.parse(input, "__TEST__");
+    
+        eval.eval(par_res[0]);
+        
+        CHECK_THROWS ( eval.eval(par_res[1]) );
+
+        std::cout.clear();
+    }
+
+
+    SECTION ( "handling" ) {
+        std::cout.setstate(std::ios_base::failbit);
+        
+        std::string input{"(defun fun (a) (signal 'siggy (\"this is sick\"))) (\"asd\" 42 42)"};
+        auto par_res = pars.parse(input, "__TEST__");
+
+        try {
+            eval.eval(par_res[0]);
+        } catch (...) {
+            CHECK_NOTHROW ( handle_errors_lippincott<false>()  );
+        }
+
+        std::cout.clear();
+    }
+
+}
+
