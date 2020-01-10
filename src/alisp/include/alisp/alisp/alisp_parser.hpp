@@ -694,12 +694,29 @@ class ALParser : public ParserBase
     ALObjectPtr parse_id()
     {
         auto temp = this->position;
+
+        std::vector<std::string> package_refs;
+        
         while(this->position.has_more() && char_in_alphabet(*this->position, detail::id_alphabet))
         {
             ++this->position;
+
+            // if(check_char('.')){
+            //     package_refs.push_back(detail::Position::str(temp, this->position));
+            //     ++this->position;
+            //     temp = this->position;
+            // }
+            
         }
 
         const auto word = detail::Position::str(temp, this->position);
+
+        if(!package_refs.empty()) {
+
+            
+            
+            
+        }
 
         auto word_hash = hash::hash(word);
 
