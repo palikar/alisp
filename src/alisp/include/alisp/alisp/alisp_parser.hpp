@@ -695,7 +695,7 @@ class ALParser : public ParserBase
     {
         auto temp = this->position;
 
-        std::vector<std::string> package_refs;
+        // std::vector<std::string> package_refs;
         
         while(this->position.has_more() && char_in_alphabet(*this->position, detail::id_alphabet))
         {
@@ -711,12 +711,8 @@ class ALParser : public ParserBase
 
         const auto word = detail::Position::str(temp, this->position);
 
-        if(!package_refs.empty()) {
-
-            
-            
-            
-        }
+        // if(!package_refs.empty()) {
+        // }
 
         auto word_hash = hash::hash(word);
 

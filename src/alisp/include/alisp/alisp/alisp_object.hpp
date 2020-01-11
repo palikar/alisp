@@ -293,6 +293,40 @@ inline bool pfunction(ALObjectPtr obj)
     return obj->check_function_flag();
 }
 
+inline bool contains(ALObjectPtr obj, const std::string& t_str)
+{
+    if (!plist(obj)) { return false; }
+
+    const auto pred = [&t_str](auto it) {
+                          if (!psym(it)) { return false; }
+                          if(it->to_string().compare(t_str) == 0) {return true; }
+                          return false;
+                      };
+    
+    return std::any_of(std::begin(*obj), std::end(*obj), pred);
+}
+
+inline auto get_next(ALObjectPtr obj, const std::string& t_str) -> std::pair<ALObjectPtr, bool>
+{
+    if (!plist(obj)) { return {nullptr, false}; }
+
+    const auto pred = [&t_str](auto it) {
+                          if (!psym(it)) { return false; }
+                          if(it->to_string().compare(t_str) == 0) {return true; }
+                          return false;
+                      };
+    
+    auto prop = std::find_if(std::begin(*obj), std::end(*obj), pred);
+    auto val = std::next(prop);
+
+    if (prop == std::end(*obj)) { return {nullptr, false}; }
+    if (val == std::end(*obj)) { return {nullptr, false}; }
+
+    return std::pair{*val, true};
+    
+}
+
+
 
 
 inline const auto AND_OBJ_FUN = [](bool t_acc, ALObjectPtr t_obj) {return t_acc and is_truthy(t_obj);};

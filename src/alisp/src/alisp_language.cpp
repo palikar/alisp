@@ -60,7 +60,7 @@ static ALObjectPtr handle_backquote_list(ALObjectPtr obj, eval::Evaluator* eval)
 ALObjectPtr Fimport(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval)
 {
     namespace fs = std::filesystem;
-    assert_size<1>(obj);
+    assert_min_size<1>(obj);
 
     auto mod_name = eval->eval(obj->i(0));
 
@@ -68,9 +68,21 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eva
 
     if (env->module_loaded(mod_name->to_string())) { return Qnil; }
 
-    env->define_module(mod_name->to_string());
-    
+    env->define_module(mod_name->to_string());    
     env::detail::ModuleChange mc{*env, mod_name->to_string()};
+
+    bool import_all = false;
+    if (contains(obj, ":all")) { import_all = true; }
+
+    auto [file, file_succ] = get_next(obj, ":file");
+    if (file_succ and pstring(file)) {
+        std::cout << "The path is now: " << file->to_string() << "\n";
+    }
+
+    auto [new_name, as_succ] = get_next(obj, ":as");
+    if (file_succ and psym(eval->eval(new_name))) {
+        std::cout << "The path is now: " << file->to_string() << "\n";
+    }
     
     for (auto& path : *Vmodpaths) {
         auto mod_file = fs::path(path->to_string()) / fs::path(mod_name->to_string() + ".al");
@@ -79,7 +91,7 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eva
 
         eval->eval_file(mod_file);
 
-        env->import_root_scope(mod_name->to_string(), mc.old_module());
+        if (import_all ) { env->import_root_scope(mod_name->to_string(), mc.old_module()); }
         
         return Qt;
     }
