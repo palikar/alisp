@@ -62,38 +62,60 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eva
     namespace fs = std::filesystem;
     assert_min_size<1>(obj);
 
-    auto mod_name = eval->eval(obj->i(0));
-
-    assert_symbol(mod_name);
-
-    if (env->module_loaded(mod_name->to_string())) { return Qnil; }
-
-    env->define_module(mod_name->to_string());    
-    env::detail::ModuleChange mc{*env, mod_name->to_string()};
+    auto mod_sym = eval->eval(obj->i(0));
+    assert_symbol(mod_sym);
+    const auto module_name = mod_sym->to_string();
 
     bool import_all = false;
+    std::string module_file = module_name;
+    std::string import_as = module_name;
+    
     if (contains(obj, ":all")) { import_all = true; }
 
     auto [file, file_succ] = get_next(obj, ":file");
     if (file_succ and pstring(file)) {
-        std::cout << "The path is now: " << file->to_string() << "\n";
+        module_file = file->to_string();
     }
 
-    auto [new_name, as_succ] = get_next(obj, ":as");
-    if (file_succ and psym(eval->eval(new_name))) {
-        std::cout << "Importing as: " << new_name->to_string() << "\n";
+    auto [name_sexp, as_succ] = get_next(obj, ":as");
+    if ( as_succ ) {
+        auto new_name = eval->eval(name_sexp);
+        if (psym(new_name)){
+            import_as = new_name->to_string();
+        }
     }
-    
-    for (auto& path : *Vmodpaths) {
-        auto mod_file = fs::path(path->to_string()) / fs::path(mod_name->to_string() + ".al");
 
-        if(!fs::exists(mod_file)) { continue; }
+    if (env->module_loaded(module_name)) {
+        
+        env->alias_module(module_name, import_as);
 
-        eval->eval_file(mod_file);
-
-        if (import_all ) { env->import_root_scope(mod_name->to_string(), mc.old_module()); }
+        if (import_all ) {
+            env->import_root_scope(module_name, env->current_module());
+        }
         
         return Qt;
+    }
+    
+    env->define_module(module_name, import_as);    
+    env::detail::ModuleChange mc{*env, module_name};
+    
+    for (auto& path : *Vmodpaths) {
+        for (auto& postfix : std::vector<std::string>{"", ".al"}) {
+
+            const auto eval_file = fs::path(path->to_string()) / fs::path(module_file + postfix);
+
+            if(!fs::exists(eval_file)) { continue; }
+        
+            eval->eval_file(eval_file);
+
+            if (import_all ) {
+                env->import_root_scope(module_name, mc.old_module());
+                return Qt;
+            }
+            
+            return Qt;
+        }
+        
     }
 
     return Qnil;
@@ -118,6 +140,22 @@ ALObjectPtr Fdefun(ALObjectPtr obj, env::Environment* env, eval::Evaluator*)
 
     env->define_function(obj->i(0), obj->i(1), splice(obj, 2));
     return Qt;
+}
+
+ALObjectPtr Fmodref(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval)
+{
+    assert_min_size<1>(obj);
+
+    size_t curr_index = 0;
+    auto curr_mod = env->get_module(env->current_module());
+    while (curr_index < obj->length() - 1) {
+        auto next_sym = eval->eval(obj->i(curr_index));
+        curr_mod = curr_mod->get_module(next_sym->to_string());
+        ++curr_index;
+    }
+    
+    auto next_sym = eval->eval(obj->i(curr_index));
+    return curr_mod->get_root().at(next_sym->to_string());
 }
 
 ALObjectPtr Fdefmacro(ALObjectPtr obj, env::Environment* env, eval::Evaluator*)

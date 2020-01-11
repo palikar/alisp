@@ -145,12 +145,8 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
           auto func = eval(obj->i(0));
 
-          std::string name;
           if(psym(func)) {
-              name += func->to_string();
               func = env.find(func);
-          } else {
-              name += obj->i(0)->to_string();
           }
 
           if ( !func->check_function_flag() ) {
@@ -159,7 +155,9 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
           
           env::detail::CallTracer tracer{env};
 
-          tracer.function_name(name, func->check_prime_flag());
+          
+          // tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag());
+          tracer.function_name("asjölk", func->check_prime_flag());
           
           try {
 

@@ -91,6 +91,7 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
     auto new_fun = make_object(t_params, t_body);
     new_fun->set_function_flag();
     new_fun->set_prop("--module--", make_string(m_active_module->name()));
+    new_fun->set_prop("--name--", make_string(name));
         
     scope.insert({name, new_fun});
     
@@ -108,6 +109,7 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
     new_fun->set_function_flag();
     new_fun->set_macro_flag();
     new_fun->set_prop("--module--", make_string(m_active_module->name()));
+    new_fun->set_prop("--name--", make_string(name));
         
     scope.insert({name, new_fun});
     

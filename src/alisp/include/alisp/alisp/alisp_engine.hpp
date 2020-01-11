@@ -66,9 +66,9 @@ class LanguageEngine
         auto parse_result = m_parser->parse(t_input, t_file);
 
         for (auto sexp : parse_result ) {
-            if (check(EngineSettings::PARSER_DEBUG)) std::cout << "DEUBG[EVAL]: " << alisp::dump(sexp) << "\n";
+            if (check(EngineSettings::PARSER_DEBUG)) std::cout << "DEUBG[PARSER]: " << alisp::dump(sexp) << "\n";
             auto eval_result = m_evaluator.eval(sexp);
-            if (check(EngineSettings::EVAL_DEBUG)) std::cout << "DEUBG[PARSER]: " << alisp::dump(eval_result) << "\n";
+            if (check(EngineSettings::EVAL_DEBUG)) std::cout << "DEUBG[EVAL]: " << alisp::dump(eval_result) << "\n";
             if (t_print_res) { std::cout << *eval_result << "\n"; }
         }
     }

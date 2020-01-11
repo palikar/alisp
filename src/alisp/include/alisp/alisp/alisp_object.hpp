@@ -21,7 +21,8 @@ namespace alisp
 
 
 inline auto splice(ALObjectPtr t_obj, std::vector<ALObject>::difference_type start_index,
-                   std::vector<ALObject>::difference_type end_index = -1){
+                   std::vector<ALObject>::difference_type end_index = -1)
+{
 
     const auto size = static_cast<std::vector<ALObject>::difference_type>(std::size(*t_obj));
     const auto end_move = end_index == -1 ? size : end_index;
@@ -38,7 +39,8 @@ inline auto splice(ALObjectPtr t_obj, std::vector<ALObject>::difference_type sta
 }
 
 inline auto splice_temp(ALObjectPtr t_obj, std::vector<ALObject>::difference_type start_index,
-                        std::vector<ALObject>::difference_type end_index = -1){
+                        std::vector<ALObject>::difference_type end_index = -1)
+{
 
     const auto size = static_cast<std::vector<ALObject>::difference_type>(std::size(*t_obj));
     const auto end_move = end_index == -1 ? size : end_index;
@@ -51,6 +53,11 @@ inline auto splice_temp(ALObjectPtr t_obj, std::vector<ALObject>::difference_typ
     }
     
     return make_object(begin_it, end_it);
+}
+
+inline auto quote(ALObjectPtr t_obj)
+{
+    return make_object(Qquote, t_obj);
 }
 
 

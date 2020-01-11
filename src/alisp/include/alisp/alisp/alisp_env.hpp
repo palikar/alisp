@@ -73,9 +73,11 @@ class Module
 
     const std::string& name() { return m_name; }
 
-    void add_module(std::shared_ptr<Module> t_module) { m_modules.insert({t_module->name(), t_module}); }
+    void add_module(std::shared_ptr<Module> t_module, const std::string t_alias) { m_modules.insert({t_alias, t_module}); }
 
     detail::CellStack::Scope& get_root() { return m_root_scope; }
+
+    Module* get_module(const std::string t_name) { return m_modules.at(t_name).get(); }
 
 };
 
@@ -106,11 +108,15 @@ class Environment
     }
     
       
-    void define_module(const std::string t_name)
+    void define_module(const std::string t_name, const std::string t_alias)
     {
         auto new_mod = std::make_shared<Module>(t_name);
-        m_active_module->add_module(new_mod);
+        m_active_module->add_module(new_mod, t_alias);
         m_modules.insert({t_name, new_mod});
+    }
+
+    void alias_module(const std::string t_name, const std::string t_alias){
+        m_active_module->add_module(m_modules.at(t_name), t_alias);
     }
 
     void activate_module(const std::string t_name)
@@ -118,10 +124,15 @@ class Environment
         
         m_active_module = m_modules.at(t_name).get();
     }
-
+    
     const std::string& current_module()
     {
         return m_active_module->name();
+    }
+
+    Module* get_module(const std::string t_name)
+    {
+        return m_modules.at(t_name).get();
     }
     
     bool module_loaded(const std::string& t_module_name)
