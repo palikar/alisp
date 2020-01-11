@@ -695,24 +695,26 @@ class ALParser : public ParserBase
     {
         auto temp = this->position;
 
-        // std::vector<std::string> package_refs;
+        std::vector<ALObjectPtr> package_refs;
         
         while(this->position.has_more() && char_in_alphabet(*this->position, detail::id_alphabet))
         {
             ++this->position;
 
-            // if(check_char('.')){
-            //     package_refs.push_back(detail::Position::str(temp, this->position));
-            //     ++this->position;
-            //     temp = this->position;
-            // }
-            
+            if(check_char('.')){
+                package_refs.push_back(quote(make_symbol(detail::Position::str(temp, this->position))));
+                ++this->position;
+                temp = this->position;
+            }            
         }
 
         const auto word = detail::Position::str(temp, this->position);
 
-        // if(!package_refs.empty()) {
-        // }
+        if(!package_refs.empty()) {
+            package_refs.insert(package_refs.begin(), make_symbol("modref"));
+            package_refs.push_back(quote(make_symbol(word)));
+            return make_object(package_refs);
+        }
 
         auto word_hash = hash::hash(word);
 
