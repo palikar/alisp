@@ -81,7 +81,7 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eva
 
     auto [new_name, as_succ] = get_next(obj, ":as");
     if (file_succ and psym(eval->eval(new_name))) {
-        std::cout << "The path is now: " << file->to_string() << "\n";
+        std::cout << "Importing as: " << new_name->to_string() << "\n";
     }
     
     for (auto& path : *Vmodpaths) {
