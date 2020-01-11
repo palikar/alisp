@@ -130,7 +130,9 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
     switch (obj->type()) {
       case ALObjectType::STRING_VALUE :
+
       case ALObjectType::REAL_VALUE :
+
       case ALObjectType::INT_VALUE : {
           return obj;
       }
@@ -142,18 +144,27 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
       case ALObjectType::LIST : {
 
           auto func = eval(obj->i(0));
+
+          std::string name;
+          if(psym(func)) {
+              name += func->to_string();
+              func = env.find(func);
+          } else {
+              name += obj->i(0)->to_string();
+          }
+
           if ( !func->check_function_flag() ) {
               throw eval_error("Head of a list must be bound to function");
           }
           
-          
           env::detail::CallTracer tracer{env};
-          tracer.function_name(obj->i(0)->to_string(), func->check_prime_flag());
 
+          tracer.function_name(name, func->check_prime_flag());
+          
           try {
 
               if (func->check_prime_flag()) {                  
-
+                  
                   STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
                   
                   return func->get_prime()(eval_ptr, &env, this);
@@ -181,8 +192,10 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
           break;
        }
 
-       default:
-           eval_error("Unknown object typee");
+      default : {
+          eval_error("Unknown object typee");
+      } 
+      
     }
 
 

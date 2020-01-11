@@ -416,6 +416,11 @@ inline std::string dump(ALObjectPtr obj)
           break;
 
       case ALObjectType::LIST:
+          if (obj->length() == 0) {
+              str << "() ";
+              break;
+          }
+
           str << "(";
           for (auto ob : *obj)
           {
