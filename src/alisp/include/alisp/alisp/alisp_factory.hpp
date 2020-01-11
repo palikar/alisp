@@ -146,6 +146,21 @@ inline auto make_list(ALObjectPtr obj)
     return detail::ALObjectHelper::get(std::vector{obj});
 }
 
+inline auto make_list()
+{
+    return detail::ALObjectHelper::get(ALObject::list_type{});
+}
+
+inline auto make_list(std::vector<std::string> strs)
+{
+    auto new_obj = detail::ALObjectHelper::get(ALObject::list_type{});
+    for (auto& str : strs) {
+        new_obj->children().push_back(make_object(str));
+    }
+    return new_obj;
+}
+
+
 
 
 }

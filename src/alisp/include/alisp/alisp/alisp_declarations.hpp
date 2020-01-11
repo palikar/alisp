@@ -21,8 +21,14 @@ DEFVAR(Qt, Vt, "t",
 DEFVAR(Qnil, Vnil, "nil",
        make_object(ALObject::list_type{Qnil}));
 
-DEFVAR(Qmodpaths, Vmodpaths, "modpaths",
+DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--",
        make_object("", "/home/arnaud/code/alisp/scripts/libs/", "/home/arnaud/temp/alisp/scripts/libs/"));
+
+DEFVAR(Qcurrent_module, Vcurrent_module, "--module--",
+       make_list(make_object("")));
+
+DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--",
+       make_list());
 
 DEFSYM(Qoptional, "&optional");
 DEFSYM(Qrest, "&rest");

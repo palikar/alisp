@@ -1,6 +1,7 @@
-(import 'math)
+(import 'math :all)
 
-;; (println (new-math.sin-new 123))
-(println math.PI)
+(println (sin-new 123))
+
+
 
 

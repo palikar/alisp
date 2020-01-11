@@ -55,6 +55,7 @@ class LanguageEngine
     eval::Evaluator m_evaluator;
 
     std::vector<EngineSettings> m_settings;
+    std::vector<std::string> m_argv;
 
     bool check(EngineSettings t_setting)
     {
@@ -91,11 +92,14 @@ class LanguageEngine
 
 
 
-    LanguageEngine(std::vector<EngineSettings> t_setting = {}) :
+    LanguageEngine(std::vector<EngineSettings> t_setting = {}, std::vector<std::string> t_cla = {}) :
         m_environment(), m_parser(std::make_shared<parser::ALParser<env::Environment>>(m_environment)),
         m_evaluator(m_environment, m_parser),
-        m_settings(t_setting)
+        m_settings(std::move(t_setting)), m_argv(std::move(t_cla))
     {
+        
+        
+        
         init_system();
     }
 

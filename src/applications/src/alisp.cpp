@@ -45,16 +45,18 @@ int main(int argc, char *argv[])
     alisp::logging::init_logging();
 
     auto cli = (
-
+        
+        
         opts.version      << clipp::option("-v", "--version")                             % "Show the version and build information of the current executable",
         opts.show_help    << clipp::option("-h", "--help")                                % "Print help information",
         opts.interactive  << clipp::option("-i", "--interactive")                         % "Start interactive mode after file evaluation",
         opts.eval         << clipp::option("-e", "--eval") & clipp::value("expr")         % "Input string to evaluate",
         opts.parse_debug  << clipp::option("-d", "--parse-debug")                         % "Debug output from the parser",
         opts.eval_debug   << clipp::option("-l", "--eval-debug")                          % "Debug output from the evaluator",
-
-        (opts.input       << clipp::opt_value("file")      % "Input file") &
-        (opts.args        << clipp::opt_values("args")     % "Args")
+        
+        
+        opts.input       << clipp::opt_value("file")      % "Input file" &
+        !(opts.args        << clipp::opt_values("args")     % "Args")
 
         );
 
@@ -107,7 +109,6 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-
     // std::cout << "File:" << opts.input << "\n";
     // std::cout << "Eval:" << opts.eval << "\n";
     // std::cout << "Parse debug:" << opts.parse_debug << "\n";
@@ -124,7 +125,7 @@ int main(int argc, char *argv[])
     if (opts.eval_debug) settings.push_back(alisp::EngineSettings::EVAL_DEBUG);
     if (opts.parse_debug) settings.push_back(alisp::EngineSettings::PARSER_DEBUG);
 
-    alisp::LanguageEngine alisp_engine(settings);
+    alisp::LanguageEngine alisp_engine(settings, std::move(opts.args));
 
 
     if(!opts.input.empty()){
