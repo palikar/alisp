@@ -1,7 +1,7 @@
-build_release|-DCMAKE_BUILD_TYPE=Release -DBUILD_DOC=ON|-j4 all
-build_debug|-DCMAKE_BUILD_TYPE=Debug|-j4 all
-build_unittests|-DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DBUILD_EXAMPLES=ON|-j4 all test test_examples
+build_release|-DCMAKE_BUILD_TYPE=Release -DBUILD_DOC=ON|-j4 all|CXX=g++
+build_debug|-DCMAKE_BUILD_TYPE=Debug|-j4 all|CXX=g++
+build_unittests|-DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DBUILD_EXAMPLES=ON|-j4 all test test_examples|CXX=g++
 build_examples|-DCMAKE_BUILD_TYPE=Debug -DBUILD_EXAMPLES=ON|-j4 all test_examples
-build_coverage|-DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DENABLE_COVERAGE=ON|-j4 all test alisp_coverage_html
-build_checks|-DCMAKE_BUILD_TYPE=Debug -DENABLE_CLANG_TIDY=ON -DENABLE_CPPCHECK=ON |-j4 all
-build_valgrind|-DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DVALGRIND_CHECKS=ON|-j4 all valgrind_checks
+build_coverage|-DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DENABLE_COVERAGE=ON|-j4 all test alisp_coverage_html|CXX=g++
+build_checks|-DCMAKE_BUILD_TYPE=Debug -DENABLE_CLANG_TIDY=ON -DENABLE_CPPCHECK=ON |-j4 all|CXX=g++
+build_valgrind|-DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DVALGRIND_CHECKS=ON|-j4 all valgrind_checks|CXX=g++
