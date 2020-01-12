@@ -50,9 +50,10 @@ int main(int argc, char *argv[])
         opts.version      << clipp::option("-v", "--version")                             % "Show the version and build information of the current executable",
         opts.show_help    << clipp::option("-h", "--help")                                % "Print help information",
         opts.interactive  << clipp::option("-i", "--interactive")                         % "Start interactive mode after file evaluation",
-        opts.eval         << clipp::option("-e", "--eval") & clipp::value("expr")         % "Input string to evaluate",
         opts.parse_debug  << clipp::option("-d", "--parse-debug")                         % "Debug output from the parser",
         opts.eval_debug   << clipp::option("-l", "--eval-debug")                          % "Debug output from the evaluator",
+
+        clipp::option("-e", "--eval")         & opts.eval << clipp::value("expr")         % "Input string to evaluate",
         
         
         opts.input       << clipp::opt_value("file")      % "Input file" &

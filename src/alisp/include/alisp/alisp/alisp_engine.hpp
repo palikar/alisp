@@ -49,7 +49,6 @@ enum class EngineSettings
 class LanguageEngine
 {
   private:
-
     env::Environment m_environment;
     std::shared_ptr<parser::ALParser<env::Environment>> m_parser;
     eval::Evaluator m_evaluator;
@@ -57,16 +56,14 @@ class LanguageEngine
     std::vector<EngineSettings> m_settings;
     std::vector<std::string> m_argv;
 
-    bool check(EngineSettings t_setting)
-    {
-        return std::find(std::begin(m_settings), std::end(m_settings), t_setting) != std::end(m_settings);
-    }
+    bool check(EngineSettings t_setting) { return std::find(std::begin(m_settings), std::end(m_settings), t_setting) != std::end(m_settings); }
 
-    void do_eval(std::string& t_input, const std::string& t_file, bool t_print_res = false)
+    void do_eval(std::string &t_input, const std::string &t_file, bool t_print_res = false)
     {
         auto parse_result = m_parser->parse(t_input, t_file);
 
-        for (auto sexp : parse_result ) {
+        for (auto sexp : parse_result)
+        {
             if (check(EngineSettings::PARSER_DEBUG)) std::cout << "DEUBG[PARSER]: " << alisp::dump(sexp) << "\n";
             auto eval_result = m_evaluator.eval(sexp);
             if (check(EngineSettings::EVAL_DEBUG)) std::cout << "DEUBG[EVAL]: " << alisp::dump(eval_result) << "\n";
@@ -76,26 +73,21 @@ class LanguageEngine
 
 
   public:
+    static bool env_bool(const char *t_name) { return getenv(t_name) != nullptr; }
 
-    static bool env_bool(const char* t_name)
+    static std::string env_string(const char *t_name)
     {
-        return getenv(t_name) != nullptr;
-    }
-
-    static std::string env_string(const char* t_name)
-    {
-        if (env_bool(t_name)){
-            return std::string{getenv(t_name)};
-        }
+        if (env_bool(t_name)) { return std::string{ getenv(t_name) }; }
         return {};
     }
 
 
-
-    LanguageEngine(std::vector<EngineSettings> t_setting = {}, std::vector<std::string> t_cla = {}) :
-        m_environment(), m_parser(std::make_shared<parser::ALParser<env::Environment>>(m_environment)),
-        m_evaluator(m_environment, m_parser),
-        m_settings(std::move(t_setting)), m_argv(std::move(t_cla))
+    LanguageEngine(std::vector<EngineSettings> t_setting = {}, std::vector<std::string> t_cla = {})
+      : m_environment()
+      , m_parser(std::make_shared<parser::ALParser<env::Environment>>(m_environment))
+      , m_evaluator(m_environment, m_parser)
+      , m_settings(std::move(t_setting))
+      , m_argv(std::move(t_cla))
     {
         init_system();
     }
@@ -106,39 +98,42 @@ class LanguageEngine
 
 
         std::string al_path = env_string("ALPATH");
-        if (!al_path.empty()) {
+        if (!al_path.empty())
+        {
             auto paths = utility::split(al_path, ':');
-            
-            
-        }
-        
 
+            const auto add_modules = [&](auto &path) { Vmodpaths->children().push_back(make_string(path)); };
+            std::for_each(std::begin(paths), std::end(paths), add_modules);
+        }
     }
 
 
-    void eval_statement(std::string& command)
+    void eval_statement(std::string &command)
     {
-        try {
+        try
+        {
             do_eval(command, "__EVAL__", true);
-        }catch (...) {
+        }
+        catch (...)
+        {
             handle_errors_lippincott<false>();
         }
-
     }
 
 
-    void eval_file(const std::filesystem::path& t_path)
+    void eval_file(const std::filesystem::path &t_path)
     {
-        try {
+        try
+        {
             auto file_content = utility::load_file(t_path);
             do_eval(file_content, t_path);
-        }catch (...) {
+        }
+        catch (...)
+        {
             handle_errors_lippincott<true>();
         }
     }
-
-
 };
 
 
-}
+}  // namespace alisp
