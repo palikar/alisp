@@ -154,10 +154,8 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
           }
           
           env::detail::CallTracer tracer{env};
-
           
-          // tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag());
-          tracer.function_name("asjölk", func->check_prime_flag());
+          tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag());
           
           try {
 

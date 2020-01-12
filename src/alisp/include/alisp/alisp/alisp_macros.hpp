@@ -15,7 +15,7 @@
 #define DEFUN(name, sym)                                                \
     extern ALObjectPtr F##name (ALObjectPtr, env::Environment*, eval::Evaluator*); \
     inline auto Q##name = env::Environment::g_global_symbol_table.insert({sym, make_symbol(sym)}).first->second; \
-    inline auto P##name = env::Environment::g_prime_values.insert({sym, make_object(ALObject::list_type{})->make_prime(&F##name)}).first->second
+    inline auto P##name = env::Environment::g_prime_values.insert({sym, make_prime(&F##name, sym)}).first->second
 
 
     

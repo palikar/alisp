@@ -2,4 +2,4 @@
 
 
 
-(println (math.sin-new-new 123))
+(println (math.sin-new 123))

@@ -160,6 +160,13 @@ inline auto make_list(std::vector<std::string> strs)
     return new_obj;
 }
 
+inline auto make_prime(Prim::func_type t_function, std::string t_name)
+{
+    auto sym = make_object(ALObject::list_type{})->make_prime(t_function);
+    sym->set_prop("--name--", make_string(t_name));
+    return sym;
+}
+
 
 
 
