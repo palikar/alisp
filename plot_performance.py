@@ -1,3 +1,4 @@
+import matplotlib
 import matplotlib.pyplot as plt
 import os
 import sys
@@ -41,8 +42,11 @@ def main():
         labels.append(build_id)
         box_data.append(times)
         
-        
-    plt.figure(figsize=(5,5))
+
+    matplotlib.rc('xtick', labelsize=13) 
+    matplotlib.rc('ytick', labelsize=17)
+
+    plt.figure(figsize=(17, 10))
 
     x = [i for i in range(1, len(data.keys())+1)]
     
@@ -56,9 +60,10 @@ def main():
     plt.gca().spines['right'].set_visible(False)
 
     plt.xlabel("Build")
-    plt.ylabel('Performance checks (s)')
+    plt.ylabel('Performance checks runtime (s)')
+    plt.title('Performance comparison', fontsize=17)
     
-    plt.show()
+    plt.savefig(os.path.join(root_dir, 'perfrmance_plot.png'), bbox_inches='tight')
 
 
 if __name__ == '__main__':
