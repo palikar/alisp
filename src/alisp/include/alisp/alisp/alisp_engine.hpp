@@ -123,6 +123,10 @@ class LanguageEngine
 
     void eval_file(const std::filesystem::path &t_path)
     {
+
+        namespace fs = std::filesystem;
+        Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path()))); 
+        
         try
         {
             auto file_content = utility::load_file(t_path);
