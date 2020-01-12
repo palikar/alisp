@@ -114,9 +114,10 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eva
             }
             
             return Qt;
-        }
-        
+        }        
     }
+
+    throw module_error(mod_sym->to_string(), "The module's file \"" + module_file + "\" was not found.");
 
     return Qnil;
 }
@@ -150,12 +151,19 @@ ALObjectPtr Fmodref(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eva
     auto curr_mod = env->get_module(env->current_module());
     while (curr_index < obj->length() - 1) {
         auto next_sym = eval->eval(obj->i(curr_index));
-        curr_mod = curr_mod->get_module(next_sym->to_string());
+        assert_symbol(next_sym);
+        auto next_mod = curr_mod->get_module(next_sym->to_string());
+        if (!next_mod) { throw module_refence_error(curr_mod->name(), next_sym->to_string()); }
+        curr_mod = next_mod;
         ++curr_index;
     }
     
     auto next_sym = eval->eval(obj->i(curr_index));
-    return curr_mod->get_root().at(next_sym->to_string());
+    assert_symbol(next_sym);
+    std::cout << dump(next_sym) << "\n";
+    auto sym = curr_mod->get_symbol(next_sym->to_string());
+    if(!sym) { throw module_refence_error(curr_mod->name(), next_sym->to_string(), true); }
+    return sym;
 }
 
 ALObjectPtr Fdefmacro(ALObjectPtr obj, env::Environment* env, eval::Evaluator*)

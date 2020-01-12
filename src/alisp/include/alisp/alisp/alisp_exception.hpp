@@ -54,7 +54,6 @@ struct al_exception : public std::runtime_error
     std::string m_signal_name;
 };
 
-
 struct signal_exception : public al_exception
 {
 
@@ -77,7 +76,6 @@ struct signal_exception : public al_exception
         return ss.str();
     }
 };
-
 
 struct parse_exception : public al_exception
 {
@@ -117,20 +115,17 @@ struct parse_exception : public al_exception
     }
 };
 
-
 struct environment_error : public al_exception
 {
   public:
     environment_error(const std::string &t_why) : al_exception(t_why, SignalTag::ENV) { m_signal_name = "environment-signal"; }
 };
 
-
 struct eval_error : public al_exception
 {
   public:
     eval_error(const std::string &t_why) : al_exception(t_why, SignalTag::EVAL) { m_signal_name = "eval-signal"; }
 };
-
 
 struct argument_error : public al_exception
 {
@@ -142,7 +137,7 @@ struct module_error : public al_exception
 {
   private:
     std::string m_module;
-    
+
   public:
     module_error(std::string t_module, const std::string& t_why) :
         al_exception(format(t_module,  t_why), SignalTag::MODULE_IMPORT),
@@ -151,21 +146,20 @@ struct module_error : public al_exception
         m_signal_name = "module-signal";
     }
 
-    
+
     static std::string format(std::string t_module, const std::string t_why)
     {
         std::ostringstream ss;
         ss << "Module import error when loading " << t_module << ":\n\t" << t_why;
         ss << '\n';
         return ss.str();
-    }    
+    }
 };
-
 
 struct module_refence_error : public al_exception
 {
-      
-    
+
+
   public:
     module_refence_error(std::string t_module, const std::string& t_reference, bool symbol = false) :
         al_exception(format(t_module,  t_reference, symbol), SignalTag::MODULE_REFERNCE)
@@ -173,7 +167,7 @@ struct module_refence_error : public al_exception
         m_signal_name = "module-signal";
     }
 
-    
+
     static std::string format(std::string t_module, const std::string t_ref, bool t_symbol)
     {
         std::ostringstream ss;
@@ -185,7 +179,7 @@ struct module_refence_error : public al_exception
         }
         ss << '\n';
         return ss.str();
-    }    
+    }
 };
 
 
@@ -261,6 +255,16 @@ template<bool should_exit = false> void handle_errors_lippincott()
     {
         std::cout << rang::fg::red << "Invalid Arguments error:<" << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name() << ">\n"
                   << rang::fg::reset;
+        std::cout << '\t' << p_exc.what() << "\n";
+    }
+    catch (module_error &p_exc)
+    {
+        std::cout << rang::fg::red << "Module error:.\n" << rang::fg::reset;
+        std::cout << '\t' << p_exc.what() << "\n";
+    }
+    catch (module_refence_error &p_exc)
+    {
+        std::cout << rang::fg::red << "Reference error:.\n" << rang::fg::reset;
         std::cout << '\t' << p_exc.what() << "\n";
     }
     catch (alobject_error &p_exc)
