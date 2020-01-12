@@ -25,5 +25,10 @@ ALObjectPtr env::intern(const std::string& name)
     return new_sym->second;
 }
 
+void env::update_prime(ALObjectPtr t_sym, ALObjectPtr t_val)
+{
+    env::Environment::g_prime_values.at(t_sym->to_string()) = std::move(t_val);
+
+}
 
 }

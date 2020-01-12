@@ -26,6 +26,7 @@ namespace env
 {
 
 extern ALObjectPtr intern(const std::string& name);
+extern void update_prime(ALObjectPtr t_sym, ALObjectPtr t_val);
 
 namespace detail
 {
@@ -346,6 +347,8 @@ struct ModuleChange
 };
 
 }
+
+
 
 }
 

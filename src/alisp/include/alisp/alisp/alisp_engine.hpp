@@ -97,14 +97,21 @@ class LanguageEngine
         m_evaluator(m_environment, m_parser),
         m_settings(std::move(t_setting)), m_argv(std::move(t_cla))
     {
-        
-        
-        
         init_system();
     }
 
     void init_system()
     {
+        env::update_prime(Qcommand_line_args, make_list(m_argv));
+
+
+        std::string al_path = env_string("ALPATH");
+        if (!al_path.empty()) {
+            auto paths = utility::split(al_path, ':');
+            
+            
+        }
+        
 
     }
 
