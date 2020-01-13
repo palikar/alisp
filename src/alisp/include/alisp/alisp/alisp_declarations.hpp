@@ -16,26 +16,18 @@ namespace alisp
 /*  \____\___/|_| |_|___/\__\__,_|_| |_|\__|___/ */
                                              
 
-DEFVAR(Qt, Vt, "t",
-       make_object(ALObject::list_type{Qt}));
-DEFVAR(Qnil, Vnil, "nil",
-       make_object(ALObject::list_type{Qnil}));
+DEFVAR(Qt, Vt, "t", make_list(Qt));
+DEFVAR(Qnil, Vnil, "nil", make_object(Qnil));
 
-DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--",
-       make_object("", "/home/arnaud/code/alisp/scripts/libs/", "/home/arnaud/temp/alisp/scripts/libs/"));
-
-DEFVAR(Qcurrent_module, Vcurrent_module, "--module--",
-       make_list(make_object("")));
-
-DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--",
-       make_list());
+DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--", make_object("", "/home/arnaud/code/alisp/scripts/libs/", "/home/arnaud/temp/alisp/scripts/libs/"));
+DEFVAR(Qcurrent_module, Vcurrent_module, "--module--", make_string(""));
+DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--", make_list());
 
 DEFSYM(Qoptional, "&optional");
 DEFSYM(Qrest, "&rest");
 
 DEFSYM(Qcomma, ",");
 DEFSYM(Qcomma_at, ",@");
-
 
 
 
@@ -49,9 +41,11 @@ DEFSYM(Qcomma_at, ",@");
 
 DEFUN(import, "import");
 DEFUN(modref, "modref");
+
 DEFUN(defun, "defun");
 DEFUN(defmacro, "defmacro");
 DEFUN(defvar, "defvar");
+
 DEFUN(setq, "setq");
 DEFUN(set, "set");
 DEFUN(quote, "quote");
