@@ -1,3 +1,18 @@
+add_library(alisp_fileio
+    src/modules/fileio.cpp)
+
+target_include_directories(alisp_fileio
+    PUBLIC include
+    PRIVATE src)
+
+
+target_link_libraries(alisp_fileio
+    PRIVATE
+    project_options
+    project_warnings
+    alisp_util)
+
+
 add_library(alisp_language
     src/alisp_parser.cpp
     src/alisp_env.cpp
@@ -12,9 +27,6 @@ add_library(alisp_language
     src/alisp_printing.cpp
     src/alisp_engine.cpp
     src/alisp_modules.cpp
-
-    src/modules/fileio.cpp
-    
     )
 
 
@@ -27,14 +39,13 @@ target_link_libraries(alisp_language
     PRIVATE
     project_options
     project_warnings
+    alisp_fileio
     PUBLIC
     alisp_util
     fmt::fmt
     )
 
-
-
-install(TARGETS alisp_language
+install(TARGETS alisp_language alisp_fileio
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
     RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}

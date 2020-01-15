@@ -179,6 +179,7 @@ class Environment
         auto new_mod = module_import->second.function(this, eval);
         m_modules.insert({ t_module_name, new_mod });
 
+        
         return true;
     }
 

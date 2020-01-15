@@ -1,22 +1,14 @@
-#include "alisp/alisp/alisp_modules.hpp"
-
-
-#include "alisp/alisp/alisp_env.hpp"
-#include "alisp/alisp/alisp_eval.hpp"
-#include "alisp/alisp/alisp_declarations.hpp"
-#include "alisp/alisp/alisp_declarations.hpp"
-
+#include "alisp/alisp/alisp_module_helpers.hpp"
 
 
 namespace alisp
 {
 
 
-ALObjectPtr Fread_file(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval)
+
+ALObjectPtr Fread_file(ALObjectPtr, env::Environment*, eval::Evaluator*)
 {
-
     std::cout << "reading file in the fun" << "\n";
-
     return Qnil;
 }
 
@@ -24,25 +16,19 @@ ALObjectPtr Fread_file(ALObjectPtr obj, env::Environment* env, eval::Evaluator* 
 
 std::shared_ptr<env::Module> init_fileio(env::Environment*, eval::Evaluator*) {
 
+    auto Mfileio = module_init("fileio");
+
     
-    auto fileio_mod = std::make_shared<env::Module>("fileio");
+    module_defun(Mfileio.get(), "read-file", &Fread_file);
 
-    fileio_mod->get_root().insert({"read-file", make_prime(&Fread_file, "read-file")});
-    fileio_mod->get_root().insert({"file-spearator", make_string("this-is-file-sep")});
+    module_defvar(Mfileio.get(), "file-separator", make_string("this-is-file-sep"));
 
+    module_defconst(Mfileio.get(), "temp-dir", make_string("/tmp/"));
+    
 
-
-    for (auto& [name, sym] : fileio_mod->get_root()) {
-        sym->set_prop("--module--", make_string("fileio"));
-    }
-
-
-    return fileio_mod;
+    return Mfileio;
+    
 }
-
-
-// inline auto Ffielio = env::Environment::g_builtin_modules.insert({"fileio", env::ModuleImport{&init_fileio}}).first->second;
-
 
 
 }
