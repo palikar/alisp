@@ -9,14 +9,10 @@
 
 #include "alisp/config.hpp"
 #include "alisp/utility.hpp"
-
 #include "alisp/applications/prompt.hpp"
-
-#include "alisp/alisp/alisp_common.hpp"
-#include "alisp/alisp/alisp_parser.hpp"
-#include "alisp/alisp/alisp_eval.hpp"
-#include "alisp/alisp/alisp_env.hpp"
 #include "alisp/alisp/alisp_engine.hpp"
+
+
 
 
 
@@ -162,7 +158,15 @@ void interactive(alisp::LanguageEngine& alisp_engine)
 
     while(true){
         auto command = alisp::prompt::repl(">>> ");
-        alisp_engine.eval_statement(command);
+
+        if(!command) {
+            std::cout << '\n';
+            exit(0);
+        }
+
+        
+        alisp_engine.eval_statement(command.value());
+        
 
     }
 }

@@ -1,16 +1,31 @@
-add_library(alisp_fileio
-    src/modules/fileio.cpp)
+# add_library(alisp_fileio
+#     src/modules/fileio.cpp)
 
-target_include_directories(alisp_fileio
-    PUBLIC include
-    PRIVATE src)
+# target_include_directories(alisp_fileio
+#     PUBLIC include
+#     PRIVATE src)
 
 
-target_link_libraries(alisp_fileio
-    PRIVATE
-    project_options
-    project_warnings
-    alisp_util)
+# target_link_libraries(alisp_fileio
+#     PRIVATE
+#     project_options
+#     project_warnings
+#     alisp_util)
+
+macro(add_module NAME SRC)    
+    add_library(${NAME} ${SRC})
+
+    target_include_directories(${NAME}
+        PUBLIC include
+        PRIVATE src)
+
+
+    target_link_libraries(${NAME}
+        PRIVATE
+        project_options
+        project_warnings
+        alisp_util)
+endmacro()
 
 
 add_library(alisp_language
@@ -39,11 +54,25 @@ target_link_libraries(alisp_language
     PRIVATE
     project_options
     project_warnings
-    alisp_fileio
     PUBLIC
     alisp_util
     fmt::fmt
     )
+
+
+add_module(alisp_fileio src/modules/fileio.cpp)
+target_link_libraries(alisp_language PRIVATE alisp_fileio)
+
+add_module(alisp_math src/modules/math.cpp)
+target_link_libraries(alisp_language PRIVATE alisp_math)
+
+add_module(alisp_time src/modules/time.cpp)
+target_link_libraries(alisp_language PRIVATE alisp_time)
+
+add_module(alisp_system src/modules/system.cpp)
+target_link_libraries(alisp_language PRIVATE alisp_system)
+
+
 
 install(TARGETS alisp_language alisp_fileio
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/

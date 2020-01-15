@@ -1,6 +1,5 @@
 #include "alisp/applications/prompt.hpp"
 
-
 #ifdef READLINE_AVAILABLE
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -57,20 +56,22 @@ void init()
     using_history();
 }
 
-std::string repl(const std::string& prompt)
+std::optional<std::string> repl(const std::string& prompt)
 {
-    char* buf;
-    while ((buf = readline(prompt.c_str())) != nullptr) {
-
-        if (strlen(buf) > 0 && *buf != ' ') {
-            add_history(buf);
-        }			
-        std::string command{buf};
+    char* buf = readline(prompt.c_str());;
+        
+    if (buf == nullptr) {
         free(buf);
-        return command;
-
+        return {};
     }
-    return std::string{""};
+        
+    if (strlen(buf) > 0 && *buf != ' ') {
+        add_history(buf);
+    }			
+    std::string command{buf};
+    free(buf);
+
+    return command;
 }
 
 
@@ -79,7 +80,7 @@ std::string repl(const std::string& prompt)
 
 void init(){}
 
-std::string repl(const std::string& prompt)
+std::optional<std::string> repl(const std::string& prompt)
 {
     std::string retval;
     std::cout << prompt;
