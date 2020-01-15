@@ -11,6 +11,9 @@ add_library(alisp_language
     src/alisp_predicates.cpp
     src/alisp_printing.cpp
     src/alisp_engine.cpp
+    src/alisp_modules.cpp
+
+    src/modules/fileio.cpp
     
     )
 

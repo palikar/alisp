@@ -18,6 +18,7 @@
 #include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_parser.hpp"
+#include "alisp/alisp/alisp_modules.hpp"
 
 #include "alisp/utility/files.hpp"
 
@@ -94,6 +95,8 @@ class LanguageEngine
 
     void init_system()
     {
+        init_modules();
+        
         env::update_prime(Qcommand_line_args, make_list(m_argv));
 
 

@@ -95,10 +95,24 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eva
         
         return Qt;
     }
+
+    //check if this is a built in module
+    if (env->load_builtin_module(module_name, eval)) {
+        
+        env->alias_module(module_name, import_as);
+        
+        if (import_all ) {
+            env->import_root_scope(module_name, env->current_module());
+        }
+        
+        return Qt;
+
+    }
     
-    env->define_module(module_name, import_as);    
+    env->define_module(module_name, import_as);
+    env->alias_module(module_name, import_as);
     env::detail::ModuleChange mc{*env, module_name};
-    
+
     for (auto& path : *Vmodpaths) {
         for (auto& postfix : std::vector<std::string>{"", ".al"}) {
 
@@ -160,7 +174,6 @@ ALObjectPtr Fmodref(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eva
     
     auto next_sym = eval->eval(obj->i(curr_index));
     assert_symbol(next_sym);
-    std::cout << dump(next_sym) << "\n";
     auto sym = curr_mod->get_symbol(next_sym->to_string());
     if(!sym) { throw module_refence_error(curr_mod->name(), next_sym->to_string(), true); }
     return sym;

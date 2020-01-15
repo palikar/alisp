@@ -104,17 +104,17 @@ using fnv::hash;
 
 
 template<size_t N>
-[[nodiscard]] static constexpr std::uint32_t hash(const char (&s)[N]) noexcept
+[[nodiscard]] inline constexpr std::uint32_t hash(const char (&s)[N]) noexcept
 {
     return hash(std::begin(s), std::end(s)-1);
 }
 
-[[nodiscard]] static inline std::uint32_t hash(const std::string_view& s) noexcept
+[[nodiscard]] inline std::uint32_t hash(const std::string_view& s) noexcept
 {
     return hash(s.begin(), s.end());
 }
 
-[[nodiscard]] static inline std::uint32_t hash(const std::string& s) noexcept
+[[nodiscard]] inline std::uint32_t hash(const std::string& s) noexcept
 {
     return hash(s.begin(), s.end());
 }

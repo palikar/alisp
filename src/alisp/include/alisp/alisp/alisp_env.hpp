@@ -8,6 +8,9 @@
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_macros.hpp"
 #include "alisp/alisp/alisp_exception.hpp"
+#include "alisp/alisp/alisp_eval.hpp"
+
+#include "alisp/alisp/alisp_modules.hpp"
 
 #include "alisp/utility/helpers.hpp"
 #include "alisp/utility/macros.hpp"
@@ -56,8 +59,12 @@ struct CellStack
 
 }  // namespace detail
 
+
 class Module
 {
+  public:
+    
+
   private:
     detail::CellStack::Scope m_root_scope;
     std::unordered_map<std::string, std::shared_ptr<Module>> m_modules;
@@ -92,6 +99,13 @@ class Module
     }
 };
 
+struct ModuleImport
+{
+    using module_import = Module* (*)(env::Environment* env, eval::Evaluator* eval);
+    std::shared_ptr<Module> (*function)(env::Environment* env, eval::Evaluator* eval);
+};
+
+
 
 class Environment
 {
@@ -100,6 +114,8 @@ class Environment
     static inline std::unordered_map<std::string, ALObjectPtr> g_symbol_table;
     static inline std::unordered_map<std::string, ALObjectPtr> g_global_symbol_table;
     static inline std::unordered_map<std::string, ALObjectPtr> g_prime_values;
+
+    static inline std::unordered_map<std::string, ModuleImport> g_builtin_modules;
 
   private:
     detail::CellStack m_stack;
@@ -118,10 +134,9 @@ class Environment
     }
 
 
-    void define_module(const std::string t_name, const std::string t_alias)
+    void define_module(const std::string t_name, const std::string)
     {
         auto new_mod = std::make_shared<Module>(t_name);
-        m_active_module->add_module(new_mod, t_alias);
         m_modules.insert({ t_name, new_mod });
     }
 
@@ -152,6 +167,19 @@ class Environment
         }
 
         // m_modules.at(t_to)->get_root() = m_modules.at(t_from)->get_root();
+    }
+
+    bool load_builtin_module(const std::string &t_module_name, eval::Evaluator* eval)
+    {
+        
+        auto module_import = g_builtin_modules.find(t_module_name);
+
+        if (module_import == std::end(g_builtin_modules)) { return false; }
+
+        auto new_mod = module_import->second.function(this, eval);
+        m_modules.insert({ t_module_name, new_mod });
+
+        return true;
     }
 
     ALObjectPtr find(const ALObjectPtr t_sym);

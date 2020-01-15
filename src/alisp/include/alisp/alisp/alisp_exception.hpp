@@ -171,7 +171,7 @@ struct module_refence_error : public al_exception
     static std::string format(std::string t_module, const std::string t_ref, bool t_symbol)
     {
         std::ostringstream ss;
-        ss << "Module reference error. \n\tThe module " << t_module << " does not contain a refernce to the";
+        ss << "Module reference error. \n\tThe module " << t_module << " does not contain a refernce to the ";
         if (t_symbol ) {
             ss << "symbol " << t_ref ;
         } else  {
