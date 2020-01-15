@@ -6,6 +6,8 @@
 #include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_declarations.hpp"
 
+
+
 namespace alisp
 {
 
@@ -26,8 +28,13 @@ std::shared_ptr<env::Module> init_fileio(env::Environment*, eval::Evaluator*) {
     auto fileio_mod = std::make_shared<env::Module>("fileio");
 
     fileio_mod->get_root().insert({"read-file", make_prime(&Fread_file, "read-file")});
+    fileio_mod->get_root().insert({"file-spearator", make_string("this-is-file-sep")});
 
-    // fileio_mod->get_root().insert({"read-file", make_});
+
+
+    for (auto& [name, sym] : fileio_mod->get_root()) {
+        sym->set_prop("--module--", make_string("fileio"));
+    }
 
 
     return fileio_mod;

@@ -1,7 +1,8 @@
-(import 'fileio)
-(import 'math)
+(import 'fileio :all)
 
 
-(println (math.sin-new 123))
+(read-file)
+(dump file-spearator)
 
-(fileio.read-file)
+;; (import 'math)
+;; (println (math.sin-new 123))
