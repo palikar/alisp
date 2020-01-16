@@ -6,7 +6,7 @@
 
 
 
-namespace alisp {
+namespace alisp::env {
 
 void init_modules();
 

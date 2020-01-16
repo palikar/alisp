@@ -5,7 +5,7 @@ namespace alisp
 {
 
 
-std::shared_ptr<env::Module> init_time(env::Environment*, eval::Evaluator*) {
+env::ModulePtr init_time(env::Environment*, eval::Evaluator*) {
 
     auto Mtime = module_init("time");
     return Mtime;

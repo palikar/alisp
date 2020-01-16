@@ -14,7 +14,7 @@ ALObjectPtr Fread_file(ALObjectPtr, env::Environment*, eval::Evaluator*)
 
 
 
-std::shared_ptr<env::Module> init_fileio(env::Environment*, eval::Evaluator*) {
+env::ModulePtr init_fileio(env::Environment*, eval::Evaluator*) {
 
     auto Mfileio = module_init("fileio");
 

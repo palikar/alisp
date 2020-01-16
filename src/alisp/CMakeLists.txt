@@ -72,6 +72,8 @@ target_link_libraries(alisp_language PRIVATE alisp_time)
 add_module(alisp_system src/modules/system.cpp)
 target_link_libraries(alisp_language PRIVATE alisp_system)
 
+add_module(alisp_platform src/modules/platform.cpp)
+target_link_libraries(alisp_language PRIVATE alisp_platform)
 
 
 install(TARGETS alisp_language alisp_fileio

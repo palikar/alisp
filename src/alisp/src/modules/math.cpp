@@ -5,7 +5,7 @@ namespace alisp
 {
 
 
-std::shared_ptr<env::Module> init_math(env::Environment*, eval::Evaluator*) {
+env::ModulePtr init_math(env::Environment*, eval::Evaluator*) {
 
     auto Mmath = module_init("math");
     return Mmath;

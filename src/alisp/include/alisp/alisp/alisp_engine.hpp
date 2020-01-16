@@ -99,7 +99,8 @@ class LanguageEngine
 
     void init_system()
     {
-        init_modules();
+        env::init_modules();
+        logging::init_logging();
         
         env::update_prime(Qcommand_line_args, make_list(m_argv));
 

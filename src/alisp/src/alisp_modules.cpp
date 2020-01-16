@@ -3,24 +3,30 @@
 #include "alisp/alisp/alisp_eval.hpp"
 
 
-namespace alisp {
 
 
-extern std::shared_ptr<env::Module> init_fileio(env::Environment*, eval::Evaluator*);
-extern std::shared_ptr<env::Module> init_system(env::Environment*, eval::Evaluator*);
-extern std::shared_ptr<env::Module> init_math(env::Environment*, eval::Evaluator*);
-extern std::shared_ptr<env::Module> init_time(env::Environment*, eval::Evaluator*);
+namespace alisp
+{
 
+extern env::ModulePtr init_fileio(env::Environment*, eval::Evaluator*);
+extern env::ModulePtr init_system(env::Environment*, eval::Evaluator*);
+extern env::ModulePtr init_math(env::Environment*, eval::Evaluator*);
+extern env::ModulePtr init_time(env::Environment*, eval::Evaluator*);
+extern env::ModulePtr init_platform(env::Environment*, eval::Evaluator*);
+
+namespace env
+{
 
 void init_modules() {
 
-    env::Environment::g_builtin_modules.insert({"fileio", env::ModuleImport{&init_fileio}});
-    env::Environment::g_builtin_modules.insert({"system", env::ModuleImport{&init_system}});
-    env::Environment::g_builtin_modules.insert({"math", env::ModuleImport{&init_math}});
-    env::Environment::g_builtin_modules.insert({"time", env::ModuleImport{&init_time}});
+    Environment::g_builtin_modules.insert({"fileio", ModuleImport{&init_fileio}});
+    Environment::g_builtin_modules.insert({"system", ModuleImport{&init_system}});
+    Environment::g_builtin_modules.insert({"math", ModuleImport{&init_math}});
+    Environment::g_builtin_modules.insert({"time", ModuleImport{&init_time}});
+    Environment::g_builtin_modules.insert({"platform", ModuleImport{&init_time}});
 
 }
 
-
+}
 
 }

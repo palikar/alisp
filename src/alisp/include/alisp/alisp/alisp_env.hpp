@@ -59,6 +59,8 @@ struct CellStack
 
 }  // namespace detail
 
+class Module;
+using ModulePtr = std::shared_ptr<Module>;
 
 class Module
 {
@@ -67,7 +69,7 @@ class Module
 
   private:
     detail::CellStack::Scope m_root_scope;
-    std::unordered_map<std::string, std::shared_ptr<Module>> m_modules;
+    std::unordered_map<std::string, ModulePtr> m_modules;
     std::string m_name;
 
   public:
@@ -77,7 +79,7 @@ class Module
 
     const std::string &name() { return m_name; }
 
-    void add_module(std::shared_ptr<Module> t_module, const std::string t_alias) { m_modules.insert({ t_alias, t_module }); }
+    void add_module(ModulePtr t_module, const std::string t_alias) { m_modules.insert({ t_alias, t_module }); }
 
     detail::CellStack::Scope &get_root() { return m_root_scope; }
 
@@ -101,11 +103,9 @@ class Module
 
 struct ModuleImport
 {
-    using module_import = Module* (*)(env::Environment* env, eval::Evaluator* eval);
-    std::shared_ptr<Module> (*function)(env::Environment* env, eval::Evaluator* eval);
+    using module_import = ModulePtr (*)(env::Environment* env, eval::Evaluator* eval);
+    ModulePtr (*function)(env::Environment* env, eval::Evaluator* eval);
 };
-
-
 
 class Environment
 {
@@ -119,7 +119,7 @@ class Environment
 
   private:
     detail::CellStack m_stack;
-    std::unordered_map<std::string, std::shared_ptr<Module>> m_modules;
+    std::unordered_map<std::string, ModulePtr> m_modules;
     Module *m_active_module;
 
     size_t m_call_depth = 0;
