@@ -1,24 +1,9 @@
-# add_library(alisp_fileio
-#     src/modules/fileio.cpp)
-
-# target_include_directories(alisp_fileio
-#     PUBLIC include
-#     PRIVATE src)
-
-
-# target_link_libraries(alisp_fileio
-#     PRIVATE
-#     project_options
-#     project_warnings
-#     alisp_util)
-
 macro(add_module NAME SRC)    
     add_library(${NAME} ${SRC})
 
     target_include_directories(${NAME}
         PUBLIC include
         PRIVATE src)
-
 
     target_link_libraries(${NAME}
         PRIVATE
