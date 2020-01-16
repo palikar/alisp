@@ -12,10 +12,6 @@
 #include "alisp/applications/prompt.hpp"
 #include "alisp/alisp/alisp_engine.hpp"
 
-
-
-
-
 void interactive(alisp::LanguageEngine& alisp_engine);
 
 struct Options
@@ -24,6 +20,8 @@ struct Options
     std::string input{""};
 
     std::vector<std::string> args;
+
+    std::vector<std::string> includes;
 
     bool parse_debug{false};
     bool eval_debug{false};
@@ -40,20 +38,24 @@ int main(int argc, char *argv[])
 
     alisp::logging::init_logging();
 
+    
+
     auto cli = (
         
         
-        opts.version      << clipp::option("-v", "--version")                             % "Show the version and build information of the current executable",
-        opts.show_help    << clipp::option("-h", "--help")                                % "Print help information",
-        opts.interactive  << clipp::option("-i", "--interactive")                         % "Start interactive mode after file evaluation",
-        opts.parse_debug  << clipp::option("-d", "--parse-debug")                         % "Debug output from the parser",
-        opts.eval_debug   << clipp::option("-l", "--eval-debug")                          % "Debug output from the evaluator",
+        opts.version      << clipp::option("-v", "--version")                               % "Show the version and build information of the current executable",
+        opts.show_help    << clipp::option("-h", "--help")                                  % "Print help information",
+        opts.interactive  << clipp::option("-i", "--interactive")                           % "Start interactive mode after file evaluation",
+        opts.parse_debug  << clipp::option("-d", "--parse-debug")                           % "Debug output from the parser",
+        opts.eval_debug   << clipp::option("-l", "--eval-debug")                            % "Debug output from the evaluator",
 
-        clipp::option("-e", "--eval")         & opts.eval << clipp::value("expr")         % "Input string to evaluate",
+        clipp::repeatable( clipp::option("-I") & clipp::integers("include", opts.includes)) % "Extra include directories for module imports.",
+
+        clipp::option("-e", "--eval")         & opts.eval << clipp::value("expr")           % "Input string to evaluate",
         
         
-        opts.input       << clipp::opt_value("file")      % "Input file" &
-        !(opts.args        << clipp::opt_values("args")     % "Args")
+        opts.input       << clipp::opt_value("file")                                        % "Input file" &
+        !(opts.args        << clipp::opt_values("args"))                                    % "Arguments for the script being ran."
 
         );
 
@@ -122,7 +124,7 @@ int main(int argc, char *argv[])
     if (opts.eval_debug) settings.push_back(alisp::EngineSettings::EVAL_DEBUG);
     if (opts.parse_debug) settings.push_back(alisp::EngineSettings::PARSER_DEBUG);
 
-    alisp::LanguageEngine alisp_engine(settings, std::move(opts.args));
+    alisp::LanguageEngine alisp_engine(settings, std::move(opts.args), std::move(opts.includes));
 
 
     if(!opts.input.empty()){

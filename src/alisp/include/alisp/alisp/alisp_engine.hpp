@@ -56,6 +56,7 @@ class LanguageEngine
 
     std::vector<EngineSettings> m_settings;
     std::vector<std::string> m_argv;
+    std::vector<std::string> m_imports;
 
     bool check(EngineSettings t_setting) { return std::find(std::begin(m_settings), std::end(m_settings), t_setting) != std::end(m_settings); }
 
@@ -83,12 +84,15 @@ class LanguageEngine
     }
 
 
-    LanguageEngine(std::vector<EngineSettings> t_setting = {}, std::vector<std::string> t_cla = {})
-      : m_environment()
-      , m_parser(std::make_shared<parser::ALParser<env::Environment>>(m_environment))
-      , m_evaluator(m_environment, m_parser)
-      , m_settings(std::move(t_setting))
-      , m_argv(std::move(t_cla))
+    LanguageEngine(std::vector<EngineSettings> t_setting = {}, std::vector<std::string> t_cla = {},
+                   std::vector<std::string> t_extra_imports = {}
+        )
+        : m_environment()
+        , m_parser(std::make_shared<parser::ALParser<env::Environment>>(m_environment))
+        , m_evaluator(m_environment, m_parser)
+        , m_settings(std::move(t_setting))
+        , m_argv(std::move(t_cla))
+        , m_imports(std::move(t_extra_imports))
     {
         init_system();
     }
@@ -101,13 +105,14 @@ class LanguageEngine
 
 
         std::string al_path = env_string("ALPATH");
+        const auto add_modules = [&](auto &path) { Vmodpaths->children().push_back(make_string(path)); };
         if (!al_path.empty())
         {
             auto paths = utility::split(al_path, ':');
-
-            const auto add_modules = [&](auto &path) { Vmodpaths->children().push_back(make_string(path)); };
             std::for_each(std::begin(paths), std::end(paths), add_modules);
         }
+        std::for_each(std::begin(m_imports), std::end(m_imports), add_modules);
+        
     }
 
 
