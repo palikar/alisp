@@ -76,7 +76,8 @@ add_module(alisp_platform src/modules/platform.cpp)
 target_link_libraries(alisp_language PRIVATE alisp_platform)
 
 
-install(TARGETS alisp_language alisp_fileio
+install(TARGETS alisp_language alisp_fileio alisp_math
+    alisp_time alisp_system alisp_platform
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
     RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}

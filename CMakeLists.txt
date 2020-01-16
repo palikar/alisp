@@ -252,6 +252,8 @@ list(GET VERSION_LIST 1 AL_VERSION_MINOR)
 list(GET VERSION_LIST 2 AL_VERSION_PATCH)
 set(AL_VERSION ${AL_VERSION_MAJOR}.${AL_VERSION_MINOR}.${AL_VERSION_PATCH})
 
+set(IMPORT_PATHS ${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME})
+
 configure_file (
     "${PROJECT_SOURCE_DIR}/src/include/${PROJECT_NAME}/config.hpp.in"
     "${PROJECT_BINARY_DIR}/src/include/${PROJECT_NAME}/config.hpp"
@@ -314,6 +316,11 @@ endif()
 
 add_subdirectory(libs)
 add_subdirectory(src)
+
+install(
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/scripts/libs/format.al
+    DESTINATION ${IMPORT_PATHS})
+
 
 
 if(BUILD_EXAMPLES)

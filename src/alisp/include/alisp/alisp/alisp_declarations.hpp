@@ -1,5 +1,7 @@
 #pragma once
 
+#include "alisp/config.hpp"
+
 #include "alisp/alisp/alisp_macros.hpp"
 #include "alisp/alisp/alisp_factory.hpp"
 #include "alisp/alisp/alisp_env.hpp"
@@ -19,7 +21,7 @@ namespace alisp
 DEFVAR(Qt, Vt, "t", make_list(Qt));
 DEFVAR(Qnil, Vnil, "nil", make_object(Qnil));
 
-DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--", make_object("", "/home/arnaud/code/alisp/scripts/libs/", "/home/arnaud/temp/alisp/scripts/libs/"));
+DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--", make_object("", "/home/arnaud/code/alisp/scripts/libs/", "/home/arnaud/temp/alisp/scripts/libs/", AL_EXTRA_MODPATHS));
 DEFVAR(Qcurrent_module, Vcurrent_module, "--module--", make_string(""));
 DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--", make_list());
 
