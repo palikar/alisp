@@ -77,6 +77,7 @@ class LanguageEngine
 
 
   public:
+    
     static bool env_bool(const char *t_name) { return getenv(t_name) != nullptr; }
 
     static std::string env_string(const char *t_name)
@@ -130,7 +131,7 @@ class LanguageEngine
         }
     }
 
-
+    
     void eval_file(const std::filesystem::path &t_path)
     {
 
@@ -147,6 +148,15 @@ class LanguageEngine
             handle_errors_lippincott<true>();
         }
     }
+
+
+    ALObjectPtr get_value(const std::string& t_sym_name)
+    {
+        return m_environment.find(t_sym_name);
+    }
+
+
+    
 };
 
 

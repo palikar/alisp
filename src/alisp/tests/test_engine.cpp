@@ -44,9 +44,34 @@ TEST_CASE("Engine Test [imports]", "[engine]")
     }
 
     SECTION ("as") {
-        std::string input{"(import 'fileio :all :as 'iles)"};
+        std::string input{"(import 'fileio :all :as 'files)"};
         CHECK_NOTHROW( engine.eval_statement(input) );
     }
-
     
+}
+
+
+TEST_CASE("Engine Test [settings]", "[engine]")
+{
+    using namespace alisp;
+
+    LanguageEngine engine({EngineSettings::PARSER_DEBUG, EngineSettings::EVAL_DEBUG});
+    
+    SECTION ("basic") {
+        std::string input{"(println \"Hello world\")"};
+        CHECK_NOTHROW( engine.eval_statement(input) );
+    }    
+}
+
+
+TEST_CASE("Engine Test [args]", "[engine]")
+{
+    using namespace alisp;
+
+    LanguageEngine engine({}, {"-one -two"});
+    
+    SECTION ("basic") {
+        std::string input{"(dump --argv-- )"};
+        CHECK_NOTHROW( engine.eval_statement(input) );
+    }    
 }
