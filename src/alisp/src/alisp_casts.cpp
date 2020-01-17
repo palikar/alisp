@@ -3,7 +3,7 @@
 
 #include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_assertions.hpp"
-#include "alisp/alisp/alisp_.hpp"
+#include "alisp/alisp/alisp_pattern_matching.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_env.hpp"
 
@@ -11,7 +11,7 @@ namespace alisp
 {
 
 
-ALObjectPtr Fint_parse(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Fint_parse(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<1>(obj);
     auto str_1 = eval->eval(obj->i(0));
@@ -27,7 +27,7 @@ ALObjectPtr Fint_parse(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
 }
 
 
-ALObjectPtr Ffloat_parse(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Ffloat_parse(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<1>(obj);
     auto str_1 = eval->eval(obj->i(0));
@@ -43,17 +43,17 @@ ALObjectPtr Ffloat_parse(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
 }
 
 
-ALObjectPtr Fto_string(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fto_string(ALObjectPtr t_obj, env::Environment*, eval::Evaluator* eval)
 {
-    assert_size<1>(obj);
+    assert_size<1>(t_obj);
 
-    return make_visit(eval->eval(obj),
+    return make_visit(eval->eval(t_obj),
                       type(ALObjectType::INT_VALUE ) >>=  [](ALObjectPtr obj)    { return make_string(std::to_string(obj->to_int())); },
                       type(ALObjectType::REAL_VALUE ) >>=  [](ALObjectPtr obj)   { return make_string(std::to_string(obj->to_real())); },
                       type(ALObjectType::STRING_VALUE ) >>=  [](ALObjectPtr obj) { return make_string(obj->to_string()); },
                       type(ALObjectType::SYMBOL ) >>=  [](ALObjectPtr obj)       { return make_string(obj->to_string()); },
-                      is_function() >>=  [](ALObjectPtr obj)                     { return make_string(obj->get_prop("--name--")); },
-                      is_char() >>=  [](ALObjectPtr obj)                         { return make_string(char(obj->to_int())); },
+                      is_function() >>=  [](ALObjectPtr obj)                     { return make_string(obj->get_prop("--name--")->to_string()); },
+                      is_char() >>=  [](ALObjectPtr obj)                         { return make_string(std::to_string(char(obj->to_int()))); },
                       any_pattern() >>=  [](ALObjectPtr)                         { return Qnil;}
                       
         );

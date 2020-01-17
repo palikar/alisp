@@ -34,10 +34,6 @@ inline std::vector<std::string> split(const std::string& s, const std::string& d
     return tokens;
 }
 
-inline void erase(std::string& str, const std::string& from)
-{
-    replace(str, from, "");
-}
 
 // from https://stackoverflow.com/a/874160
 inline bool ends_with(const std::string& str, const std::string& suffix)
@@ -59,28 +55,29 @@ inline std::string replace(std::string subject, const std::string& search, const
     return subject;
 }
 
-inline void replace_all(std::string& str, const std::string& from, const std::string& to)
+inline std::string replace_all(std::string str, const std::string& from, const std::string& to)
 {
-    if(from.empty())
-        return;
+    if(from.empty()) return str;
+
     size_t start_pos = 0;
     while((start_pos = str.find(from, start_pos)) != std::string::npos) {
         str.replace(start_pos, from.length(), to);
         start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
     }
+    return str;
 }
 
-std::string& str_toupper(std::string& s) {
+inline std::string& str_toupper(std::string& s) {
     std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c){ return std::toupper(c); });
     return s;
 }
 
-std::string& str_tolower(std::string& s) {
+inline std::string& str_tolower(std::string& s) {
     std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c){ return std::tolower(c); });
     return s;
 }
 
-std::string trim(const std::string& str)
+inline std::string trim(const std::string& str)
 {
     size_t first = str.find_first_not_of(' ');
     if (std::string::npos == first)

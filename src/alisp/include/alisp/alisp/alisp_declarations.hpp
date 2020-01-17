@@ -170,7 +170,6 @@ DEFUN(string_startswtih, "string-startswtih");
 DEFUN(string_length, "string-length");
 DEFUN(string_capitalize, "string-capitalize");
 DEFUN(string_isalpha, "string-isalpha");
-DEFUN(string_isdecimal, "string-isdecimal");
 DEFUN(string_isdigit, "string-isdigit");
 DEFUN(string_find, "string-find");
 DEFUN(string_replace, "string-replace");

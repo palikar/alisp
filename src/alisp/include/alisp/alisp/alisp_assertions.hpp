@@ -41,6 +41,11 @@ inline void assert_symbol (ALObjectPtr obj)
     if(!obj->is_sym()) throw argument_error("Invalid argument. Object must be symbol");
 }
 
+inline void assert_string (ALObjectPtr obj)
+{
+    if(!obj->is_string()) throw argument_error("Invalid argument. Object must be string");
+}
+
 inline void assert_list (ALObjectPtr obj)
 {
     if(!obj->is_list() and obj != Qnil) throw argument_error("Invalid argument. Object must be list");
@@ -54,6 +59,11 @@ inline void assert_number (ALObjectPtr obj)
 inline void assert_int (ALObjectPtr obj)
 {
     if(!obj->is_int()) throw argument_error("Invalid argument. Object must be an integer");
+}
+
+inline void assert_char (ALObjectPtr obj)
+{
+    if(!obj->is_int() and !obj->check_char_flag()) throw argument_error("Invalid argument. Object must be a char");
 }
 
 
