@@ -18,6 +18,9 @@ add_executable(alisp_language_test
     ../src/alisp_printing.cpp
     ../src/alisp_engine.cpp
     ../src/alisp_modules.cpp
+    ../src/alisp_strings.cpp
+    ../src/alisp_casts.cpp
+    ../src/alisp_algorithms.cpp
 
     )
 

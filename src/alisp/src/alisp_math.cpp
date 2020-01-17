@@ -219,6 +219,26 @@ ALObjectPtr Fpow(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 }
 
 
+ALObjectPtr Fmin(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+{
+    assert_min_size<2>(obj);
+    return Qnil;
+}
+
+ALObjectPtr Fmax(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+{
+    assert_min_size<2>(obj);
+    return Qnil;
+}
+
+ALObjectPtr Fround(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+{
+    assert_size<1>(obj);
+    return Qnil;
+}
+
+
+
 
 
 }

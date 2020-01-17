@@ -87,6 +87,14 @@ ALObjectPtr Fpush(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     return list;
 }
 
+ALObjectPtr Flength(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+{
+    assert_size<1>(obj);
+    assert_list(obj->i(0));
+    
+    return make_int(std::size(obj->i(0)->children()));
+}
+
 
 ALObjectPtr Fnth(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {

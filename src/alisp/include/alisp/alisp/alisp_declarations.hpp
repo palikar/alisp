@@ -1,7 +1,6 @@
 #pragma once
 
 #include "alisp/config.hpp"
-
 #include "alisp/alisp/alisp_macros.hpp"
 #include "alisp/alisp/alisp_factory.hpp"
 #include "alisp/alisp/alisp_env.hpp"
@@ -101,6 +100,7 @@ DEFUN(delete, "delete");
 DEFUN(remove, "remove");
 DEFUN(nth, "nth");
 DEFUN(range, "range");
+DEFUN(length, "length");
 
 
 /*  ____               _ _           _             */
@@ -151,5 +151,65 @@ DEFUN(pow, "pow");
 
 DEFUN(leftshift, "<<");
 DEFUN(rightshift, ">>");
+
+DEFUN(min, "min");
+DEFUN(max, "max");
+DEFUN(round, "round");
+
+
+/*  ____  _        _                  */
+/* / ___|| |_ _ __(_)_ __   __ _ ___  */
+/* \___ \| __| '__| | '_ \ / _` / __| */
+/*  ___) | |_| |  | | | | | (_| \__ \ */
+/* |____/ \__|_|  |_|_| |_|\__, |___/ */
+/*                         |___/      */
+
+DEFUN(string_contains, "string-contains");
+DEFUN(string_endswith, "string-endswith");
+DEFUN(string_startswtih, "string-startswtih");
+DEFUN(string_length, "string-length");
+DEFUN(string_capitalize, "string-capitalize");
+DEFUN(string_isalpha, "string-isalpha");
+DEFUN(string_isdecimal, "string-isdecimal");
+DEFUN(string_isdigit, "string-isdigit");
+DEFUN(string_find, "string-find");
+DEFUN(string_replace, "string-replace");
+DEFUN(string_replaceall, "string-replaceall");
+DEFUN(string_split, "string-split");
+DEFUN(string_substring, "string-substring");
+DEFUN(string_splitlines, "string-splitlines");
+DEFUN(string_upper, "string-upper");
+DEFUN(string_lower, "string-lower");
+DEFUN(string_strip, "string-strip");
+DEFUN(string_join, "string-join");
+
+
+/*     _    _                  _ _   _                    */
+/*    / \  | | __ _  ___  _ __(_) |_| |__  _ __ ___  ___  */
+/*   / _ \ | |/ _` |/ _ \| '__| | __| '_ \| '_ ` _ \/ __| */
+/*  / ___ \| | (_| | (_) | |  | | |_| | | | | | | | \__ \ */
+/* /_/   \_\_|\__, |\___/|_|  |_|\__|_| |_|_| |_| |_|___/ */
+/*            |___/                                       */
+
+
+DEFUN(slice, "slice");
+DEFUN(sort, "sort");
+DEFUN(zip, "zip");
+DEFUN(filter, "filter");
+DEFUN(any, "any");
+DEFUN(all, "all");
+
+/*  ____                      */
+/* |  _ \ __ _ _ __ ___  ___  */
+/* | |_) / _` | '__/ __|/ _ \ */
+/* |  __/ (_| | |  \__ \  __/ */
+/* |_|   \__,_|_|  |___/\___| */
+
+
+DEFUN(int_parse, "parse_int");
+DEFUN(float_parse, "parse_float");
+DEFUN(to_string, "to-string");
+
+
 
 }
