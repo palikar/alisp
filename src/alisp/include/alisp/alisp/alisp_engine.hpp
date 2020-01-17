@@ -26,7 +26,7 @@
 namespace alisp
 {
 
-static constexpr std::string ENV_VAR_MODPATHS = "ALPATH"
+static constexpr auto ENV_VAR_MODPATHS = "ALPATH";
 
 namespace detail
 {
@@ -58,7 +58,7 @@ class LanguageEngine
 
     std::vector<EngineSettings> m_settings;
     std::vector<std::string> m_argv;
-    std::pvector<std::string> m_imports;
+    std::vector<std::string> m_imports;
 
     bool check(EngineSettings t_setting) { return std::find(std::begin(m_settings), std::end(m_settings), t_setting) != std::end(m_settings); }
 
@@ -108,7 +108,7 @@ class LanguageEngine
         env::update_prime(Qcommand_line_args, make_list(m_argv));
 
         std::string al_path = env_string(ENV_VAR_MODPATHS);
-        const auto add_modules = [&](auto &path) { Vmodpaths->children().push_back(make_string(ENV_VAR_MODPATHS)); };
+        const auto add_modules = [&](auto &path) { Vmodpaths->children().push_back(make_string(path)); };
         if (!al_path.empty())
         {
             auto paths = utility::split(al_path, ':');
@@ -152,7 +152,7 @@ class LanguageEngine
 
     ALObjectPtr get_value(const std::string& t_sym_name)
     {
-        return m_environment.find(t_sym_name);
+        return m_environment.find(make_symbol(t_sym_name));
     }
 
 

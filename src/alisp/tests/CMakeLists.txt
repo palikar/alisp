@@ -5,18 +5,19 @@ add_executable(alisp_language_test
     test_common.cpp
     test_eval.cpp
     test_engine.cpp
-
+    
     ../src/alisp_parser.cpp
     ../src/alisp_env.cpp
     ../src/alisp_eval.cpp
     ../src/alisp_object.cpp
-
     ../src/alisp_language.cpp
     ../src/alisp_lists.cpp
     ../src/alisp_logic.cpp
     ../src/alisp_math.cpp
     ../src/alisp_predicates.cpp
     ../src/alisp_printing.cpp
+    ../src/alisp_engine.cpp
+    ../src/alisp_modules.cpp
 
     )
 
@@ -37,6 +38,8 @@ target_link_libraries(alisp_language_test
     alisp_util)
 
 
+target_link_libraries(alisp_language_test PRIVATE alisp_fileio
+    alisp_math alisp_time alisp_system alisp_platform)
 
 include(CTest)
 include(Catch)

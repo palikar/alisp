@@ -60,6 +60,8 @@ target_link_libraries(alisp_language PRIVATE alisp_system)
 add_module(alisp_platform src/modules/platform.cpp)
 target_link_libraries(alisp_language PRIVATE alisp_platform)
 
+target_compile_definitions(alisp_language PRIVATE -DLINK_MODULES)
+
 
 install(TARGETS alisp_language alisp_fileio alisp_math
     alisp_time alisp_system alisp_platform
