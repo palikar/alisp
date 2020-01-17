@@ -340,6 +340,11 @@ inline const auto AND_OBJ_FUN = [](bool t_acc, ALObjectPtr t_obj) {return t_acc 
 inline const auto OR_OBJ_FUN = [](bool t_acc, ALObjectPtr t_obj) {return t_acc or is_truthy(t_obj);};
 
 
+// inline bool operator bool(ALObjectPtr t_obj) {
+//     return is_truthy(t_obj);
+// }
+
+
 
 /*  __  __       _   _             _   _ _      */
 /* |  \/  | __ _| |_| |__    _   _| |_(_) |___  */

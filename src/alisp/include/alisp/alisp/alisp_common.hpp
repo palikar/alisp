@@ -168,11 +168,15 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         return std::get<list_type>(m_data);
     }
 
-
-    string_type to_string() const {
+    string_type& to_string() {
         check<string_type>();
         return std::get<std::string>(m_data);
     }
+    const string_type& to_string() const {
+        check<string_type>();
+        return std::get<std::string>(m_data);
+    }
+
     real_type to_real() const {
         if (std::get_if<real_type>(&m_data)) {
             return std::get<real_type>(m_data);
