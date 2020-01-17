@@ -114,7 +114,7 @@ auto visit_match(ALObjectPtr obj, std::tuple<pattern_entry<Checks, Matches>...> 
 }
 
 
-inline auto type(ALObjectType t_type) {
+inline auto type(ALObjectType t_type){
     return detail::match(
         [t_t=std::move(t_type)](ALObjectPtr obj)->bool {
             return  obj->type() == t_t;});
@@ -144,7 +144,7 @@ inline auto is_const(){
             return  obj->check_const_flag(); });
 }
 
-inline auto any_pattern() {
+inline auto any_pattern(){
     return detail::match( [](ALObjectPtr)->bool { return  true; });
 }
 
@@ -155,8 +155,6 @@ inline auto make_visit (ALObjectPtr obj, detail::pattern_entry<Matches, Checks> 
 
 
 }
-
-
 
 
 template<typename T>
