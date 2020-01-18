@@ -26,9 +26,16 @@
 ;; (dump (remove '(a b c ) 'b))
 
 
-(defun list-example()
-  (let (a b (c 10))
-    (when 't
-      (dump (nth '(0 1 2 3 4 5 6 7) 7)))))
+;; (defun list-example()
+;;   (let (a b (c 10))
+;;     (when 't
+;;       (dump (nth '(0 1 2 3 4 5 6 7) 7)))))
 
-(list-example)
+;; (list-example)
+
+
+;; (mapc (lambda (x) (dump x)) (zip (range 1 100) (range 100 200)))
+(mapc dump (zip (range 1 100) (range 100 200)))
+
+
+

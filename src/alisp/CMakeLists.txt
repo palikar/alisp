@@ -27,11 +27,11 @@ add_library(alisp_language
     src/alisp_math.cpp
     src/alisp_predicates.cpp
     src/alisp_printing.cpp
-
+    src/alisp_algorithms.cpp
     src/alisp_strings.cpp
     src/alisp_casts.cpp
-    src/alisp_algorithms.cpp
-    
+
+
     )
 
 

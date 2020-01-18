@@ -251,7 +251,7 @@ ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
     if (!obj->check_function_flag()) {
         throw eval_error("Cannot apply a non function object.");
     }
-
+    
     env::detail::FunctionCall fc{env, func};
     if (obj->check_prime_flag()) {
         return obj->get_prime()(args, &env, this);

@@ -163,7 +163,7 @@ class Environment
 
     void alias_module(const std::string t_name, const std::string t_alias) { m_active_module->add_module(m_modules.at(t_name), t_alias); }
 
-    void activate_module(const std::string t_name) { m_active_module = m_modules.at(t_name).get(); }
+    void activate_module(const std::string t_name);
 
     const std::string &current_module() { return m_active_module->name(); }
 

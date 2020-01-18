@@ -134,6 +134,8 @@ class LanguageEngine
             std::for_each(std::begin(paths), std::end(paths), add_modules);
         }
         std::for_each(std::begin(m_imports), std::end(m_imports), add_modules);
+
+        Vcurrent_module->set("--main--");
         
     }
 

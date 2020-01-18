@@ -15,10 +15,6 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-
-
-
-
 #include <algorithm>
 #include <string>
 
@@ -42,10 +38,29 @@ ALObjectPtr Fsort(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
     return Qnil;
 }
 
-ALObjectPtr Fzip(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Fzip(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_min_size<2>(obj);
-    return Qnil;
+
+    auto eval_list = eval_transform(eval, obj);
+    ALObject::list_type new_list{};
+    size_t min_size = eval_list->i(0)->children().size();
+    for (auto& l : *eval_list) {
+        auto curr_size = std::size(l->children());
+        if (curr_size < min_size) { min_size = curr_size; }
+    }
+
+    for (size_t i = 0; i < min_size; ++i) {
+        ALObject::list_type next_tuple{};
+
+        for (auto& el : *eval_list) {
+            next_tuple.push_back(el->children()[i]) ;
+        }
+        
+        new_list.push_back(make_object(next_tuple));
+    }
+
+    return make_object(new_list);
 }
 
 ALObjectPtr Ffilter(ALObjectPtr obj, env::Environment*, eval::Evaluator*)

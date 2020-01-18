@@ -44,8 +44,9 @@ ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     auto fun_obj = eval->eval(obj->i(0));
     auto list = eval->eval(obj->i(1));
 
-    for (auto el : list->children()) {
-        eval->handle_lambda(fun_obj, make_list(el));
+
+    for (auto& el : list->children()) {
+        eval->handle_lambda(fun_obj, make_list(quote(el)));
     }
 
     return Qt;
