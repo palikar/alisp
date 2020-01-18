@@ -14,11 +14,6 @@
  You should have received a copy of the GNU General Public License along
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
-
-
-
-
-
 #include <algorithm>
 
 #include "alisp/alisp/alisp_common.hpp"
@@ -70,13 +65,11 @@ ALObjectPtr Fdump(ALObjectPtr t_obj, env::Environment*, eval::Evaluator* eval)
     return Qt;
 }
 
-
 ALObjectPtr Fdumpstack(ALObjectPtr, env::Environment* env, eval::Evaluator*)
 {
     env->stack_dump();
     return Qt;
 }
-
 
 ALObjectPtr Fdumpcallstack(ALObjectPtr, env::Environment* env, eval::Evaluator*)
 {
@@ -84,6 +77,11 @@ ALObjectPtr Fdumpcallstack(ALObjectPtr, env::Environment* env, eval::Evaluator*)
     return Qt;
 }
 
+ALObjectPtr Fdumplicense(ALObjectPtr, env::Environment*, eval::Evaluator*)
+{
+    std::cout << AL_LICENSE_TEXT << '\n';
+    return Qt;
+}
 
 
 }

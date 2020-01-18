@@ -45,6 +45,8 @@ DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--", make_object("", "/home/arnaud/code/
 DEFVAR(Qcurrent_module, Vcurrent_module, "--module--", make_string(""));
 DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--", make_list());
 
+DEFVAR(Qlicense, Vlicense, "--al-license--", make_string(AL_LICENSE));
+
 DEFSYM(Qoptional, "&optional");
 DEFSYM(Qrest, "&rest");
 
@@ -101,6 +103,8 @@ DEFUN(println, "println");
 DEFUN(dump, "dump");
 DEFUN(dumpstack, "dumpstack");
 DEFUN(dumpcallstack, "dumpcallstack");
+
+DEFUN(dumplicense, "Fdumplicense");
 
 /*  _     _     _        */
 /* | |   (_)___| |_ ___  */
