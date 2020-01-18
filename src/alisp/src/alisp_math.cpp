@@ -221,12 +221,12 @@ ALObjectPtr Fmin(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_min_size<2>(obj);
 
-    auto eval_obj = eval_list(eval, obj);
-    assert_number(eval_obj);
-    auto is_int = are_objects_int(obj);
+    auto eval_obj = eval_transform(eval, obj) ;
+    assert_numbers(eval_obj);
+    auto is_int = are_objects_int(eval_obj);
     if (is_int) {
         auto min_element = obj->i(0)->to_int();
-        for (auto el : *obj) {
+        for (auto el : *eval_obj) {
             auto current = el->to_int();
             if (current < min_element) {
                 min_element = current;
@@ -236,7 +236,7 @@ ALObjectPtr Fmin(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     } else {
         
         auto min_element = obj->i(0)->to_real();
-        for (auto el : *obj) {
+        for (auto el : *eval_obj) {
             auto current = el->to_real();
             if (current < min_element) {
                 min_element = current;
@@ -250,9 +250,9 @@ ALObjectPtr Fmax(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_min_size<2>(obj);
 
-    auto eval_obj = eval_list(eval, obj);
-    assert_number(eval_obj);
-    auto is_int = are_objects_int(obj);
+    auto eval_obj = eval_transform(eval, obj);
+    assert_numbers(eval_obj);
+    auto is_int = are_objects_int(eval_obj);
     if (is_int) {
         auto max_element = obj->i(0)->to_int();
         for (auto el : *eval_obj) {
