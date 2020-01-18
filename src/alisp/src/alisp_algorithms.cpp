@@ -82,9 +82,21 @@ ALObjectPtr Ffilter(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     return make_object(new_list);
 }
 
-ALObjectPtr Fany(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Fany(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<2>(obj);
+
+    auto fun_obj = eval->eval(obj->i(0));
+    auto list = eval->eval(obj->i(1));
+
+    assert_list(list);
+
+    for (auto& el : *list) {
+        if(is_truthy(eval->handle_lambda(fun_obj, make_list(el)))) {
+            return Qt;
+        }
+    }
+
     return Qnil;
 }
 
