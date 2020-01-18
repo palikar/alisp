@@ -107,6 +107,9 @@ DEFUN(dumpcallstack, "dumpcallstack");
 DEFUN(dumplicense, "dumplicense");
 DEFUN(dumpcredits, "dumpcredits");
 
+DEFUN(read_line, "read-line");
+
+
 /*  _     _     _        */
 /* | |   (_)___| |_ ___  */
 /* | |   | / __| __/ __| */

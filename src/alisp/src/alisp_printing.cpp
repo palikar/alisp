@@ -38,16 +38,16 @@ ALObjectPtr Fprint(ALObjectPtr t_obj, env::Environment*, eval::Evaluator* eval)
     for (auto child : *t_obj)
     {
         auto val = eval->eval(child);
-        
+
         make_visit(val,
                    type(ALObjectType::INT_VALUE ) >>=  [](ALObjectPtr obj) { std::cout << obj->to_int(); },
                    type(ALObjectType::REAL_VALUE ) >>=  [](ALObjectPtr obj) { std::cout << obj->to_real(); },
                    type(ALObjectType::STRING_VALUE ) >>=  [](ALObjectPtr obj) { std::cout << obj->to_string(); },
                    type(ALObjectType::SYMBOL ) >>=  [](ALObjectPtr obj) { std::cout << obj->to_string(); }
             );
-        
-    }    
-    
+
+    }
+
     return Qt;
 
 }
@@ -87,6 +87,13 @@ ALObjectPtr Fdumpcredits(ALObjectPtr, env::Environment*, eval::Evaluator*)
 {
     std::cout << AL_CREDITS_TEXT << '\n';
     return Qt;
+}
+
+ALObjectPtr Fread_line(ALObjectPtr, env::Environment*, eval::Evaluator*)
+{
+    std::string line;
+    std::getline(std::cin, line);
+    return make_string(line);
 }
 
 }
