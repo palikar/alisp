@@ -26,10 +26,32 @@
 namespace alisp
 {
 
-ALObjectPtr Fslice(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Fslice(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_min_size<2>(obj);
-    return Qnil;
+
+    auto list = eval->eval(obj->i(0));
+    assert_list(list);
+
+    auto ind_1 = eval->eval(obj->i(1));
+    assert_int(ind_1);
+    size_t start = static_cast<size_t>(ind_1->to_int());
+
+    size_t end = list->children().size();
+    if (std::size(*obj) == 3) {
+        auto ind_2 = eval->eval(obj->i(2));
+        assert_int(ind_2);
+        end = static_cast<size_t>(ind_2->to_int());
+    }
+
+    ALObject::list_type new_list{};
+    
+    auto& child = list->children();
+    for (auto i = start; i < end; ++i) {
+        new_list.push_back(child[i]);
+    }
+
+    return make_object(new_list);
 }
 
 ALObjectPtr Fsort(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
@@ -71,6 +93,7 @@ ALObjectPtr Ffilter(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     auto list = eval->eval(obj->i(1));
 
     assert_list(list);
+    assert_function(fun_obj);
 
     ALObject::list_type new_list{};
     for (auto& el : *list) {
@@ -90,6 +113,7 @@ ALObjectPtr Fany(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     auto list = eval->eval(obj->i(1));
 
     assert_list(list);
+    assert_function(fun_obj);
 
     for (auto& el : *list) {
         if(is_truthy(eval->handle_lambda(fun_obj, make_list(el)))) {
@@ -100,10 +124,23 @@ ALObjectPtr Fany(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     return Qnil;
 }
 
-ALObjectPtr Fall(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Fall(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<2>(obj);
-    return Qnil;
+
+    auto fun_obj = eval->eval(obj->i(0));
+    auto list = eval->eval(obj->i(1));
+
+    assert_list(list);
+    assert_function(fun_obj);
+
+    for (auto& el : *list) {
+        if(is_falsy(eval->handle_lambda(fun_obj, make_list(el)))) {
+            return Qnil;
+        }
+    }
+
+    return Qt;
 }
 
 

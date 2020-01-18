@@ -88,4 +88,10 @@ inline void assert_char (ALObjectPtr obj)
 }
 
 
+inline void assert_function (ALObjectPtr obj)
+{
+    if(!obj->check_function_flag()) throw argument_error("Invalid argument. Object must be a function");
+}
+
+
 }
