@@ -13,11 +13,10 @@
 #include "alisp/utility/meta.hpp"
 #include "alisp/utility/vector_view.hpp"
 
+#include "alisp/config.hpp"
+
 namespace alisp
 {
-
-inline constexpr size_t MAX_EAVALUATION_DEPTH = 256;
-inline constexpr size_t MAX_FUNCTION_CALL_DEPTH = 128;
 
 enum class ALObjectType
 {
@@ -45,6 +44,14 @@ class alobject_error : public std::runtime_error
 
 };
 
+class ALObject;
+#ifdef USE_MANUAL_MEMORY
+using ALObjectPtr = ALObject*;
+inline constexpr bool USING_SHARED = false;
+#else
+using ALObjectPtr = std::shared_ptr<ALObject>;
+inline constexpr bool USING_SHARED = true;
+#endif
 
 
 namespace env {
@@ -53,18 +60,6 @@ class Environment;
 namespace eval {
 class Evaluator;
 }
-
-
-
-class ALObject;
-#ifdef USE_MANUAL_MEMORY
-using ALObjectPtr = ALObject*;
-static constexpr bool USING_SHARED = false;
-#else
-using ALObjectPtr = std::shared_ptr<ALObject>;
-static constexpr bool USING_SHARED = true;
-#endif
-
 
 
 struct Prim

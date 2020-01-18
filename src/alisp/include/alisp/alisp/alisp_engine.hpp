@@ -26,8 +26,6 @@
 namespace alisp
 {
 
-static constexpr auto ENV_VAR_MODPATHS = "ALPATH";
-
 namespace detail
 {
 
