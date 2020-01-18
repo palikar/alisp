@@ -38,8 +38,11 @@
 ;; (mapc dump (zip (range 1 100) (range 100 200)))
 ;; (dump (filter (lambda (x) (== (mod x 2) 1)) '(1 2 3 4 5 2 2 3)))
 ;; (dump (any (lambda (x) (== (mod x 2) 3)) '(1 2 3 4 5 2 2 3)))
+;; (dump (slice '(1 2 3 4 5 6 7 8 9) 1 5))
 
-(dump (slice '(1 2 3 4 5 6 7 8 9) 1 5))
+(dump (sort '(9 12 1 23 41 1 9 76 43 657 65 12)))
+(dump (sort '(9 12 1.12 23 41.1 1 9.0 76 43.0 657 65 12)))
+
 
 
 

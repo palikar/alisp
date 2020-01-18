@@ -54,10 +54,18 @@ ALObjectPtr Fslice(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     return make_object(new_list);
 }
 
-ALObjectPtr Fsort(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Fsort(ALObjectPtr obj, env::Environment*, eval::Evaluator*  eval)
 {
     assert_size<1>(obj);
-    return Qnil;
+
+    auto list = eval->eval(obj->i(0));
+    
+    assert_numbers(list);
+
+    std::sort(std::begin(*list), std::end(*list),
+              [&](auto& obj_1, auto& obj_2){ return obj_1->to_real() < obj_2->to_real();});
+    
+    return list;
 }
 
 ALObjectPtr Fzip(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
