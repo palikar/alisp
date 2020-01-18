@@ -10,6 +10,7 @@
 #include "alisp/alisp/alisp_assertions.hpp"
 
 #include "alisp/utility/macros.hpp"
+#include "alisp/utility/math_utils.hpp"
 
 
 namespace alisp
@@ -188,8 +189,6 @@ ALObjectPtr Fneq(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
     else return Qnil;
 }
 
-
-
 ALObjectPtr Fmod(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
     assert_size<2>(obj);
@@ -218,27 +217,76 @@ ALObjectPtr Fpow(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
     return make_object(std::pow(one->to_real(), two->to_real()));
 }
 
-
-ALObjectPtr Fmin(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Fmin(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_min_size<2>(obj);
-    return Qnil;
+
+    auto eval_obj = eval_list(eval, obj);
+    assert_number(eval_obj);
+    auto is_int = are_objects_int(obj);
+    if (is_int) {
+        auto min_element = obj->i(0)->to_int();
+        for (auto el : *obj) {
+            auto current = el->to_int();
+            if (current < min_element) {
+                min_element = current;
+            }
+        }
+        return make_int(min_element);
+    } else {
+        
+        auto min_element = obj->i(0)->to_real();
+        for (auto el : *obj) {
+            auto current = el->to_real();
+            if (current < min_element) {
+                min_element = current;
+            }
+        }
+        return make_double(min_element);
+    }
 }
 
-ALObjectPtr Fmax(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Fmax(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_min_size<2>(obj);
-    return Qnil;
+
+    auto eval_obj = eval_list(eval, obj);
+    assert_number(eval_obj);
+    auto is_int = are_objects_int(obj);
+    if (is_int) {
+        auto max_element = obj->i(0)->to_int();
+        for (auto el : *eval_obj) {
+            auto current = el->to_int();
+            if (max_element < current) {
+                max_element = current;
+            }
+        }
+        return make_int(max_element);
+    } else {
+        
+        auto max_element = obj->i(0)->to_real();
+        for (auto el : *eval_obj) {
+            auto current = el->to_real();
+            if (max_element < current) {
+                max_element = current;
+            }
+        }
+        return make_double(max_element);
+    }
 }
 
-ALObjectPtr Fround(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Fround(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
-    assert_size<1>(obj);
-    return Qnil;
+    assert_size<2>(obj);
+
+    const auto one = evl->eval(obj->i(0));
+    const auto two = evl->eval(obj->i(1));
+    
+    assert_number(one);
+    assert_int(two);
+
+    return make_double(utility::round_nplaces(one->to_real(), two->to_int()));
 }
-
-
-
 
 
 }

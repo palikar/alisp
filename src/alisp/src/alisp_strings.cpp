@@ -19,7 +19,7 @@ ALObjectPtr Fstring_contains(ALObjectPtr obj, env::Environment*, eval::Evaluator
     auto str_2 = eval->eval(obj->i(1));
     assert_string(str_1);
     assert_string(str_2);
-    
+
     if (str_1->to_string().find(str_2->to_string()) != std::string::npos) {
         return Qt;
     }
@@ -33,21 +33,21 @@ ALObjectPtr Fstring_endswith(ALObjectPtr obj, env::Environment*, eval::Evaluator
     auto str_2 = eval->eval(obj->i(1));
     assert_string(str_1);
     assert_string(str_2);
-    
+
     if (utility::ends_with(str_1->to_string(), str_2->to_string())) {
         return Qt;
     }
     return Qnil;
 }
 
-ALObjectPtr Fstring_startswtih(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fstring_startswith(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<2>(obj);
     auto str_1 = eval->eval(obj->i(0));
     auto str_2 = eval->eval(obj->i(1));
     assert_string(str_1);
     assert_string(str_2);
-    
+
     if (utility::starts_with(str_1->to_string(), str_2->to_string())) {
         return Qt;
     }
@@ -72,7 +72,7 @@ ALObjectPtr Fstring_capitalize(ALObjectPtr obj, env::Environment*, eval::Evaluat
     return str;
 }
 
-ALObjectPtr Fstring_isalpha(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fchar_isalpha(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<1>(obj);
     auto str = eval->eval(obj->i(0));
@@ -80,7 +80,7 @@ ALObjectPtr Fstring_isalpha(ALObjectPtr obj, env::Environment*, eval::Evaluator*
     return std::isalpha(static_cast<int>(str->to_int())) ? Qt : Qnil;
 }
 
-ALObjectPtr Fstring_isdigit(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fchar_isdigit(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<1>(obj);
     auto str = eval->eval(obj->i(0));
@@ -108,7 +108,7 @@ ALObjectPtr Fstring_replace(ALObjectPtr obj, env::Environment*, eval::Evaluator*
     assert_size<3>(obj);
     auto str_1 = eval->eval(obj->i(0));
     auto str_2 = eval->eval(obj->i(1));
-    auto str_3 = eval->eval(obj->i(1));
+    auto str_3 = eval->eval(obj->i(2));
     assert_string(str_1);
     assert_string(str_2);
     assert_string(str_3);
@@ -120,7 +120,7 @@ ALObjectPtr Fstring_replaceall(ALObjectPtr obj, env::Environment*, eval::Evaluat
     assert_size<3>(obj);
     auto str_1 = eval->eval(obj->i(0));
     auto str_2 = eval->eval(obj->i(1));
-    auto str_3 = eval->eval(obj->i(1));
+    auto str_3 = eval->eval(obj->i(2));
     assert_string(str_1);
     assert_string(str_2);
     assert_string(str_3);
@@ -131,17 +131,15 @@ ALObjectPtr Fstring_replaceall(ALObjectPtr obj, env::Environment*, eval::Evaluat
 ALObjectPtr Fstring_split(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<2>(obj);
+
     auto str_1 = eval->eval(obj->i(0));
     auto str_2 = eval->eval(obj->i(1));
+
     assert_string(str_1);
     assert_string(str_2);
 
-    auto tokens = utility::split(str_1->to_string(), str_2->to_string());
-
-    ALObject::list_type token_objs(std::size(tokens));
-    std::transform(std::begin(tokens), std::end(tokens), std::back_inserter(token_objs), make_string);
     
-    return make_object(token_objs);
+    return make_list(utility::split(str_1->to_string(), str_2->to_string()));
 }
 
 ALObjectPtr Fstring_substring(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
@@ -163,13 +161,7 @@ ALObjectPtr Fstring_splitlines(ALObjectPtr obj, env::Environment*, eval::Evaluat
     assert_size<1>(obj);
     auto str_1 = eval->eval(obj->i(0));
     assert_string(str_1);
-    
-    auto tokens = utility::split(str_1->to_string(), '\n');
-
-    ALObject::list_type token_objs(std::size(tokens));
-    std::transform(std::begin(tokens), std::end(tokens), std::back_inserter(token_objs), make_string);
-    
-    return make_object(token_objs);
+    return make_list(utility::split(str_1->to_string(), '\n'));
 }
 
 ALObjectPtr Fstring_upper(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
@@ -204,7 +196,7 @@ ALObjectPtr Fstring_join(ALObjectPtr obj, env::Environment*, eval::Evaluator* ev
         auto e = eval->eval(t_obj);
         assert_string(e);
         new_string += e->to_string();
-    }    
+    }
     return make_string(new_string);
 }
 

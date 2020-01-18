@@ -37,7 +37,6 @@ ALObjectPtr Fcar(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     return list->i(0);
 }
 
-
 ALObjectPtr Fcons(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<1>(obj);
@@ -50,7 +49,6 @@ ALObjectPtr Fhead(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval)
 {
     return Fcar(obj, env, eval);
 }
-
 
 ALObjectPtr Ftail(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval)
 {
@@ -65,7 +63,6 @@ ALObjectPtr Flast(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     return list->i(list->length() - 1);
 }
 
-
 ALObjectPtr Finit(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<1>(obj);
@@ -73,7 +70,6 @@ ALObjectPtr Finit(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     assert_list(list);
     return splice(list, 0, static_cast<ALObject::list_type::difference_type>(list->length() - 1));
 }
-
 
 ALObjectPtr Fpush(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
@@ -95,7 +91,6 @@ ALObjectPtr Flength(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
     return make_int(std::size(obj->i(0)->children()));
 }
 
-
 ALObjectPtr Fnth(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_size<2>(obj);
@@ -110,7 +105,6 @@ ALObjectPtr Fnth(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     
     return list->i(static_cast<ALObject::list_type::size_type>(index->to_int()));
 }
-
 
 //inplace
 ALObjectPtr Fdelete(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
@@ -128,7 +122,6 @@ ALObjectPtr Fdelete(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     return list;
 }
 
-
 //return copy
 ALObjectPtr Fremove(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {
@@ -145,7 +138,6 @@ ALObjectPtr Fremove(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     
     return make_object(new_children);
 }
-
 
 ALObjectPtr Frange(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 {

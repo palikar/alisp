@@ -11,12 +11,14 @@ namespace alisp::utility {
 inline std::vector<std::string> split(const std::string& s, char delimiter)
 {
     std::vector<std::string> tokens;
-    std::string token;
-    std::istringstream tokenStream(s);
-    while (std::getline(tokenStream, token, delimiter))
-    {
-        tokens.push_back(token);
+    
+    size_t last = 0; size_t next = 0;
+
+    while ((next = s.find(delimiter, last)) != std::string::npos) {
+        tokens.push_back(s.substr(last, next-last));
+        last = next + 1;
     }
+    tokens.push_back(s.substr(last));
     return tokens;
 }
 
@@ -26,7 +28,7 @@ inline std::vector<std::string> split(const std::string& s, const std::string& d
     
     size_t last = 0; size_t next = 0;
 
-    while ((next = s.find(delimiter)) != std::string::npos) {
+    while ((next = s.find(delimiter, last)) != std::string::npos) {
         tokens.push_back(s.substr(last, next-last));
         last = next + 1;
     }

@@ -166,11 +166,9 @@ DEFUN(round, "round");
 
 DEFUN(string_contains, "string-contains");
 DEFUN(string_endswith, "string-endswith");
-DEFUN(string_startswtih, "string-startswtih");
+DEFUN(string_startswith, "string-startswith");
 DEFUN(string_length, "string-length");
 DEFUN(string_capitalize, "string-capitalize");
-DEFUN(string_isalpha, "string-isalpha");
-DEFUN(string_isdigit, "string-isdigit");
 DEFUN(string_find, "string-find");
 DEFUN(string_replace, "string-replace");
 DEFUN(string_replaceall, "string-replaceall");
@@ -181,6 +179,9 @@ DEFUN(string_upper, "string-upper");
 DEFUN(string_lower, "string-lower");
 DEFUN(string_strip, "string-strip");
 DEFUN(string_join, "string-join");
+
+DEFUN(char_isalpha, "char-isalpha");
+DEFUN(char_isdigit, "char-isdigit");
 
 
 /*     _    _                  _ _   _                    */
@@ -205,9 +206,10 @@ DEFUN(all, "all");
 /* |_|   \__,_|_|  |___/\___| */
 
 
-DEFUN(int_parse, "parse_int");
-DEFUN(float_parse, "parse_float");
+DEFUN(int_parse, "parse-int");
+DEFUN(float_parse, "parse-float");
 DEFUN(to_string, "to-string");
+DEFUN(to_char, "to-char");
 
 
 

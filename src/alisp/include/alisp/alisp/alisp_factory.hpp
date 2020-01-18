@@ -64,8 +64,6 @@ struct ALObjectHelper
         const auto val = static_cast<ALObject::int_type>(a); 
         auto obj = new ALObject(val);
 
-        if (0 <= val && val <= 127) { obj->set_char_flag(); }
-        
         return init_ptr(obj);
     }
 
@@ -124,8 +122,19 @@ template<typename T>
 inline auto make_int(T value)
 {
     static_assert(std::is_integral_v<T>, "Value must be of integer type");
+    return make_object(static_cast<ALObject::int_type>(value));
+}
+
+
+template<typename T>
+inline auto make_char(T value)
+{
+    static_assert(std::is_integral_v<T>, "Value must be of integer type");
 
     auto obj = make_object(static_cast<ALObject::int_type>(value));
+    
+    if (0 <= value && value <= 127) { obj->set_char_flag(); }
+    
     return obj;
 }
 
@@ -166,8 +175,6 @@ inline auto make_prime(Prim::func_type t_function, std::string t_name)
     sym->set_prop("--name--", make_string(t_name));
     return sym;
 }
-
-
 
 
 }

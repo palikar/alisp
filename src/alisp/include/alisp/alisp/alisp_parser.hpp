@@ -792,43 +792,43 @@ class ALParser : public ParserBase
             switch(*position){
               case '\'':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>('\''));
+                  return make_char(static_cast<ALObject::int_type>('\''));
               case '\"':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>('\"'));
+                  return make_char(static_cast<ALObject::int_type>('\"'));
               case 'a':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>('\a'));
+                  return make_char(static_cast<ALObject::int_type>('\a'));
               case 'b':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>('\b'));
+                  return make_char(static_cast<ALObject::int_type>('\b'));
               case 't':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>('\t'));
+                  return make_char(static_cast<ALObject::int_type>('\t'));
               case 'n':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>('\n'));
+                  return make_char(static_cast<ALObject::int_type>('\n'));
               case 'v':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>('\v'));
+                  return make_char(static_cast<ALObject::int_type>('\v'));
               case 'f':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>('\f'));
+                  return make_char(static_cast<ALObject::int_type>('\f'));
               case 'r':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>('\r'));
+                  return make_char(static_cast<ALObject::int_type>('\r'));
               case 'e':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>(27));
+                  return make_char(static_cast<ALObject::int_type>(27));
               case 'd':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>(127));
+                  return make_char(static_cast<ALObject::int_type>(127));
               case 's':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>(' '));
+                  return make_char(static_cast<ALObject::int_type>(' '));
               case '\\':
                   ++position;
-                  return make_int(static_cast<ALObject::int_type>('\\'));
+                  return make_char(static_cast<ALObject::int_type>('\\'));
               default:  PARSE_ERROR("Unknown escape sequence \'?\'");
             }
 
@@ -836,7 +836,7 @@ class ALParser : public ParserBase
             
             char captured = *position;
             ++position;
-            return make_int(static_cast<ALObject::int_type>(captured));
+            return make_char(static_cast<ALObject::int_type>(captured));
         }
 
     }
