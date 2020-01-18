@@ -83,6 +83,8 @@ void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
     auto& scope = m_stack.current_scope();
     auto name = t_sym->to_string();
 
+    NameValidator::validate_object_name(name);
+
     if (scope.count(name)) { throw environment_error("Variable alredy exists: "  + name);}
 
     scope.insert({name, t_val});
@@ -92,6 +94,8 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value)
 {
     auto& scope = m_active_module->root_scope();
     auto name = t_sym->to_string();
+
+    NameValidator::validate_object_name(name);
 
     if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name);}
 
@@ -106,6 +110,8 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
         
     auto& scope = m_active_module->root_scope();
     auto name = t_sym->to_string();
+
+    NameValidator::validate_object_name(name);
 
     if (scope.count(name)) { throw environment_error("Function alredy exists: " + name);}
 
@@ -123,6 +129,8 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
         
     auto& scope = m_active_module->root_scope();
     auto name = t_sym->to_string();
+
+    NameValidator::validate_object_name(name);
 
     if (scope.count(name)) { throw environment_error("Function alredy exists: " + name);}
 
@@ -192,7 +200,6 @@ void Environment::stack_dump() const
 
 void Environment::callstack_dump() const
 {
-
     using namespace fmt;
     using namespace std;
 
@@ -200,16 +207,13 @@ void Environment::callstack_dump() const
     
     for (auto& [fun, prime] : utility::reverse(m_stack_trace) ) {
 
-
         if (prime) {
             cout << format("|{:<46}{:>}|", fun, "<-") << '\n';
         } else {
             cout << format("|{:<48}|", fun) << '\n';
         }
-
         
-    }
-    
+    }    
     cout << format("+{:-^48}+", "") << '\n';
 }
 

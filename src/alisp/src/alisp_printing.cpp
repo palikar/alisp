@@ -83,5 +83,10 @@ ALObjectPtr Fdumplicense(ALObjectPtr, env::Environment*, eval::Evaluator*)
     return Qt;
 }
 
+ALObjectPtr Fdumpcredits(ALObjectPtr, env::Environment*, eval::Evaluator*)
+{
+    std::cout << AL_CREDITS_TEXT << '\n';
+    return Qt;
+}
 
 }

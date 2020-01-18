@@ -43,6 +43,7 @@ enum class SignalTag
     USER,
     MODULE_IMPORT,
     MODULE_REFERNCE,
+    ILLEGAL_NAME,
     FLOW_CONTROL,
 
 };
@@ -50,7 +51,7 @@ enum class SignalTag
 
 constexpr const char *signal_tag_to_string(SignalTag type)
 {
-    constexpr const char *const names[] = { "unknown", "parser", "eval", "invalid_arguments", "env", "module_import", "module_reference", "user" };
+    constexpr const char *const names[] = { "unknown", "parser", "eval", "invalid_arguments", "env", "module_import", "module_reference", "user", "illegal_name" };
     return names[static_cast<int>(type)];
 }
 
@@ -201,6 +202,26 @@ struct module_refence_error : public al_exception
         ss << '\n';
         return ss.str();
     }
+};
+
+struct illegal_name_error : public al_exception
+{
+    
+  public:
+    illegal_name_error(const std::string& t_name, const std::string& t_why) :
+        al_exception(format(t_why, t_name), SignalTag::ILLEGAL_NAME)
+    {
+        m_signal_name = "illegal-name-signal";
+    }
+
+    
+    static std::string format(std::string t_why, const std::string& t_name)
+    {
+        std::ostringstream ss;
+        ss << "Invalid name error for \"" << t_name << "\"\t" << t_why << '\n';
+        return ss.str();
+    }
+
 };
 
 

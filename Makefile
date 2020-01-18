@@ -17,3 +17,8 @@ plain_build:
 	cd $(BUILD_DEBUG_DIR) && conan install ..
 	cd $(BUILD_DEBUG_DIR) && cmake .. -DCMAKE_BUILD_TYPE=Debug
 	cd $(BUILD_DEBUG_DIR) && make -j4
+
+
+count_line:
+	@cloc CMakeLists.txt ./src ./scripts/ --force-lang=lisp,al
+

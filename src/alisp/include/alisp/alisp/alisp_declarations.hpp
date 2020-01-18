@@ -104,7 +104,8 @@ DEFUN(dump, "dump");
 DEFUN(dumpstack, "dumpstack");
 DEFUN(dumpcallstack, "dumpcallstack");
 
-DEFUN(dumplicense, "Fdumplicense");
+DEFUN(dumplicense, "dumplicense");
+DEFUN(dumpcredits, "dumpcredits");
 
 /*  _     _     _        */
 /* | |   (_)___| |_ ___  */
