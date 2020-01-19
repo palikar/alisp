@@ -46,7 +46,11 @@ ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 
 
     for (auto& el : list->children()) {
-        eval->handle_lambda(fun_obj, make_list(quote(el)));
+        if (psym(el) or plist(el)) {
+            eval->handle_lambda(fun_obj, make_list(quote(el)));
+        } else {
+            eval->handle_lambda(fun_obj, make_list(el));
+        }
     }
 
     return Qt;
