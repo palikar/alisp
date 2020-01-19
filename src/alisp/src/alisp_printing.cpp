@@ -52,9 +52,37 @@ ALObjectPtr Fprint(ALObjectPtr t_obj, env::Environment*, eval::Evaluator* eval)
 
 }
 
+
+ALObjectPtr Feprint(ALObjectPtr t_obj, env::Environment*, eval::Evaluator* eval)
+{
+    assert_min_size<1>(t_obj);
+
+    for (auto child : *t_obj)
+    {
+        auto val = eval->eval(child);
+
+        make_visit(val,
+                   type(ALObjectType::INT_VALUE ) >>=  [](ALObjectPtr obj) { std::cerr << obj->to_int(); },
+                   type(ALObjectType::REAL_VALUE ) >>=  [](ALObjectPtr obj) { std::cerr << obj->to_real(); },
+                   type(ALObjectType::STRING_VALUE ) >>=  [](ALObjectPtr obj) { std::cerr << obj->to_string(); },
+                   type(ALObjectType::SYMBOL ) >>=  [](ALObjectPtr obj) { std::cerr << obj->to_string(); }
+            );
+
+    }
+
+    return Qt;
+}
+
 ALObjectPtr Fprintln(ALObjectPtr t_obj, env::Environment* env, eval::Evaluator* eval)
 {
     Fprint(t_obj, env, eval);
+    std::cout << '\n';
+    return Qt;
+}
+
+ALObjectPtr Feprintln(ALObjectPtr t_obj, env::Environment* env, eval::Evaluator* eval)
+{
+    Feprint(t_obj, env, eval);
     std::cout << '\n';
     return Qt;
 }

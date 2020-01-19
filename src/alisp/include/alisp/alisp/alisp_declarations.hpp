@@ -100,6 +100,8 @@ DEFUN(exit, "exit");
 
 DEFUN(print, "print");
 DEFUN(println, "println");
+DEFUN(eprint, "eprint");
+DEFUN(eprintln, "eprintln");
 DEFUN(dump, "dump");
 DEFUN(dumpstack, "dumpstack");
 DEFUN(dumpcallstack, "dumpcallstack");
