@@ -52,7 +52,6 @@ ALObjectPtr Fprint(ALObjectPtr t_obj, env::Environment*, eval::Evaluator* eval)
 
 }
 
-
 ALObjectPtr Feprint(ALObjectPtr t_obj, env::Environment*, eval::Evaluator* eval)
 {
     assert_min_size<1>(t_obj);

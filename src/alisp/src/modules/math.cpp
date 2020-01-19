@@ -15,20 +15,34 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-
-
-
-
 #include "alisp/alisp/alisp_module_helpers.hpp"
+
+
 
 
 namespace alisp
 {
 
+namespace detail
+{
+
+inline constexpr double PI = 3.14159265358979323846;
+inline constexpr double E = 2.71828182845904523536;
+inline constexpr double TAU = 2*PI;
+
+}
+
 
 env::ModulePtr init_math(env::Environment*, eval::Evaluator*) {
 
     auto Mmath = module_init("math");
+
+    module_defvar(Mmath.get(), "PI", make_double(detail::PI));
+    module_defvar(Mmath.get(), "E", make_double(detail::E));
+    module_defvar(Mmath.get(), "TAU", make_double(detail::TAU));
+
+
+
     return Mmath;
 }
 
