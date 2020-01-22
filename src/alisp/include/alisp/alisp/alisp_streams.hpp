@@ -43,14 +43,14 @@ class CoutStream : public ALStream {
     
     CoutStream() {}
     
-    void write(const std::string& t_input) { printf(t_input.data()); }
-    void write(const std::string_view& t_input) {  printf(t_input.data()); }
-    void write(const char* c_str) {printf(c_str); }
-    void write(char c) {std::putchar(c); }
+    void write(const std::string& t_input) override { printf(t_input.data()); }
+    void write(const std::string_view& t_input) override {  printf(t_input.data()); }
+    void write(const char* c_str) override { printf(c_str); }
+    void write(char c) override { std::putchar(c); }
     
-    char get_char() { return 0; }
-    std::string get_chars(size_t cout) {return nullptr;}
-    std::string get_line() {return "";}
+    char get_char() override { return 0; }
+    std::string get_chars(size_t) override {return "";}
+    std::string get_line() override {return "";}
 
     std::string content() override{ return ""; }    
 };
@@ -61,14 +61,12 @@ class CinStream : public ALStream {
     
     CinStream() {}
     
-    void write(const std::string& t_input) {}
-    void write(const std::string_view& t_input) {}
-    void write(const char* c_str) {}
-    void write(char c) {}
+    void write(const std::string&) {}
+    void write(const std::string_view&) {}
+    void write(const char*) {}
+    void write(char) {}
 
-    char get_char() {
-        return getchar();
-    }
+    char get_char() { return getchar(); }
     
     std::string get_chars(size_t cout) {
         return nullptr;
