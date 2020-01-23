@@ -65,13 +65,21 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
     for (auto& scope : m_stack.current_frame())
     {
         if (scope.count(name)) {
-            scope.at(name) = t_value;
+            auto& sym = scope.at(name);
+            if (sym->check_const_flag()) {
+                throw environment_error("\tTrying to change a const symbol: " + name);
+            }
+            sym = t_value;
             return;
         };
     }
         
     if (m_active_module->root_scope().count(name)) {
-        m_active_module->root_scope().at(name) = t_value;
+        auto& sym = m_active_module->root_scope().at(name);
+        if (sym->check_const_flag()) {
+            throw environment_error("\tTrying to change a const symbol: " + name);
+        }
+        sym = t_value;
         return;
     };
 
@@ -143,7 +151,6 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
     scope.insert({name, new_fun});
     
 }
-
 
 void Environment::activate_module(const std::string t_name)
 {

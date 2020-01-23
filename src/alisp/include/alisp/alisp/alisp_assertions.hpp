@@ -87,11 +87,14 @@ inline void assert_char (ALObjectPtr obj)
     if(!obj->is_int() and !obj->check_char_flag()) throw argument_error("Invalid argument. Object must be a char");
 }
 
-
 inline void assert_function (ALObjectPtr obj)
 {
     if(!obj->check_function_flag()) throw argument_error("Invalid argument. Object must be a function");
 }
 
+inline void assert_non_const (ALObjectPtr obj)
+{
+    if(!obj->check_const_flag()) throw argument_error("A symbol is const.");
+}
 
 }

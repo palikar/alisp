@@ -24,6 +24,7 @@
 #include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_assertions.hpp"
 #include "alisp/alisp/alisp_pattern_matching.hpp"
+#include "alisp/alisp/alisp_streams.hpp"
 
 #include "alisp/utility/macros.hpp"
 
