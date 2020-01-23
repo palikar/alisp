@@ -104,17 +104,23 @@ class Registry {
 
     template<typename ... Arg>
     Resource<T>* emplace_resource(Arg ... t_args){
-        
         auto id = next_id();
-        if ((id & INLINED_BIT) != 0) {
+
+        if (is_inlined(id)) {
             Resource<T>* mem = get_memory(id);
             new (mem) Resource<T>{T(t_args...), id};
             return mem;
         }
+
+        const auto dyn_id = get_true_id(id);
         
-        const auto dyn_id = (id & ~INLINED_BIT & ~REG_BITS & ~VALID_BIT);
-        dyn_res.insert(dyn_res.begin()+dyn_id, {T(t_args...), id});
-        return &dyn_res[dyn_id];    
+        if (dyn_res.size() <= dyn_id ) {
+            dyn_res.push_back({T(t_args...), id});
+        } else {
+            dyn_res.at(dyn_id) = {T(t_args...), id};
+
+        }
+        return &dyn_res[dyn_id];
         
     }
 

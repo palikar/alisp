@@ -74,7 +74,7 @@ TEST_CASE("Basic registry test [belonging]", "[registry]")
 }
 
 
-TEST_CASE("Basic registry test [destroy]", "[registry]")
+TEST_CASE("Basic registry test [destroy 1]", "[registry]")
 {
     using namespace alisp;
     
@@ -102,6 +102,24 @@ TEST_CASE("Basic registry test [destroy]", "[registry]")
     CHECK( !str_registry.belong(id + 2) );
     CHECK( str_registry.belong(id - 1) );
     
+}
+
+TEST_CASE("Basic registry test [destroy 2]", "[registry]")
+{
+    using namespace alisp;
     
+    management::Registry<std::string, 42> str_registry;
+
+    for (int i = 0; i < 20; ++i) {
+        auto id = str_registry.emplace_resource("this is str: " + std::to_string(i))->id;
+        CHECK( str_registry.belong(id) );
+        str_registry.destroy_resource(id);
+        CHECK( !str_registry.belong(id) );
+    }
+
+    auto id = str_registry.emplace_resource("")->id;
+    CHECK( str_registry.belong(id) );
+    str_registry.destroy_resource(id);
+    CHECK( !str_registry.belong(id) );
     
 }
