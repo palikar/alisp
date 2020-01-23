@@ -41,10 +41,10 @@ ALObjectPtr Fprint(ALObjectPtr t_obj, env::Environment*, eval::Evaluator* eval)
         auto val = eval->eval(child);
 
         make_visit(val,
-                   type(ALObjectType::INT_VALUE ) >>=  [](ALObjectPtr obj) { std::cout << obj->to_int(); },
-                   type(ALObjectType::REAL_VALUE ) >>=  [](ALObjectPtr obj) { std::cout << obj->to_real(); },
-                   type(ALObjectType::STRING_VALUE ) >>=  [](ALObjectPtr obj) { std::cout << obj->to_string(); },
-                   type(ALObjectType::SYMBOL ) >>=  [](ALObjectPtr obj) { std::cout << obj->to_string(); }
+                   type(ALObjectType::INT_VALUE ) >>=  [](ALObjectPtr obj) { al::cout << obj->to_int(); },
+                   type(ALObjectType::REAL_VALUE ) >>=  [](ALObjectPtr obj) { al::cout << obj->to_real(); },
+                   type(ALObjectType::STRING_VALUE ) >>=  [](ALObjectPtr obj) { al::cout << obj->to_string(); },
+                   type(ALObjectType::SYMBOL ) >>=  [](ALObjectPtr obj) { al::cout << obj->to_string(); }
             );
 
     }
@@ -76,14 +76,14 @@ ALObjectPtr Feprint(ALObjectPtr t_obj, env::Environment*, eval::Evaluator* eval)
 ALObjectPtr Fprintln(ALObjectPtr t_obj, env::Environment* env, eval::Evaluator* eval)
 {
     Fprint(t_obj, env, eval);
-    std::cout << '\n';
+    al::cout << '\n';
     return Qt;
 }
 
 ALObjectPtr Feprintln(ALObjectPtr t_obj, env::Environment* env, eval::Evaluator* eval)
 {
     Feprint(t_obj, env, eval);
-    std::cout << '\n';
+    al::cout << '\n';
     return Qt;
 }
 
@@ -107,13 +107,13 @@ ALObjectPtr Fdumpcallstack(ALObjectPtr, env::Environment* env, eval::Evaluator*)
 
 ALObjectPtr Fdumplicense(ALObjectPtr, env::Environment*, eval::Evaluator*)
 {
-    std::cout << AL_LICENSE_TEXT << '\n';
+    al::cout << AL_LICENSE_TEXT << '\n';
     return Qt;
 }
 
 ALObjectPtr Fdumpcredits(ALObjectPtr, env::Environment*, eval::Evaluator*)
 {
-    std::cout << AL_CREDITS_TEXT << '\n';
+    al::cout << AL_CREDITS_TEXT << '\n';
     return Qt;
 }
 

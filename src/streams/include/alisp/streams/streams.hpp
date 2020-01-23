@@ -30,6 +30,9 @@ class ALStream {
 
     // virtual size_t tellg() = 0;
     // virtual void seekg(size_t cout) = 0;
+
+    virtual bool hasmore() = 0;
+    
     
 
     virtual std::string content() = 0;
@@ -44,7 +47,9 @@ class CoutStream : public ALStream {
   public:
 
     static CoutStream* get_instance() {
-        m_instance = std::make_unique<CoutStream>();
+        if (!m_instance){
+            m_instance = std::make_unique<CoutStream>();
+        }
         return m_instance.get();
     }
     
@@ -59,6 +64,8 @@ class CoutStream : public ALStream {
     std::string get_chars(size_t) override {return "";}
     std::string get_line() override {return "";}
 
+    bool hasmore() override { return true; }
+
     std::string content() override{ return ""; }    
 };
 
@@ -70,7 +77,9 @@ class CinStream : public ALStream {
   public:
 
     static CinStream* get_instance() {
-        m_instance = std::make_unique<CinStream>();
+        if (!m_instance) {
+            m_instance = std::make_unique<CinStream>();
+        }
         return m_instance.get();
     }    
     CinStream() {}
@@ -98,7 +107,12 @@ class CinStream : public ALStream {
         return str;
     }
 
-    std::string content() override{ return ""; }    
+
+    bool hasmore() override { return true; }
+
+
+    std::string content() override{ return ""; }
+    
 };
 
 class StringStream : public ALStream {
@@ -143,6 +157,8 @@ class StringStream : public ALStream {
         }
         return str;
     }
+
+    bool hasmore() override { return m_pos < std::size(m_str); }
 
     std::string content() override { return m_str; }    
 };
@@ -195,7 +211,7 @@ inline ALStream& operator<<(ALStream& os, const std::string& c){
 }
 
 inline ALStream& operator<<(ALStream& os, const std::string_view& c){
-    os.write(c.c_str());
+    os.write(c.data());
     return os;
 }
 

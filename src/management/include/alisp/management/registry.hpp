@@ -34,7 +34,7 @@ namespace management
 template<typename T>
 struct Resource {
     T res;
-    uint32_t id;
+    uint32_t id{0};
 };
 
 
@@ -146,7 +146,7 @@ class Registry {
             if (is_inlined(t_id)) {
                 auto* mem = get_memory(t_id);
                 mem->~Resource<T>();
-                mem->id = mem->id & ~VALID_BIT;
+                mem->id = 0;
                 --inlined_cnt;
                 free_list.push_back(t_id);
                 return;

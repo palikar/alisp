@@ -38,6 +38,10 @@ void StreamsHelper::rebind_cin(ALObjectPtr t_stream) {
     al::cin = *al::streams_registry[id];
 }
 
+streams::ALStream* StreamsHelper::get_stream(ALObjectPtr t_stream) {
+    return al::streams_registry[object_to_resource(t_stream)];
+}
+
 ALObjectPtr StreamsHelper::create_string_stream(ALObjectPtr t_string) {
     streams::StringStream* new_stream = new streams::StringStream(t_string->to_string());
     auto new_id = al::streams_registry.put_resource(dynamic_cast<streams::ALStream*>(new_stream))->id;

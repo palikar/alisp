@@ -22,6 +22,7 @@ add_library(alisp_language
     src/alisp_modules.cpp
     src/alisp_streams.cpp
 
+    src/alisp_stream_functions.cpp
     src/alisp_language.cpp
     src/alisp_lists.cpp
     src/alisp_logic.cpp
@@ -31,7 +32,6 @@ add_library(alisp_language
     src/alisp_algorithms.cpp
     src/alisp_strings.cpp
     src/alisp_casts.cpp
-
 
     )
 

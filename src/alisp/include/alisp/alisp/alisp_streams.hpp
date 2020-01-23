@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <functional>
+
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/management/registry.hpp"
 #include "alisp/streams/streams.hpp"
@@ -32,8 +34,9 @@ namespace al
 
 inline management::Registry<streams::ALStream*, STREAM_REGISTRY_TAG> streams_registry;
 
-inline streams::ALStream& cout = *streams::CoutStream::get_instance();
-inline streams::ALStream& cin = *streams::CinStream::get_instance();
+
+inline std::reference_wrapper<streams::ALStream> cout = *streams::CoutStream::get_instance();
+inline std::reference_wrapper<streams::ALStream> cin = *streams::CinStream::get_instance();
 
 inline uint32_t cout_id;
 inline uint32_t cin_id;
@@ -56,28 +59,47 @@ struct StreamsHelper {
     static void rebind_cout(ALObjectPtr t_stream);
     static void rebind_cin(ALObjectPtr t_stream);
 
-    static ALObjectPtr create_string_stream(ALObjectPtr t_string);
-    static ALObjectPtr create_file_stream(ALObjectPtr t_file);
+    static streams::ALStream* get_stream(ALObjectPtr t_stream);
 
+    static ALObjectPtr create_string_stream(ALObjectPtr t_string);
+
+    static ALObjectPtr create_file_stream(ALObjectPtr t_file);
     static void close_stream(ALObjectPtr t_stream);
     
 };
 
 struct StreamClose {
 
-
-    explicit StreamClose() {}
-    ~StreamClose() {}
+  private:
+    ALObjectPtr m_id;
+  public:
+    
+    explicit StreamClose(ALObjectPtr t_id) : m_id(t_id) {}
+    ~StreamClose() { StreamsHelper::close_stream(m_id);}
 
     StreamClose(StreamClose &&) = default;
     StreamClose& operator=(StreamClose &&) = default;
     StreamClose(const StreamClose &) = delete;
-
     
 };
 
+struct CoutRestore {
+    explicit CoutRestore()  {}
+    ~CoutRestore() { al::cout = *al::streams_registry[al::cout_id]; }
 
+    CoutRestore(CoutRestore &&) = default;
+    CoutRestore& operator=(CoutRestore &&) = default;
+    CoutRestore(const CoutRestore &) = delete;    
+};
 
+struct CinRestore {
+    explicit CinRestore()  {}
+    ~CinRestore() { al::cin = *al::streams_registry[al::cin_id]; }
+
+    CinRestore(CinRestore &&) = default;
+    CinRestore& operator=(CinRestore &&) = default;
+    CinRestore(const CinRestore &) = delete;    
+};
 
 }
 

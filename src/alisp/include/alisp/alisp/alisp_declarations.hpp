@@ -135,11 +135,20 @@ DEFUN(length, "length");
 
 
 
-//Streams
+/*  ____  _                                 */
+/* / ___|| |_ _ __ ___  __ _ _ __ ___  ___  */
+/* \___ \| __| '__/ _ \/ _` | '_ ` _ \/ __| */
+/*  ___) | |_| | |  __/ (_| | | | | | \__ \ */
+/* |____/ \__|_|  \___|\__,_|_| |_| |_|___/ */
 
 DEFUN(stream, "stream");
+DEFUN(close_stream, "stream-close");
+// DEFUN(with_stream, "with-stream");
 DEFUN(with_cout, "with-cout");
 DEFUN(with_cin, "with-cin");
+
+DEFUN(stream_content, "stream-content");
+
 DEFUN(stream_write, "stream-write");
 DEFUN(stream_write_line, "stream-write-line");
 DEFUN(stream_write_lines, "stream-write-lines");
@@ -147,9 +156,6 @@ DEFUN(stream_read, "stream-read");
 DEFUN(stream_read_line, "stream-read-line");
 DEFUN(stream_read_lines, "stream-read-lines");
 
-//Files
-
-DEFUN(file_open, "file");
 
 
 /*  ____               _ _           _             */
