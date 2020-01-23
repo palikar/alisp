@@ -37,7 +37,6 @@ TEST_CASE("Basic registry test [dynamic]", "[registry]")
     CHECK( str_registry[id].compare("new_str") == 0 );
 }
 
-
 TEST_CASE("Basic registry test [emplace]", "[registry]")
 {
     using namespace alisp;
@@ -55,8 +54,7 @@ TEST_CASE("Basic registry test [emplace]", "[registry]")
     CHECK( str_registry[id].compare("new_str") == 0 );
 }
 
-
-TEST_CASE("Basic registry test [belonging]", "[registry]")
+TEST_CASE("Basic registry test [belonging 1]", "[registry]")
 {
     using namespace alisp;
     
@@ -72,7 +70,6 @@ TEST_CASE("Basic registry test [belonging]", "[registry]")
     CHECK( str_registry.belong(id) );
     CHECK( !str_registry.belong(213) );
 }
-
 
 TEST_CASE("Basic registry test [destroy 1]", "[registry]")
 {
@@ -121,5 +118,21 @@ TEST_CASE("Basic registry test [destroy 2]", "[registry]")
     CHECK( str_registry.belong(id) );
     str_registry.destroy_resource(id);
     CHECK( !str_registry.belong(id) );
+    
+}
+
+TEST_CASE("Basic registry test [belong 2]", "[registry]")
+{
+    using namespace alisp;
+    
+    management::Registry<std::string, 42> str_registry;
+    
+    CHECK( !str_registry.belong(231) );
+    CHECK( !str_registry.belong(219083) );
+    CHECK( !str_registry.belong(0) );
+    CHECK( !str_registry.belong(213213) );
+    CHECK( !str_registry.belong(123) );
+    CHECK( !str_registry.belong(12) );
+    CHECK( !str_registry.belong(5) );
     
 }
