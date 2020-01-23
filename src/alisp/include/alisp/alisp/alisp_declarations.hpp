@@ -134,6 +134,24 @@ DEFUN(range, "range");
 DEFUN(length, "length");
 
 
+
+//Streams
+
+DEFUN(stream, "stream");
+DEFUN(with_cout, "with-cout");
+DEFUN(with_cin, "with-cin");
+DEFUN(stream_write, "stream-write");
+DEFUN(stream_write_line, "stream-write-line");
+DEFUN(stream_write_lines, "stream-write-lines");
+DEFUN(stream_read, "stream-read");
+DEFUN(stream_read_line, "stream-read-line");
+DEFUN(stream_read_lines, "stream-read-lines");
+
+//Files
+
+DEFUN(file_open, "file");
+
+
 /*  ____               _ _           _             */
 /* |  _ \ _ __ ___  __| (_) ___ __ _| |_ ___  ___  */
 /* | |_) | '__/ _ \/ _` | |/ __/ _` | __/ _ \/ __| */
