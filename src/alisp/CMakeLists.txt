@@ -46,6 +46,8 @@ target_link_libraries(alisp_language
     project_warnings
     PUBLIC
     alisp_util
+    alisp_streams
+    alisp_management
     fmt::fmt
     )
 

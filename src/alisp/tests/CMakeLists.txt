@@ -5,23 +5,6 @@ add_executable(alisp_language_test
     test_common.cpp
     test_eval.cpp
     test_engine.cpp
-    
-    ../src/alisp_parser.cpp
-    ../src/alisp_env.cpp
-    ../src/alisp_eval.cpp
-    ../src/alisp_object.cpp
-    ../src/alisp_language.cpp
-    ../src/alisp_lists.cpp
-    ../src/alisp_logic.cpp
-    ../src/alisp_math.cpp
-    ../src/alisp_predicates.cpp
-    ../src/alisp_printing.cpp
-    ../src/alisp_engine.cpp
-    ../src/alisp_modules.cpp
-    ../src/alisp_strings.cpp
-    ../src/alisp_casts.cpp
-    ../src/alisp_algorithms.cpp
-
     )
 
 target_include_directories(alisp_language_test
@@ -38,7 +21,8 @@ target_link_libraries(alisp_language_test
     project_options
     project_warnings
     PUBLIC
-    alisp_util)
+    alisp_language
+    )
 
 
 target_link_libraries(alisp_language_test PRIVATE alisp_fileio

@@ -1,3 +1,5 @@
 add_subdirectory(utility)
-add_subdirectory(alisp)
 add_subdirectory(applications)
+add_subdirectory(streams)
+add_subdirectory(management)
+add_subdirectory(alisp)
