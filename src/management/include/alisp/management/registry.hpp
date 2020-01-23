@@ -71,7 +71,7 @@ class Registry {
             return mem;
         }
 
-        const auto dyn_id = (id & ~INLINED_BIT & ~REG_BITS);
+        const auto dyn_id = (id & ~INLINED_BIT & ~REG_BITS & ~VALID_BIT);
         dyn_res.insert(dyn_res.begin()+dyn_id, {t_res, id});
         return &dyn_res[dyn_id];
         
@@ -119,6 +119,9 @@ class Registry {
                 return false;
             }
 
+            if (get_memory(t_id)->id & VALID_BIT == 0) {
+                return false;
+            }
             
             return true;
         }

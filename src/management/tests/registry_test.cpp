@@ -90,9 +90,18 @@ TEST_CASE("Basic registry test [destroy]", "[registry]")
 
     str_registry.destroy_resource(id);
 
-    std::cout << std::hex << management::Registry<std::string, 42>::REG_BITS << "\n";
-    std::cout << std::hex << management::Registry<std::string, 42>::VALID_BIT << "\n";
     CHECK( !str_registry.belong(id) );
+
+    id = str_registry.emplace_resource("new_str")->id;
+    CHECK( str_registry.belong(id) );
+
+    str_registry.destroy_resource(id);
+    CHECK( !str_registry.belong(id) );
+
+    CHECK( !str_registry.belong(id - 1) );
+    CHECK( !str_registry.belong(id + 1) );
+
+    
     
     
 }
