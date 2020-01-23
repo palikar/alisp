@@ -149,47 +149,52 @@ class StringStream : public ALStream {
 
 
 
-ALStream& operator<<(ALStream& os, char c){
+inline ALStream& operator<<(ALStream& os, char c){
     os.write(c);
     return os;
 }
 
-ALStream& operator<<(ALStream& os, int c){
+inline ALStream& operator<<(ALStream& os, int c){
     os.write(std::to_string(c));
     return os;
 }
 
-ALStream& operator<<(ALStream& os, long c){
+inline ALStream& operator<<(ALStream& os, long c){
     os.write(std::to_string(c));
     return os;
 }
 
-ALStream& operator<<(ALStream& os, short c){
+inline ALStream& operator<<(ALStream& os, short c){
     os.write(std::to_string(c));
     return os;
 }
 
-ALStream& operator<<(ALStream& os, long long c){
+inline ALStream& operator<<(ALStream& os, long long c){
     os.write(std::to_string(c));
     return os;
 }
 
-ALStream& operator<<(ALStream& os, float c){
+inline ALStream& operator<<(ALStream& os, float c){
     os.write(std::to_string(c));
     return os;
 }
 
-ALStream& operator<<(ALStream& os, double c){
+inline ALStream& operator<<(ALStream& os, double c){
     os.write(std::to_string(c));
     return os;
 }
 
-ALStream& operator<<(ALStream& os, const char* c){
+inline ALStream& operator<<(ALStream& os, const char* c){
     os.write(c);
     return os;
 }
 
-ALStream& operator<<(ALStream& os, const std::string& c){
+inline ALStream& operator<<(ALStream& os, const std::string& c){
+    os.write(c.c_str());
+    return os;
+}
+
+inline ALStream& operator<<(ALStream& os, const std::string_view& c){
     os.write(c.c_str());
     return os;
 }

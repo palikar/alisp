@@ -20,6 +20,7 @@ add_library(alisp_language
     src/alisp_object.cpp
     src/alisp_engine.cpp
     src/alisp_modules.cpp
+    src/alisp_streams.cpp
 
     src/alisp_language.cpp
     src/alisp_lists.cpp

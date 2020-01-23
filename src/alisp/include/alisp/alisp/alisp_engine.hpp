@@ -40,6 +40,7 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_parser.hpp"
 #include "alisp/alisp/alisp_modules.hpp"
+#include "alisp/alisp/alisp_streams.hpp"
 
 #include "alisp/utility/files.hpp"
 
@@ -123,6 +124,7 @@ class LanguageEngine
     {
         env::init_modules();
         logging::init_logging();
+        al::init_streams();
         
         env::update_prime(Qcommand_line_args, make_list(m_argv));
 
