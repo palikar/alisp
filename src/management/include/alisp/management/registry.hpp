@@ -42,37 +42,62 @@ class Registry {
     uint32_t inlined_cnt = 0;
 
     uint32_t next_id() {
+
         if (!free_list.empty()) {
             auto i = free_list.back();
             free_list.pop_back();
             return i;
         }
+        
         if (inlined_cnt < INLINED) {
             return (inlined_cnt++ | INLINED_BIT | TAG_BITS | VALID_BIT);
         }
-        return (static_cast<std::uint32_t>(dyn_res.size()) & ~INLINED_BIT) | TAG_BITS | VALID_BIT;
+
+        return (static_cast<std::uint32_t>(dyn_res.size())) | TAG_BITS | VALID_BIT;
     }
 
-    Resource<T>* get_memory(uint32_t t_index) {
-        if ((t_index & INLINED_BIT) != 0) {
-            return &inline_res[t_index & ~INLINED_BIT & ~REG_BITS & ~VALID_BIT];
+    Resource<T>* get_memory(uint32_t t_id) {
+
+        if (is_inlined(t_id)) {
+            return &inline_res[get_true_id(t_id)];
         }
-        const auto dyn_index = (t_index & ~INLINED_BIT & ~REG_BITS & ~VALID_BIT);
+        
+        const auto dyn_index = (get_true_id(t_id));
         return dyn_res.data() + dyn_index;
     }
 
+    bool is_inlined(uint32_t t_id) { return (t_id & INLINED_BIT) != 0; }
+
+    uint32_t get_true_id(uint32_t t_id) { return t_id & ~INLINED_BIT & ~REG_BITS & ~VALID_BIT; }
+
+    bool id_belongs(uint32_t t_id) { return ((t_id & REG_BITS) >> 23) == tag; }
+
   public:
+
+    Registry() {
+        for (size_t i = 0; i < INLINED; ++i) {
+            inline_res[i].id = 0;
+        }
+
+    }
 
     Resource<T>* put_resource(T t_res){
         auto id = next_id();
-        if ((id & INLINED_BIT) != 0) {
+
+        if (is_inlined(id)) {
             Resource<T>* mem = get_memory(id);
             new (mem) Resource<T>{t_res, id};
             return mem;
         }
 
-        const auto dyn_id = (id & ~INLINED_BIT & ~REG_BITS & ~VALID_BIT);
-        dyn_res.insert(dyn_res.begin()+dyn_id, {t_res, id});
+        const auto dyn_id = get_true_id(id);
+        
+        if (dyn_res.size() <= dyn_id ) {
+            dyn_res.push_back({t_res, id});
+        } else {
+            dyn_res.at(dyn_id) = {t_res, id};
+
+        }
         return &dyn_res[dyn_id];
         
     };
@@ -94,16 +119,24 @@ class Registry {
     }
 
     void destroy_resource(uint32_t t_id){
+        if (id_belongs(t_id)) {
 
-        auto* mem = get_memory(t_id);
-        mem->~Resource<T>();
+            if (is_inlined(t_id)) {
+                auto* mem = get_memory(t_id);
+                mem->~Resource<T>();
+                mem->id = mem->id & ~VALID_BIT;
+                --inlined_cnt;
+                free_list.push_back(t_id);
+                return;
+            }
 
-        mem->id = mem->id & ~VALID_BIT;
 
-        if ((t_id & INLINED_BIT) != 0) {
-            --inlined_cnt;
+            dyn_res.at(get_true_id(t_id)).~Resource<T>();
+            dyn_res.at(get_true_id(t_id)).id = dyn_res.at(get_true_id(t_id)).id & ~VALID_BIT;
+            free_list.push_back(t_id);
+
+
         }
-        free_list.push_back(t_id);
     };
     
     Resource<T>* get_resource(uint32_t t_id) {
@@ -112,14 +145,26 @@ class Registry {
 
     bool belong(uint32_t t_id ) {
         
-        if (((t_id & REG_BITS) >> 23) == tag) {
+        if (id_belongs(t_id)) {
             
             
             if (std::find(std::begin(free_list),std::end(free_list), t_id) != std::end(free_list)){
                 return false;
             }
 
-            if (get_memory(t_id)->id & VALID_BIT == 0) {
+            if (is_inlined(t_id)) {
+                return (get_memory(t_id)->id & VALID_BIT) > 0;
+                
+            }
+
+            const auto true_id = get_true_id(t_id);
+
+
+            if (dyn_res.size() <= true_id) {
+                return false;
+            }
+
+            if ((dyn_res.at(true_id).id & VALID_BIT) == 0){
                 return false;
             }
             

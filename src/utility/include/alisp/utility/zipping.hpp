@@ -22,6 +22,7 @@
 #pragma once
 
 #include <iterator>
+#include <functional>
 
 namespace alisp::utility {
 

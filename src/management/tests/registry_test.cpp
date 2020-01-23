@@ -98,9 +98,9 @@ TEST_CASE("Basic registry test [destroy]", "[registry]")
     str_registry.destroy_resource(id);
     CHECK( !str_registry.belong(id) );
 
-    CHECK( !str_registry.belong(id - 1) );
-    CHECK( !str_registry.belong(id + 1) );
-
+    CHECK( !str_registry.belong(id + 10) );
+    CHECK( !str_registry.belong(id + 2) );
+    CHECK( str_registry.belong(id - 1) );
     
     
     
