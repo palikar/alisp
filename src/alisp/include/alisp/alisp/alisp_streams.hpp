@@ -1,6 +1,6 @@
 #pragma once
 
-#include "alisp/management/registryg.hpp"
+#include "alisp/management/registry.hpp"
 #include "alisp/streams/streams.hpp"
 
 

@@ -1,17 +1,19 @@
 #pragma once
 
+#include <iostream>
+
 #include <vector>
 #include <unordered_map>
 #include <array>
 #include <memory>
 #include <utility>
+#include <cstring>
 
 namespace alisp
 {
 
 namespace management
 {
-
 
 template<typename T>
 struct Resource {
@@ -25,8 +27,9 @@ class Registry {
 
   public:
 
-    constexpr static std::uint32_t REG_BITS = 0xF << 27;
-    constexpr static std::uint32_t TAG_BITS = tag << 27;
+    constexpr static std::uint32_t REG_BITS = 0xFF << 23;
+    constexpr static std::uint32_t VALID_BIT = 0x1 << 22;
+    constexpr static std::uint32_t TAG_BITS = static_cast<std::uint32_t>(tag) << 23;
     constexpr static std::uint32_t INLINED_BIT = 0x80000000;
     static constexpr size_t INLINED = 10;
     
@@ -45,16 +48,16 @@ class Registry {
             return i;
         }
         if (inlined_cnt < INLINED) {
-            return (inlined_cnt++ | INLINED_BIT | TAG_BITS);
+            return (inlined_cnt++ | INLINED_BIT | TAG_BITS | VALID_BIT);
         }
-        return (dyn_res.size() & ~INLINED_BIT) | TAG_BITS;
+        return (static_cast<std::uint32_t>(dyn_res.size()) & ~INLINED_BIT) | TAG_BITS | VALID_BIT;
     }
 
     Resource<T>* get_memory(uint32_t t_index) {
         if ((t_index & INLINED_BIT) != 0) {
-            return &inline_res[t_index & ~INLINED_BIT & ~REG_BITS];
+            return &inline_res[t_index & ~INLINED_BIT & ~REG_BITS & ~VALID_BIT];
         }
-        const auto dyn_index = (t_index & ~INLINED_BIT & ~REG_BITS);
+        const auto dyn_index = (t_index & ~INLINED_BIT & ~REG_BITS & ~VALID_BIT);
         return dyn_res.data() + dyn_index;
     }
 
@@ -91,7 +94,15 @@ class Registry {
     }
 
     void destroy_resource(uint32_t t_id){
-        get_memory(t_id)->~Resource<T>();
+
+        auto* mem = get_memory(t_id);
+        mem->~Resource<T>();
+
+        mem->id = mem->id & ~VALID_BIT;
+
+        if ((t_id & INLINED_BIT) != 0) {
+            --inlined_cnt;
+        }
         free_list.push_back(t_id);
     };
     
@@ -100,7 +111,18 @@ class Registry {
     }
 
     bool belong(uint32_t t_id ) {
-        return ((t_id & REG_BITS) >> 27) == tag;
+        
+        if (((t_id & REG_BITS) >> 23) == tag) {
+            
+            
+            if (std::find(std::begin(free_list),std::end(free_list), t_id) != std::end(free_list)){
+                return false;
+            }
+
+            
+            return true;
+        }
+        return false;
     }
 
     T& operator[](uint32_t t_ind) {

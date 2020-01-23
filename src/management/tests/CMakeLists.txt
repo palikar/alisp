@@ -1,5 +1,7 @@
 add_executable(alisp_management_test
-    main_test.cpp)
+    main_test.cpp
+    registry_test.cpp
+    )
 
 target_include_directories(alisp_management_test
     PUBLIC ../include
@@ -9,7 +11,9 @@ target_include_directories(alisp_management_test
 target_link_libraries(alisp_management_test
     PRIVATE
     project_options
-    project_warnings)
+    project_warnings
+    alisp_management
+    )
 
 
 include(CTest)

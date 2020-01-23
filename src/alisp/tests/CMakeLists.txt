@@ -13,9 +13,6 @@ target_include_directories(alisp_language_test
     )
 
 
-
-
-
 target_link_libraries(alisp_language_test
     PRIVATE
     project_options
