@@ -33,7 +33,7 @@
 #include "alisp/applications/prompt.hpp"
 #include "alisp/alisp/alisp_engine.hpp"
 
-void interactive(alisp::LanguageEngine& alisp_engine);
+int interactive(alisp::LanguageEngine& alisp_engine);
 
 struct Options
 {
@@ -49,6 +49,7 @@ struct Options
     bool version{false};
     bool interactive{false};
     bool show_help{false};
+    bool quick{false};
 };
 
 Options opts{};
@@ -69,6 +70,7 @@ int main(int argc, char *argv[])
         opts.interactive  << clipp::option("-i", "--interactive")                           % "Start interactive mode after file evaluation",
         opts.parse_debug  << clipp::option("-d", "--parse-debug")                           % "Debug output from the parser",
         opts.eval_debug   << clipp::option("-l", "--eval-debug")                            % "Debug output from the evaluator",
+        opts.quick   << clipp::option("-Q", "--quick-start")                           % "Do not loady any scripts on initialization",
 
         clipp::repeatable( clipp::option("-I") & clipp::integers("include", opts.includes)) % "Extra include directories for module imports.",
 
@@ -144,6 +146,7 @@ int main(int argc, char *argv[])
 
     if (opts.eval_debug) settings.push_back(alisp::EngineSettings::EVAL_DEBUG);
     if (opts.parse_debug) settings.push_back(alisp::EngineSettings::PARSER_DEBUG);
+    if (opts.quick) settings.push_back(alisp::EngineSettings::QUICK_INIT);
 
     alisp::LanguageEngine alisp_engine(settings, std::move(opts.args), std::move(opts.includes));
 
@@ -163,26 +166,24 @@ int main(int argc, char *argv[])
 
 
     if(!opts.eval.empty()){
-        alisp_engine.eval_statement(opts.eval);
-        exit(0);;
+        auto [succ, val] = alisp_engine.eval_statement(opts.eval);
+        return val;
     }
 
-    interactive(alisp_engine);
-
-    return 0;
+    return interactive(alisp_engine);
 }
 
 
-void interactive(alisp::LanguageEngine& alisp_engine)
+int interactive(alisp::LanguageEngine& alisp_engine)
 {
 
     std::cout << alisp::get_build_info();
 
-    alisp::prompt::init("/home/arnaud/.alisp_hisotry");
-
+    alisp::prompt::init("/home/arnaud/.alisp_history");
     alisp::prompt::SaveHistory hist;
 
     while(true){
+        
         auto command = alisp::prompt::repl(">>> ");
 
         if(!command) {
@@ -190,9 +191,10 @@ void interactive(alisp::LanguageEngine& alisp_engine)
             exit(0);
         }
 
-        
-        alisp_engine.eval_statement(command.value());
-        
+        auto [succ, val] = alisp_engine.eval_statement(command.value());
 
+        if (!succ) { return val; }
     }
+
+    return 0;
 }

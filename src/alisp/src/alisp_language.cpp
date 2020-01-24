@@ -436,7 +436,7 @@ ALObjectPtr Fexit(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
     assert_size<1>(obj);
     auto val = evl->eval(obj->i(0));
     assert_int(val);
-    exit(static_cast<int>(val->to_int()));
+    throw al_exit(static_cast<int>(val->to_int()));
     return Qnil;
 }
 

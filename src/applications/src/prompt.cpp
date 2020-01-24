@@ -70,11 +70,28 @@ char** completer(const char* text, int, int )
     return rl_completion_matches(text, completion_generator);
 }
 
+void load_history()
+{
+    namespace fs = std::filesystem;
+
+    if (history_file.empty()) { return; }
+    if (!fs::is_regular_file(history_file)) { return; }
+
+    std::ifstream alisphist(history_file);
+
+    std::string line;
+    while (std::getline(alisphist, line)) {
+        add_history(line.c_str());
+    }
+    
+
+}
 void init(std::string hist)
 {
     rl_attempted_completion_function = completer;
     history_file = std::move(hist);
     using_history();
+    if (!history_file.empty()) { load_history(); }
 }
 
 std::optional<std::string> repl(const std::string& prompt)
@@ -107,9 +124,8 @@ SaveHistory::~SaveHistory()
 
     std::ofstream alisphist(history_file);
     for (size_t i = 0; hist_list[i]; i++) {
-        std::cout << "saving" << hist_list[i]->line << "\n";
-        
-        alisphist << hist_list[i]->line;
+        std::cout << "saving:" << hist_list[i]->line << "\n";
+        alisphist << hist_list[i]->line << '\n';
     }
 
     alisphist.close();

@@ -198,6 +198,12 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
               }
 
 
+          }catch (al_continue&) {
+              throw;
+          }catch (al_break&) {
+              throw;
+          }catch (al_exit&) {
+              throw;
           }catch (al_return&) {
               throw;
           } catch (...) {

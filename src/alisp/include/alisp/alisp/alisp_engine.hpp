@@ -57,7 +57,8 @@ inline constexpr auto prelude_directory = AL_PRELUDE_DIR;
 enum class EngineSettings
 {
     PARSER_DEBUG,
-    EVAL_DEBUG
+    EVAL_DEBUG,
+    QUICK_INIT
 };
 
 
@@ -145,28 +146,44 @@ class LanguageEngine
 
         Vcurrent_module->set("--main--");
 
-        for(auto& al_file: fs::directory_iterator(detail::prelude_directory)) {
-            eval_file(al_file, false);
-        }
+        if (!check(EngineSettings::QUICK_INIT)) { load_init_scripts();}
 
+        
+    }
+
+    void load_init_scripts() {
+        namespace fs = std::filesystem;
+
+        if (fs::is_directory(detail::prelude_directory)) {
+            
+            for(auto& al_file: fs::directory_iterator(detail::prelude_directory)) {
+                eval_file(al_file, false);
+            }
+        }
+        
         auto alisprc = fs::path(m_home_directory) / ".alisprc";
         if (fs::is_regular_file(alisprc)) {
             eval_file(alisprc, false);
         }
-        
     }
+    
 
 
-    void eval_statement(std::string &command)
+    std::pair<bool, int> eval_statement(std::string &command)
     {
         try
         {
             do_eval(command, "__EVAL__", true);
         }
+        catch (al_exit& ex)
+        {
+            return {false, ex.value()};
+        }
         catch (...)
         {
             handle_errors_lippincott<false>();
         }
+        return {true, 0};
     }
 
     

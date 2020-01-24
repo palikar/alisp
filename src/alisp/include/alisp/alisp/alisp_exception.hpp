@@ -256,6 +256,18 @@ struct al_return : public al_exception
 };
 
 
+
+
+struct al_exit : public al_exception
+{
+  public:
+    al_exit(int value) : al_exception("", SignalTag::FLOW_CONTROL), m_value(value) {}
+    int value() { return m_value; }
+  private:
+    int m_value;
+};
+
+
 /*  _   _ _   _ _  */
 /* | | | | |_(_) | */
 /* | | | | __| | | */
