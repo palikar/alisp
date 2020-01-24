@@ -2,7 +2,10 @@
   `(setq ,var (+ ,var 1)))
 
 (defmacro 1+ (var)
-  `(setq ,var (+ ,var 1)))
+  `(progn
+     (inc ,var)
+     (inc ,var)
+     ))
 
 (defmacro custom-when (condition &rest body) 
   `(if ,condition
