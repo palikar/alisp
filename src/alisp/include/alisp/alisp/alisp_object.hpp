@@ -124,6 +124,10 @@ inline ALObjectPtr eval_list_n (eval::Evaluator* evl, ALObjectPtr t_obj, size_t 
     auto return_it = std::next(std::begin(objects), return_hops - 1);
     auto end_it = std::end(objects);
 
+    if (start_it > end_it) {
+        return Qt;
+    }
+
     while (start_it != return_it) {
         evl->eval(*start_it);
         start_it = std::next(start_it);
@@ -155,6 +159,10 @@ inline auto apply (eval::Evaluator* evl, ALObjectPtr t_obj, Callable t_fun, size
 
     auto start_it = std::next(std::begin(objects), hops);
     auto end_it = std::prev(std::end(objects));
+
+    if (start_it > end_it) {
+        return Qt;
+    }
 
     while (start_it != end_it) {
         if constexpr (eval){
@@ -191,6 +199,9 @@ inline StartType reduce ([[maybe_unused]]eval::Evaluator* evl, ALObjectPtr t_obj
             }
         }();
 
+    if (start_it > end_it) {
+        return Qt;
+    }
 
     while (start_it != end_it) {
 

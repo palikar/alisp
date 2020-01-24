@@ -1,9 +1,5 @@
 (println "Starting the stream!")
 
-(let ((s "string"))
-  (println s)
-  )
-
 ;; (let ((s (stream :from-string "")))
 ;;   (println "Reading from the stream")
 ;;   (stream-write-lines s '("line1" "line2" "line3"))
