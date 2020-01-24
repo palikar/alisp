@@ -212,6 +212,8 @@ class LanguageEngine
         return m_environment.find(make_symbol(t_sym_name));
     }
 
+    const std::string& get_home() const {return m_home_directory;}
+
 
     
 };

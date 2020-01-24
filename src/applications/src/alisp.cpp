@@ -15,14 +15,15 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-
-
-
-
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <filesystem>
+#include <atomic>
+#include <functional>
+#include <signal.h>
+#include <cstring>
+
 
 #include <clipp.hpp>
 #include <fmt/format.h>
@@ -34,6 +35,19 @@
 #include "alisp/alisp/alisp_engine.hpp"
 
 int interactive(alisp::LanguageEngine& alisp_engine);
+
+alisp::LanguageEngine* g_alisp_engine = nullptr;
+
+
+void got_signal(int)
+{
+    if (g_alisp_engine) {
+
+        alisp::prompt::SaveHistory hist;
+        
+    }
+    exit(0);
+}
 
 struct Options
 {
@@ -54,7 +68,6 @@ struct Options
 
 Options opts{};
 
-
 int main(int argc, char *argv[])
 {
 
@@ -63,7 +76,6 @@ int main(int argc, char *argv[])
     
 
     auto cli = (
-        
         
         opts.version      << clipp::option("-v", "--version")                               % "Show the version and build information of the current executable",
         opts.show_help    << clipp::option("-h", "--help")                                  % "Print help information",
@@ -123,12 +135,12 @@ int main(int argc, char *argv[])
         std::cout << clipp::make_man_page(cli, "progname", fmt)
             .prepend_section("DESCRIPTION", "The alisp programming language.")
             .append_section("LICENSE", "GPLv3");
-        exit(0);
+        return 0;
     }
 
     if (opts.version) {
         std::cout << alisp::get_build_info();
-        exit(0);
+        return 0;
     }
 
     // std::cout << "File:" << opts.input << "\n";
@@ -148,7 +160,14 @@ int main(int argc, char *argv[])
     if (opts.parse_debug) settings.push_back(alisp::EngineSettings::PARSER_DEBUG);
     if (opts.quick) settings.push_back(alisp::EngineSettings::QUICK_INIT);
 
-    alisp::LanguageEngine alisp_engine(settings, std::move(opts.args), std::move(opts.includes));
+    alisp::LanguageEngine alisp_engine{settings, std::move(opts.args), std::move(opts.includes)};
+    g_alisp_engine = &alisp_engine;
+
+    struct sigaction sa;
+    memset( &sa, 0, sizeof(sa) );
+    sa.sa_handler = got_signal;
+    sigfillset(&sa.sa_mask);
+    sigaction(SIGINT,&sa,NULL);
 
 
     if(!opts.input.empty()){
@@ -176,11 +195,19 @@ int main(int argc, char *argv[])
 
 int interactive(alisp::LanguageEngine& alisp_engine)
 {
+    namespace fs = std::filesystem;
+
+    auto alisp_hisotry = fs::path(alisp_engine.get_home()) / ".alisp_history";
+
+    if (!fs::is_regular_file(alisp_hisotry)) {
+        std::ofstream file { alisp_hisotry };
+    }
+
+    alisp::prompt::init(alisp_hisotry);
+    
+    alisp::prompt::SaveHistory hist;
 
     std::cout << alisp::get_build_info();
-
-    alisp::prompt::init("/home/arnaud/.alisp_history");
-    alisp::prompt::SaveHistory hist;
 
     while(true){
         
@@ -188,7 +215,7 @@ int interactive(alisp::LanguageEngine& alisp_engine)
 
         if(!command) {
             std::cout << '\n';
-            exit(0);
+            break;
         }
 
         auto [succ, val] = alisp_engine.eval_statement(command.value());

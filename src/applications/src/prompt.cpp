@@ -124,7 +124,6 @@ SaveHistory::~SaveHistory()
 
     std::ofstream alisphist(history_file);
     for (size_t i = 0; hist_list[i]; i++) {
-        std::cout << "saving:" << hist_list[i]->line << "\n";
         alisphist << hist_list[i]->line << '\n';
     }
 
