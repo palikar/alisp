@@ -258,3 +258,77 @@
 (dolist (element '(1 2 3 4 5 "s"))
   (println "element: " element))
 
+
+
+(defmacro inc (var)
+  `(setq ,var (+ ,var 1)))
+
+(defmacro 1+ (var)
+  `(setq ,var (+ ,var 1)))
+
+(defmacro custom-when (condition &rest body) 
+  `(if ,condition
+       (progn ,@body)
+     nil))
+
+
+(defvar new-a 42)
+(println "Beginning: " new-a )
+(inc new-a)
+(1+ new-a)
+(println "End: " new-a )
+
+(custom-when t
+             (println "1:true!")
+             (println "2:true!")
+             (println "3:true!"))
+
+(println (parse-int "123"))
+(println (parse-int "42"))
+
+(println (parse-float "42.21"))
+(println (parse-float "10.45"))
+
+(println (parse-float "42.21"))
+
+(println (to-string "string"))
+(println (to-string 10.45))
+(println (to-string 10))
+(println (to-string 'sym))
+
+(println (to-string println))
+(println (to-string ?a))
+
+(println (to-string (to-char 65)))
+(println (to-string (to-char 97)))
+
+
+(println "Starting the stream!")
+
+(let ((s (stream :from-string "")))
+  (println "Reading from the stream")
+  (stream-write-lines s '("line1" "line2" "line3"))
+  (stream-write s "line4")
+  (println (stream-content s))
+  (stream-close s)
+  )
+
+
+(let ((s (stream :from-string ":")))
+  (with-cout s
+             (print "line1|")
+             (print "line2"))
+
+  (println "Content-> "(stream-content s))
+
+  (stream-close s)
+  )
+(println "end")
+
+
+(mapc println (range 1 10))
+
+(dolist (element (range 1 100))
+  (println "element: " element))
+
+('println "hello world")
