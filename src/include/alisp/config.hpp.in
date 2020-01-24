@@ -41,6 +41,8 @@ inline constexpr size_t SOCKET_REGISTRY_TAG = 0x03;
 inline constexpr size_t MEMORY_BUFFER_REGISTRY_TAG = 0x03;
 
 inline constexpr auto ENV_VAR_MODPATHS = "ALPATH";
+inline constexpr auto PROMPT_HISTORY_FILE = ".alisp_history";
+
 
 
 inline constexpr auto AL_LICENSE = "GPLv2";

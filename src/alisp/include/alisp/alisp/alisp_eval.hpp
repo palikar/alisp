@@ -30,6 +30,9 @@ class Evaluator
     env::Environment &env;
     size_t m_eval_depth = 0;
     std::shared_ptr<parser::ParserBase> m_parser;
+    //bit set for the status of the evaluator
+    // 13:1 -> SIGINT -> throw exception on the next eval!
+    
 
   public:
     Evaluator(env::Environment &env_, std::shared_ptr<parser::ParserBase> t_parser);

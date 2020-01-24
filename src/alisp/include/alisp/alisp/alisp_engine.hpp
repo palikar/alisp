@@ -109,7 +109,6 @@ class LanguageEngine
         return {};
     }
 
-
     LanguageEngine(std::vector<EngineSettings> t_setting = {}, std::vector<std::string> t_cla = {},
                    std::vector<std::string> t_extra_imports = {}
         )
@@ -166,8 +165,6 @@ class LanguageEngine
             eval_file(alisprc, false);
         }
     }
-    
-
 
     std::pair<bool, int> eval_statement(std::string &command)
     {
@@ -186,7 +183,6 @@ class LanguageEngine
         return {true, 0};
     }
 
-    
     void eval_file(const std::filesystem::path &t_path, bool insert_mod_path=true)
     {
 
@@ -206,14 +202,12 @@ class LanguageEngine
         }
     }
 
-
     ALObjectPtr get_value(const std::string& t_sym_name)
     {
         return m_environment.find(make_symbol(t_sym_name));
     }
-
-    const std::string& get_home() const {return m_home_directory;}
-
+ 
+    const std::string& get_home() const { return m_home_directory; }
 
     
 };

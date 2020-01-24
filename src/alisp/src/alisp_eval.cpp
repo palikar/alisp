@@ -221,8 +221,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
       
     }
 
-
-     return nullptr;
+    return nullptr;
 }
 
 ALObjectPtr Evaluator::eval_function(ALObjectPtr func, ALObjectPtr args)

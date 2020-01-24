@@ -197,7 +197,7 @@ int interactive(alisp::LanguageEngine& alisp_engine)
 {
     namespace fs = std::filesystem;
 
-    auto alisp_hisotry = fs::path(alisp_engine.get_home()) / ".alisp_history";
+    auto alisp_hisotry = fs::path(alisp_engine.get_home()) / PROMPT_HISTORY_FILE;
 
     if (!fs::is_regular_file(alisp_hisotry)) {
         std::ofstream file { alisp_hisotry };
