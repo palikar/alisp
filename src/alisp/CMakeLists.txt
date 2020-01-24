@@ -68,7 +68,11 @@ target_link_libraries(alisp_language PRIVATE alisp_system)
 add_module(alisp_platform src/modules/platform.cpp)
 target_link_libraries(alisp_language PRIVATE alisp_platform)
 
-target_compile_definitions(alisp_language PRIVATE -DLINK_MODULES)
+set(PRELUDE_DIR ${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}/prelude)
+    
+target_compile_definitions(alisp_language PUBLIC LINK_MODULES)
+target_compile_definitions(alisp_language PUBLIC AL_PRELUDE_DIR=\"${PRELUDE_DIR}\")
+
 
 
 install(TARGETS alisp_language alisp_fileio alisp_math
@@ -79,6 +83,8 @@ install(TARGETS alisp_language alisp_fileio alisp_math
     INCLUDES DESTINATION      ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
     ARCHIVE DESTINATION       ${CMAKE_INSTALL_SHAREDSTATEDIR}
     )
+
+install(DIRECTORY ./data/prelude/ DESTINATION ${PRELUDE_DIR})
 
 
 

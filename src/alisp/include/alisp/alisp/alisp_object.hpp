@@ -199,10 +199,6 @@ inline StartType reduce ([[maybe_unused]]eval::Evaluator* evl, ALObjectPtr t_obj
             }
         }();
 
-    if (start_it > end_it) {
-        return Qt;
-    }
-
     while (start_it != end_it) {
 
         if constexpr (eval){

@@ -42,6 +42,7 @@ inline constexpr size_t MEMORY_BUFFER_REGISTRY_TAG = 0x03;
 
 inline constexpr auto ENV_VAR_MODPATHS = "ALPATH";
 
+
 inline constexpr auto AL_LICENSE = "GPLv2";
 inline constexpr auto AL_LICENSE_TEXT = R"(
                     GNU GENERAL PUBLIC LICENSE

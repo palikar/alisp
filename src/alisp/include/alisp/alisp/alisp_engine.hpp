@@ -50,7 +50,7 @@ namespace alisp
 
 namespace detail
 {
-
+inline constexpr auto prelude_directory = AL_PRELUDE_DIR;
 
 }
 
@@ -79,6 +79,8 @@ class LanguageEngine
     std::vector<EngineSettings> m_settings;
     std::vector<std::string> m_argv;
     std::vector<std::string> m_imports;
+
+    const std::string m_home_directory;
 
     bool check(EngineSettings t_setting) { return std::find(std::begin(m_settings), std::end(m_settings), t_setting) != std::end(m_settings); }
 
@@ -116,12 +118,16 @@ class LanguageEngine
         , m_settings(std::move(t_setting))
         , m_argv(std::move(t_cla))
         , m_imports(std::move(t_extra_imports))
+        , m_home_directory(env_string("HOME"))
     {
         init_system();
+        
     }
 
     void init_system()
     {
+        namespace fs = std::filesystem;
+        
         env::init_modules();
         logging::init_logging();
         al::init_streams();
@@ -138,6 +144,15 @@ class LanguageEngine
         std::for_each(std::begin(m_imports), std::end(m_imports), add_modules);
 
         Vcurrent_module->set("--main--");
+
+        for(auto& al_file: fs::directory_iterator(detail::prelude_directory)) {
+            eval_file(al_file, false);
+        }
+
+        auto alisprc = fs::path(m_home_directory) / ".alisprc";
+        if (fs::is_regular_file(alisprc)) {
+            eval_file(alisprc, false);
+        }
         
     }
 
@@ -155,11 +170,13 @@ class LanguageEngine
     }
 
     
-    void eval_file(const std::filesystem::path &t_path)
+    void eval_file(const std::filesystem::path &t_path, bool insert_mod_path=true)
     {
 
         namespace fs = std::filesystem;
-        Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path()))); 
+        if (insert_mod_path) {
+            Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path()))); 
+        }
         
         try
         {
