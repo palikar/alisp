@@ -177,7 +177,10 @@ void interactive(alisp::LanguageEngine& alisp_engine)
 {
 
     std::cout << alisp::get_build_info();
-    alisp::prompt::init();
+
+    alisp::prompt::init("/home/arnaud/.alisp_hisotry");
+
+    alisp::prompt::SaveHistory hist;
 
     while(true){
         auto command = alisp::prompt::repl(">>> ");

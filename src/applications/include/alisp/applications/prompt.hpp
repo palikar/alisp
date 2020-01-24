@@ -31,9 +31,20 @@
 namespace alisp::prompt
 {
 
+class SaveHistory {
+  public:
 
-    
-void init();
+    SaveHistory() = default;
+    ~SaveHistory();
+    SaveHistory(SaveHistory &&) = default;
+    SaveHistory& operator=(SaveHistory &&) = default;
+    SaveHistory(const SaveHistory &) = delete;
+    SaveHistory& operator=(const SaveHistory  &) = delete;
+
+};
+
+static std::string history_file;
+void init(std::string history_file = "");
 std::optional<std::string> repl(const std::string& prompt);
 
 }

@@ -15,9 +15,8 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-
-
-
+#include <filesystem>
+#include <fstream>
 
 #include "alisp/applications/prompt.hpp"
 
@@ -71,9 +70,10 @@ char** completer(const char* text, int, int )
     return rl_completion_matches(text, completion_generator);
 }
 
-void init()
+void init(std::string hist)
 {
     rl_attempted_completion_function = completer;
+    history_file = std::move(hist);
     using_history();
 }
 
@@ -95,10 +95,29 @@ std::optional<std::string> repl(const std::string& prompt)
     return command;
 }
 
+SaveHistory::~SaveHistory()
+{
+    namespace fs = std::filesystem;
+
+    if (history_file.empty()) { return; }
+    if (!fs::is_regular_file(history_file)) { return; }
+
+    auto hist_list = history_list();
+    if (!hist_list) { return; }
+
+    std::ofstream alisphist(history_file);
+    for (size_t i = 0; hist_list[i]; i++) {
+        std::cout << "saving" << hist_list[i]->line << "\n";
+        
+        alisphist << hist_list[i]->line;
+    }
+
+    alisphist.close();
+}
 
 #else
 
-
+SaveHistory::~SaveHistory() {}
 void init(){}
 
 std::optional<std::string> repl(const std::string& prompt)
