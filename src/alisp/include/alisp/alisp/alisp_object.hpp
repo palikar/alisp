@@ -102,6 +102,10 @@ inline ALObjectPtr eval_list (eval::Evaluator* evl, ALObjectPtr t_obj, size_t t_
     auto start_it = std::next(std::begin(objects), hops);
     auto end_it = std::prev(std::end(objects));
 
+    if (start_it > end_it) {
+        return Qt;
+    }
+
     while (start_it != end_it) {
         evl->eval(*start_it);
         start_it = std::next(start_it);
