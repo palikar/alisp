@@ -189,7 +189,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
                   env::detail::FunctionCall fc{env, func};
 
                   STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
-                  
+
                   return eval(apply_function(func, eval_ptr));
               } else {
                   STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));

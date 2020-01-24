@@ -376,7 +376,7 @@ ALObjectPtr Ffuncall(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 
 ALObjectPtr Fprogn(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl)
 {
-    return eval_list(evl, obj, 1);
+    return eval_list(evl, obj, 0);
 }
 
 ALObjectPtr Flet(ALObjectPtr obj, env::Environment* env, eval::Evaluator* evl)
