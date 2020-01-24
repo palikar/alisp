@@ -152,7 +152,7 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
     
 }
 
-void Environment::activate_module(const std::string t_name)
+void Environment::activate_module(const std::string& t_name)
 {
     Vcurrent_module->set(t_name);
     m_active_module = m_modules.at(t_name).get();

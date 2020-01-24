@@ -25,6 +25,7 @@
 #include <vector>
 #include <array>
 #include <iostream>
+#include <string_view>
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_macros.hpp"
@@ -94,13 +95,13 @@ class Module
     std::string m_name;
 
   public:
-    Module(std::string t_name) : m_name(std::move(t_name)) {}
+    Module(std::string_view t_name) : m_name(std::move(t_name)) {}
 
     detail::CellStack::Scope &root_scope() { return m_root_scope; }
 
     const std::string &name() { return m_name; }
 
-    void add_module(ModulePtr t_module, const std::string t_alias) { m_modules.insert({ t_alias, t_module }); }
+    void add_module(ModulePtr t_module, const std::string t_alias) { m_modules.insert({ std::move(t_alias), t_module }); }
 
     detail::CellStack::Scope &get_root() { return m_root_scope; }
 
@@ -114,7 +115,7 @@ class Module
         return nullptr;
     }
 
-    Module *get_module(const std::string t_name)
+    Module *get_module(const std::string& t_name)
     {
         auto mod = m_modules.find(t_name);
         if (mod != std::end(m_modules)) { return mod->second.get(); };
@@ -161,13 +162,13 @@ class Environment
         m_modules.insert({ t_name, new_mod });
     }
 
-    void alias_module(const std::string t_name, const std::string t_alias) { m_active_module->add_module(m_modules.at(t_name), t_alias); }
+    void alias_module(const std::string& t_name, const std::string t_alias) { m_active_module->add_module(m_modules.at(t_name), std::move(t_alias)); }
 
-    void activate_module(const std::string t_name);
+    void activate_module(const std::string& t_name);
 
     const std::string &current_module() { return m_active_module->name(); }
 
-    Module *get_module(const std::string t_name)
+    Module *get_module(const std::string&  t_name)
     {
         auto mod = m_modules.find(t_name);
         if (mod != std::end(m_modules)) { return mod->second.get(); };
@@ -360,7 +361,7 @@ struct ModuleChange
     const std::string &m_prev_mod;
 
   public:
-    ModuleChange(Environment &t_env, const std::string &t_module) : m_env(t_env), m_prev_mod(m_env.current_module())
+    ModuleChange(Environment &t_env, const std::string& t_module) : m_env(t_env), m_prev_mod(m_env.current_module())
     {
 
         m_env.activate_module(t_module);

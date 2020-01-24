@@ -322,7 +322,7 @@ inline bool plist(ALObjectPtr obj)
     return obj->is_list();
 }
 
-inline bool pstring(ALObjectPtr obj)
+inline bool pstring(ALObject* obj)
 {
     return obj->is_string();
 }
