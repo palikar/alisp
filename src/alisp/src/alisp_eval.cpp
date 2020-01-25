@@ -272,7 +272,7 @@ void Evaluator::eval_file(const std::string& t_file)
 
     auto parse_result = m_parser->parse(file_content, t_file);
 
-    for (auto sexp : parse_result ) { eval(sexp); }        
+    for (auto sexp : parse_result ) { eval(sexp); }
 }
 
 }

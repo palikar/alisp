@@ -78,7 +78,7 @@ inline auto splice_temp(ALObjectPtr t_obj, std::vector<ALObject>::difference_typ
 
 inline auto quote(ALObjectPtr t_obj)
 {
-    return make_object(Qquote, t_obj);
+    return make_object(Qquote, std::move(t_obj));
 }
 
 
@@ -322,7 +322,7 @@ inline bool plist(ALObjectPtr obj)
     return obj->is_list();
 }
 
-inline bool pstring(ALObject* obj)
+inline bool pstring(ALObjectPtr obj)
 {
     return obj->is_string();
 }

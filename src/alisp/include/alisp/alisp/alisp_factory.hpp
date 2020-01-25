@@ -141,7 +141,6 @@ inline auto make_int(T value)
     return make_object(static_cast<ALObject::int_type>(value));
 }
 
-
 template<typename T>
 inline auto make_char(T value)
 {
@@ -190,6 +189,14 @@ inline auto make_prime(Prim::func_type t_function, std::string t_name)
     auto sym = make_object(ALObject::list_type{})->make_prime(t_function);
     sym->set_prop("--name--", make_string(t_name));
     return sym;
+}
+
+inline auto getraw(ALObjectPtr& t_obj) {
+    if constexpr (USING_SHARED){
+        return t_obj.get();
+    } else {
+        return t_obj;
+    }
 }
 
 
