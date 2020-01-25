@@ -224,6 +224,18 @@ struct illegal_name_error : public al_exception
 
 };
 
+struct interrupt_error : public al_exception
+{
+    
+  public:
+    interrupt_error() :
+        al_exception("KeyboardInterrupt", SignalTag::ILLEGAL_NAME)
+    {
+        m_signal_name = "interrupt-signal";
+    }    
+
+};
+
 
 /*  _____ _                  ____            _             _  */
 /* |  ___| | _____      __  / ___|___  _ __ | |_ _ __ ___ | | */
@@ -325,6 +337,10 @@ template<bool should_exit = false> void handle_errors_lippincott()
     {
         std::cout << rang::fg::red << "ALObject exception. This is not normal. Report bug or something.\n" << rang::fg::reset;
         std::cout << '\t' << p_exc.what() << "\n";
+    }
+    catch (interrupt_error &p_exc)
+    {
+        std::cout << rang::fg::red << "Interrupt Exception." << rang::fg::reset;
     }
 
     if constexpr (should_exit) { exit(1); }

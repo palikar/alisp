@@ -39,14 +39,19 @@ int interactive(alisp::LanguageEngine& alisp_engine);
 alisp::LanguageEngine* g_alisp_engine = nullptr;
 
 
-void got_signal(int)
+void got_signal(int c)
 {
     if (g_alisp_engine) {
 
         alisp::prompt::SaveHistory hist;
-        
+
+        try {
+            g_alisp_engine->handle_signal(c);
+        } catch (...) {
+            alisp::handle_errors_lippincott<false>();
+        }
+
     }
-    exit(0);
 }
 
 struct Options
@@ -82,14 +87,14 @@ int main(int argc, char *argv[])
         opts.interactive  << clipp::option("-i", "--interactive")                           % "Start interactive mode after file evaluation",
         opts.parse_debug  << clipp::option("-d", "--parse-debug")                           % "Debug output from the parser",
         opts.eval_debug   << clipp::option("-l", "--eval-debug")                            % "Debug output from the evaluator",
-        opts.quick   << clipp::option("-Q", "--quick-start")                           % "Do not loady any scripts on initialization",
+        opts.quick        << clipp::option("-Q", "--quick-start")                           % "Do not loady any scripts on initialization",
 
         clipp::repeatable( clipp::option("-I") & clipp::integers("include", opts.includes)) % "Extra include directories for module imports.",
 
         clipp::option("-e", "--eval")         & opts.eval << clipp::value("expr")           % "Input string to evaluate",
         
         
-        opts.input       << clipp::opt_value("file")                                        % "Input file" &
+        opts.input         << clipp::opt_value("file")                                      % "Input file" &
         !(opts.args        << clipp::opt_values("args"))                                    % "Arguments for the script being ran."
 
         );
@@ -172,11 +177,12 @@ int main(int argc, char *argv[])
 
     if(!opts.input.empty()){
         auto file_path = std::filesystem::path{opts.input};
+        
         if (!std::filesystem::is_regular_file(file_path)){
             std::cerr << '\"' <<file_path << "\" is not a file." << "\n";
             exit(1);
         }
-        
+
         alisp_engine.eval_file(file_path);
         if (opts.interactive) { interactive(alisp_engine); }
 

@@ -185,10 +185,15 @@ class LanguageEngine
 
     void eval_file(const std::filesystem::path &t_path, bool insert_mod_path=true)
     {
-
+        
         namespace fs = std::filesystem;
         if (insert_mod_path) {
-            Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path()))); 
+            
+            if (t_path.has_parent_path()) {
+                Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path())));
+            } else {
+                Vmodpaths->children().push_back(make_string(fs::absolute(fs::current_path())));
+            }
         }
         
         try
@@ -208,6 +213,12 @@ class LanguageEngine
     }
  
     const std::string& get_home() const { return m_home_directory; }
+
+    
+    void handle_signal(int t_c) {
+        m_evaluator.handle_signal(t_c);
+    };
+
 
     
 };

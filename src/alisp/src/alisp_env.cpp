@@ -163,6 +163,8 @@ void Environment::stack_dump() const
     using namespace fmt;
     using namespace std;
 
+    cout.flush();
+
     cout << format("+{:-^48}+", "Environment") << '\n';
 
     size_t frame_index = 0;
@@ -217,6 +219,7 @@ void Environment::callstack_dump() const
     using namespace fmt;
     using namespace std;
 
+    cout.flush();
     cout << format("+{:-^48}+", "Call stack") << '\n';
     
     for (auto& [fun, prime] : utility::reverse(m_stack_trace) ) {
