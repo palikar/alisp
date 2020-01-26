@@ -15,20 +15,41 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-
-
-
-
 #include "alisp/alisp/alisp_module_helpers.hpp"
 
 
 namespace alisp
 {
 
+namespace detail
+{
 
-env::ModulePtr init_platform(env::Environment*, eval::Evaluator*) {
 
-    auto Mplatform = module_init("system");
+
+}  // namespace detail
+
+env::ModulePtr init_platform(env::Environment*, eval::Evaluator*)
+{
+
+    auto Mplatform = module_init("platform");
+    auto plat_ptr = Mplatform.get();
+
+    module_defvar(plat_ptr, "os", make_string(ALISP_OS_NAME));
+    module_defvar(plat_ptr, "alisp-version", make_string(alisp::BuildInfo::version()));
+    module_defvar(plat_ptr, "alisp-version-major", make_int(alisp::BuildInfo::version_major()));
+    module_defvar(plat_ptr, "alisp-version-minor", make_int(alisp::BuildInfo::version_minor()));
+    module_defvar(plat_ptr, "alisp-version-patch", make_int(alisp::BuildInfo::version_patch()));
+    module_defvar(plat_ptr, "max-call-depth", make_int(MAX_FUNCTION_CALL_DEPTH));
+    module_defvar(plat_ptr, "max-evaluation-depth", make_int(MAX_EAVALUATION_DEPTH));
+
+    module_defvar(plat_ptr, "compiler-name", make_string(ALISP_COMPILER_NAME));
+    module_defvar(plat_ptr, "compiler-version", make_string(compiler_version));
+
+    module_defvar(plat_ptr, "arch", make_string(ALISP_ARCH_NAME));
+
+    module_defvar(plat_ptr, "debug-build", debug_build ? Qt : Qnil);
+    module_defvar(plat_ptr, "build-info", make_string(get_build_info()));
+
     return Mplatform;
 }
 

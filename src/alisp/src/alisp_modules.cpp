@@ -45,7 +45,7 @@ void init_modules() {
     Environment::g_builtin_modules.insert({"system", ModuleImport{&init_system}});
     Environment::g_builtin_modules.insert({"math", ModuleImport{&init_math}});
     Environment::g_builtin_modules.insert({"time", ModuleImport{&init_time}});
-    Environment::g_builtin_modules.insert({"platform", ModuleImport{&init_time}});
+    Environment::g_builtin_modules.insert({"platform", ModuleImport{&init_platform}});
 
 }
 
