@@ -157,6 +157,18 @@ DEFUN(stream_read_line, "stream-read-line");
 DEFUN(stream_read_lines, "stream-read-lines");
 
 
+/*  ____                       */
+/* |  _ \ _ __ ___  _ __  ___  */
+/* | |_) | '__/ _ \| '_ \/ __| */
+/* |  __/| | | (_) | |_) \__ \ */
+/* |_|   |_|  \___/| .__/|___/ */
+/*                 |_| */
+
+
+DEFUN(prop_get, "prop-get");
+DEFUN(prop_set, "prop-set");
+DEFUN(prop_list, "prop-list");
+
 
 /*  ____               _ _           _             */
 /* |  _ \ _ __ ___  __| (_) ___ __ _| |_ ___  ___  */

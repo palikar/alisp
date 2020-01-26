@@ -202,6 +202,10 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
           {
               throw;
           }
+          catch (interrupt_error &)
+          {
+              throw;
+          }
           catch (...)
           {
               tracer.dump();

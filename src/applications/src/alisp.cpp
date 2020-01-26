@@ -41,6 +41,8 @@ alisp::LanguageEngine* g_alisp_engine = nullptr;
 
 void got_signal(int c)
 {
+    signal(SIGINT, got_signal);
+    
     if (g_alisp_engine) {
 
         alisp::prompt::SaveHistory hist;

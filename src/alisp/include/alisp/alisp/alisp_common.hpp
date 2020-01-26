@@ -347,6 +347,10 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         return m_props.count(t_name) != 0;
     }
     
+    auto props() { return m_props; }
+
+    
+    
     std::string pretty_print() const
     {
         std::ostringstream oss;

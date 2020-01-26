@@ -20,5 +20,5 @@ plain_build:
 
 
 count_line:
-	@cloc CMakeLists.txt ./src ./scripts/ --force-lang=lisp,al
+	@cloc CMakeLists.txt ./src ./scripts/ --force-lang=lisp,al | sed -e 's/Lisp /ALisp/'
 

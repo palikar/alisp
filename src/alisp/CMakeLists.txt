@@ -32,6 +32,7 @@ add_library(alisp_language
     src/alisp_algorithms.cpp
     src/alisp_strings.cpp
     src/alisp_casts.cpp
+    src/alisp_props.cpp
 
     )
 
