@@ -38,15 +38,74 @@
 #define APP_FUNCTION_(NAME, FUN, TYPE)                                  \
     ALObjectPtr NAME(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl) \
     {                                                                   \
-        assert_size<0>(obj);                                            \
-        assert_number(obj->i(0));                                       \
-        return make_##TYPE(FUN(evl->eval(obj->i(0))->to_##TYPE()));     \
-    }
+        assert_size<1>(obj);                                            \
+        auto num = evl->eval(obj->i(0));                                \
+        assert_number(num);                                             \
+        return make_##TYPE(FUN(num->to_##TYPE()));                      \
+    }static_assert(true, "")
 
 
 #define REAL_APP_FUNCTION(NAME, FUN) APP_FUNCTION_(NAME, FUN, real)
 
 #define INT_APP_FUNCTION(NAME, FUN) APP_FUNCTION_(NAME, FUN, int)
+
+
+#define APP_BIFUNCTION(NAME, FUN)                                       \
+    ALObjectPtr NAME(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl) \
+    {                                                                   \
+        assert_size<2>(obj);                                            \
+        auto eval_obj = eval_transform(evl, obj);                       \
+        assert_numbers(eval_obj);                                       \
+        if (are_objects_int(eval_obj)) {                                \
+            const ALObject::int_type res = FUN(eval_obj->i(0)->to_int(), eval_obj->i(1)->to_int()); \
+            return make_int(res);                                       \
+        } else if (are_objects_numbers(eval_obj)){                      \
+            const ALObject::real_type res = FUN(eval_obj->i(0)->to_real(), eval_obj->i(1)->to_real()); \
+            return make_double(res);                                    \
+        }                                                               \
+        return Qnil;                                                    \
+    }static_assert(true, "")
+
+
+#define INT_APP_BIFUNCTION(NAME, FUN)                                   \
+    ALObjectPtr NAME(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl) \
+    {                                                                   \
+        assert_size<2>(obj);                                            \
+        auto eval_obj = eval_transform(evl, obj);                       \
+        assert_numbers(eval_obj);                                       \
+        if (are_objects_int(eval_obj)) {                                \
+            const ALObject::int_type res = FUN(eval_obj->i(0)->to_int(), eval_obj->i(1)->to_int()); \
+            return make_int(res);                                       \
+        }                                                               \
+        return Qnil;                                                    \
+    }static_assert(true, "")
+
+
+#define REAL_APP_BIFUNCTION(NAME, FUN)                                  \
+    ALObjectPtr NAME(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl) \
+    {                                                                   \
+        assert_size<2>(obj);                                            \
+        auto eval_obj = eval_transform(evl, obj);                       \
+        assert_numbers(eval_obj);                                       \
+        if (are_objects_numbers(eval_obj)){                             \
+            const ALObject::real_type res = FUN(eval_obj->i(0)->to_real(), eval_obj->i(1)->to_real()); \
+            return make_double(res);                                    \
+        }                                                               \
+        return Qnil;                                                    \
+    }static_assert(true, "")
+
+
+
+
+#define REAL_APP_PREDICATE(NAME, FUN)                                   \
+    ALObjectPtr NAME(ALObjectPtr obj, env::Environment*, eval::Evaluator* evl) \
+    {                                                                   \
+        assert_size<1>(obj);                                            \
+        const auto one = evl->eval(obj->i(0));                          \
+        assert_number(one);                                             \
+        return FUN(one->to_real()) ? Qt : Qnil;                         \
+    }static_assert(true, "")
+
 
 #define STACK_ALLOC_OBJECT(NAME, PTR, ...)                              \
     ALObject NAME(__VA_ARGS__);                                         \

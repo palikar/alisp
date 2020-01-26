@@ -160,6 +160,13 @@ inline auto make_double(T value)
     return make_object(static_cast<double>(value));
 }
 
+template<typename T>
+inline auto make_real(T value)
+{
+    static_assert(std::is_arithmetic_v<T>, "Value must be of real type");
+    return make_object(static_cast<double>(value));
+}
+
 inline auto make_string(std::string value)
 {
     return make_object(value);
