@@ -147,7 +147,6 @@ env::ModulePtr init_math(env::Environment *, eval::Evaluator *)
     module_defun(math_ptr, "pow", &detail::Fpow);
     module_defun(math_ptr, "hypot", &detail::Fhypot);
     
-
     module_defun(math_ptr, "cbrt", &detail::Fcbrt);
     module_defun(math_ptr, "sqrt", &detail::Fsqrt);
 
