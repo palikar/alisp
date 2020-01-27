@@ -22,3 +22,7 @@ plain_build:
 count_line:
 	@cloc CMakeLists.txt ./src ./scripts/ --force-lang=lisp,al | sed -e 's/Lisp /ALisp/'
 
+format_project:
+	@echo "Fromating the source directory..."
+	@find ./src/ -iname *.hpp -o -iname *.cpp | xargs clang-format -i -style=file
+
