@@ -1,34 +1,31 @@
-add_library(test_alisp_module MODULE
-    src/main.cpp
-    )
+macro(add_dynmodule NAME SRC)    
+    add_library(${NAME} MODULE ${SRC})
+
+    target_include_directories(${NAME}
+        PUBLIC include
+        PRIVATE src)
+
+    target_link_libraries(${NAME}
+        PRIVATE
+        project_options
+        project_warnings
+        alisp_language
+        fmt::fmt)
+    
+    set_target_properties(${NAME} PROPERTIES PREFIX "")
+    set_target_properties(${NAME} PROPERTIES OUTPUT_NAME "${NAME}")
+    set_target_properties(${NAME} PROPERTIES SUFFIX ".so")
+    
+    install(TARGETS ${NAME} DESTINATION ${IMPORT_PATHS})
+    
+endmacro()
 
 
-target_include_directories(test_alisp_module
-    PUBLIC include
-    PRIVATE src
-    )
 
-target_link_libraries(test_alisp_module
-    PRIVATE
-    project_options
-    project_warnings
-    PUBLIC
-    fmt::fmt
-    alisp_language
-    )
-
-set_target_properties(test_alisp_module PROPERTIES PREFIX "")
-set_target_properties(test_alisp_module PROPERTIES OUTPUT_NAME "test")
-set_target_properties(test_alisp_module PROPERTIES SUFFIX ".so")
-
-
-install(
-    TARGETS test_alisp_module
-    DESTINATION ${IMPORT_PATHS})
-
+add_dynmodule(test src/main.cpp)
 
 
 
 if(ENABLE_TESTING)
-	add_subdirectory(tests)
+    add_subdirectory(tests)
 endif()
