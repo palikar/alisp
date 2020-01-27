@@ -18,6 +18,9 @@ plain_build:
 	cd $(BUILD_DEBUG_DIR) && cmake .. -DCMAKE_BUILD_TYPE=Debug
 	cd $(BUILD_DEBUG_DIR) && make -j4
 
+build:
+	@make -j8 -C $(BUILD_DEBUG_DIR)
+
 
 count_line:
 	@cloc CMakeLists.txt ./src ./scripts/ --force-lang=lisp,al | sed -e 's/Lisp /ALisp/'

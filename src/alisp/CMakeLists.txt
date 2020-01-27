@@ -47,6 +47,7 @@ target_link_libraries(alisp_language
     PRIVATE
     project_options
     project_warnings
+    dl
     PUBLIC
     alisp_util
     alisp_streams
