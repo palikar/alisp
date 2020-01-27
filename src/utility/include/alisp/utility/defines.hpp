@@ -42,6 +42,14 @@
 #endif
 #endif
 
+
+#ifdef  CHAISCRIPT_HAS_DECLSPEC
+#define CHAISCRIPT_MODULE_EXPORT extern "C" __declspec(dllexport)
+#else
+#define CHAISCRIPT_MODULE_EXPORT extern "C" 
+#endif
+
+
 namespace alisp
 {
 

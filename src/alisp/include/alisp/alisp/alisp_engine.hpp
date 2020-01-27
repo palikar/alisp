@@ -131,6 +131,8 @@ class LanguageEngine
         env::init_modules();
         logging::init_logging();
         al::init_streams();
+
+         
         
         env::update_prime(Qcommand_line_args, make_list(m_argv));
 
