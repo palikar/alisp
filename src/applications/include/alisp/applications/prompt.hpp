@@ -16,9 +16,6 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
 #pragma once
 
 #include <vector>
@@ -26,25 +23,24 @@
 #include <iostream>
 #include <string>
 #include <optional>
-	
+
 
 namespace alisp::prompt
 {
 
-class SaveHistory {
+class SaveHistory
+{
   public:
-
     SaveHistory() = default;
     ~SaveHistory();
     SaveHistory(SaveHistory &&) = default;
-    SaveHistory& operator=(SaveHistory &&) = default;
-    SaveHistory(const SaveHistory &) = delete;
-    SaveHistory& operator=(const SaveHistory  &) = delete;
-
+    SaveHistory &operator=(SaveHistory &&) = default;
+    SaveHistory(const SaveHistory &)       = delete;
+    SaveHistory &operator=(const SaveHistory &) = delete;
 };
 
 static std::string history_file;
 void init(std::string history_file = "");
-std::optional<std::string> repl(const std::string& prompt);
+std::optional<std::string> repl(const std::string &prompt);
 
-}
+}  // namespace alisp::prompt

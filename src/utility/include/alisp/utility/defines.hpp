@@ -43,10 +43,10 @@
 #endif
 
 
-#ifdef  CHAISCRIPT_HAS_DECLSPEC
+#ifdef CHAISCRIPT_HAS_DECLSPEC
 #define CHAISCRIPT_MODULE_EXPORT extern "C" __declspec(dllexport)
 #else
-#define CHAISCRIPT_MODULE_EXPORT extern "C" 
+#define CHAISCRIPT_MODULE_EXPORT extern "C"
 #endif
 
 
@@ -57,19 +57,18 @@ namespace alisp
 #ifdef _WIN32
 inline constexpr auto ALISP_OS_NAME = "windows-32";
 #elif _WIN64
-inline constexpr auto ALISP_OS_NAME = "windows-64";
+inline constexpr auto ALISP_OS_NAME   = "windows-64";
 #elif __APPLE__ || __MACH__
-inline constexpr auto ALISP_OS_NAME = "mac-osx";
+inline constexpr auto ALISP_OS_NAME   = "mac-osx";
 #elif __linux__
-inline constexpr auto ALISP_OS_NAME = "linux";
+inline constexpr auto ALISP_OS_NAME   = "linux";
 #elif __FreeBSD__
-inline constexpr auto ALISP_OS_NAME = "freebsd";
+inline constexpr auto ALISP_OS_NAME   = "freebsd";
 #elif __unix || __unix__
-inline constexpr auto ALISP_OS_NAME = "unix";
+inline constexpr auto ALISP_OS_NAME   = "unix";
 #else
 inline constexpr auto ALISP_OS_NAME = "unknow";
 #endif
-
 
 
 #ifdef __i386__
@@ -85,7 +84,6 @@ inline constexpr auto ALISP_ARCH_NAME = "aarch64";
 #else
 inline constexpr auto ALISP_ARCH_NAME = "unknow";
 #endif
-
 
 
 }  // namespace alisp

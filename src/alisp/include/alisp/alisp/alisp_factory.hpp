@@ -28,8 +28,6 @@
 #include "alisp/utility.hpp"
 
 
-
-
 namespace alisp
 {
 
@@ -47,67 +45,61 @@ struct ALObjectHelper
 {
 
   public:
-
-    template<typename T>
-    static auto init_ptr(T && val) {
-        if constexpr (USING_SHARED){
-            return std::shared_ptr<ALObject>(val);
-        } else {
+    template<typename T> static auto init_ptr(T &&val)
+    {
+        if constexpr (USING_SHARED) { return std::shared_ptr<ALObject>(val); }
+        else
+        {
             return val;
         }
     }
 
-    
-    template<typename T>
-    static auto init_ptr_temp(T && val) {
-        if constexpr (USING_SHARED){
+
+    template<typename T> static auto init_ptr_temp(T &&val)
+    {
+        if constexpr (USING_SHARED)
+        {
             return std::shared_ptr<ALObject>(val, [](ALObject *) {});
-        } else {
+        }
+        else
+        {
             return val;
         }
     }
 
 
-    template<typename T>
-    static auto allocate_ptr(T &&) {
-        return nullptr;
-    }
+    template<typename T> static auto allocate_ptr(T &&) { return nullptr; }
 
   public:
-
-    template<typename T>
-    static auto get(T a) -> typename  std::enable_if_t<std::is_integral_v<T>, ALObjectPtr> {
-        const auto val = static_cast<ALObject::int_type>(a); 
-        auto obj = new ALObject(val);
+    template<typename T> static auto get(T a) -> typename std::enable_if_t<std::is_integral_v<T>, ALObjectPtr>
+    {
+        const auto val = static_cast<ALObject::int_type>(a);
+        auto obj       = new ALObject(val);
 
         return init_ptr(obj);
     }
 
-    template<typename T>
-    static auto get(T a) -> typename std::enable_if_t<std::is_floating_point_v<T>, ALObjectPtr> {
+    template<typename T> static auto get(T a) -> typename std::enable_if_t<std::is_floating_point_v<T>, ALObjectPtr>
+    {
         return init_ptr(new ALObject(static_cast<ALObject::real_type>(a)));
     }
 
-    template<typename T>
-    static auto get(T a) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr> {
+    template<typename T> static auto get(T a) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr>
+    {
         return init_ptr(new ALObject(std::string(a)));
     }
 
-    template<typename T>
-    static auto get(T a, bool) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr> {
+    template<typename T> static auto get(T a, bool) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr>
+    {
         return init_ptr(new ALObject(std::string(a), true));
     }
 
-    static auto get(std::vector<ALObjectPtr> vec_objs) {
-        return init_ptr(new ALObject(vec_objs));
-    }
+    static auto get(std::vector<ALObjectPtr> vec_objs) { return init_ptr(new ALObject(vec_objs)); }
 
-    static auto get(ALObjectPtr obj) -> ALObjectPtr {
-        return obj;
-    }
+    static auto get(ALObjectPtr obj) -> ALObjectPtr { return obj; }
 
-    template<typename ...T>
-    static auto get(T... objs) -> ALObjectPtr {
+    template<typename... T> static auto get(T... objs) -> ALObjectPtr
+    {
         std::vector<ALObjectPtr> vec_objs;
         vec_objs.reserve(sizeof...(objs));
 
@@ -115,53 +107,46 @@ struct ALObjectHelper
 
         return init_ptr(new ALObject(vec_objs));
     }
-
 };
 
-}
+}  // namespace detail
 
-template<typename ... T>
-inline auto make_object(T && ... args)
+template<typename... T> inline auto make_object(T &&... args)
 {
-    return detail::ALObjectHelper::get(std::forward<T>(args) ...);
+    return detail::ALObjectHelper::get(std::forward<T>(args)...);
 }
 
-template<typename T>
-inline auto make_symbol(T name)
+template<typename T> inline auto make_symbol(T name)
 {
     static_assert(std::is_constructible_v<std::string, T>, "Name must be string like type.");
-    
+
     return detail::ALObjectHelper::get(std::string(name), true);
 }
 
-template<typename T>
-inline auto make_int(T value)
+template<typename T> inline auto make_int(T value)
 {
     static_assert(std::is_integral_v<T>, "Value must be of integer type");
     return make_object(static_cast<ALObject::int_type>(value));
 }
 
-template<typename T>
-inline auto make_char(T value)
+template<typename T> inline auto make_char(T value)
 {
     static_assert(std::is_integral_v<T>, "Value must be of integer type");
 
     auto obj = make_object(static_cast<ALObject::int_type>(value));
-    
+
     if (0 <= value && value <= 127) { obj->set_char_flag(); }
-    
+
     return obj;
 }
 
-template<typename T>
-inline auto make_double(T value)
+template<typename T> inline auto make_double(T value)
 {
     static_assert(std::is_arithmetic_v<T>, "Value must be of real type");
     return make_object(static_cast<double>(value));
 }
 
-template<typename T>
-inline auto make_real(T value)
+template<typename T> inline auto make_real(T value)
 {
     static_assert(std::is_arithmetic_v<T>, "Value must be of real type");
     return make_object(static_cast<double>(value));
@@ -174,7 +159,7 @@ inline auto make_string(std::string value)
 
 inline auto make_list(ALObjectPtr obj)
 {
-    return detail::ALObjectHelper::get(std::vector{obj});
+    return detail::ALObjectHelper::get(std::vector{ obj });
 }
 
 inline auto make_list()
@@ -185,9 +170,7 @@ inline auto make_list()
 inline auto make_list(std::vector<std::string> strs)
 {
     auto new_obj = detail::ALObjectHelper::get(ALObject::list_type{});
-    for (auto& str : strs) {
-        new_obj->children().push_back(make_object(str));
-    }
+    for (auto &str : strs) { new_obj->children().push_back(make_object(str)); }
     return new_obj;
 }
 
@@ -198,13 +181,14 @@ inline auto make_prime(Prim::func_type t_function, std::string t_name)
     return sym;
 }
 
-inline auto getraw(ALObjectPtr& t_obj) {
-    if constexpr (USING_SHARED){
-        return t_obj.get();
-    } else {
+inline auto getraw(ALObjectPtr &t_obj)
+{
+    if constexpr (USING_SHARED) { return t_obj.get(); }
+    else
+    {
         return t_obj;
     }
 }
 
 
-}
+}  // namespace alisp

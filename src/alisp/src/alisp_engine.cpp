@@ -16,9 +16,6 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
 #include "alisp/alisp/alisp_engine.hpp"
 
 
@@ -32,4 +29,4 @@ namespace detail
 }
 
 
-}
+}  // namespace alisp

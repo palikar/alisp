@@ -2,7 +2,7 @@
 #include "catch2/catch.hpp"
 
 
-TEST_CASE( "Basic test", "[equality]" ) {
-	REQUIRE( 3 == 3 );
+TEST_CASE("Basic test", "[equality]")
+{
+    REQUIRE(3 == 3);
 }
-

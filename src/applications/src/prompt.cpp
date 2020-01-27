@@ -34,37 +34,35 @@ namespace alisp::prompt
 
 std::vector<std::string> matches;
 size_t match_index = 0;
-    
-std::vector<std::string> get_completions(const std::string& )
+
+std::vector<std::string> get_completions(const std::string &)
 {
     return {};
 }
 
-char* completion_generator(const char* text, int state)
+char *completion_generator(const char *text, int state)
 {
 
-    if (state == 0) {
+    if (state == 0)
+    {
         matches.clear();
         match_index = 0;
 
-        std::string textstr{text};
-        for (const auto& word : get_completions(text)) {
-            if (word.size() >= textstr.size() &&
-                word.compare(0, textstr.size(), textstr) == 0) {
-                matches.push_back(word);
-            }
+        std::string textstr{ text };
+        for (const auto &word : get_completions(text))
+        {
+            if (word.size() >= textstr.size() && word.compare(0, textstr.size(), textstr) == 0) { matches.push_back(word); }
         }
-            
     }
 
-    if (match_index >= matches.size()) {
-        return nullptr;
-    } else {
+    if (match_index >= matches.size()) { return nullptr; }
+    else
+    {
         return strdup(matches[match_index++].c_str());
     }
 }
 
-char** completer(const char* text, int, int )
+char **completer(const char *text, int, int)
 {
     rl_attempted_completion_over = 1;
     return rl_completion_matches(text, completion_generator);
@@ -80,33 +78,29 @@ void load_history()
     std::ifstream alisphist(history_file);
 
     std::string line;
-    while (std::getline(alisphist, line)) {
-        add_history(line.c_str());
-    }
-    
-
+    while (std::getline(alisphist, line)) { add_history(line.c_str()); }
 }
 void init(std::string hist)
 {
     rl_attempted_completion_function = completer;
-    history_file = std::move(hist);
+    history_file                     = std::move(hist);
     using_history();
     if (!history_file.empty()) { load_history(); }
 }
 
-std::optional<std::string> repl(const std::string& prompt)
+std::optional<std::string> repl(const std::string &prompt)
 {
-    char* buf = readline(prompt.c_str());;
-        
-    if (buf == nullptr) {
+    char *buf = readline(prompt.c_str());
+    ;
+
+    if (buf == nullptr)
+    {
         free(buf);
         return {};
     }
-        
-    if (strlen(buf) > 0 && *buf != ' ') {
-        add_history(buf);
-    }			
-    std::string command{buf};
+
+    if (strlen(buf) > 0 && *buf != ' ') { add_history(buf); }
+    std::string command{ buf };
     free(buf);
 
     return command;
@@ -123,19 +117,21 @@ SaveHistory::~SaveHistory()
     if (!hist_list) { return; }
 
     std::ofstream alisphist(history_file);
-    for (size_t i = 0; hist_list[i]; i++) {
-        alisphist << hist_list[i]->line << '\n';
-    }
+    for (size_t i = 0; hist_list[i]; i++) { alisphist << hist_list[i]->line << '\n'; }
 
     alisphist.close();
 }
 
 #else
 
-SaveHistory::~SaveHistory() {}
-void init(){}
+SaveHistory::~SaveHistory()
+{
+}
+void init()
+{
+}
 
-std::optional<std::string> repl(const std::string& prompt)
+std::optional<std::string> repl(const std::string &prompt)
 {
     std::string retval;
     std::cout << prompt;
@@ -147,5 +143,4 @@ std::optional<std::string> repl(const std::string& prompt)
 #endif
 
 
-
-}
+}  // namespace alisp::prompt

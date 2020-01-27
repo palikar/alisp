@@ -37,7 +37,8 @@ struct WarningsHelper
 {
     inline static std::uint8_t g_warning_bits{ 0 };
 
-    constexpr static std::uint8_t ALL_BIT        = 0x8;
+    constexpr static std::uint8_t ALL_BIT        = 0x80;
+    constexpr static std::uint8_t NONE_BIT       = 0x40;
     constexpr static std::uint8_t IMPORT_BIT     = 0x01;
     constexpr static std::uint8_t DEPRECATED_BIT = 0x02;
     constexpr static std::uint8_t USER_BIT       = 0x03;

@@ -25,14 +25,13 @@ namespace detail
 {
 
 
-
 }  // namespace detail
 
-env::ModulePtr init_platform(env::Environment*, eval::Evaluator*)
+env::ModulePtr init_platform(env::Environment *, eval::Evaluator *)
 {
 
     auto Mplatform = module_init("platform");
-    auto plat_ptr = Mplatform.get();
+    auto plat_ptr  = Mplatform.get();
 
     module_defvar(plat_ptr, "os", make_string(ALISP_OS_NAME));
     module_defvar(plat_ptr, "alisp-version", make_string(alisp::BuildInfo::version()));
@@ -54,4 +53,4 @@ env::ModulePtr init_platform(env::Environment*, eval::Evaluator*)
 }
 
 
-}
+}  // namespace alisp

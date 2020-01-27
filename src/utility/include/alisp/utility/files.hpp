@@ -38,9 +38,8 @@ inline bool skip_bom(std::ifstream &infile)
 
     infile.read(buffer, static_cast<std::streamsize>(bytes_needed));
 
-    if ((buffer[0] == '\xef')
-        && (buffer[1] == '\xbb')
-        && (buffer[2] == '\xbf')) {
+    if ((buffer[0] == '\xef') && (buffer[1] == '\xbb') && (buffer[2] == '\xbf'))
+    {
 
         infile.seekg(3);
         return true;
@@ -53,7 +52,7 @@ inline bool skip_bom(std::ifstream &infile)
 
 inline std::string load_file(const std::string &t_filename)
 {
-    std::ifstream infile(t_filename.c_str(), std::ios::in | std::ios::ate | std::ios::binary );
+    std::ifstream infile(t_filename.c_str(), std::ios::in | std::ios::ate | std::ios::binary);
 
     if (!infile.is_open()) {}
 
@@ -62,19 +61,19 @@ inline std::string load_file(const std::string &t_filename)
 
     assert(size >= 0);
 
-    if (skip_bom(infile)) {
-        size-=3;
+    if (skip_bom(infile))
+    {
+        size -= 3;
         assert(size >= 0);
     }
 
-    if (size == std::streampos(0))
+    if (size == std::streampos(0)) { return std::string(); }
+    else
     {
-        return std::string();
-    } else {
         std::vector<char> v(static_cast<size_t>(size));
         infile.read(&v[0], static_cast<std::streamsize>(size));
         return std::string(v.begin(), v.end());
     }
 }
 
-}
+}  // namespace alisp::utility

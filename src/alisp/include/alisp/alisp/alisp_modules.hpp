@@ -16,9 +16,6 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
 #pragma once
 
 #include <memory>
@@ -26,8 +23,8 @@
 #include <algorithm>
 
 
-
-namespace alisp::env {
+namespace alisp::env
+{
 
 void init_modules();
 

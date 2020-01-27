@@ -75,7 +75,6 @@ namespace detail
 class EvalDepthTrack
 {
   public:
-
     explicit EvalDepthTrack(Evaluator &t_eval);
     ~EvalDepthTrack();
 

@@ -53,7 +53,6 @@ inline double to_rad(double t_deg)
 }
 
 
-
 REAL_APP_PREDICATE(Fisnan, std::isnan);
 REAL_APP_PREDICATE(Fisinf, std::isinf);
 
@@ -115,7 +114,7 @@ env::ModulePtr init_math(env::Environment *, eval::Evaluator *)
 
     module_defun(math_ptr, "isinf", &detail::Fisinf);
     module_defun(math_ptr, "isnan", &detail::Fisnan);
-    
+
     module_defun(math_ptr, "todegrees", &detail::Ftodegrees);
     module_defun(math_ptr, "toradians", &detail::Ftoradians);
 
@@ -146,7 +145,7 @@ env::ModulePtr init_math(env::Environment *, eval::Evaluator *)
     module_defun(math_ptr, "fdim", &detail::Ffdim);
     module_defun(math_ptr, "pow", &detail::Fpow);
     module_defun(math_ptr, "hypot", &detail::Fhypot);
-    
+
     module_defun(math_ptr, "cbrt", &detail::Fcbrt);
     module_defun(math_ptr, "sqrt", &detail::Fsqrt);
 

@@ -16,9 +16,6 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
 #pragma once
 
 #include "alisp/config.hpp"
@@ -36,12 +33,15 @@ namespace alisp
 /* | |   / _ \| '_ \/ __| __/ _` | '_ \| __/ __| */
 /* | |__| (_) | | | \__ \ || (_| | | | | |_\__ \ */
 /*  \____\___/|_| |_|___/\__\__,_|_| |_|\__|___/ */
-                                             
+
 
 DEFVAR(Qt, Vt, "t", make_list(Qt));
 DEFVAR(Qnil, Vnil, "nil", make_object(Qnil));
 
-DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--", make_object("", "/home/arnaud/code/alisp/scripts/libs/", "/home/arnaud/temp/alisp/scripts/libs/", AL_EXTRA_MODPATHS));
+DEFVAR(Qmodpaths,
+       Vmodpaths,
+       "--modpaths--",
+       make_object("", "/home/arnaud/code/alisp/scripts/libs/", "/home/arnaud/temp/alisp/scripts/libs/", AL_EXTRA_MODPATHS));
 DEFVAR(Qcurrent_module, Vcurrent_module, "--module--", make_string(""));
 DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--", make_list());
 
@@ -52,7 +52,6 @@ DEFSYM(Qrest, "&rest");
 
 DEFSYM(Qcomma, ",");
 DEFSYM(Qcomma_at, ",@");
-
 
 
 // /*  _                                                ____                _                   _        */
@@ -134,7 +133,6 @@ DEFUN(range, "range");
 DEFUN(length, "length");
 
 
-
 /*  ____  _                                 */
 /* / ___|| |_ _ __ ___  __ _ _ __ ___  ___  */
 /* \___ \| __| '__/ _ \/ _` | '_ ` _ \/ __| */
@@ -175,7 +173,6 @@ DEFUN(prop_list, "prop-list");
 /* | |_) | '__/ _ \/ _` | |/ __/ _` | __/ _ \/ __| */
 /* |  __/| | |  __/ (_| | | (_| (_| | ||  __/\__ \ */
 /* |_|   |_|  \___|\__,_|_|\___\__,_|\__\___||___/ */
-
 
 
 DEFUN(pfunction, "pfunction");
@@ -279,5 +276,4 @@ DEFUN(to_string, "to-string");
 DEFUN(to_char, "to-char");
 
 
-
-}
+}  // namespace alisp

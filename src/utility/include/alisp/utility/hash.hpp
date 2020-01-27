@@ -26,32 +26,29 @@ namespace alisp::hash
 namespace fnv
 {
 static constexpr std::uint32_t prime = 0x01000193;
-			
-template<typename Itr>
-static constexpr std::uint32_t hash(Itr begin, Itr end)
+
+template<typename Itr> static constexpr std::uint32_t hash(Itr begin, Itr end)
 {
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-conversion"
-#endif    
+#endif
 
     std::uint32_t hash = 0x811c9dc5;
 
-    while(begin != end) { hash = (hash ^ *(begin++)) * prime; }
+    while (begin != end) { hash = (hash ^ *(begin++)) * prime; }
 
     return hash;
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-
 }
-}
+}  // namespace fnv
 
 namespace jenkins_one_at_a_time
 {
-template<typename Itr>
-static constexpr std::uint32_t hash(Itr begin, Itr end)
+template<typename Itr> static constexpr std::uint32_t hash(Itr begin, Itr end)
 {
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -60,7 +57,7 @@ static constexpr std::uint32_t hash(Itr begin, Itr end)
 
     std::uint32_t hash = 0;
 
-    while(begin != end)
+    while (begin != end)
     {
         hash += *(begin++);
         hash += hash << 10;
@@ -76,39 +73,36 @@ static constexpr std::uint32_t hash(Itr begin, Itr end)
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-
 }
-}
+}  // namespace jenkins_one_at_a_time
 
 namespace elf
 {
-template<typename Itr>
-static constexpr std::uint32_t hash(Itr begin, Itr end)
+template<typename Itr> static constexpr std::uint32_t hash(Itr begin, Itr end)
 {
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
-    
+
     std::uint32_t hash = 0;
-    std::uint32_t high = 0;				
+    std::uint32_t high = 0;
 
     while (begin != end)
     {
-        hash = ( hash << 4 ) + *(begin++);
+        hash = (hash << 4) + *(begin++);
         if ((high = (hash & 0xF0000000))) { hash ^= high >> 24; }
         hash &= ~high;
     }
-				
+
     return hash;
 
-    
+
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-
-}			
 }
+}  // namespace elf
 
 
 #ifdef ELF_HASHING
@@ -120,22 +114,20 @@ using fnv::hash;
 #endif
 
 
-template<size_t N>
-[[nodiscard]] inline constexpr std::uint32_t hash(const char (&s)[N]) noexcept
+template<size_t N>[[nodiscard]] inline constexpr std::uint32_t hash(const char (&s)[N]) noexcept
 {
-    return hash(std::begin(s), std::end(s)-1);
+    return hash(std::begin(s), std::end(s) - 1);
 }
 
-[[nodiscard]] inline std::uint32_t hash(const std::string_view& s) noexcept
+[[nodiscard]] inline std::uint32_t hash(const std::string_view &s) noexcept
+{
+    return hash(s.begin(), s.end());
+}
+
+[[nodiscard]] inline std::uint32_t hash(const std::string &s) noexcept
 {
     return hash(s.begin(), s.end());
 }
 
-[[nodiscard]] inline std::uint32_t hash(const std::string& s) noexcept
-{
-    return hash(s.begin(), s.end());
-}
-		
 
-
-}
+}  // namespace alisp::hash

@@ -16,19 +16,16 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
-
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_object.hpp"
 
 namespace alisp
 {
 
-operator ALObject::bool(){
+operator ALObject::bool()
+{
     return is_truthy(this);
 }
 
 
-}
+}  // namespace alisp

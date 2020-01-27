@@ -16,9 +16,6 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
 #pragma once
 
 #include <fmt/format.h>
@@ -51,7 +48,8 @@ enum class SignalTag
 
 constexpr const char *signal_tag_to_string(SignalTag type)
 {
-    constexpr const char *const names[] = { "unknown", "parser", "eval", "invalid_arguments", "env", "module_import", "module_reference", "user", "illegal_name" };
+    constexpr const char *const names[] = { "unknown",       "parser",           "eval", "invalid_arguments", "env",
+                                            "module_import", "module_reference", "user", "illegal_name" };
     return names[static_cast<int>(type)];
 }
 
@@ -161,9 +159,8 @@ struct module_error : public al_exception
     std::string m_module;
 
   public:
-    module_error(std::string t_module, const std::string& t_why) :
-        al_exception(format(t_module,  t_why), SignalTag::MODULE_IMPORT),
-        m_module(std::move(t_module))
+    module_error(std::string t_module, const std::string &t_why)
+      : al_exception(format(t_module, t_why), SignalTag::MODULE_IMPORT), m_module(std::move(t_module))
     {
         m_signal_name = "module-signal";
     }
@@ -183,8 +180,8 @@ struct module_refence_error : public al_exception
 
 
   public:
-    module_refence_error(std::string t_module, const std::string& t_reference, bool symbol = false) :
-        al_exception(format(t_module,  t_reference, symbol), SignalTag::MODULE_REFERNCE)
+    module_refence_error(std::string t_module, const std::string &t_reference, bool symbol = false)
+      : al_exception(format(t_module, t_reference, symbol), SignalTag::MODULE_REFERNCE)
     {
         m_signal_name = "module-signal";
     }
@@ -194,10 +191,10 @@ struct module_refence_error : public al_exception
     {
         std::ostringstream ss;
         ss << "Module reference error. \n\tThe module " << t_module << " does not contain a refernce to the ";
-        if (t_symbol ) {
-            ss << "symbol " << t_ref ;
-        } else  {
-            ss << "module " << t_ref ;
+        if (t_symbol) { ss << "symbol " << t_ref; }
+        else
+        {
+            ss << "module " << t_ref;
         }
         ss << '\n';
         return ss.str();
@@ -206,34 +203,27 @@ struct module_refence_error : public al_exception
 
 struct illegal_name_error : public al_exception
 {
-    
+
   public:
-    illegal_name_error(const std::string& t_name, const std::string& t_why) :
-        al_exception(format(t_why, t_name), SignalTag::ILLEGAL_NAME)
+    illegal_name_error(const std::string &t_name, const std::string &t_why) : al_exception(format(t_why, t_name), SignalTag::ILLEGAL_NAME)
     {
         m_signal_name = "illegal-name-signal";
     }
 
-    
-    static std::string format(std::string t_why, const std::string& t_name)
+
+    static std::string format(std::string t_why, const std::string &t_name)
     {
         std::ostringstream ss;
         ss << "Invalid name error for \"" << t_name << "\"\t" << t_why << '\n';
         return ss.str();
     }
-
 };
 
 struct interrupt_error : public al_exception
 {
-    
-  public:
-    interrupt_error() :
-        al_exception("KeyboardInterrupt", SignalTag::ILLEGAL_NAME)
-    {
-        m_signal_name = "interrupt-signal";
-    }    
 
+  public:
+    interrupt_error() : al_exception("KeyboardInterrupt", SignalTag::ILLEGAL_NAME) { m_signal_name = "interrupt-signal"; }
 };
 
 
@@ -268,13 +258,12 @@ struct al_return : public al_exception
 };
 
 
-
-
 struct al_exit : public al_exception
 {
   public:
     al_exit(int value) : al_exception("", SignalTag::FLOW_CONTROL), m_value(value) {}
     int value() { return m_value; }
+
   private:
     int m_value;
 };

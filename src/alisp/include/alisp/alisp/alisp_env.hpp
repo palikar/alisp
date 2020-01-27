@@ -16,9 +16,6 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
 #pragma once
 
 #include <unordered_map>
@@ -87,8 +84,6 @@ using ModulePtr = std::shared_ptr<Module>;
 class Module
 {
   public:
-    
-
   private:
     detail::CellStack::Scope m_root_scope;
     std::unordered_map<std::string, ModulePtr> m_modules;
@@ -115,7 +110,7 @@ class Module
         return nullptr;
     }
 
-    Module *get_module(const std::string& t_name)
+    Module *get_module(const std::string &t_name)
     {
         auto mod = m_modules.find(t_name);
         if (mod != std::end(m_modules)) { return mod->second.get(); };
@@ -125,8 +120,8 @@ class Module
 
 struct ModuleImport
 {
-    using module_import = ModulePtr (*)(env::Environment* env, eval::Evaluator* eval);
-    ModulePtr (*function)(env::Environment* env, eval::Evaluator* eval);
+    using module_import = ModulePtr (*)(env::Environment *env, eval::Evaluator *eval);
+    ModulePtr (*function)(env::Environment *env, eval::Evaluator *eval);
 };
 
 class Environment
@@ -162,13 +157,13 @@ class Environment
         m_modules.insert({ t_name, new_mod });
     }
 
-    void alias_module(const std::string& t_name, const std::string t_alias) { m_active_module->add_module(m_modules.at(t_name), std::move(t_alias)); }
+    void alias_module(const std::string &t_name, const std::string t_alias) { m_active_module->add_module(m_modules.at(t_name), std::move(t_alias)); }
 
-    void activate_module(const std::string& t_name);
+    void activate_module(const std::string &t_name);
 
     const std::string &current_module() { return m_active_module->name(); }
 
-    Module *get_module(const std::string&  t_name)
+    Module *get_module(const std::string &t_name)
     {
         auto mod = m_modules.find(t_name);
         if (mod != std::end(m_modules)) { return mod->second.get(); };
@@ -191,9 +186,9 @@ class Environment
         // m_modules.at(t_to)->get_root() = m_modules.at(t_from)->get_root();
     }
 
-    bool load_builtin_module(const std::string &t_module_name, eval::Evaluator* eval)
+    bool load_builtin_module(const std::string &t_module_name, eval::Evaluator *eval)
     {
-        
+
         auto module_import = g_builtin_modules.find(t_module_name);
 
         if (module_import == std::end(g_builtin_modules)) { return false; }
@@ -201,7 +196,7 @@ class Environment
         auto new_mod = module_import->second.function(this, eval);
         m_modules.insert({ t_module_name, new_mod });
 
-        
+
         return true;
     }
 
@@ -361,7 +356,7 @@ struct ModuleChange
     const std::string &m_prev_mod;
 
   public:
-    ModuleChange(Environment &t_env, const std::string& t_module) : m_env(t_env), m_prev_mod(m_env.current_module())
+    ModuleChange(Environment &t_env, const std::string &t_module) : m_env(t_env), m_prev_mod(m_env.current_module())
     {
 
         m_env.activate_module(t_module);

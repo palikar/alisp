@@ -16,9 +16,6 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
 #include <algorithm>
 
 #include "alisp/alisp/alisp_common.hpp"
@@ -36,19 +33,19 @@ namespace alisp
 {
 
 
-
-ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);
 
     auto fun_obj = eval->eval(obj->i(0));
-    auto list = eval->eval(obj->i(1));
+    auto list    = eval->eval(obj->i(1));
 
 
-    for (auto& el : list->children()) {
-        if (psym(el) or plist(el)) {
-            eval->handle_lambda(fun_obj, make_list(quote(el)));
-        } else {
+    for (auto &el : list->children())
+    {
+        if (psym(el) or plist(el)) { eval->handle_lambda(fun_obj, make_list(quote(el))); }
+        else
+        {
             eval->handle_lambda(fun_obj, make_list(el));
         }
     }
@@ -56,14 +53,14 @@ ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     return Qt;
 }
 
-ALObjectPtr Fcar(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fcar(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
     auto list = eval->eval(obj->i(0));
     return list->i(0);
 }
 
-ALObjectPtr Fcons(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fcons(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
     auto list = eval->eval(obj->i(0));
@@ -71,17 +68,17 @@ ALObjectPtr Fcons(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     return splice(list, 1);
 }
 
-ALObjectPtr Fhead(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval)
+ALObjectPtr Fhead(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
 {
     return Fcar(obj, env, eval);
 }
 
-ALObjectPtr Ftail(ALObjectPtr obj, env::Environment* env, eval::Evaluator* eval)
+ALObjectPtr Ftail(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
 {
     return Fcons(obj, env, eval);
 }
 
-ALObjectPtr Flast(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Flast(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
     auto list = eval->eval(obj->i(0));
@@ -89,7 +86,7 @@ ALObjectPtr Flast(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     return list->i(list->length() - 1);
 }
 
-ALObjectPtr Finit(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Finit(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
     auto list = eval->eval(obj->i(0));
@@ -97,27 +94,27 @@ ALObjectPtr Finit(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     return splice(list, 0, static_cast<ALObject::list_type::difference_type>(list->length() - 1));
 }
 
-ALObjectPtr Fpush(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fpush(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);
     auto list = eval->eval(obj->i(0));
     assert_list(list);
     auto element = eval->eval(obj->i(1));
-    
+
     list->children().push_back(element);
-    
+
     return list;
 }
 
-ALObjectPtr Flength(ALObjectPtr obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Flength(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 {
     assert_size<1>(obj);
     assert_list(obj->i(0));
-    
+
     return make_int(std::size(obj->i(0)->children()));
 }
 
-ALObjectPtr Fnth(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fnth(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);
     auto list = eval->eval(obj->i(0));
@@ -125,63 +122,59 @@ ALObjectPtr Fnth(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
     auto index = eval->eval(obj->i(1));
     assert_int(index);
 
-    if (static_cast<ALObject::list_type::size_type>(index->to_int()) >= std::size(list->children())){
-        throw std::runtime_error("Index out of bound!");
-    }
-    
+    if (static_cast<ALObject::list_type::size_type>(index->to_int()) >= std::size(list->children()))
+    { throw std::runtime_error("Index out of bound!"); }
+
     return list->i(static_cast<ALObject::list_type::size_type>(index->to_int()));
 }
 
-//inplace
-ALObjectPtr Fdelete(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+// inplace
+ALObjectPtr Fdelete(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);
     auto list = eval->eval(obj->i(0));
     assert_list(list);
     auto element = eval->eval(obj->i(1));
-    
-    auto& children = list->children();
 
-    children.erase(std::remove_if(std::begin(children), std::end(children),
-                                  [element](ALObjectPtr t_obj){ return equal(element, t_obj); }));
-    
+    auto &children = list->children();
+
+    children.erase(std::remove_if(std::begin(children), std::end(children), [element](ALObjectPtr t_obj) { return equal(element, t_obj); }));
+
     return list;
 }
 
-//return copy
-ALObjectPtr Fremove(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+// return copy
+ALObjectPtr Fremove(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);
     auto list = eval->eval(obj->i(0));
     assert_list(list);
-    auto element = eval->eval(obj->i(1));
-    auto& children = list->children();
+    auto element   = eval->eval(obj->i(1));
+    auto &children = list->children();
     ALObject::list_type new_children;
     new_children.reserve(std::size(children));
 
-    std::copy_if(std::begin(children), std::end(children), std::back_inserter(new_children),
-                 [element](ALObjectPtr t_obj){ return !equal(element, t_obj); });
-    
+    std::copy_if(
+      std::begin(children), std::end(children), std::back_inserter(new_children), [element](ALObjectPtr t_obj) { return !equal(element, t_obj); });
+
     return make_object(new_children);
 }
 
-ALObjectPtr Frange(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Frange(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);
 
     auto start = eval->eval(obj->i(0));
-    auto end = eval->eval(obj->i(1));
+    auto end   = eval->eval(obj->i(1));
 
     assert_int(start);
     assert_int(end);
 
     ALObject::list_type nums;
-    for (auto i = start->to_int(); i < end->to_int(); ++i) {
-        nums.push_back(make_int(i));
-    }
-    
+    for (auto i = start->to_int(); i < end->to_int(); ++i) { nums.push_back(make_int(i)); }
+
     return make_object(nums);
 }
 
 
-}
+}  // namespace alisp

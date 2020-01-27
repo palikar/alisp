@@ -16,9 +16,6 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
 #pragma once
 
 #include <string>
@@ -100,7 +97,6 @@ class LanguageEngine
 
 
   public:
-    
     static bool env_bool(const char *t_name) { return getenv(t_name) != nullptr; }
 
     static std::string env_string(const char *t_name)
@@ -109,34 +105,30 @@ class LanguageEngine
         return {};
     }
 
-    LanguageEngine(std::vector<EngineSettings> t_setting = {}, std::vector<std::string> t_cla = {},
-                   std::vector<std::string> t_extra_imports = {}
-        )
-        : m_environment()
-        , m_parser(std::make_shared<parser::ALParser<env::Environment>>(m_environment))
-        , m_evaluator(m_environment, m_parser)
-        , m_settings(std::move(t_setting))
-        , m_argv(std::move(t_cla))
-        , m_imports(std::move(t_extra_imports))
-        , m_home_directory(env_string("HOME"))
+    LanguageEngine(std::vector<EngineSettings> t_setting = {}, std::vector<std::string> t_cla = {}, std::vector<std::string> t_extra_imports = {})
+      : m_environment()
+      , m_parser(std::make_shared<parser::ALParser<env::Environment>>(m_environment))
+      , m_evaluator(m_environment, m_parser)
+      , m_settings(std::move(t_setting))
+      , m_argv(std::move(t_cla))
+      , m_imports(std::move(t_extra_imports))
+      , m_home_directory(env_string("HOME"))
     {
         init_system();
-        
     }
 
     void init_system()
     {
         namespace fs = std::filesystem;
-        
+
         env::init_modules();
         logging::init_logging();
         al::init_streams();
 
-         
-        
+
         env::update_prime(Qcommand_line_args, make_list(m_argv));
 
-        std::string al_path = env_string(ENV_VAR_MODPATHS);
+        std::string al_path    = env_string(ENV_VAR_MODPATHS);
         const auto add_modules = [&](auto &path) { Vmodpaths->children().push_back(make_string(path)); };
         if (!al_path.empty())
         {
@@ -147,25 +139,21 @@ class LanguageEngine
 
         Vcurrent_module->set("--main--");
 
-        if (!check(EngineSettings::QUICK_INIT)) { load_init_scripts();}
-
-        
+        if (!check(EngineSettings::QUICK_INIT)) { load_init_scripts(); }
     }
 
-    void load_init_scripts() {
+    void load_init_scripts()
+    {
         namespace fs = std::filesystem;
 
-        if (fs::is_directory(detail::prelude_directory)) {
-            
-            for(auto& al_file: fs::directory_iterator(detail::prelude_directory)) {
-                eval_file(al_file, false);
-            }
+        if (fs::is_directory(detail::prelude_directory))
+        {
+
+            for (auto &al_file : fs::directory_iterator(detail::prelude_directory)) { eval_file(al_file, false); }
         }
-        
+
         auto alisprc = fs::path(m_home_directory) / ".alisprc";
-        if (fs::is_regular_file(alisprc)) {
-            eval_file(alisprc, false);
-        }
+        if (fs::is_regular_file(alisprc)) { eval_file(alisprc, false); }
     }
 
     std::pair<bool, int> eval_statement(std::string &command)
@@ -174,30 +162,31 @@ class LanguageEngine
         {
             do_eval(command, "__EVAL__", true);
         }
-        catch (al_exit& ex)
+        catch (al_exit &ex)
         {
-            return {false, ex.value()};
+            return { false, ex.value() };
         }
         catch (...)
         {
             handle_errors_lippincott<false>();
         }
-        return {true, 0};
+        return { true, 0 };
     }
 
-    void eval_file(const std::filesystem::path &t_path, bool insert_mod_path=true)
+    void eval_file(const std::filesystem::path &t_path, bool insert_mod_path = true)
     {
-        
+
         namespace fs = std::filesystem;
-        if (insert_mod_path) {
-            
-            if (t_path.has_parent_path()) {
-                Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path())));
-            } else {
+        if (insert_mod_path)
+        {
+
+            if (t_path.has_parent_path()) { Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path()))); }
+            else
+            {
                 Vmodpaths->children().push_back(make_string(fs::absolute(fs::current_path())));
             }
         }
-        
+
         try
         {
             auto file_content = utility::load_file(t_path);
@@ -209,20 +198,12 @@ class LanguageEngine
         }
     }
 
-    ALObjectPtr get_value(const std::string& t_sym_name)
-    {
-        return m_environment.find(make_symbol(t_sym_name));
-    }
- 
-    const std::string& get_home() const { return m_home_directory; }
+    ALObjectPtr get_value(const std::string &t_sym_name) { return m_environment.find(make_symbol(t_sym_name)); }
 
-    
-    void handle_signal(int t_c) {
-        m_evaluator.handle_signal(t_c);
-    };
+    const std::string &get_home() const { return m_home_directory; }
 
 
-    
+    void handle_signal(int t_c) { m_evaluator.handle_signal(t_c); };
 };
 
 

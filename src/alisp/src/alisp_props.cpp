@@ -16,9 +16,6 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
 #include <algorithm>
 #include <string>
 
@@ -32,7 +29,7 @@ namespace alisp
 {
 
 
-ALObjectPtr Fprop_set(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fprop_set(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<3>(obj);
 
@@ -40,44 +37,38 @@ ALObjectPtr Fprop_set(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
 
     auto prop = eval->eval(obj->i(1));
     assert_string(prop);
-    auto& prop_name = prop->to_string();
+    auto &prop_name = prop->to_string();
 
-    if (!target->prop_exists(prop_name)) {
-        return Qnil;
-    }
-    
+    if (!target->prop_exists(prop_name)) { return Qnil; }
+
     target->set_prop(prop_name, eval->eval(obj->i(2)));
 
     return Qt;
 }
 
-ALObjectPtr Fprop_get(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fprop_get(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);
 
     auto target = eval->eval(obj->i(0));
-    
+
     auto prop = eval->eval(obj->i(1));
     assert_string(prop);
-    auto& prop_name = prop->to_string();
+    auto &prop_name = prop->to_string();
 
-    if (!target->prop_exists(prop_name)) {
-        return Qnil;
-    }
-    
+    if (!target->prop_exists(prop_name)) { return Qnil; }
+
     return target->get_prop(prop_name);
 }
 
-ALObjectPtr Fprop_list(ALObjectPtr obj, env::Environment*, eval::Evaluator* eval)
+ALObjectPtr Fprop_list(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 
     auto target = eval->eval(obj->i(0));
     ALObject::list_type props;
-    for (auto& [name, _] : target->props()) {
-        props.push_back(make_string(name));
-    }
+    for (auto &[name, _] : target->props()) { props.push_back(make_string(name)); }
     return make_object(props);
 }
 
-}
+}  // namespace alisp

@@ -39,16 +39,22 @@ void Evaluator::new_evaluation()
     if (m_eval_depth > MAX_EAVALUATION_DEPTH) { throw eval_error("Maximum evaluation depth reached!"); }
 }
 
-void Evaluator::end_evaluation() { --m_eval_depth; }
+void Evaluator::end_evaluation()
+{
+    --m_eval_depth;
+}
 
 
 Evaluator::Evaluator(env::Environment &env_, std::shared_ptr<parser::ParserBase> t_parser)
-    : env(env_), m_parser(std::move(t_parser)), m_status_flags(0)
+  : env(env_), m_parser(std::move(t_parser)), m_status_flags(0)
 {
 }
 
 
-void Evaluator::put_argument(ALObjectPtr param, ALObjectPtr arg) { this->env.put(param, arg); }
+void Evaluator::put_argument(ALObjectPtr param, ALObjectPtr arg)
+{
+    this->env.put(param, arg);
+}
 
 template<bool evaluation> void Evaluator::handle_argument_bindings(ALObjectPtr params, ALObjectPtr args)
 {
@@ -133,93 +139,92 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
     switch (obj->type())
     {
-      case ALObjectType::STRING_VALUE:
+    case ALObjectType::STRING_VALUE:
 
-      case ALObjectType::REAL_VALUE:
+    case ALObjectType::REAL_VALUE:
 
-      case ALObjectType::INT_VALUE:
-      {
-          return obj;
-      }
+    case ALObjectType::INT_VALUE:
+    {
+        return obj;
+    }
 
-      case ALObjectType::SYMBOL:
-      {
-          return env.find(obj);
-      }
+    case ALObjectType::SYMBOL:
+    {
+        return env.find(obj);
+    }
 
-      case ALObjectType::LIST:
-      {
+    case ALObjectType::LIST:
+    {
 
-          auto func = eval(obj->i(0));
+        auto func = eval(obj->i(0));
 
-          if (psym(func)) { func = env.find(func); }
+        if (psym(func)) { func = env.find(func); }
 
-          if (!func->check_function_flag()) { throw eval_error("Head of a list must be bound to function"); }
+        if (!func->check_function_flag()) { throw eval_error("Head of a list must be bound to function"); }
 
-          env::detail::CallTracer tracer{ env };
+        env::detail::CallTracer tracer{ env };
 
-          tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag());
+        tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag());
 
-          try
-          {
+        try
+        {
 
-              if (func->check_prime_flag())
-              {
+            if (func->check_prime_flag())
+            {
 
-                  STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
+                STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
 
-                  return func->get_prime()(eval_ptr, &env, this);
-              }
-              else if (func->check_macro_flag())
-              {
-                  env::detail::FunctionCall fc{ env, func };
+                return func->get_prime()(eval_ptr, &env, this);
+            }
+            else if (func->check_macro_flag())
+            {
+                env::detail::FunctionCall fc{ env, func };
 
-                  STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
+                STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
 
-                  return eval(apply_function(func, eval_ptr));
-              }
-              else
-              {
-                  STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
+                return eval(apply_function(func, eval_ptr));
+            }
+            else
+            {
+                STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
 
-                  return eval_function(func, eval_ptr);
-              }
-              
-          }
-          catch (al_continue &)
-          {
-              throw;
-          }
-          catch (al_break &)
-          {
-              throw;
-          }
-          catch (al_exit &)
-          {
-              throw;
-          }
-          catch (al_return &)
-          {
-              throw;
-          }
-          catch (interrupt_error &)
-          {
-              throw;
-          }
-          catch (...)
-          {
-              tracer.dump();
-              throw;
-          }
+                return eval_function(func, eval_ptr);
+            }
+        }
+        catch (al_continue &)
+        {
+            throw;
+        }
+        catch (al_break &)
+        {
+            throw;
+        }
+        catch (al_exit &)
+        {
+            throw;
+        }
+        catch (al_return &)
+        {
+            throw;
+        }
+        catch (interrupt_error &)
+        {
+            throw;
+        }
+        catch (...)
+        {
+            tracer.dump();
+            throw;
+        }
 
 
-          break;
-      }
+        break;
+    }
 
-      default:
-      {
-          eval_error("Unknown object typee");
-      }
+    default:
+    {
+        eval_error("Unknown object typee");
+    }
     }
 
     return nullptr;
@@ -282,18 +287,18 @@ void Evaluator::handle_signal(int t_c)
             throw interrupt_error();
             return;
         }
-        
+
         m_signal = t_c;
         m_status_flags |= SIGINT_FLAG;
-            
     }
 }
 
-void Evaluator::set_evaluation_flag() {
+void Evaluator::set_evaluation_flag()
+{
     m_status_flags |= ACTIVE_EVALUATION_FLAG;
-    
 }
-void Evaluator::reset_evaluation_flag() {
+void Evaluator::reset_evaluation_flag()
+{
     m_status_flags &= ~ACTIVE_EVALUATION_FLAG;
 }
 
@@ -308,12 +313,11 @@ void Evaluator::check_status()
 }
 
 
-
 detail::EvalDepthTrack::EvalDepthTrack(Evaluator &t_eval) : m_eval(t_eval)
 {
     m_eval.check_status();
     m_eval.new_evaluation();
-    m_eval.set_evaluation_flag(); 
+    m_eval.set_evaluation_flag();
 }
 
 
@@ -326,4 +330,3 @@ detail::EvalDepthTrack::~EvalDepthTrack()
 }  // namespace eval
 
 }  // namespace alisp
-

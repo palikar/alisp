@@ -16,9 +16,6 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
 #pragma once
 
 #include <algorithm>
@@ -41,38 +38,32 @@ namespace alisp
 {
 
 
-inline auto splice(ALObjectPtr t_obj, std::vector<ALObject>::difference_type start_index,
-                   std::vector<ALObject>::difference_type end_index = -1)
+inline auto splice(ALObjectPtr t_obj, std::vector<ALObject>::difference_type start_index, std::vector<ALObject>::difference_type end_index = -1)
 {
 
-    const auto size = static_cast<std::vector<ALObject>::difference_type>(std::size(*t_obj));
+    const auto size     = static_cast<std::vector<ALObject>::difference_type>(std::size(*t_obj));
     const auto end_move = end_index == -1 ? size : end_index;
 
-    auto begin_it = std::next(std::begin(*t_obj),  start_index);
-    auto end_it = std::next(std::begin(*t_obj), end_move);
+    auto begin_it = std::next(std::begin(*t_obj), start_index);
+    auto end_it   = std::next(std::begin(*t_obj), end_move);
 
-    if (begin_it > end_it) {
-        return  Qnil;
-    }
+    if (begin_it > end_it) { return Qnil; }
 
     auto new_child = std::vector<ALObjectPtr>(begin_it, end_it);
     return make_object(new_child);
 }
 
-inline auto splice_temp(ALObjectPtr t_obj, std::vector<ALObject>::difference_type start_index,
-                        std::vector<ALObject>::difference_type end_index = -1)
+inline auto splice_temp(ALObjectPtr t_obj, std::vector<ALObject>::difference_type start_index, std::vector<ALObject>::difference_type end_index = -1)
 {
 
-    const auto size = static_cast<std::vector<ALObject>::difference_type>(std::size(*t_obj));
+    const auto size     = static_cast<std::vector<ALObject>::difference_type>(std::size(*t_obj));
     const auto end_move = end_index == -1 ? size : end_index;
 
-    auto begin_it = std::next(std::begin(*t_obj),  start_index);
-    auto end_it = std::next(std::begin(*t_obj), end_move);
+    auto begin_it = std::next(std::begin(*t_obj), start_index);
+    auto end_it   = std::next(std::begin(*t_obj), end_move);
 
-    if (begin_it > end_it) {
-        return  Qnil;
-    }
-    
+    if (begin_it > end_it) { return Qnil; }
+
     return make_object(begin_it, end_it);
 }
 
@@ -95,47 +86,46 @@ inline auto quote(ALObjectPtr t_obj)
 /*                         |_|  */
 
 
-
-inline ALObjectPtr eval_list (eval::Evaluator* evl, ALObjectPtr t_obj, size_t t_offset = 0) {
-    auto& objects = *t_obj;
+inline ALObjectPtr eval_list(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_offset = 0)
+{
+    auto &objects   = *t_obj;
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
-    auto start_it = std::next(std::begin(objects), hops);
-    auto end_it = std::prev(std::end(objects));
+    auto start_it   = std::next(std::begin(objects), hops);
+    auto end_it     = std::prev(std::end(objects));
 
-    if (start_it > end_it) {
-        return Qt;
-    }
+    if (start_it > end_it) { return Qt; }
 
-    while (start_it != end_it) {
+    while (start_it != end_it)
+    {
         evl->eval(*start_it);
         start_it = std::next(start_it);
     }
     return evl->eval(*end_it);
 }
 
-template<size_t N>
-inline ALObjectPtr eval_list_n (eval::Evaluator* evl, ALObjectPtr t_obj, size_t t_offset = 0) {
+template<size_t N> inline ALObjectPtr eval_list_n(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_offset = 0)
+{
 
-    auto& objects = *t_obj;
-    const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
+    auto &objects              = *t_obj;
+    const auto hops            = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
     constexpr auto return_hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(N);
 
-    auto start_it = std::next(std::begin(objects), hops);
+    auto start_it  = std::next(std::begin(objects), hops);
     auto return_it = std::next(std::begin(objects), return_hops - 1);
-    auto end_it = std::end(objects);
+    auto end_it    = std::end(objects);
 
-    if (start_it > end_it) {
-        return Qt;
-    }
+    if (start_it > end_it) { return Qt; }
 
-    while (start_it != return_it) {
+    while (start_it != return_it)
+    {
         evl->eval(*start_it);
         start_it = std::next(start_it);
     }
     auto res = evl->eval(*start_it);
     start_it = std::next(start_it);
 
-    while (start_it != end_it) {
+    while (start_it != end_it)
+    {
         evl->eval(*start_it);
         start_it = std::next(start_it);
     }
@@ -143,67 +133,67 @@ inline ALObjectPtr eval_list_n (eval::Evaluator* evl, ALObjectPtr t_obj, size_t 
     return res;
 }
 
-inline ALObjectPtr eval_list_1 (eval::Evaluator* evl, ALObjectPtr t_obj, size_t t_offset = 0) {
+inline ALObjectPtr eval_list_1(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_offset = 0)
+{
     return eval_list_n<0>(evl, t_obj, t_offset);
 }
 
-inline ALObjectPtr eval_list_2 (eval::Evaluator* evl, ALObjectPtr t_obj, size_t t_offset = 0) {
+inline ALObjectPtr eval_list_2(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_offset = 0)
+{
     return eval_list_n<1>(evl, t_obj, t_offset);
 }
 
-template<bool eval, typename Callable>
-inline auto apply (eval::Evaluator* evl, ALObjectPtr t_obj, Callable t_fun, size_t t_offset = 0){
+template<bool eval, typename Callable> inline auto apply(eval::Evaluator *evl, ALObjectPtr t_obj, Callable t_fun, size_t t_offset = 0)
+{
 
-    auto& objects = *t_obj;
+    auto &objects   = *t_obj;
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
 
     auto start_it = std::next(std::begin(objects), hops);
-    auto end_it = std::prev(std::end(objects));
+    auto end_it   = std::prev(std::end(objects));
 
-    if (start_it > end_it) {
-        return Qt;
-    }
+    if (start_it > end_it) { return Qt; }
 
-    while (start_it != end_it) {
-        if constexpr (eval){
-            t_fun(evl->eval(*start_it));
-        } else {
+    while (start_it != end_it)
+    {
+        if constexpr (eval) { t_fun(evl->eval(*start_it)); }
+        else
+        {
             t_fun(*start_it);
         }
         ++start_it;
     }
 
-    if constexpr (eval){
-        return t_fun(evl->eval(*end_it));
-    } else {
+    if constexpr (eval) { return t_fun(evl->eval(*end_it)); }
+    else
+    {
         return t_fun(*end_it);
     }
-
 }
 
 template<bool eval, typename Callable, typename StartType>
-inline StartType reduce ([[maybe_unused]]eval::Evaluator* evl, ALObjectPtr t_obj, Callable && t_fun, StartType t_start, size_t t_offset = 0)
+inline StartType reduce([[maybe_unused]] eval::Evaluator *evl, ALObjectPtr t_obj, Callable &&t_fun, StartType t_start, size_t t_offset = 0)
 {
-    auto& objects = *t_obj;
+    auto &objects   = *t_obj;
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
 
     auto start_it = std::next(std::begin(objects), hops);
-    auto end_it = std::end(objects);
+    auto end_it   = std::end(objects);
 
-    StartType val =
-        [&](){
-            if constexpr (eval){
-                return t_fun(t_start, evl->eval(*start_it++));
-            } else {
-                return t_fun(t_start, *start_it++);
-            }
-        }();
+    StartType val = [&]() {
+        if constexpr (eval) { return t_fun(t_start, evl->eval(*start_it++)); }
+        else
+        {
+            return t_fun(t_start, *start_it++);
+        }
+    }();
 
-    while (start_it != end_it) {
+    while (start_it != end_it)
+    {
 
-        if constexpr (eval){
-            val = t_fun(val, evl->eval(*start_it));
-        } else {
+        if constexpr (eval) { val = t_fun(val, evl->eval(*start_it)); }
+        else
+        {
             val = t_fun(val, *start_it);
         }
 
@@ -213,16 +203,17 @@ inline StartType reduce ([[maybe_unused]]eval::Evaluator* evl, ALObjectPtr t_obj
     return val;
 }
 
-inline ALObjectPtr eval_transform (eval::Evaluator* evl, ALObjectPtr t_obj, size_t t_offset = 0)
+inline ALObjectPtr eval_transform(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_offset = 0)
 {
-    auto& objects = *t_obj;
+    auto &objects   = *t_obj;
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
-    auto start_it = std::next(std::begin(objects), hops);
-    auto end_it = std::end(objects);
+    auto start_it   = std::next(std::begin(objects), hops);
+    auto end_it     = std::end(objects);
 
     std::vector<ALObjectPtr> new_child;
 
-    while (start_it != end_it) {
+    while (start_it != end_it)
+    {
         new_child.push_back(evl->eval(*start_it));
         start_it = std::next(start_it);
     }
@@ -237,18 +228,16 @@ inline ALObjectPtr eval_transform (eval::Evaluator* evl, ALObjectPtr t_obj, size
 /* |____/ \___/ \___/|_|  \__,_|\__|_|_|___/ */
 
 
-
 inline bool is_falsy(ALObjectPtr obj)
 {
-    if(obj == Qnil) return true;
+    if (obj == Qnil) return true;
 
-    if(obj->type() == ALObjectType::LIST) return obj->length() == 0;
-    if(obj->type() == ALObjectType::STRING_VALUE) return obj->to_string().empty();
-    if(obj->type() == ALObjectType::INT_VALUE) return obj->to_int() == 0;
-    if(obj->type() == ALObjectType::REAL_VALUE) return obj->to_real() == 0.0;
+    if (obj->type() == ALObjectType::LIST) return obj->length() == 0;
+    if (obj->type() == ALObjectType::STRING_VALUE) return obj->to_string().empty();
+    if (obj->type() == ALObjectType::INT_VALUE) return obj->to_int() == 0;
+    if (obj->type() == ALObjectType::REAL_VALUE) return obj->to_real() == 0.0;
 
     return false;
-
 }
 
 inline bool is_truthy(ALObjectPtr obj)
@@ -259,7 +248,8 @@ inline bool is_truthy(ALObjectPtr obj)
 inline bool are_objects_numbers(ALObjectPtr obj)
 {
     if (!obj->is_list()) { return obj->is_int() && obj->is_real(); }
-    for (auto child : *obj) {
+    for (auto child : *obj)
+    {
         if (!(child->is_int() || child->is_real())) return false;
     }
     return true;
@@ -268,7 +258,8 @@ inline bool are_objects_numbers(ALObjectPtr obj)
 inline bool are_objects_int(ALObjectPtr obj)
 {
     if (!obj->is_list()) { return obj->is_int(); }
-    for (auto child : *obj) {
+    for (auto child : *obj)
+    {
         if (!child->is_int()) return false;
     }
     return true;
@@ -277,7 +268,8 @@ inline bool are_objects_int(ALObjectPtr obj)
 inline bool are_objects_real(ALObjectPtr obj)
 {
     if (!obj->is_list()) { return obj->is_real(); }
-    for (auto child : *obj) {
+    for (auto child : *obj)
+    {
         if (!child->is_real()) return false;
     }
     return true;
@@ -286,7 +278,8 @@ inline bool are_objects_real(ALObjectPtr obj)
 inline bool are_objects_string(ALObjectPtr obj)
 {
     if (!obj->is_list()) { return obj->is_string(); }
-    for (auto child : *obj) {
+    for (auto child : *obj)
+    {
         if (!child->is_string()) return false;
     }
     return true;
@@ -332,50 +325,46 @@ inline bool pfunction(ALObjectPtr obj)
     return obj->check_function_flag();
 }
 
-inline bool contains(ALObjectPtr obj, const std::string& t_str)
+inline bool contains(ALObjectPtr obj, const std::string &t_str)
 {
     if (!plist(obj)) { return false; }
 
     const auto pred = [&t_str](auto it) {
-                          if (!psym(it)) { return false; }
-                          if(it->to_string().compare(t_str) == 0) {return true; }
-                          return false;
-                      };
-    
+        if (!psym(it)) { return false; }
+        if (it->to_string().compare(t_str) == 0) { return true; }
+        return false;
+    };
+
     return std::any_of(std::begin(*obj), std::end(*obj), pred);
 }
 
-inline auto get_next(ALObjectPtr obj, const std::string& t_str) -> std::pair<ALObjectPtr, bool>
+inline auto get_next(ALObjectPtr obj, const std::string &t_str) -> std::pair<ALObjectPtr, bool>
 {
-    if (!plist(obj)) { return {nullptr, false}; }
+    if (!plist(obj)) { return { nullptr, false }; }
 
     const auto pred = [&t_str](auto it) {
-                          if (!psym(it)) { return false; }
-                          if(it->to_string().compare(t_str) == 0) {return true; }
-                          return false;
-                      };
-    
+        if (!psym(it)) { return false; }
+        if (it->to_string().compare(t_str) == 0) { return true; }
+        return false;
+    };
+
     auto prop = std::find_if(std::begin(*obj), std::end(*obj), pred);
-    auto val = std::next(prop);
+    auto val  = std::next(prop);
 
-    if (prop == std::end(*obj)) { return {nullptr, false}; }
-    if (val == std::end(*obj)) { return {nullptr, false}; }
+    if (prop == std::end(*obj)) { return { nullptr, false }; }
+    if (val == std::end(*obj)) { return { nullptr, false }; }
 
-    return std::pair{*val, true};
-    
+    return std::pair{ *val, true };
 }
 
 
-
-
-inline const auto AND_OBJ_FUN = [](bool t_acc, ALObjectPtr t_obj) {return t_acc and is_truthy(t_obj);};
-inline const auto OR_OBJ_FUN = [](bool t_acc, ALObjectPtr t_obj) {return t_acc or is_truthy(t_obj);};
+inline const auto AND_OBJ_FUN = [](bool t_acc, ALObjectPtr t_obj) { return t_acc and is_truthy(t_obj); };
+inline const auto OR_OBJ_FUN  = [](bool t_acc, ALObjectPtr t_obj) { return t_acc or is_truthy(t_obj); };
 
 
 // inline bool operator bool(ALObjectPtr t_obj) {
 //     return is_truthy(t_obj);
 // }
-
 
 
 /*  __  __       _   _             _   _ _      */
@@ -385,24 +374,23 @@ inline const auto OR_OBJ_FUN = [](bool t_acc, ALObjectPtr t_obj) {return t_acc o
 /* |_|  |_|\__,_|\__|_| |_|  \__,_|\__|_|_|___/ */
 
 
+inline const auto ADD_OBJ_FUN = [](int64_t t_acc, ALObjectPtr t_obj) { return t_acc + t_obj->to_int(); };
+inline const auto SUB_OBJ_FUN = [](int64_t t_acc, ALObjectPtr t_obj) { return t_acc - t_obj->to_int(); };
+inline const auto MUL_OBJ_FUN = [](int64_t t_acc, ALObjectPtr t_obj) { return t_acc * t_obj->to_int(); };
+inline const auto DIV_OBJ_FUN = [](int64_t t_acc, ALObjectPtr t_obj) { return t_acc / t_obj->to_int(); };
 
-inline const auto ADD_OBJ_FUN = [](int64_t t_acc, ALObjectPtr t_obj) {return t_acc + t_obj->to_int();};
-inline const auto SUB_OBJ_FUN = [](int64_t t_acc, ALObjectPtr t_obj) {return t_acc - t_obj->to_int();};
-inline const auto MUL_OBJ_FUN = [](int64_t t_acc, ALObjectPtr t_obj) {return t_acc * t_obj->to_int();};
-inline const auto DIV_OBJ_FUN = [](int64_t t_acc, ALObjectPtr t_obj) {return t_acc / t_obj->to_int();};
-
-inline const auto ADD_OBJ_FUN_D = [](double t_acc, ALObjectPtr t_obj) {return t_acc + t_obj->to_real();};
-inline const auto SUB_OBJ_FUN_D = [](double t_acc, ALObjectPtr t_obj) {return t_acc - t_obj->to_real();};
-inline const auto MUL_OBJ_FUN_D = [](double t_acc, ALObjectPtr t_obj) {return t_acc * t_obj->to_real();};
-inline const auto DIV_OBJ_FUN_D = [](double t_acc, ALObjectPtr t_obj) {return t_acc / t_obj->to_real();};
+inline const auto ADD_OBJ_FUN_D = [](double t_acc, ALObjectPtr t_obj) { return t_acc + t_obj->to_real(); };
+inline const auto SUB_OBJ_FUN_D = [](double t_acc, ALObjectPtr t_obj) { return t_acc - t_obj->to_real(); };
+inline const auto MUL_OBJ_FUN_D = [](double t_acc, ALObjectPtr t_obj) { return t_acc * t_obj->to_real(); };
+inline const auto DIV_OBJ_FUN_D = [](double t_acc, ALObjectPtr t_obj) { return t_acc / t_obj->to_real(); };
 
 
-inline const auto SHIFT_LEFT = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() << t_rhs->to_int();};
-inline const auto SHIFT_RIGHT = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() >> t_rhs->to_int();};
-inline const auto BIT_OR = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() | t_rhs->to_int();};
-inline const auto BIT_AND = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() & t_rhs->to_int();};
-inline const auto BIT_XOR = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() ^ t_rhs->to_int();};
-inline const auto BIT_INV = [](ALObjectPtr t_obj) { return ~t_obj->to_int();};
+inline const auto SHIFT_LEFT  = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() << t_rhs->to_int(); };
+inline const auto SHIFT_RIGHT = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() >> t_rhs->to_int(); };
+inline const auto BIT_OR      = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() | t_rhs->to_int(); };
+inline const auto BIT_AND     = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() & t_rhs->to_int(); };
+inline const auto BIT_XOR     = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() ^ t_rhs->to_int(); };
+inline const auto BIT_INV     = [](ALObjectPtr t_obj) { return ~t_obj->to_int(); };
 
 
 /*  _____                  _ _ _          */
@@ -418,14 +406,15 @@ inline bool equal(ALObjectPtr t_lhs, ALObjectPtr t_rhs);
 inline bool list_equal(ALObjectPtr t_lhs, ALObjectPtr t_rhs)
 {
 
-    auto& children_1 = *t_lhs;
-    auto& children_2 = *t_rhs;
+    auto &children_1 = *t_lhs;
+    auto &children_2 = *t_rhs;
 
-    if (std::size(children_1) != std::size(children_2) ) { return false; }
+    if (std::size(children_1) != std::size(children_2)) { return false; }
 
     size_t index = 0;
-    for (index = 0; index < std::size(children_1); ++index) {
-        if (! equal(children_1[index], children_2[index])) return false;
+    for (index = 0; index < std::size(children_1); ++index)
+    {
+        if (!equal(children_1[index], children_2[index])) return false;
     }
 
     return true;
@@ -440,99 +429,84 @@ inline bool real_equal(ALObjectPtr t_lhs, ALObjectPtr t_rhs)
 
 inline bool equal(ALObjectPtr t_lhs, ALObjectPtr t_rhs)
 {
-    
-    if ( t_lhs->type() != t_rhs->type()) { return false; }
-    
-    return  make_visit(t_lhs,
-                       type ( ALObjectType::SYMBOL ) or
-                       type( ALObjectType::STRING_VALUE ) >>=  [t_rhs](ALObjectPtr t_obj)  { return t_obj->to_string().compare(t_rhs->to_string()) == 0; },
-                       type( ALObjectType::INT_VALUE )    >>=  [t_rhs](ALObjectPtr t_obj) { return t_obj->to_int() == t_rhs->to_int(); },
-                       type( ALObjectType::REAL_VALUE )   >>=  [t_rhs](ALObjectPtr t_obj){ return real_equal(t_obj, t_rhs); },
-                       type( ALObjectType::LIST )         >>=  [t_rhs](ALObjectPtr t_obj){ return list_equal(t_obj, t_rhs); },
-                       any_pattern()                      >>=  [](ALObjectPtr){ return false; });
+
+    if (t_lhs->type() != t_rhs->type()) { return false; }
+
+    return make_visit(
+      t_lhs,
+      type(ALObjectType::SYMBOL) or type(ALObjectType::STRING_VALUE) >>=
+      [t_rhs](ALObjectPtr t_obj) { return t_obj->to_string().compare(t_rhs->to_string()) == 0; },
+      type(ALObjectType::INT_VALUE) >>= [t_rhs](ALObjectPtr t_obj) { return t_obj->to_int() == t_rhs->to_int(); },
+      type(ALObjectType::REAL_VALUE) >>= [t_rhs](ALObjectPtr t_obj) { return real_equal(t_obj, t_rhs); },
+      type(ALObjectType::LIST) >>= [t_rhs](ALObjectPtr t_obj) { return list_equal(t_obj, t_rhs); },
+      any_pattern() >>= [](ALObjectPtr) { return false; });
 }
 
 inline bool eq(ALObjectPtr t_lhs, ALObjectPtr t_rhs)
 {
-    if ( t_lhs->type() != t_rhs->type()) { return false; }
-    
-    return make_visit(t_lhs,
-                      type( ALObjectType::INT_VALUE )    >>=  [t_rhs](ALObjectPtr t_obj) { return t_obj->to_int() == t_rhs->to_int(); },
-                      type( ALObjectType::REAL_VALUE )   >>=  [t_rhs](ALObjectPtr t_obj) { return real_equal(t_obj, t_rhs); },
-                      type( ALObjectType::STRING_VALUE ) >>=  [t_rhs](ALObjectPtr t_obj) { return t_obj->to_string().compare(t_rhs->to_string()) == 0; },
-                      type ( ALObjectType::SYMBOL ) or
-                      type( ALObjectType::LIST )         >>=  [t_rhs](ALObjectPtr t_obj) { return t_rhs == t_obj; });
-    
+    if (t_lhs->type() != t_rhs->type()) { return false; }
+
+    return make_visit(
+      t_lhs,
+      type(ALObjectType::INT_VALUE) >>= [t_rhs](ALObjectPtr t_obj) { return t_obj->to_int() == t_rhs->to_int(); },
+      type(ALObjectType::REAL_VALUE) >>= [t_rhs](ALObjectPtr t_obj) { return real_equal(t_obj, t_rhs); },
+      type(ALObjectType::STRING_VALUE) >>= [t_rhs](ALObjectPtr t_obj) { return t_obj->to_string().compare(t_rhs->to_string()) == 0; },
+      type(ALObjectType::SYMBOL) or type(ALObjectType::LIST) >>= [t_rhs](ALObjectPtr t_obj) { return t_rhs == t_obj; });
 }
 
 
+struct NameValidator
+{
 
-struct NameValidator {
-
-    template<typename T>
-    static bool is_reserved_word(const T &t_s) noexcept
+    template<typename T> static bool is_reserved_word(const T &t_s) noexcept
     {
-        switch(hash::hash(t_s)) {
-          case hash::hash("print"):
-          case hash::hash("println"):
-            
-          case hash::hash("import"):
-          case hash::hash("modref"):
-          case hash::hash("defun"):
-          case hash::hash("defvar"):
-          case hash::hash("defconst"):
-          case hash::hash("defmacro"):
-          case hash::hash("set"):
-          case hash::hash("setq"):
-          case hash::hash("lambda"):
-          case hash::hash("function"):
-          case hash::hash("funcall"):
+        switch (hash::hash(t_s))
+        {
+        case hash::hash("print"):
+        case hash::hash("println"):
 
-          case hash::hash("quote"):
-          case hash::hash("if"):
-          case hash::hash("while"):
-          case hash::hash("dolist"):
-          case hash::hash("cond"):
-          case hash::hash("unless"):
-          case hash::hash("when"):
-          case hash::hash("progn"):
-          case hash::hash("let*"):
-          case hash::hash("let"):
-          case hash::hash("backqoute"):
-              
-          case hash::hash("signal"):
-          case hash::hash("return"):
+        case hash::hash("import"):
+        case hash::hash("modref"):
+        case hash::hash("defun"):
+        case hash::hash("defvar"):
+        case hash::hash("defconst"):
+        case hash::hash("defmacro"):
+        case hash::hash("set"):
+        case hash::hash("setq"):
+        case hash::hash("lambda"):
+        case hash::hash("function"):
+        case hash::hash("funcall"):
 
-          case hash::hash("and"):
-          case hash::hash("or"):
-          case hash::hash("not"):
-              
-              return true;
-          default:
-            return false;
+        case hash::hash("quote"):
+        case hash::hash("if"):
+        case hash::hash("while"):
+        case hash::hash("dolist"):
+        case hash::hash("cond"):
+        case hash::hash("unless"):
+        case hash::hash("when"):
+        case hash::hash("progn"):
+        case hash::hash("let*"):
+        case hash::hash("let"):
+        case hash::hash("backqoute"):
+
+        case hash::hash("signal"):
+        case hash::hash("return"):
+
+        case hash::hash("and"):
+        case hash::hash("or"):
+        case hash::hash("not"): return true;
+        default: return false;
         }
     }
 
-    template<typename T>
-    static bool valid_object_name(const T &t_name) noexcept
-    {
-        return utility::starts_with(t_name, "--");
-    }
+    template<typename T> static bool valid_object_name(const T &t_name) noexcept { return utility::starts_with(t_name, "--"); }
 
-    template<typename T>
-    static void validate_object_name(const T &t_name)
+    template<typename T> static void validate_object_name(const T &t_name)
     {
-        if (is_reserved_word(t_name)) {
-            throw illegal_name_error(t_name, "This is a reserved keyword.");
-        }
+        if (is_reserved_word(t_name)) { throw illegal_name_error(t_name, "This is a reserved keyword."); }
 
-        if (valid_object_name(t_name)) {
-            throw illegal_name_error(t_name, "Symbol names should not start with \"--\"");
-        }
+        if (valid_object_name(t_name)) { throw illegal_name_error(t_name, "Symbol names should not start with \"--\""); }
     }
-    
-    
 };
-    
-}
 
+}  // namespace alisp

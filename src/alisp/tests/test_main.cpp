@@ -16,8 +16,5 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
 #define CATCH_CONFIG_MAIN
 #include "catch2/catch.hpp"

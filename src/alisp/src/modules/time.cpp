@@ -16,9 +16,6 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-
-
-
 #include "alisp/alisp/alisp_module_helpers.hpp"
 
 
@@ -26,11 +23,12 @@ namespace alisp
 {
 
 
-env::ModulePtr init_time(env::Environment*, eval::Evaluator*) {
+env::ModulePtr init_time(env::Environment *, eval::Evaluator *)
+{
 
     auto Mtime = module_init("time");
     return Mtime;
 }
 
 
-}
+}  // namespace alisp
