@@ -37,7 +37,8 @@ ALObjectPtr Ffile_close(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *
     assert_size<1>(t_obj);
     auto file = eval->eval(t_obj->i(0));
     assert_int(file);
-
+    assert_file(file);
+    
     FileHelpers::close_file(file);
     return Qt;
 }
@@ -49,6 +50,7 @@ ALObjectPtr Ffile_read_line(ALObjectPtr t_obj, env::Environment *, eval::Evaluat
     assert_size<1>(t_obj);
     auto file = eval->eval(t_obj->i(0));
     assert_int(file);
+    assert_file(file);
 
     auto &file_obj = FileHelpers::get_file(file);
 
@@ -69,6 +71,7 @@ ALObjectPtr Ffile_write_line(ALObjectPtr t_obj, env::Environment *, eval::Evalua
     assert_size<2>(t_obj);
     auto file = eval->eval(t_obj->i(0));
     assert_int(file);
+    assert_file(file);
 
     auto line = eval->eval(t_obj->i(1));
     assert_string(line);
@@ -91,6 +94,7 @@ ALObjectPtr Ffile_has_more(ALObjectPtr t_obj, env::Environment *, eval::Evaluato
     assert_size<1>(t_obj);
     auto file = eval->eval(t_obj->i(0));
     assert_int(file);
+    assert_file(file);
 
     auto &file_obj = FileHelpers::get_file(file);
 

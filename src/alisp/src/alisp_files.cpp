@@ -1,20 +1,11 @@
 #include "alisp/alisp/alisp_files.hpp"
 #include "alisp/alisp/alisp_factory.hpp"
 #include "alisp/alisp/alisp_declarations.hpp"
+#include "alisp/alisp/alisp_object.hpp"
 
 namespace alisp
 {
 
-
-uint32_t FileHelpers::object_to_resource(ALObjectPtr t_obj)
-{
-    return static_cast<uint32_t>(t_obj->to_int());
-}
-
-ALObjectPtr FileHelpers::resource_to_object(uint32_t t_id)
-{
-    return make_int(static_cast<ALObject::int_type>(t_id));
-}
 
 ALObjectPtr FileHelpers::open_file(ALObjectPtr t_file, ALObjectPtr t_output, ALObjectPtr t_input)
 {

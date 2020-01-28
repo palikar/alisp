@@ -33,48 +33,40 @@ namespace alisp
 {
 
 
-namespace files
+namespace memory
 {
 
-namespace fs = std::filesystem;
 
-struct FileObj
+struct MemoryBuffer
 {
-    fs::path m_path;
-    std::fstream m_file;
-    bool m_output;
-    bool m_input;
+    char *m_ptr;
+    size_t m_size;
 };
 
 
-inline management::Registry<FileObj *, FILE_REGISTRY_TAG> files_registry;
+inline management::Registry<MemoryBuffer, MEMORY_BUFFER_REGISTRY_TAG> files_registry;
 
-}  // namespace files
+}  // namespace memory
 
-
-struct FileHelpers
+struct MemoryHelpers
 {
-    
   public:
-    static ALObjectPtr open_file(ALObjectPtr t_file, ALObjectPtr t_output, ALObjectPtr t_input);
-
-    static files::FileObj &get_file(ALObjectPtr t_file);
-
-    static void close_file(ALObjectPtr t_file);
+    static ALObjectPtr allocate_buffer(size_t t_size);
+    static memory::MemoryBuffer &get_buffer(ALObjectPtr t_buffer);
+    static void release_buffer(ALObjectPtr t_buffer);
 };
 
-
-struct FileClose
+struct BufferRelease
 {
 
   private:
     ALObjectPtr m_id;
 
   public:
-    explicit FileClose(ALObjectPtr t_id) : m_id(t_id) {}
-    ~FileClose() { FileHelpers::close_file(m_id); }
+    explicit BufferRelease(ALObjectPtr t_id) : m_id(t_id) {}
+    ~BufferRelease() { MemoryHelpers::release_buffer(m_id); }
 
-    ALISP_RAII_OBJECT(FileClose);
+    ALISP_RAII_OBJECT(BufferRelease);
 };
 
 

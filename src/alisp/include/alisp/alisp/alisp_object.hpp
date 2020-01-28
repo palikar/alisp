@@ -366,6 +366,10 @@ inline const auto OR_OBJ_FUN  = [](bool t_acc, ALObjectPtr t_obj) { return t_acc
 //     return is_truthy(t_obj);
 // }
 
+uint32_t object_to_resource(ALObjectPtr t_obj);
+
+ALObjectPtr resource_to_object(uint32_t t_id);
+
 
 /*  __  __       _   _             _   _ _      */
 /* |  \/  | __ _| |_| |__    _   _| |_(_) |___  */

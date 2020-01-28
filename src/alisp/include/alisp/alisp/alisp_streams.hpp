@@ -23,6 +23,7 @@
 #include "alisp/management/registry.hpp"
 #include "alisp/streams/streams.hpp"
 
+
 #include "alisp/config.hpp"
 
 namespace alisp
@@ -48,11 +49,6 @@ void reset_system_streams();
 
 struct StreamsHelper
 {
-
-  private:
-    static uint32_t object_to_resource(ALObjectPtr t_obj);
-    static ALObjectPtr resource_to_object(uint32_t t_id);
-
 
   public:
     static void rebind_cout(ALObjectPtr t_stream);

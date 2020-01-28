@@ -1,4 +1,4 @@
-#/*   Alisp - the alisp interpreted language
+/*   Alisp - the alisp interpreted language
      Copyright (C) 2020 Stanislav Arnaudov
 
  This program is free software; you can redistribute it and/or modify

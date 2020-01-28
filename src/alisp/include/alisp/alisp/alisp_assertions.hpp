@@ -21,6 +21,8 @@
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_exception.hpp"
+#include "alisp/alisp/alisp_files.hpp"
+#include "alisp/alisp/alisp_streams.hpp"
 
 
 namespace alisp
@@ -86,5 +88,17 @@ inline void assert_non_const(ALObjectPtr obj)
 {
     if (!obj->check_const_flag()) throw argument_error("A symbol is const.");
 }
+
+inline void assert_file(ALObjectPtr obj)
+{
+    if (files::files_registry.belong(object_to_resource(obj))) throw argument_error("The object does not point ot a file");
+}
+
+inline void assert_stream(ALObjectPtr obj)
+{
+    if (al::streams_registry.belong(object_to_resource(obj))) throw argument_error("The object does not point ot a file");
+}
+
+
 
 }  // namespace alisp

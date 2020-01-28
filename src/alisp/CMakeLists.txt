@@ -9,7 +9,10 @@ macro(add_module NAME SRC)
         PRIVATE
         project_options
         project_warnings
-        alisp_util)
+        alisp_util
+        alisp_management
+        alisp_streams
+        )
 endmacro()
 
 
@@ -59,19 +62,19 @@ target_link_libraries(alisp_language
 
 
 add_module(alisp_fileio src/modules/fileio.cpp)
-target_link_libraries(alisp_language PRIVATE alisp_fileio)
+target_link_libraries(alisp_language PUBLIC alisp_fileio)
 
 add_module(alisp_math src/modules/math.cpp)
-target_link_libraries(alisp_language PRIVATE alisp_math)
+target_link_libraries(alisp_language PUBLIC alisp_math)
 
 add_module(alisp_time src/modules/time.cpp)
-target_link_libraries(alisp_language PRIVATE alisp_time)
+target_link_libraries(alisp_language PUBLIC alisp_time)
 
 add_module(alisp_system src/modules/system.cpp)
-target_link_libraries(alisp_language PRIVATE alisp_system)
+target_link_libraries(alisp_language PUBLIC alisp_system)
 
 add_module(alisp_platform src/modules/platform.cpp)
-target_link_libraries(alisp_language PRIVATE alisp_platform)
+target_link_libraries(alisp_language PUBLIC alisp_platform)
 
 set(PRELUDE_DIR ${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}/prelude)
     

@@ -41,4 +41,16 @@ void env::update_prime(ALObjectPtr t_sym, ALObjectPtr t_val)
     env::Environment::g_prime_values.at(t_sym->to_string()) = std::move(t_val);
 }
 
+
+uint32_t object_to_resource(ALObjectPtr t_obj)
+{
+    return static_cast<uint32_t>(t_obj->to_int());
+}
+
+ALObjectPtr resource_to_object(uint32_t t_id)
+{
+    return make_int(static_cast<ALObject::int_type>(t_id));
+}
+
+
 }  // namespace alisp

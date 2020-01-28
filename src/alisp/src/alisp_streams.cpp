@@ -18,6 +18,8 @@
 #include "alisp/alisp/alisp_streams.hpp"
 #include "alisp/alisp/alisp_factory.hpp"
 #include "alisp/alisp/alisp_files.hpp"
+#include "alisp/alisp/alisp_object.hpp"
+#include "alisp/alisp/alisp_object.hpp"
 
 
 namespace alisp
@@ -39,16 +41,6 @@ void reset_system_streams()
 }
 
 }  // namespace al
-
-uint32_t StreamsHelper::object_to_resource(ALObjectPtr t_obj)
-{
-    return static_cast<uint32_t>(t_obj->to_int());
-}
-
-ALObjectPtr StreamsHelper::resource_to_object(uint32_t t_id)
-{
-    return make_int(static_cast<ALObject::int_type>(t_id));
-}
 
 void StreamsHelper::rebind_cout(ALObjectPtr t_stream)
 {
