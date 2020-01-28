@@ -18,23 +18,22 @@ ALObjectPtr FileHelpers::resource_to_object(uint32_t t_id)
 
 ALObjectPtr FileHelpers::open_file(ALObjectPtr t_file, ALObjectPtr t_output, ALObjectPtr t_input)
 {
+    namespace fs = std::filesystem;
 
     bool output = t_output == Qt;
     bool input  = t_input == Qt;
 
     auto mode = [&]() {
         if (input and output) return std::ios::out | std::ios::in;
-        if (input)
+        else if (input)
             return std::ios::in;
-        else if (output)
-            return std::ios::out;
         else
             return std::ios::out;
     }();
 
     std::fstream file_stream{ t_file->to_string(), mode };
-
-    auto new_id  = files::files_registry.emplace_resource(t_file->to_string(), std::move(file_stream), output, input)->id;
+    
+    auto new_id  = files::files_registry.emplace_resource(fs::path{t_file->to_string()}, std::move(file_stream), output, input)->id;
     auto new_obj = resource_to_object(new_id);
 
     new_obj->set_prop("file-path", t_file);

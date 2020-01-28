@@ -44,6 +44,13 @@ struct FileObj
     std::fstream m_file;
     bool m_output;
     bool m_input;
+
+    // FileObj(FileObj&& o) {
+    //     m_path = std::move(o.m_path);
+    //     m_file = std::move(o.m_file);
+    //     m_output = o.m_output;
+    //     m_input = o.m_input;
+    // }
 };
 
 
