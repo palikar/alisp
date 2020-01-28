@@ -46,7 +46,7 @@ inline auto splice(ALObjectPtr t_obj, std::vector<ALObject>::difference_type sta
 
     auto begin_it = std::next(std::begin(*t_obj), start_index);
     auto end_it   = std::next(std::begin(*t_obj), end_move);
- 
+
     if (begin_it > end_it) { return Qnil; }
 
     auto new_child = std::vector<ALObjectPtr>(begin_it, end_it);

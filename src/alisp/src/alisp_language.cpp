@@ -130,16 +130,19 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
     {
         for (auto &postfix : { "", ".so", ".al" })
         {
-            
+
             const auto eval_file = fs::path(path->to_string()) / fs::path(module_file + postfix);
 
             if (!fs::exists(eval_file)) { continue; }
 
-            if (hash::hash(std::string_view(postfix)) == hash::hash(".so")) {
-                dynmoduels::AlispDynModule dyn{module_name, eval_file.string()};
+            if (hash::hash(std::string_view(postfix)) == hash::hash(".so"))
+            {
+                dynmoduels::AlispDynModule dyn{ module_name, eval_file.string() };
                 auto mod_ptr = dyn.init_dynmod(env, eval);
                 env->define_module(module_name, mod_ptr);
-            } else {
+            }
+            else
+            {
                 eval->eval_file(eval_file);
             }
 

@@ -82,7 +82,7 @@ class Module;
 class Environment;
 using ModulePtr = std::shared_ptr<Module>;
 
-using module_init_func = ModulePtr (*)(Environment*, eval::Evaluator*);
+using module_init_func = ModulePtr (*)(Environment *, eval::Evaluator *);
 
 class Module
 {
@@ -160,10 +160,7 @@ class Environment
         m_modules.insert({ t_name, new_mod });
     }
 
-    void define_module(const std::string t_name, ModulePtr t_mod)
-    {
-        m_modules.insert({ t_name, std::move(t_mod) });
-    }
+    void define_module(const std::string t_name, ModulePtr t_mod) { m_modules.insert({ t_name, std::move(t_mod) }); }
 
     void alias_module(const std::string &t_name, const std::string t_alias) { m_active_module->add_module(m_modules.at(t_name), std::move(t_alias)); }
 

@@ -50,15 +50,11 @@ struct DLModule
 };
 
 
-template<typename T>
-struct DLSym
+template<typename T> struct DLSym
 {
-    DLSym(DLModule &t_mod, const std::string_view &t_symbol)
-        : m_symbol(reinterpret_cast<T>(dlsym(t_mod.m_data, t_symbol.data())))
+    DLSym(DLModule &t_mod, const std::string_view &t_symbol) : m_symbol(reinterpret_cast<T>(dlsym(t_mod.m_data, t_symbol.data())))
     {
-        if (!m_symbol)
-        {
-        }
+        if (!m_symbol) {}
     }
 
     T m_symbol;
@@ -68,14 +64,12 @@ struct DLSym
 struct AlispDynModule
 {
     AlispDynModule(const std::string &t_module_name, const std::string_view &t_filename)
-        : m_dlmodule(t_filename), m_init_func(m_dlmodule, "init_" + t_module_name)
-    {}
-
-    env::ModulePtr init_dynmod(env::Environment* env, eval::Evaluator* eval)
+      : m_dlmodule(t_filename), m_init_func(m_dlmodule, "init_" + t_module_name)
     {
-        return m_init_func.m_symbol(env, eval);
     }
-    
+
+    env::ModulePtr init_dynmod(env::Environment *env, eval::Evaluator *eval) { return m_init_func.m_symbol(env, eval); }
+
     DLModule m_dlmodule;
     DLSym<env::module_init_func> m_init_func;
 };
