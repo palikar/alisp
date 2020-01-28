@@ -164,6 +164,8 @@ DEFUN(stream_read_lines, "stream-read-lines");
 DEFUN(file_open, "file-open");
 DEFUN(file_close, "file-close");
 DEFUN(file_read_line, "file-read-line");
+DEFUN(file_write_line, "file-write-line");
+DEFUN(file_has_more, "file-has-more");
 
 
 /*  ____                       */
