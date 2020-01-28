@@ -37,9 +37,14 @@
     void operator=(const TypeName &) = delete;    \
     void operator=(TypeName &&) = delete
 
+#define ALISP_RAII_OBJECT(TypeName)             \
+    TypeName(TypeName &&) = default;            \
+    TypeName &operator=(TypeName &&) = default; \
+    TypeName(const TypeName &)       = delete
+
 
 #if DEBUG_LOGGING
-#define ALISP_HERE(message)                                                                                       \
+#define ALISP_HERE(message)                                             \
     do                                                                                                            \
     {                                                                                                             \
         std::cout << "-> here() called in " << __FILE__ << " line " << __LINE__ << ". " << #message << std::endl; \
