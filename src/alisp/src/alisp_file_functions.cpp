@@ -19,13 +19,14 @@ namespace alisp
 
 ALObjectPtr Ffile_open(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
+    assert_min_size<1>(t_obj);
     auto name = eval->eval(t_obj->i(0));
     assert_string(name);
 
-    
+    auto output = contains(t_obj, ":out") ? Qt : Qnil;
+    auto input = contains(t_obj, ":in") ? Qt : Qnil;
 
-    auto file_obj = FileHelpers::open_file(name, Qnil, Qt);
+    auto file_obj = FileHelpers::open_file(name, output, input);
 
     return file_obj;
 }
@@ -75,7 +76,7 @@ ALObjectPtr Ffile_write_line(ALObjectPtr t_obj, env::Environment *, eval::Evalua
     auto& file_obj = FileHelpers::get_file(file);
 
     if (file_obj.m_output) {
-        file_obj.m_file << line;
+        file_obj.m_file << line->to_string() << '\n';
         return Qt;
     }
     

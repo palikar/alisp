@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cstdio>
 #include <memory>
+#include <fstream>
 
 namespace alisp
 {
@@ -106,6 +107,48 @@ class CinStream : public ALStream
 
 
     std::string content() override { return ""; }
+};
+
+class FileStream : public ALStream
+{
+  private:
+    std::fstream &m_stream;
+
+  public:
+    FileStream(std::fstream &t_stream) : m_stream(t_stream) {}
+
+
+    void write(const std::string &t_input) override { m_stream << t_input; }
+    void write(const std::string_view &t_input) override { m_stream << t_input; }
+    void write(const char *c_str) override { m_stream << c_str; }
+    void write(char c) override { m_stream.put(c); }
+
+    int get_char() override { return m_stream.get(); }
+
+    std::string get_chars(size_t count) override
+    {
+        std::string str;
+
+        for (size_t i = 0; i < count; ++i) { str.push_back(static_cast<char>(m_stream.get())); }
+
+        return str;
+    }
+
+    std::string get_line() override
+    {
+        std::string str;
+        std::getline(m_stream, str);
+        return str;
+    }
+
+    bool hasmore() override { return !m_stream.eof(); }
+
+    std::string content() override
+    {
+        std::stringstream buffer;
+        buffer << m_stream.rdbuf();
+        return buffer.str();
+    }
 };
 
 class StringStream : public ALStream
