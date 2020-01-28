@@ -34,6 +34,124 @@ inline constexpr auto separator = "/";
 #endif
 
 
+
+ALObjectPtr Froot(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Fdirectories(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Fentries(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Fglob(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Ftouch(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Fcopy_contest(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Fcopy(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Fmove(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Fmake_symlink(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Fdelete(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Fmkdir(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Ftemp_file(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Fread_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
 ALObjectPtr Fread_text(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(t_obj);
@@ -52,7 +170,25 @@ ALObjectPtr Fwrite_text(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *
     return Qnil;
 }
 
+ALObjectPtr Fwrite_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<2>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
 ALObjectPtr Fappend_text(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_stream(path);
+
+    return Qnil;
+}
+
+ALObjectPtr Fappend_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
