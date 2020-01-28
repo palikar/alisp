@@ -123,7 +123,7 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
     new_fun->set_prop("--module--", make_string(m_active_module->name()));
     new_fun->set_prop("--name--", make_string(name));
     new_fun->set_prop("--doc--", make_string(t_doc));
-    
+
     scope.insert({ name, new_fun });
 }
 

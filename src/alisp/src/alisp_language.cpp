@@ -164,14 +164,16 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
 
 ALObjectPtr Fdefvar(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
 {
-    assert_size<2>(obj);
+    assert_min_size<2>(obj);
+    assert_max_size<3>(obj);
     assert_symbol(obj->i(0));
 
-    if (obj->size() >= 3 and pstring(obj->i(2))) {
+    if (obj->size() >= 3 and pstring(obj->i(2)))
+    {
         env->define_variable(obj->i(0), eval->eval(obj->i(1)), obj->i(2)->to_string());
         return Qt;
     };
-    
+
     env->define_variable(obj->i(0), eval->eval(obj->i(1)), "");
 
     return Qt;
@@ -183,7 +185,8 @@ ALObjectPtr Fdefun(ALObjectPtr obj, env::Environment *env, eval::Evaluator *)
     assert_symbol(obj->i(0));
     assert_list(obj->i(1));
 
-    if (obj->size() >= 3 and pstring(obj->i(2))) {
+    if (obj->size() >= 3 and pstring(obj->i(2)))
+    {
         env->define_function(obj->i(0), obj->i(1), splice(obj, 3), obj->i(2)->to_string());
         return Qt;
     };
@@ -221,11 +224,12 @@ ALObjectPtr Fdefmacro(ALObjectPtr obj, env::Environment *env, eval::Evaluator *)
     assert_symbol(obj->i(0));
     assert_list(obj->i(1));
 
-    if (obj->size() >= 3 and pstring(obj->i(2))) {
+    if (obj->size() >= 3 and pstring(obj->i(2)))
+    {
         env->define_macro(obj->i(0), obj->i(1), splice(obj, 3), obj->i(2)->to_string());
         return Qt;
     };
-    
+
     env->define_macro(obj->i(0), obj->i(1), splice(obj, 2));
 
     return Qt;
