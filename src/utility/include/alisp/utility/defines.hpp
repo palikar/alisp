@@ -25,6 +25,7 @@
 #define ALISP_COMPILER_VERSION __VERSION__
 
 #if defined(_WIN32)
+#define ALISP_WIN
 #if defined(__llvm__)
 #define ALISP_COMPILER_NAME "clang(windows)"
 #elif defined(__GNUC__)
@@ -33,6 +34,7 @@
 #define ALISP_COMPILER_NAME "msvc"
 #endif
 #else
+#define ALISP_POSIX
 #if defined(__llvm__)
 #define ALISP_COMPILER_NAME "clang"
 #elif defined(__GNUC__)
