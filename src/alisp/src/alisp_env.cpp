@@ -93,7 +93,7 @@ void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
     scope.insert({ name, t_val });
 }
 
-void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value)
+void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, std::string t_doc)
 {
     auto &scope = m_active_module->root_scope();
     auto name   = t_sym->to_string();
@@ -103,11 +103,12 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value)
     if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name); }
 
     t_value->set_prop("--module--", make_string(m_active_module->name()));
+    t_value->set_prop("--doc--", make_string(t_doc));
 
     scope.insert({ name, t_value });
 }
 
-void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body)
+void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc)
 {
 
     auto &scope = m_active_module->root_scope();
@@ -121,11 +122,12 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
     new_fun->set_function_flag();
     new_fun->set_prop("--module--", make_string(m_active_module->name()));
     new_fun->set_prop("--name--", make_string(name));
-
+    new_fun->set_prop("--doc--", make_string(t_doc));
+    
     scope.insert({ name, new_fun });
 }
 
-void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body)
+void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc)
 {
 
     auto &scope = m_active_module->root_scope();
@@ -140,6 +142,7 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
     new_fun->set_macro_flag();
     new_fun->set_prop("--module--", make_string(m_active_module->name()));
     new_fun->set_prop("--name--", make_string(name));
+    new_fun->set_prop("--doc--", make_string(t_doc));
 
     scope.insert({ name, new_fun });
 }

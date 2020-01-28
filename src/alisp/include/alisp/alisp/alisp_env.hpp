@@ -207,11 +207,11 @@ class Environment
 
     ALObjectPtr find(const ALObjectPtr t_sym);
 
-    void define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value);
+    void define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, std::string t_doc = {});
 
-    void define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
+    void define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc = {});
 
-    void define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body);
+    void define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc = {});
 
     void put(const ALObjectPtr t_sym, ALObjectPtr t_val);
 

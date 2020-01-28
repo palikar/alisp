@@ -22,6 +22,7 @@
 
 
 (defun ret-fun()
+  ""
   "ret-fun")
 (fun-2 (ret-fun) (ret-fun))
 

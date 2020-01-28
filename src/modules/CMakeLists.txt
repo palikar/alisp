@@ -22,10 +22,6 @@ endmacro()
 
 
 
-add_dynmodule(test src/main.cpp)
+add_dynmodule(test-module src/main.cpp)
 
 
-
-if(ENABLE_TESTING)
-    add_subdirectory(tests)
-endif()
