@@ -25,6 +25,7 @@ add_library(alisp_language
     src/alisp_warnings.cpp
 
     src/alisp_stream_functions.cpp
+    src/alisp_file_functions.cpp
     src/alisp_language.cpp
     src/alisp_lists.cpp
     src/alisp_logic.cpp

@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
     if (res.any_bad_repeat() or res.any_blocked() or res.any_conflict())
     {
         std::cout << "Usage:\n" << clipp::usage_lines(cli, "progname", fmt) << "\n";
-        exit(1);
+        return 1;
     }
 
 
@@ -189,19 +189,20 @@ int main(int argc, char *argv[])
         {
             std::cerr << '\"' << file_path << "\" is not a file."
                       << "\n";
-            exit(1);
+            return 0;
         }
 
         alisp_engine.eval_file(file_path);
         if (opts.interactive) { interactive(alisp_engine); }
 
-        exit(0);
+        return 0;
     }
 
 
     if (!opts.eval.empty())
     {
         auto [succ, val] = alisp_engine.eval_statement(opts.eval);
+        alisp_engine.~LanguageEngine();
         return val;
     }
 

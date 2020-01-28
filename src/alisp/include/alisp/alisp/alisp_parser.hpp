@@ -125,7 +125,7 @@ namespace
 #define PARSE_ERROR(MSG)                                                                           \
     do                                                                                             \
     {                                                                                              \
-        throw parse_exception(MSG, FileLocation{ position.col, position.line, *m_file }, m_input); \
+        throw parse_exception(MSG, FileLocation{ position.col, position.line, m_file }, m_input); \
     } while (0)
 
 namespace parser
@@ -137,7 +137,7 @@ template<class Environment> class ALParser : public ParserBase
   private:
     detail::Position position;
     size_t depth;
-    std::shared_ptr<std::string> m_file;
+    std::string m_file;
     std::string m_input;
 
     Environment &env;
@@ -745,8 +745,8 @@ template<class Environment> class ALParser : public ParserBase
 
         switch (word_hash)
         {
-        case hash::hash("--FILE--"): return make_string(*m_file);
-        case hash::hash("--LINE--"): return make_int(position.line);
+          case hash::hash("--FILE--"): return make_string(m_file);
+          case hash::hash("--LINE--"): return make_int(position.line);
         }
 
         return env::intern(std::string(word));
@@ -970,7 +970,7 @@ template<class Environment> class ALParser : public ParserBase
 
 
   public:
-    std::vector<ALObjectPtr> parse(std::string &input, std::string file_name) override
+    std::vector<ALObjectPtr> parse(std::string &input, const std::string& file_name) override
     {
         std::vector<ALObjectPtr> objects;
 
@@ -978,7 +978,7 @@ template<class Environment> class ALParser : public ParserBase
         const auto end   = begin == nullptr ? nullptr : begin + input.size();
         this->position   = detail::Position(begin, end);
 
-        m_file = std::make_shared<std::string>(std::move(file_name));
+        m_file = file_name;
 
         m_input = input;
 

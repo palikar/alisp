@@ -72,7 +72,7 @@ class LanguageEngine
 {
   private:
     env::Environment m_environment;
-    std::shared_ptr<parser::ALParser<env::Environment>> m_parser;
+    std::unique_ptr<parser::ALParser<env::Environment>> m_parser;
     eval::Evaluator m_evaluator;
 
     std::vector<EngineSettings> m_settings;
@@ -112,8 +112,8 @@ class LanguageEngine
                    std::vector<std::string> t_extra_imports = {},
                    std::vector<std::string> t_warnings      = {})
       : m_environment()
-      , m_parser(std::make_shared<parser::ALParser<env::Environment>>(m_environment))
-      , m_evaluator(m_environment, m_parser)
+      , m_parser(std::make_unique<parser::ALParser<env::Environment>>(m_environment))
+      , m_evaluator(m_environment, m_parser.get())
       , m_settings(std::move(t_setting))
       , m_argv(std::move(t_cla))
       , m_imports(std::move(t_extra_imports))
@@ -123,6 +123,8 @@ class LanguageEngine
         init_system();
     }
 
+    ~LanguageEngine(){}
+    
     void init_system()
     {
         namespace fs = std::filesystem;

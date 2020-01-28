@@ -93,7 +93,7 @@ class Module
     std::string m_name;
 
   public:
-    Module(std::string_view t_name) : m_name(std::move(t_name)) {}
+    Module(std::string t_name) : m_name(std::move(t_name)) {}
 
     detail::CellStack::Scope &root_scope() { return m_root_scope; }
 
@@ -140,20 +140,20 @@ class Environment
   private:
     detail::CellStack m_stack;
     std::unordered_map<std::string, ModulePtr> m_modules;
-    Module *m_active_module;
+    std::reference_wrapper<Module> m_active_module;
 
-    size_t m_call_depth = 0;
+    size_t m_call_depth;
 
     std::vector<std::tuple<std::string, bool>> m_stack_trace;  // name, is_prime
 
   public:
-    Environment() : m_stack()
-    {
-        m_call_depth    = 0;
-        m_active_module = (m_modules.insert({ "--main--", std::make_shared<Module>("--main--") }).first->second.get());
-    }
+    Environment() : m_modules{{ "--main--", std::make_shared<Module>("--main--") }},
+                    m_active_module({*m_modules.at("--main--").get()}),
+                    m_call_depth(0)
+    {}
 
-
+    ~Environment() {}
+    
     void define_module(const std::string t_name, const std::string)
     {
         auto new_mod = std::make_shared<Module>(t_name);
@@ -162,11 +162,11 @@ class Environment
 
     void define_module(const std::string t_name, ModulePtr t_mod) { m_modules.insert({ t_name, std::move(t_mod) }); }
 
-    void alias_module(const std::string &t_name, const std::string t_alias) { m_active_module->add_module(m_modules.at(t_name), std::move(t_alias)); }
+    void alias_module(const std::string &t_name, const std::string t_alias) { m_active_module.get().add_module(m_modules.at(t_name), std::move(t_alias)); }
 
     void activate_module(const std::string &t_name);
 
-    const std::string &current_module() { return m_active_module->name(); }
+    const std::string &current_module() { return m_active_module.get().name(); }
 
     Module *get_module(const std::string &t_name)
     {
@@ -298,7 +298,7 @@ struct CallTracer
     CallTracer(const CallTracer &)       = delete;
     CallTracer &operator=(const CallTracer &) = delete;
 
-    // TODO: trace here
+
 
   private:
     Environment &m_env;

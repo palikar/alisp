@@ -54,7 +54,7 @@ struct FileObj
 };
 
 
-inline management::Registry<FileObj, FILE_REGISTRY_TAG> files_registry;
+inline management::Registry<FileObj*, FILE_REGISTRY_TAG> files_registry;
 
 }
 
@@ -69,6 +69,8 @@ struct FileHelpers
   public:
 
     static ALObjectPtr open_file(ALObjectPtr t_file, ALObjectPtr t_output, ALObjectPtr t_input);
+
+    static files::FileObj& get_file(ALObjectPtr t_file);
 
     static void close_file(ALObjectPtr t_file);
     

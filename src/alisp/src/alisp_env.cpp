@@ -50,7 +50,7 @@ ALObjectPtr Environment::find(const ALObjectPtr t_sym)
 
     if (g_prime_values.count(name)) { return g_prime_values.at(name); }
 
-    if (m_active_module->root_scope().count(name)) { return m_active_module->root_scope().at(name); };
+    if (m_active_module.get().root_scope().count(name)) { return m_active_module.get().root_scope().at(name); };
 
     throw environment_error("\tUnbounded Symbol: " + name);
 }
@@ -70,9 +70,9 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
         };
     }
 
-    if (m_active_module->root_scope().count(name))
+    if (m_active_module.get().root_scope().count(name))
     {
-        auto &sym = m_active_module->root_scope().at(name);
+        auto &sym = m_active_module.get().root_scope().at(name);
         if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); }
         sym = t_value;
         return;
@@ -95,14 +95,14 @@ void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
 
 void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, std::string t_doc)
 {
-    auto &scope = m_active_module->root_scope();
+    auto &scope = m_active_module.get().root_scope();
     auto name   = t_sym->to_string();
 
     NameValidator::validate_object_name(name);
 
     if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name); }
 
-    t_value->set_prop("--module--", make_string(m_active_module->name()));
+    t_value->set_prop("--module--", make_string(m_active_module.get().name()));
     t_value->set_prop("--doc--", make_string(t_doc));
 
     scope.insert({ name, t_value });
@@ -111,7 +111,7 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, 
 void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc)
 {
 
-    auto &scope = m_active_module->root_scope();
+    auto &scope = m_active_module.get().root_scope();
     auto name   = t_sym->to_string();
 
     NameValidator::validate_object_name(name);
@@ -120,7 +120,7 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
 
     auto new_fun = make_object(t_params, t_body);
     new_fun->set_function_flag();
-    new_fun->set_prop("--module--", make_string(m_active_module->name()));
+    new_fun->set_prop("--module--", make_string(m_active_module.get().name()));
     new_fun->set_prop("--name--", make_string(name));
     new_fun->set_prop("--doc--", make_string(t_doc));
 
@@ -130,7 +130,7 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
 void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc)
 {
 
-    auto &scope = m_active_module->root_scope();
+    auto &scope = m_active_module.get().root_scope();
     auto name   = t_sym->to_string();
 
     NameValidator::validate_object_name(name);
@@ -140,7 +140,7 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
     auto new_fun = make_object(t_params, t_body);
     new_fun->set_function_flag();
     new_fun->set_macro_flag();
-    new_fun->set_prop("--module--", make_string(m_active_module->name()));
+    new_fun->set_prop("--module--", make_string(m_active_module.get().name()));
     new_fun->set_prop("--name--", make_string(name));
     new_fun->set_prop("--doc--", make_string(t_doc));
 
@@ -150,7 +150,7 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
 void Environment::activate_module(const std::string &t_name)
 {
     Vcurrent_module->set(t_name);
-    m_active_module = m_modules.at(t_name).get();
+    m_active_module = *m_modules.at(t_name).get();
 }
 
 void Environment::stack_dump() const

@@ -1,4 +1,4 @@
-/*   Alisp - the alisp interpreted language
+#/*   Alisp - the alisp interpreted language
      Copyright (C) 2020 Stanislav Arnaudov
 
  This program is free software; you can redistribute it and/or modify
@@ -153,6 +153,17 @@ DEFUN(stream_write_lines, "stream-write-lines");
 DEFUN(stream_read, "stream-read");
 DEFUN(stream_read_line, "stream-read-line");
 DEFUN(stream_read_lines, "stream-read-lines");
+
+
+/*  _____ _ _            */
+/* |  ___(_) | ___  ___  */
+/* | |_  | | |/ _ \/ __| */
+/* |  _| | | |  __/\__ \ */
+/* |_|   |_|_|\___||___/ */
+
+DEFUN(file_open, "file-open");
+DEFUN(file_close, "file-close");
+DEFUN(file_read_line, "file-read-line");
 
 
 /*  ____                       */

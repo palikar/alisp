@@ -34,7 +34,7 @@ class Evaluator
   private:
     env::Environment &env;
     size_t m_eval_depth = 0;
-    std::shared_ptr<parser::ParserBase> m_parser;
+    parser::ParserBase* m_parser;
 
     int m_signal;
     std::uint_fast32_t m_status_flags;
@@ -44,7 +44,7 @@ class Evaluator
 
 
   public:
-    Evaluator(env::Environment &env_, std::shared_ptr<parser::ParserBase> t_parser);
+    Evaluator(env::Environment &env_, parser::ParserBase* t_parser);
 
     void eval_file(const std::string &t_file);
 

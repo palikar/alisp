@@ -1,4 +1,4 @@
-#/*   Alisp - the alisp interpreted language
+/*   Alisp - the alisp interpreted language
      Copyright (C) 2020 Stanislav Arnaudov
 
  This program is free software; you can redistribute it and/or modify
@@ -433,7 +433,7 @@ class ParserBase
     ParserBase &operator=(ParserBase &&) = delete;
     ParserBase &operator=(const ParserBase &&)                                        = delete;
     virtual ~ParserBase()                                                             = default;
-    virtual std::vector<ALObjectPtr> parse(std::string &input, std::string file_name) = 0;
+    virtual std::vector<ALObjectPtr> parse(std::string &input, const std::string& file_name) = 0;
 };
 
 
