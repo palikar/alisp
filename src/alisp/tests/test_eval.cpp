@@ -38,7 +38,7 @@ TEST_CASE("Evaluator Test [simple]", "[eval]")
     env::Environment env;
     auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     auto &pars = *p;
-    eval::Evaluator eval(env, p);
+    eval::Evaluator eval(env, p.get());
 
     SECTION("int")
     {
@@ -85,7 +85,7 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
     env::Environment env;
     auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     auto &pars = *p;
-    eval::Evaluator eval(env, p);
+    eval::Evaluator eval(env, p.get());
     std::cout.setstate(std::ios_base::failbit);
 
     SECTION("defun")
@@ -323,7 +323,7 @@ TEST_CASE("Evaluator Test [math]", "[eval]")
     env::Environment env;
     auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     auto &pars = *p;
-    eval::Evaluator eval(env, p);
+    eval::Evaluator eval(env, p.get());
 
     SECTION("+")
     {
@@ -480,7 +480,7 @@ TEST_CASE("Evaluator Test [printing]", "[eval]")
     env::Environment env;
     auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     auto &pars = *p;
-    eval::Evaluator eval(env, p);
+    eval::Evaluator eval(env, p.get());
 
     std::cout.setstate(std::ios_base::failbit);
 
@@ -542,7 +542,7 @@ TEST_CASE("Evaluator Test [logic]", "[eval]")
     env::Environment env;
     auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     auto &pars = *p;
-    eval::Evaluator eval(env, p);
+    eval::Evaluator eval(env, p.get());
 
     SECTION("or")
     {
@@ -576,7 +576,7 @@ TEST_CASE("Evaluator Test [predicates]", "[eval]")
     env::Environment env;
     auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     auto &pars = *p;
-    eval::Evaluator eval(env, p);
+    eval::Evaluator eval(env, p.get());
 
 
     SECTION("pfunction")
@@ -625,7 +625,7 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
     env::Environment env;
     auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     auto &pars = *p;
-    eval::Evaluator eval(env, p);
+    eval::Evaluator eval(env, p.get());
 
     SECTION("mapc")
     {
@@ -805,7 +805,7 @@ TEST_CASE("Evaluator Test [function call]", "[eval]")
     env::Environment env;
     auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     auto &pars = *p;
-    eval::Evaluator eval(env, p);
+    eval::Evaluator eval(env, p.get());
 
     std::string input{ "(defun fun (a &optional b &rest c) a) (fun 42)" };
     auto par_res = pars.parse(input, "__TEST__");
@@ -825,7 +825,7 @@ TEST_CASE("Evaluator Test [exception]", "[eval]")
     env::Environment env;
     auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     auto &pars = *p;
-    eval::Evaluator eval(env, p);
+    eval::Evaluator eval(env, p.get());
 
     SECTION("signal")
     {
