@@ -38,6 +38,7 @@
 #include "alisp/alisp/alisp_parser.hpp"
 #include "alisp/alisp/alisp_modules.hpp"
 #include "alisp/alisp/alisp_streams.hpp"
+#include "alisp/alisp/alisp_warnings.hpp"
 
 #include "alisp/utility/files.hpp"
 
@@ -77,6 +78,7 @@ class LanguageEngine
     std::vector<EngineSettings> m_settings;
     std::vector<std::string> m_argv;
     std::vector<std::string> m_imports;
+    std::vector<std::string> m_warnings;
 
     const std::string m_home_directory;
 
@@ -105,13 +107,17 @@ class LanguageEngine
         return {};
     }
 
-    LanguageEngine(std::vector<EngineSettings> t_setting = {}, std::vector<std::string> t_cla = {}, std::vector<std::string> t_extra_imports = {})
+    LanguageEngine(std::vector<EngineSettings> t_setting    = {},
+                   std::vector<std::string> t_cla           = {},
+                   std::vector<std::string> t_extra_imports = {},
+                   std::vector<std::string> t_warnings      = {})
       : m_environment()
       , m_parser(std::make_shared<parser::ALParser<env::Environment>>(m_environment))
       , m_evaluator(m_environment, m_parser)
       , m_settings(std::move(t_setting))
       , m_argv(std::move(t_cla))
       , m_imports(std::move(t_extra_imports))
+      , m_warnings(std::move(t_warnings))
       , m_home_directory(env_string("HOME"))
     {
         init_system();
@@ -124,6 +130,7 @@ class LanguageEngine
         env::init_modules();
         logging::init_logging();
         al::init_streams();
+        warnings::init_warning(m_warnings);
 
 
         env::update_prime(Qcommand_line_args, make_list(m_argv));

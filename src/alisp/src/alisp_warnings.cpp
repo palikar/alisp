@@ -23,12 +23,11 @@ namespace alisp
 namespace warnings
 {
 
-void init_warning(std::vector<std::string_view> t_enabled_warning)
+void init_warning(std::vector<std::string> t_enabled_warning)
 {
 
     for (auto &warn : t_enabled_warning)
     {
-
         switch (hash::hash(warn))
         {
         case hash::hash("all"): WarningsHelper::g_warning_bits |= WarningsHelper::ALL_BIT; break;

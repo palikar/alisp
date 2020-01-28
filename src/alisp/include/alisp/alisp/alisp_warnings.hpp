@@ -52,7 +52,7 @@ enum class WarnTypes
     MATH
 };
 
-void init_warning(std::vector<std::string_view> t_enabled_warning = {});
+void init_warning(std::vector<std::string> t_enabled_warning = {});
 
 void warning(ALObjectPtr t_sym, std::string_view t_msg);
 

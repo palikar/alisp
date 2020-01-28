@@ -65,8 +65,8 @@ struct Options
     std::string input{ "" };
 
     std::vector<std::string> args;
-
     std::vector<std::string> includes;
+    std::vector<std::string> warnings;
 
     bool parse_debug{ false };
     bool eval_debug{ false };
@@ -93,7 +93,9 @@ int main(int argc, char *argv[])
       opts.eval_debug << clipp::option("-l", "--eval-debug") % "Debug output from the evaluator",
       opts.quick << clipp::option("-Q", "--quick-start") % "Do not loady any scripts on initialization",
 
-      clipp::repeatable(clipp::option("-I") & clipp::integers("include", opts.includes)) % "Extra include directories for module imports.",
+      clipp::repeatable(clipp::option("-I") & clipp::words("include", opts.includes)) % "Extra include directories for module imports.",
+
+      clipp::repeatable(clipp::option("-W") & clipp::words("warnings", opts.warnings)) % "Warning types that should be enabled.",
 
       clipp::option("-e", "--eval") & opts.eval << clipp::value("expr") % "Input string to evaluate",
 
@@ -169,7 +171,7 @@ int main(int argc, char *argv[])
     if (opts.parse_debug) settings.push_back(alisp::EngineSettings::PARSER_DEBUG);
     if (opts.quick) settings.push_back(alisp::EngineSettings::QUICK_INIT);
 
-    alisp::LanguageEngine alisp_engine{ settings, std::move(opts.args), std::move(opts.includes) };
+    alisp::LanguageEngine alisp_engine{ settings, std::move(opts.args), std::move(opts.includes), std::move(opts.warnings) };
     g_alisp_engine = &alisp_engine;
 
     struct sigaction sa;
