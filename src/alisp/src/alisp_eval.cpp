@@ -45,8 +45,7 @@ void Evaluator::end_evaluation()
 }
 
 
-Evaluator::Evaluator(env::Environment &env_, parser::ParserBase* t_parser)
-  : env(env_), m_parser(t_parser), m_status_flags(0)
+Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser) : env(env_), m_parser(t_parser), m_status_flags(0)
 {
 }
 

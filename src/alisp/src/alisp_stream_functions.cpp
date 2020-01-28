@@ -20,20 +20,21 @@ namespace alisp
 ALObjectPtr Fstream(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     auto [string_sym, from_string] = get_next(t_obj, ":from-string");
-    auto [file_sym, from_file] = get_next(t_obj, ":from-file");
+    auto [file_sym, from_file]     = get_next(t_obj, ":from-file");
 
-    
-    if (from_string) {
+
+    if (from_string)
+    {
         auto obj = eval->eval(string_sym);
         assert_string(obj);
         return StreamsHelper::create_string_stream(obj);
     }
 
-    if (from_file) {
+    if (from_file)
+    {
         auto obj = eval->eval(file_sym);
         assert_int(obj);
         return StreamsHelper::create_file_stream(obj);
-    
     }
 
     return Qnil;

@@ -147,13 +147,13 @@ class Environment
     std::vector<std::tuple<std::string, bool>> m_stack_trace;  // name, is_prime
 
   public:
-    Environment() : m_modules{{ "--main--", std::make_shared<Module>("--main--") }},
-                    m_active_module({*m_modules.at("--main--").get()}),
-                    m_call_depth(0)
-    {}
+    Environment()
+      : m_modules{ { "--main--", std::make_shared<Module>("--main--") } }, m_active_module({ *m_modules.at("--main--").get() }), m_call_depth(0)
+    {
+    }
 
     ~Environment() {}
-    
+
     void define_module(const std::string t_name, const std::string)
     {
         auto new_mod = std::make_shared<Module>(t_name);
@@ -162,7 +162,10 @@ class Environment
 
     void define_module(const std::string t_name, ModulePtr t_mod) { m_modules.insert({ t_name, std::move(t_mod) }); }
 
-    void alias_module(const std::string &t_name, const std::string t_alias) { m_active_module.get().add_module(m_modules.at(t_name), std::move(t_alias)); }
+    void alias_module(const std::string &t_name, const std::string t_alias)
+    {
+        m_active_module.get().add_module(m_modules.at(t_name), std::move(t_alias));
+    }
 
     void activate_module(const std::string &t_name);
 
@@ -297,7 +300,6 @@ struct CallTracer
     CallTracer &operator=(CallTracer &&) = default;
     CallTracer(const CallTracer &)       = delete;
     CallTracer &operator=(const CallTracer &) = delete;
-
 
 
   private:

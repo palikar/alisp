@@ -122,9 +122,9 @@ namespace
 }
 
 
-#define PARSE_ERROR(MSG)                                                                           \
-    do                                                                                             \
-    {                                                                                              \
+#define PARSE_ERROR(MSG)                                                                          \
+    do                                                                                            \
+    {                                                                                             \
         throw parse_exception(MSG, FileLocation{ position.col, position.line, m_file }, m_input); \
     } while (0)
 
@@ -745,8 +745,8 @@ template<class Environment> class ALParser : public ParserBase
 
         switch (word_hash)
         {
-          case hash::hash("--FILE--"): return make_string(m_file);
-          case hash::hash("--LINE--"): return make_int(position.line);
+        case hash::hash("--FILE--"): return make_string(m_file);
+        case hash::hash("--LINE--"): return make_int(position.line);
         }
 
         return env::intern(std::string(word));
@@ -970,7 +970,7 @@ template<class Environment> class ALParser : public ParserBase
 
 
   public:
-    std::vector<ALObjectPtr> parse(std::string &input, const std::string& file_name) override
+    std::vector<ALObjectPtr> parse(std::string &input, const std::string &file_name) override
     {
         std::vector<ALObjectPtr> objects;
 

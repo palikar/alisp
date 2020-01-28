@@ -44,7 +44,7 @@
 
 
 #if DEBUG_LOGGING
-#define ALISP_HERE(message)                                             \
+#define ALISP_HERE(message)                                                                                       \
     do                                                                                                            \
     {                                                                                                             \
         std::cout << "-> here() called in " << __FILE__ << " line " << __LINE__ << ". " << #message << std::endl; \

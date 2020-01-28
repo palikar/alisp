@@ -123,8 +123,8 @@ class LanguageEngine
         init_system();
     }
 
-    ~LanguageEngine(){}
-    
+    ~LanguageEngine() {}
+
     void init_system()
     {
         namespace fs = std::filesystem;

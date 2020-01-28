@@ -54,10 +54,9 @@ struct FileObj
 };
 
 
-inline management::Registry<FileObj*, FILE_REGISTRY_TAG> files_registry;
+inline management::Registry<FileObj *, FILE_REGISTRY_TAG> files_registry;
 
-}
-
+}  // namespace files
 
 
 struct FileHelpers
@@ -67,13 +66,11 @@ struct FileHelpers
     static ALObjectPtr resource_to_object(uint32_t t_id);
 
   public:
-
     static ALObjectPtr open_file(ALObjectPtr t_file, ALObjectPtr t_output, ALObjectPtr t_input);
 
-    static files::FileObj& get_file(ALObjectPtr t_file);
+    static files::FileObj &get_file(ALObjectPtr t_file);
 
     static void close_file(ALObjectPtr t_file);
-    
 };
 
 
@@ -84,7 +81,6 @@ struct FileClose
     ALObjectPtr m_id;
 
   public:
-
     explicit FileClose(ALObjectPtr t_id) : m_id(t_id) {}
     ~FileClose() { FileHelpers::close_file(m_id); }
 
@@ -92,4 +88,4 @@ struct FileClose
 };
 
 
-}
+}  // namespace alisp

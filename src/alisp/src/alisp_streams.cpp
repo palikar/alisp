@@ -77,7 +77,7 @@ ALObjectPtr StreamsHelper::create_string_stream(ALObjectPtr t_string)
 ALObjectPtr StreamsHelper::create_file_stream(ALObjectPtr t_file)
 {
     streams::FileStream *new_stream = new streams::FileStream(FileHelpers::get_file(t_file).m_file);
-    auto new_id                       = al::streams_registry.put_resource(dynamic_cast<streams::ALStream *>(new_stream))->id;
+    auto new_id                     = al::streams_registry.put_resource(dynamic_cast<streams::ALStream *>(new_stream))->id;
     return resource_to_object(new_id);
 }
 

@@ -431,9 +431,9 @@ class ParserBase
     ParserBase()              = default;
     ParserBase(ParserBase &&) = default;
     ParserBase &operator=(ParserBase &&) = delete;
-    ParserBase &operator=(const ParserBase &&)                                        = delete;
-    virtual ~ParserBase()                                                             = default;
-    virtual std::vector<ALObjectPtr> parse(std::string &input, const std::string& file_name) = 0;
+    ParserBase &operator=(const ParserBase &&)                                               = delete;
+    virtual ~ParserBase()                                                                    = default;
+    virtual std::vector<ALObjectPtr> parse(std::string &input, const std::string &file_name) = 0;
 };
 
 
