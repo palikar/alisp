@@ -41,6 +41,7 @@
 #include "alisp/alisp/alisp_warnings.hpp"
 
 #include "alisp/utility/files.hpp"
+#include "alisp/utility/env.hpp"
 
 
 namespace alisp
@@ -99,14 +100,7 @@ class LanguageEngine
 
 
   public:
-    static bool env_bool(const char *t_name) { return getenv(t_name) != nullptr; }
-
-    static std::string env_string(const char *t_name)
-    {
-        if (env_bool(t_name)) { return std::string{ getenv(t_name) }; }
-        return {};
-    }
-
+    
     LanguageEngine(std::vector<EngineSettings> t_setting    = {},
                    std::vector<std::string> t_cla           = {},
                    std::vector<std::string> t_extra_imports = {},
@@ -118,7 +112,7 @@ class LanguageEngine
       , m_argv(std::move(t_cla))
       , m_imports(std::move(t_extra_imports))
       , m_warnings(std::move(t_warnings))
-      , m_home_directory(env_string("HOME"))
+      , m_home_directory(utility::env_string("HOME"))
     {
         init_system();
     }
@@ -137,7 +131,7 @@ class LanguageEngine
 
         env::update_prime(Qcommand_line_args, make_list(m_argv));
 
-        std::string al_path    = env_string(ENV_VAR_MODPATHS);
+        std::string al_path    = utility::env_string(ENV_VAR_MODPATHS);
         const auto add_modules = [&](auto &path) { Vmodpaths->children().push_back(make_string(path)); };
         if (!al_path.empty())
         {

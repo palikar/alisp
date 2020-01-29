@@ -18,20 +18,23 @@
 #pragma once
 
 #include <string>
+#include <stdio.h>
 #include <cstdlib>
+#include <unistd.h>
+#include <unordered_map>
+
+#include <alisp/utility/string_utils.hpp>
+
 
 namespace alisp::utility
 {
 
 
-inline bool env_bool(const char *t_name) { return std::getenv(t_name) != nullptr; }
+bool env_bool(const char *t_name);
 
-inline std::string env_string(const char *t_name)
-{
-    auto e =  std::getenv(t_name) ;
-    if (e != nullptr) { return std::string{ std::getenv(e) }; }
-    return {};
-}
+std::string env_string(const char *t_name);
+
+std::unordered_map<std::string, std::string> env_list();
 
 
 }

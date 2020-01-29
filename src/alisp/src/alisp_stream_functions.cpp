@@ -166,7 +166,7 @@ ALObjectPtr Fstream_read_lines(ALObjectPtr t_obj, env::Environment *, eval::Eval
 
     ALObject::list_type lines{};
     while (stream->hasmore()) { lines.push_back(make_string((*stream).get_line())); }
-
+    
     return make_object(lines);
 }
 

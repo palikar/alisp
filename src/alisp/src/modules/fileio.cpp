@@ -413,7 +413,7 @@ ALObjectPtr Fprelative(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     return Qnil;
 }
 
-ALObjectPtr Froot(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fis_Froot(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
@@ -500,6 +500,9 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
 {
 
     auto Mfileio = module_init("fileio");
+    auto fio_ptr = Mfileio.get();
+
+    module_defvar(fio_ptr, "directory-separator", make_string(detail::separator));
 
 
     return Mfileio;

@@ -2,6 +2,7 @@ add_library(alisp_util
     ./src/common.cpp
     ./src/logging.cpp
     ./src/defines.cpp
+    ./src/env.cpp
     )
 
 
