@@ -99,6 +99,20 @@ inline void assert_stream(ALObjectPtr obj)
     if (al::streams_registry.belong(object_to_resource(obj))) throw argument_error("The object does not point ot a file");
 }
 
+inline void assert_byte(ALObjectPtr obj)
+{
+    if (!obj->is_int()) throw argument_error("Object cannot be intrepreted as byte.");
+    auto val = obj->to_int();
+    if (!(0 <= val and val <= 255)) throw argument_error("Object cannot be intrepreted as byte.");
+}
 
+inline void assert_byte_array(ALObjectPtr obj)
+{
+    if (!obj->is_list()) throw argument_error("Object cannot be intrepreted as byte-array.");
+    for (auto & el : *obj) {
+        auto val = el->to_int();
+        if (!(0 <= val and val <= 255)) throw argument_error("Object cannot be intrepreted as byte-array.");
+    }
+}
 
 }  // namespace alisp

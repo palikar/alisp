@@ -202,7 +202,6 @@ int main(int argc, char *argv[])
     if (!opts.eval.empty())
     {
         auto [succ, val] = alisp_engine.eval_statement(opts.eval);
-        alisp_engine.~LanguageEngine();
         return val;
     }
 
