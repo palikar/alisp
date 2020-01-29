@@ -23,6 +23,7 @@
 #include "alisp/alisp/alisp_exception.hpp"
 #include "alisp/alisp/alisp_files.hpp"
 #include "alisp/alisp/alisp_streams.hpp"
+#include "alisp/alisp/alisp_memory.hpp"
 
 
 namespace alisp
@@ -91,12 +92,17 @@ inline void assert_non_const(ALObjectPtr obj)
 
 inline void assert_file(ALObjectPtr obj)
 {
-    if (files::files_registry.belong(object_to_resource(obj))) throw argument_error("The object does not point ot a file");
+    if (!files::files_registry.belong(object_to_resource(obj))) throw argument_error("The object does not point to a file");
 }
 
 inline void assert_stream(ALObjectPtr obj)
 {
-    if (al::streams_registry.belong(object_to_resource(obj))) throw argument_error("The object does not point ot a file");
+    if (!al::streams_registry.belong(object_to_resource(obj))) throw argument_error("The object does not point to a stream");
+}
+
+inline void assert_memory(ALObjectPtr obj)
+{
+    if (!memory::memory_registry.belong(object_to_resource(obj))) throw argument_error("The object does not point to a stream");
 }
 
 inline void assert_byte(ALObjectPtr obj)

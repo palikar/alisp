@@ -44,7 +44,7 @@ struct MemoryBuffer
 };
 
 
-inline management::Registry<MemoryBuffer, MEMORY_BUFFER_REGISTRY_TAG> files_registry;
+inline management::Registry<MemoryBuffer, MEMORY_BUFFER_REGISTRY_TAG> memory_registry;
 
 }  // namespace memory
 
