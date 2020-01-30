@@ -268,13 +268,18 @@ The argument list can also use the =&rest= keyword in order for the function to 
 
 
 * Lists
+In ALisp lists are just s-expressions that are not evaluated. To create a list with elements, just quote a regular s-exp:
 
 #+BEGIN_SRC emacs-lisp :results none
 '("s1" "s2" "s3" "s3")
 #+END_SRC
 
-** Back-quoted syntax
+\\
 
+Lists can contain arbitrary elements:
+#+BEGIN_SRC emacs-lisp :results none
+'("s1" 42 42.2 a)
+#+END_SRC
 
 * Flow control
 ** Conditionals
