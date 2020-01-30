@@ -122,3 +122,4 @@ inline void assert_byte_array(ALObjectPtr obj)
 }
 
 }  // namespace alisp
+

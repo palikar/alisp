@@ -93,9 +93,9 @@ int main(int argc, char *argv[])
       opts.eval_debug << clipp::option("-l", "--eval-debug") % "Debug output from the evaluator",
       opts.quick << clipp::option("-Q", "--quick-start") % "Do not loady any scripts on initialization",
 
-      clipp::repeatable(clipp::option("-I") & clipp::words("include", opts.includes)) % "Extra include directories for module imports.",
+      clipp::repeatable(clipp::option("-I") & clipp::word("include", opts.includes)) % "Extra include directories for module imports.",
 
-      clipp::repeatable(clipp::option("-W") & clipp::words("warnings", opts.warnings)) % "Warning types that should be enabled.",
+      clipp::repeatable(clipp::option("-W") & clipp::word("warnings", opts.warnings)) % "Warning types that should be enabled.",
 
       clipp::option("-e", "--eval") & opts.eval << clipp::value("expr") % "Input string to evaluate",
 
@@ -142,9 +142,10 @@ int main(int argc, char *argv[])
 
     if (opts.show_help)
     {
-        std::cout << clipp::make_man_page(cli, "progname", fmt)
-                       .prepend_section("DESCRIPTION", "The alisp programming language.")
-                       .append_section("LICENSE", "GPLv3");
+        std::cout << clipp::make_man_page(cli, "alisp", fmt)
+            .prepend_section("DESCRIPTION", "The alisp programming language.")
+            .append_section("ENVIRONMENT VARIABLES", "\n\tALPATH:\t  \n\n\tALISPRC:\t  \n\n")
+            .append_section("LICENSE", "GPLv3");
         return 0;
     }
 
