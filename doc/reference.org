@@ -1,0 +1,342 @@
+
+#+TITLE: Alisp Language reference
+
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
+
+
+* General
+Alisp is a general programming language of the [[https://en.wikipedia.org/wiki/Lisp_(programming_language)][Lisp]] kind. To quote Wikipedia:
+
+#+BEGIN_QUOTE
+Lisp is an expression oriented language. Unlike most other languages, no distinction is made between "expressions" and "statements"; all code and data are written as expressions. When an expression is evaluated, it produces a value, which can then be embedded into other expressions. Each value can be any data type.
+#+END_QUOTE
+
+This means that each lisp program (respectively each alisp program) is comprised of nested [[https://en.wikipedia.org/wiki/S-expression][s-expression]]. The have the general form:
+#+BEGIN_SRC lisp
+(atom-1 atom-2 atom-3)
+#+END_SRC
+Each atomic expression can either be a symbol, a literal or result of the evaluation of another s-expression. An s-expression is evaluated by calling the function which is pointed by the head of the list. In the above case, the function pointed by =atom-1=. The arguments passed to the function will be the values of =atom-2= and =atom-3=. If those are literals, their values are the objects themselves. If they are symbols, the value is the thing pointed by the symbol. Think of symbols as /ids/ or variable names (more on them later).
+
+\\
+Another example for s-expression is:
+#+BEGIN_SRC lisp
+(atom-1 atom-2 (atom-3 atom-4 atom-5))
+#+END_SRC
+Here the inner most expression is e valuated first, and the result of that becomes the third value of the outermost:
+#+BEGIN_SRC
+(atom-1 atom-2 (atom-3 atom-4 atom-5)) -> (atom-1 atom-2 value-1)
+#+END_SRC
+A lisp interpreter always evaluates inner most expression first.
+
+\\
+
+S-expression build the basic syntax of the Alisp language. This makes the syntax minimal in a sense. 
+
+
+* Hello world 
+Open your favorite text editor and type the following:
+#+BEGIN_SRC emacs-lisp :results none
+(println "Hello, Alisp")
+#+END_SRC
+Save the contents in a file "hello.al". You can execute the script as Alisp program by executing:
+#+BEGIN_SRC sh
+alisp hello.al
+#+END_SRC
+in a terminal.
+
+
+* Comments
+The comment syntax corresponds to the one of [[https://www.gnu.org/software/emacs/manual/html_node/elisp/][Emacs-lisp]]. The symbol =;= is used to start a comment:
+
+#+BEGIN_SRC lisp
+
+; (println "Hello world")
+; comment line
+#+END_SRC
+ 
+In Alisp there is no notion of multi-line comment. For multi-line comment, just use =;;= at the start of each line.
+
+
+* Literals
+
+There are several types of literals in Alisp. When the parser read a literal, it creates an object of the corresponding data-type. Examples for literals in the code:
+#+BEGIN_SRC elisp
+42       ;; this is integer value
+42.42    ;; this is real value
+"string" ;; this is real value
+#+END_SRC
+
+** Char literals
+There is a spacial syntax for char literals. While in most languages ='a'= is seen as the char literal for "a", in Alisp the ='= character is reserved and thus the syntax for char literals is a bit different. The question mark is used to indicate a char literal. The next symbol after =?= is considered to be a char and an object with this char is constructed.X
+
+#+BEGIN_SRC emacs-lisp :results none
+?a     ;; this is a char value
+#+END_SRC
+
+Special characters can be escaped with =\=: 
+
+#+BEGIN_SRC emacs-lisp :results none
+?\n ;; new line
+?\t ;; tab
+?\\ ;; the character "\"
+#+END_SRC
+
+** Integer literals
+
+Integers can be written in a straight forward form, just like in any other language. =32= means the integer 32. There are, however, other way to write an integer. For example, a sequence of symbols prefixed with =#x= or =#X= will be read as an integer given in hexadecimal format. One can also write an integer in binary and octal format.
+
+#+BEGIN_SRC emacs-lisp :results none
+#b1001 ;; the integer 9 (1001 in binary)
+#B1001 ;; the integer 9 (1001 in binary)
+
+#xAA    ;; the integer 170 (AA in binary)
+#XAA    ;; the integer 170 (AA in binary)
+
+#o17    ;; the integer 15 (17 in ocal)
+#O17    ;; the integer 15 (17 in ocal)
+#+END_SRC
+
+There are several builtin symbols that evaluate to themselves. Those are generally used to represent =true= and =false=.
+#+BEGIN_SRC emacs-lisp :results none
+t      ;; used as 'true' in most cotexts
+nil    ;; used as 'false' in most cotexts
+#+END_SRC
+
+** Real literals
+Real numbers can also be given in a simple manner:
+#+BEGIN_SRC elisp
+42.42 ;; the value 42.42
+#+END_SRC
+Real values can also be written in scientific notation:
+#+BEGIN_SRC emacs-lisp :results none
+1.3e3   ;; the value 1300.0
+1.3E-3  ;; the value 0.0013
+#+END_SRC
+
+** String literals
+String literals are sequence of symbols enclosed in quotation marks
+#+BEGIN_SRC emacs-lisp :results none
+"string" ;; this is string with content 'string'
+#+END_SRC
+The "general" rules for string literals apply. You can escape characters with =\= and the literal "\" characters is written as "\\" in a string. Characters in string literals can be given in octal or hexadecimal form with =\o= or =\x= followed by the sequence of symbols representing a number. The ASCII character with this number will be read. 32 bit Unicode is also allowed with prefacing a sequence with =\u= and giving a value the [[https://en.wikipedia.org/wiki/UTF-32][32 bit Unicode standard]].
+
+#+BEGIN_SRC emacs-lisp :results none
+"string with new line\n"
+"string with hex char \xA"
+"string with oct char \x27"
+"string with unicode char \uAABE"
+#+END_SRC
+
+
+* Symbols 
+As previously said, symbols can be thought as variable names. In code those are given as a plain sequence of characters. Later we'll see how variables are defined and symbols are used as names. For now, all you need to know is that symbols can contain any character form =A-Z, a-z, 0-9, -, _, +, *, /, =, \ !, $, ?, \, |, @, :, <, >, &, ], += (characters are separated with commas).
+
+\\
+Example of symbols:
+#+BEGIN_SRC
+this-is-symbol
+sym
+--this-is-symbol
+1--a
+a--1
+#+END_SRC
+
+
+* Variables
+Variables can be defined with the built-in construct =defvar=.
+
+\\
+
+For example:
+#+BEGIN_SRC emacs-lisp
+(defvar sym "initial value" 
+  "Documentaion for the varuable sym")
+#+END_SRC
+The documentation string is optional. The value can be any valid Alisp value including literal, quoted symbol or list. The value will be evaluated when defining a variable
+
+\\
+
+Some more examples:
+#+BEGIN_SRC emacs-lisp
+(defvar sym-1 "initial value")
+(defvar sym-2 12)
+(defvar sym-3 42.23)
+(defvar sym-3 ?a)
+#+END_SRC
+
+\\
+
+Once a variable is defined, the symbol for this variable will evaluate to the value of the variables:
+
+#+BEGIN_SRC emacs-lisp :results none
+(defvar sym-1 "initial value")
+(println sym-1) ;; Prints 'initial value'
+#+END_SRC
+
+** Local variables
+
+#+BEGIN_SRC emacs-lisp :results none
+(let ((sym-new-1 "new-variable 1")
+      (sym-new-2 "new-variable 2"))
+  (println sym-new-1))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :results none
+(let* ((sym-new-1 "new-variable 1")
+      (sym-new-2 sym-new-1))
+  (println sym-new-1))
+#+END_SRC
+
+
+** Setting variables
+
+#+BEGIN_SRC emacs-lisp :results none
+(let ((sym-new-1 "new-variable 1")
+      (sym-new-2 "new-variable 2"))
+  (setq sym-1 "new value")
+  (println sym-new-1))
+#+END_SRC
+
+
+* Functions
+
+A function is defined with the built-in construct =(defun ([ARG_LIST]) [DOC_STRING] [[S-EXPRESSION]...])=. The body of the function is just a sequence of expressions that are evaluated on after another. Once defines, a function can be called by placing it at the start of and s-expression.
+
+\\
+
+Example of function definition:
+#+BEGIN_SRC emacs-lisp :results none
+(defun fun-1 ()  ;; defining function
+  "Documentaion"
+)
+
+(fun-1)          ;; calling function
+#+END_SRC
+
+** Arguments
+A function can also defines an argument list. The value of each argument will be bound on function call.
+#+BEGIN_SRC emacs-lisp :results none
+(defvar fun-1 (a b c)
+  "Documentaion"
+  (println a)
+  (println b)
+  (println c))
+
+(fun-1 "a" "b" "c")
+#+END_SRC
+
+
+** Optional arguments
+The argument list can contain optional arguments. All arguments after the keyword =&optional= are considered optional. On function call, the optional arguments will either be bound to nil or to the value supplied.
+
+\\
+
+#+BEGIN_SRC emacs-lisp :results none
+(defun fun-1 (a b c &optional d e)
+  "Documentaion"
+  (println a)
+  (println b)
+  (println c)
+  (println d)
+  (println e))
+
+(fun-1 "a" "b" "c" "d")      ;; d -> "d", e -> nil
+(fun-1 "a" "b" "c" "d" "e")  ;; d -> "d", e -> "e"
+(fun-1 "a" "b" "c")          ;; d -> nil, e -> nil
+#+END_SRC
+
+
+** Rest arguments
+The argument list can also use the =&rest= keyword in order for the function to capture all of passed arguments on function call.
+
+\\
+
+#+BEGIN_SRC emacs-lisp :results none
+(defun fun-1 (a b c &optional d e &rest r)
+  "Documentaion"
+  (println a)
+  (println b)
+  (println c)
+  (println d)
+  (println e))
+
+(fun-1 "a" "b" "c" "d")              ;; d -> "d", e -> nil
+(fun-1 "a" "b" "c" "d" "e")          ;; d -> "d", e -> "e"
+(fun-1 "a" "b" "c")                  ;; d -> nil, e -> nil
+(fun-1 "a" "b" "c" "d" "e" "f" "g")  ;; d -> "d", e -> "e", r -> ("f" "g")
+#+END_SRC
+
+
+* Lists
+
+#+BEGIN_SRC emacs-lisp :results none
+'("s1" "s2" "s3" "s3")
+#+END_SRC
+
+** Back-quoted syntax
+
+
+* Flow control
+** Conditionals
+
+#+BEGIN_SRC emacs-lisp :results none
+(if t (println "true") (println "false"))
+(if nil  (println "true") (println "false"))
+#+END_SRC
+
+
+#+BEGIN_SRC emacs-lisp :results none
+(when t (println "true") (println "true"))
+(unless nil (println "false") (println "false"))
+#+END_SRC
+
+** Evaluating expressions
+#+BEGIN_SRC emacs-lisp :results none
+(progn 
+    (println "body")
+    (println "body")
+    (println "body"))
+#+END_SRC
+
+** Switch 
+
+
+* Loops
+** While
+#+BEGIN_SRC emacs-lisp :results none
+(while 't
+  (println "body")
+  (println "body"))
+#+END_SRC
+** Iterating over list
+#+BEGIN_SRC emacs-lisp :results none
+(dolist (s '("a" "b" "c"))
+  (println s))
+#+END_SRC
+
+
+* Modules
+
+#+BEGIN_SRC emacs-lisp :results none
+(import 'math)
+
+(import 'math :as 'new-math)
+(import 'math :from "./math.al")
+
+(import 'math (sin))
+(import 'math (sin :as new-sin))
+#+END_SRC
+
+
+
+#+BEGIN_SRC emacs-lisp :results none
+(import 'math)
+
+(math.sin 72.0)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :results none
+((modref 'math 'sin) 72.0)
+#+END_SRC
+
+
