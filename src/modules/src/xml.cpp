@@ -17,6 +17,7 @@ ALISP_EXPORT alisp::env::ModulePtr init_xml(alisp::env::Environment *, alisp::ev
     auto xml_ptr = Mxml.get();
 
     alisp::module_defun(xml_ptr, "xml-parse", &Fparse_xml);
+    alisp::module_defun(xml_ptr, "parse", &Fparse_xml);
 
     return Mxml;
 }

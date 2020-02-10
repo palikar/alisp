@@ -168,11 +168,6 @@ void Environment::load_module(eval::Evaluator *eval, const std::string t_file, c
 {
     auto loaded_mod = m_loaded_modules.insert( { t_name,  std::make_unique<dynmoduels::AlispDynModule>(t_name, t_file)}).first->second.get();
     auto mod_ptr = loaded_mod->init_dynmod(this, eval);
-
-    for (auto el : mod_ptr->root_scope()) {
-        std::cout << el.first << "\n";
-    }
-
     define_module(t_name, std::move(mod_ptr));
     alias_module(t_name, t_name);
 }

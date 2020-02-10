@@ -122,10 +122,6 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
         return Qt;
     }
 
-    env->define_module(module_name, import_as);
-    env->alias_module(module_name, import_as);
-    env::detail::ModuleChange mc{ *env, module_name };
-
     for (auto &path : *Vmodpaths)
     {
         for (auto &postfix : { "", ".so", ".al" })
@@ -138,19 +134,21 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
             if (hash::hash(std::string_view(postfix)) == hash::hash(".so"))
             {
                 env->load_module(eval, eval_file.string(), module_name);
-            }
-            else
-            {
-                eval->eval_file(eval_file);
-            }
-
-
-            if (import_all)
-            {
-                env->import_root_scope(module_name, mc.old_module());
+                if (import_all) {
+                    env->import_root_scope(module_name, env->current_module());
+                }
                 return Qt;
             }
 
+            env->define_module(module_name, import_as);
+            env->alias_module(module_name, import_as);
+            env::detail::ModuleChange mc{ *env, module_name };
+            eval->eval_file(eval_file);
+            if (import_all)
+            {
+                env->import_root_scope(module_name, mc.old_module());
+            }
+            
             return Qt;
         }
     }

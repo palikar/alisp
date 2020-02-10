@@ -161,7 +161,9 @@ class Environment
         m_modules.insert({ t_name, new_mod });
     }
 
-    void define_module(const std::string t_name, ModulePtr t_mod) { m_modules.insert({ t_name, std::move(t_mod) }); }
+    void define_module(const std::string t_name, ModulePtr t_mod) {for (auto el : t_mod->root_scope()) {
+            std::cout << el.first << "\n";
+        } m_modules.insert({ t_name, std::move(t_mod) }); }
 
     void load_module(eval::Evaluator *eval, const std::string t_file, const std::string t_name);
 
