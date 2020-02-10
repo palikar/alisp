@@ -22,6 +22,6 @@ endmacro()
 
 
 
-add_dynmodule(test-module src/main.cpp)
+add_dynmodule(xml src/xml.cpp)
 
 

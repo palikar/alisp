@@ -40,9 +40,7 @@ add_library(alisp_language
     src/alisp_algorithms.cpp
     src/alisp_strings.cpp
     src/alisp_casts.cpp
-    src/alisp_props.cpp
-
-    )
+    src/alisp_props.cpp)
 
 
 target_include_directories(alisp_language
@@ -90,7 +88,7 @@ target_compile_definitions(alisp_language PUBLIC AL_PRELUDE_DIR=\"${PRELUDE_DIR}
 
 
 install(TARGETS alisp_language alisp_fileio alisp_math
-    alisp_time alisp_system alisp_platform
+    alisp_time alisp_system alisp_platform alisp_memory
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
     RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}

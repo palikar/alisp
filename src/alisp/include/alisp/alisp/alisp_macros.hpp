@@ -16,6 +16,12 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 #pragma once
 
+#ifdef ALISP_HAS_DECLSPEC
+#define ALISP_EXPORT extern "C" __declspec(dllexport)
+#else
+#define ALISP_EXPORT extern "C" 
+#endif
+
 
 #define PRIMITIVE_CAT(a, ...) a##__VA_ARGS__
 #define CAT(a, ...) PRIMITIVE_CAT(a, __VA_ARGS__)
@@ -29,11 +35,11 @@
 
 #define DEFUN(name, sym)                                                                                           \
     extern ALObjectPtr F##name(ALObjectPtr, env::Environment *, eval::Evaluator *);                                \
-    inline auto Q##name = env::Environment::g_global_symbol_table.insert({ sym, make_symbol(sym) }).first->second; \
-    inline auto P##name = env::Environment::g_prime_values.insert({ sym, make_prime(&F##name, sym) }).first->second
+    inline auto P##name = env::Environment::g_global_symbol_table.insert({ sym, make_symbol(sym) }).first->second; \
+    inline auto Q##name = env::Environment::g_prime_values.insert({ sym, make_prime(&F##name, sym) }).first->second
 
 
-#define APP_FUNCTION_(NAME, FUN, TYPE)                                          \
+#define APP_FUNCTION_(NAME, FUN, TYPE)                                  \
     ALObjectPtr NAME(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl) \
     {                                                                           \
         assert_size<1>(obj);                                                    \

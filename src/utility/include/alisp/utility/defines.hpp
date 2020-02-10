@@ -26,6 +26,7 @@
 
 #if defined(_WIN32)
 #define ALISP_WIN
+#define ALISP_HAS_DECLSPEC
 #if defined(__llvm__)
 #define ALISP_COMPILER_NAME "clang(windows)"
 #elif defined(__GNUC__)
@@ -42,13 +43,6 @@
 #else
 #define ALISP_COMPILER_NAME "unknown"
 #endif
-#endif
-
-
-#ifdef CHAISCRIPT_HAS_DECLSPEC
-#define CHAISCRIPT_MODULE_EXPORT extern "C" __declspec(dllexport)
-#else
-#define CHAISCRIPT_MODULE_EXPORT extern "C"
 #endif
 
 
