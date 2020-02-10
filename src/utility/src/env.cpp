@@ -35,6 +35,14 @@ std::string env_string(const char *t_name)
     return {};
 }
 
+
+void env_set(const std::string& t_name, const std::string& t_val)
+{
+    std::string new_env = (t_name + '=' + t_val);
+    
+    putenv(new_env.data());
+}
+
 std::unordered_map<std::string, std::string> env_list()
 {
 

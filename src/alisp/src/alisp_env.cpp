@@ -153,6 +153,17 @@ void Environment::activate_module(const std::string &t_name)
     m_active_module = *m_modules.at(t_name).get();
 }
 
+bool Environment::load_builtin_module(const std::string &t_module_name, eval::Evaluator *eval)
+{
+    auto module_import = g_builtin_modules.find(t_module_name);
+
+    if (module_import == std::end(g_builtin_modules)) { return false; }
+    auto new_mod = module_import->second.function(this, eval);
+    m_modules.insert({ t_module_name, new_mod });
+
+    return true;
+}
+
 void Environment::stack_dump() const
 {
     using namespace fmt;

@@ -78,6 +78,8 @@ struct CellStack
 
 }  // namespace detail
 
+class AlispDynModule;
+
 class Module;
 class Environment;
 using ModulePtr = std::shared_ptr<Module>;
@@ -162,6 +164,8 @@ class Environment
 
     void define_module(const std::string t_name, ModulePtr t_mod) { m_modules.insert({ t_name, std::move(t_mod) }); }
 
+    void define_loadable_module(const std::string t_name, ModulePtr t_mod);
+
     void alias_module(const std::string &t_name, const std::string t_alias)
     {
         m_active_module.get().add_module(m_modules.at(t_name), std::move(t_alias));
@@ -194,19 +198,7 @@ class Environment
         // m_modules.at(t_to)->get_root() = m_modules.at(t_from)->get_root();
     }
 
-    bool load_builtin_module(const std::string &t_module_name, eval::Evaluator *eval)
-    {
-
-        auto module_import = g_builtin_modules.find(t_module_name);
-
-        if (module_import == std::end(g_builtin_modules)) { return false; }
-
-        auto new_mod = module_import->second.function(this, eval);
-        m_modules.insert({ t_module_name, new_mod });
-
-
-        return true;
-    }
+    bool load_builtin_module(const std::string &t_module_name, eval::Evaluator *eval);
 
     ALObjectPtr find(const ALObjectPtr t_sym);
 

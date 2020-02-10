@@ -112,10 +112,10 @@ ALObjectPtr Fallocate_buffer(ALObjectPtr t_obj, env::Environment *, eval::Evalua
 
 }
 
-env::ModulePtr init_system(env::Environment *, eval::Evaluator *)
+env::ModulePtr init_memory(env::Environment *, eval::Evaluator *)
 {
 
-    auto Mmemory = module_init("system");
+    auto Mmemory = module_init("memory");
     auto mem_ptr = Mmemory.get();
 
     
