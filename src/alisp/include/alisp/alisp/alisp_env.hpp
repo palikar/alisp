@@ -28,8 +28,8 @@
 #include "alisp/alisp/alisp_macros.hpp"
 #include "alisp/alisp/alisp_exception.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
-
 #include "alisp/alisp/alisp_modules.hpp"
+#include "alisp/alisp/alisp_loadable_modules.hpp"
 
 #include "alisp/utility/helpers.hpp"
 #include "alisp/utility/macros.hpp"
@@ -78,13 +78,11 @@ struct CellStack
 
 }  // namespace detail
 
-class AlispDynModule;
+using AlispDynModulePtr = std::unique_ptr<dynmoduels::AlispDynModule>;
 
 class Module;
 class Environment;
 using ModulePtr = std::shared_ptr<Module>;
-
-using module_init_func = ModulePtr (*)(Environment *, eval::Evaluator *);
 
 class Module
 {
@@ -142,6 +140,7 @@ class Environment
   private:
     detail::CellStack m_stack;
     std::unordered_map<std::string, ModulePtr> m_modules;
+    std::unordered_map<std::string, AlispDynModulePtr> m_loaded_modules;
     std::reference_wrapper<Module> m_active_module;
 
     size_t m_call_depth;
@@ -164,7 +163,7 @@ class Environment
 
     void define_module(const std::string t_name, ModulePtr t_mod) { m_modules.insert({ t_name, std::move(t_mod) }); }
 
-    void define_loadable_module(const std::string t_name, ModulePtr t_mod);
+    void load_module(eval::Evaluator *eval, const std::string t_file, const std::string t_name);
 
     void alias_module(const std::string &t_name, const std::string t_alias)
     {

@@ -164,6 +164,13 @@ bool Environment::load_builtin_module(const std::string &t_module_name, eval::Ev
     return true;
 }
 
+void Environment::load_module(eval::Evaluator *eval, const std::string t_file, const std::string t_name)
+{
+    auto loaded_mod = m_loaded_modules.insert( { t_name,  std::make_unique<dynmoduels::AlispDynModule>(t_name, t_file)}).first->second.get();
+    auto mod_ptr = loaded_mod->init_dynmod(this, eval);
+    define_module(t_name, mod_ptr);
+}
+
 void Environment::stack_dump() const
 {
     using namespace fmt;

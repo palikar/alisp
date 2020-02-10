@@ -19,15 +19,20 @@
 
 #include <string_view>
 #include <string>
+#include <utility>
+#include <memory>
 
 #include <dlfcn.h>
 
-#include "alisp/alisp/alisp_modules.hpp"
-#include "alisp/alisp/alisp_env.hpp"
-#include "alisp/alisp/alisp_eval.hpp"
 
 namespace alisp
 {
+
+namespace env{ class Environment; }
+namespace env{ class Module; }
+namespace eval{ class Evaluator; }
+
+using module_init_func = std::shared_ptr<env::Module> (*)(env::Environment *, eval::Evaluator *);
 
 namespace dynmoduels
 {
@@ -63,15 +68,12 @@ template<typename T> struct DLSym
 
 struct AlispDynModule
 {
-    AlispDynModule(const std::string &t_module_name, const std::string_view &t_filename)
-      : m_dlmodule(t_filename), m_init_func(m_dlmodule, "init_" + t_module_name)
-    {
-    }
+    AlispDynModule(const std::string &t_module_name, const std::string_view &t_filename);
 
-    env::ModulePtr init_dynmod(env::Environment *env, eval::Evaluator *eval) { return m_init_func.m_symbol(env, eval); }
+    std::shared_ptr<env::Module> init_dynmod(env::Environment *env, eval::Evaluator *eval);
 
     DLModule m_dlmodule;
-    DLSym<env::module_init_func> m_init_func;
+    DLSym<module_init_func> m_init_func;
 };
 
 }  // namespace dynmoduels

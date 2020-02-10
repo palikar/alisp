@@ -26,6 +26,7 @@ add_library(alisp_language
     src/alisp_streams.cpp
     src/alisp_files.cpp
     src/alisp_warnings.cpp
+    src/alisp_loadable_modules.cpp
 
     src/alisp_stream_functions.cpp
     src/alisp_file_functions.cpp
@@ -54,6 +55,7 @@ target_link_libraries(alisp_language
     project_warnings
     dl
     PUBLIC
+    ${CMAKE_DL_LIBS}
     alisp_util
     alisp_streams
     alisp_management
