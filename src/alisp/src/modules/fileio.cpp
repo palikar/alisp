@@ -61,6 +61,24 @@ std::vector<std::string> glob(const std::string& pattern)
     return filenames;
 }
 
+std::string expand_user(std::string path) {
+    if (not path.empty() and path[0] == '~') {
+        assert(path.size() == 1 or path[1] == '/');  // or other error handling
+        char const* home = getenv("HOME");
+        if (home or ((home = getenv("USERPROFILE")))) {
+            path.replace(0, 1, home);
+        }
+        else {
+            char const *hdrive = getenv("HOMEDRIVE"),
+                *hpath = getenv("HOMEPATH");
+            assert(hdrive);  // or other error handling
+            assert(hpath);
+            path.replace(0, 1, std::string(hdrive) + hpath);
+        }
+    }
+    return path;
+}
+
 #ifdef ALISP_WIN
 inline constexpr auto separator = "\\";
 #else
@@ -133,13 +151,22 @@ ALObjectPtr Ftouch(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     assert_string(path);
 
     std::fstream fs;
-    fs.open(path->to_string(), std::ios::out);
+    fs.open(path->to_string(), std::ios::out | std::ios::app);
     if (!fs.is_open()) {
         return Qnil;
     }
     fs.close();
 
     return Qt;
+}
+
+ALObjectPtr Fexpand_user(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto path = eval->eval(t_obj->i(0));
+    assert_string(path);
+
+    return make_string(expand_user(path->to_string()));
 }
 
 ALObjectPtr Fcopy(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -842,9 +869,59 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
     auto Mfileio = module_init("fileio");
     auto fio_ptr = Mfileio.get();
 
-    module_defvar(fio_ptr, "directory-separator", make_string(detail::separator));
+    module_defvar(fio_ptr, "f-directory-separator", make_string(detail::separator));
 
-
+    module_defun(fio_ptr, "f-expand-user", &detail::Fexpand_user);
+    module_defun(fio_ptr, "f-root", &detail::Froot);
+    module_defun(fio_ptr, "f-directories", &detail::Fdirectories);
+    module_defun(fio_ptr, "f-entries", &detail::Fentries);
+    module_defun(fio_ptr, "f-glob", &detail::Fglob);
+    module_defun(fio_ptr, "f-touch", &detail::Ftouch);
+    module_defun(fio_ptr, "f-copy", &detail::Fcopy);
+    module_defun(fio_ptr, "f-move", &detail::Fmove);
+    module_defun(fio_ptr, "f-make-symlink", &detail::Fmake_symlink);
+    module_defun(fio_ptr, "f-delete", &detail::Fdelete);
+    module_defun(fio_ptr, "f-mkdir", &detail::Fmkdir);
+    module_defun(fio_ptr, "f-temp-file", &detail::Ftemp_file);
+    module_defun(fio_ptr, "f-read-bytes", &detail::Fread_bytes);
+    module_defun(fio_ptr, "f-read-text", &detail::Fread_text);
+    module_defun(fio_ptr, "f-write-text", &detail::Fwrite_text);
+    module_defun(fio_ptr, "f-write-bytes", &detail::Fwrite_bytes);
+    module_defun(fio_ptr, "f-append-text", &detail::Fappend_text);
+    module_defun(fio_ptr, "f-append-bytes", &detail::Fappend_bytes);
+    module_defun(fio_ptr, "f-join", &detail::Fjoin);
+    module_defun(fio_ptr, "f-split", &detail::Fsplit);
+    module_defun(fio_ptr, "f-expand", &detail::Fexpand);
+    module_defun(fio_ptr, "f-filename", &detail::Ffilename);
+    module_defun(fio_ptr, "f-dirname", &detail::Fdirname);
+    module_defun(fio_ptr, "f-common-parent", &detail::Fcommon_parent);
+    module_defun(fio_ptr, "f-ext", &detail::Fext);
+    module_defun(fio_ptr, "f-no-ext", &detail::Fno_ext);
+    module_defun(fio_ptr, "f-swap-ext", &detail::Fswap_ext);
+    module_defun(fio_ptr, "f-base", &detail::Fbase);
+    module_defun(fio_ptr, "f-relative", &detail::Frelative);
+    module_defun(fio_ptr, "f-short", &detail::Fshort);
+    module_defun(fio_ptr, "f-long", &detail::Flong);
+    module_defun(fio_ptr, "f-canonical", &detail::Fcanonical);
+    module_defun(fio_ptr, "f-full", &detail::Ffull);
+    module_defun(fio_ptr, "f-exists", &detail::Fexists);
+    module_defun(fio_ptr, "f-direcotry", &detail::Fdirecotry);
+    module_defun(fio_ptr, "f-file", &detail::Ffile);
+    module_defun(fio_ptr, "f-symlink", &detail::Fsymlink);
+    module_defun(fio_ptr, "f-readable", &detail::Freadable);
+    module_defun(fio_ptr, "f-writable", &detail::Fwritable);
+    module_defun(fio_ptr, "f-executable", &detail::Fexecutable);
+    module_defun(fio_ptr, "f-absolute", &detail::Fabsolute);
+    module_defun(fio_ptr, "f-prelative", &detail::Fprelative);
+    module_defun(fio_ptr, "f-is-root", &detail::Fis_root);
+    module_defun(fio_ptr, "f-same", &detail::Fsame);
+    module_defun(fio_ptr, "f-parent-of", &detail::Fparent_of);
+    module_defun(fio_ptr, "f-child-of", &detail::Fchild_of);
+    module_defun(fio_ptr, "f-ancestor-of", &detail::Fancestor_of);
+    module_defun(fio_ptr, "f-descendant-of", &detail::Fdescendant_of);
+    module_defun(fio_ptr, "f-hidden", &detail::Fhidden);
+    module_defun(fio_ptr, "f-empty", &detail::Fempty);
+    
     return Mfileio;
 }
 
