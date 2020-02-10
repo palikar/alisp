@@ -17,6 +17,7 @@
 
 
 #include "alisp/alisp/alisp_module_helpers.hpp"
+#include "alisp/alisp/alisp_memory.hpp"
 
 #include "alisp/utility/env.hpp"
 
@@ -30,83 +31,146 @@ namespace detail
 
 ALObjectPtr Fmmap(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_size<3>(t_obj);
+    auto mem_source = eval->eval(t_obj->i(0));
+    auto mem_target = eval->eval(t_obj->i(1));
+    auto size = eval->eval(t_obj->i(2));
 
-    return Qnil;
+    assert_memory(mem_source);
+    assert_memory(mem_target);
+    assert_int(size);
+
+    
+    auto& buf_s = MemoryHelpers::get_buffer(mem_source);
+    auto& buf_t = MemoryHelpers::get_buffer(mem_target);
+    for (size_t i = 0; i < static_cast<size_t>(size->to_int()); ++i) {
+        *(buf_t.m_ptr + i) = *(buf_s.m_ptr + i);
+    }
+
+
+    return Qt;
 }
 
 ALObjectPtr Fget_size(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    auto mem = eval->eval(t_obj->i(0));
+    assert_memory(mem);
 
-    return Qnil;
+    return make_int(MemoryHelpers::get_buffer(mem).m_size);
 }
 
 ALObjectPtr Fset_nth_byte(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_size<3>(t_obj);
+    auto mem = eval->eval(t_obj->i(0));
+    auto i = eval->eval(t_obj->i(1));
+    auto byte = eval->eval(t_obj->i(2));
+    assert_memory(mem);
+    assert_int(i);
+    assert_byte(byte);
 
-    return Qnil;
+    *(MemoryHelpers::get_buffer(mem).m_ptr + i->to_int()) = static_cast<unsigned char>(byte->to_int());
+    return Qt;
+    
 }
 
 ALObjectPtr Fget_nth_byte(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_size<2>(t_obj);
+    auto mem = eval->eval(t_obj->i(0));
+    auto i = eval->eval(t_obj->i(1));
+    assert_memory(mem);
+    assert_int(i);
 
-    return Qnil;
+    return make_int(static_cast<ALObject::int_type>(*(MemoryHelpers::get_buffer(mem).m_ptr + i->to_int())));
 }
 
 ALObjectPtr Fget_range(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_size<3>(t_obj);
+    auto mem = eval->eval(t_obj->i(0));
+    auto start = eval->eval(t_obj->i(1));
+    auto end = eval->eval(t_obj->i(2));
+    assert_memory(mem);
+    assert_int(start);
+    assert_int(end);
+    
+    ALObject::list_type bytes;
+    auto& buf = MemoryHelpers::get_buffer(mem);
+    for (size_t i = static_cast<size_t>(start->to_int());
+         i < static_cast<size_t>(end->to_int());
+         ++i) {
+        bytes.push_back(make_int(static_cast<ALObject::int_type>(*(buf.m_ptr + i))));
+    }
 
-    return Qnil;
+    return make_object(bytes);
 }
 
 ALObjectPtr Ffill_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_size<2>(t_obj);
+    auto mem = eval->eval(t_obj->i(0));
+    auto val = eval->eval(t_obj->i(1));
+    assert_memory(mem);
+    assert_byte(val);
 
-    return Qnil;
+    auto& buf = MemoryHelpers::get_buffer(mem);
+    for (size_t i = 0; i < buf.m_size; ++i) {
+        *(buf.m_ptr + i) = static_cast<unsigned char>(val->to_int());
+    }
+
+    return Qt;
 }
 
 ALObjectPtr Fset_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_size<2>(t_obj);
+    auto mem = eval->eval(t_obj->i(0));
+    auto array = eval->eval(t_obj->i(1));
+    assert_memory(mem);
+    assert_byte_array(array);
 
-    return Qnil;
+    auto& buf = MemoryHelpers::get_buffer(mem);
+    for (size_t i = 0; i < array->size(); ++i) {
+        *(buf.m_ptr + i) = static_cast<unsigned char>(array->i(i)->to_int());
+    }
+
+    return Qt;
 }
 
 ALObjectPtr Fget_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    auto mem = eval->eval(t_obj->i(0));
+    assert_memory(mem);
+    
+    ALObject::list_type bytes;
+    auto& buf = MemoryHelpers::get_buffer(mem);
+    for (size_t i = 0; i < buf.m_size; ++i) {
+        bytes.push_back(make_int(static_cast<ALObject::int_type>(*(buf.m_ptr + i))));
+    }
 
-    return Qnil;
+    return make_object(bytes);
 }
 
 ALObjectPtr Fallocate_buffer(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    auto size = eval->eval(t_obj->i(0));
+    assert_int(size);
 
-    return Qnil;
+    return MemoryHelpers::allocate_buffer(static_cast<size_t>(size->to_int()));
+}
+
+ALObjectPtr Frelease_buffer(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(t_obj);
+    auto mem = eval->eval(t_obj->i(0));
+    assert_memory(mem);
+
+    MemoryHelpers::release_buffer(mem);
+    return Qt;
 }
 
 
@@ -117,8 +181,17 @@ env::ModulePtr init_memory(env::Environment *, eval::Evaluator *)
 
     auto Mmemory = module_init("memory");
     auto mem_ptr = Mmemory.get();
-
-    
+ 
+    module_defun(mem_ptr, "buffer-allocate", &detail::Fallocate_buffer);
+    module_defun(mem_ptr, "buffer-release", &detail::Frelease_buffer);
+    module_defun(mem_ptr, "buffer-mmap", &detail::Fmmap);
+    module_defun(mem_ptr, "buffer-get-size", &detail::Fget_size);
+    module_defun(mem_ptr, "buffer-nth-get", &detail::Fget_nth_byte);
+    module_defun(mem_ptr, "buffer-nth-set", &detail::Fset_nth_byte);
+    module_defun(mem_ptr, "buffer-range-get", &detail::Fget_range);
+    module_defun(mem_ptr, "buffer-fill", &detail::Ffill_bytes);
+    module_defun(mem_ptr, "buffer-set", &detail::Fset_bytes);
+    module_defun(mem_ptr, "buffer-get", &detail::Fget_bytes);
     
     return Mmemory;
 }

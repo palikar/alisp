@@ -42,6 +42,7 @@ void init_modules()
     Environment::g_builtin_modules.insert({ "math", ModuleImport{ &init_math } });
     Environment::g_builtin_modules.insert({ "time", ModuleImport{ &init_time } });
     Environment::g_builtin_modules.insert({ "platform", ModuleImport{ &init_platform } });
+    Environment::g_builtin_modules.insert({ "memory", ModuleImport{ &init_memory } });
 }
 
 }  // namespace env

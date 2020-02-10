@@ -39,7 +39,7 @@ namespace memory
 
 struct MemoryBuffer
 {
-    char *m_ptr;
+    unsigned char *m_ptr;
     size_t m_size;
 };
 
