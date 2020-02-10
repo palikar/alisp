@@ -15,10 +15,10 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-
 #include "alisp/alisp/alisp_module_helpers.hpp"
-
 #include "alisp/utility/env.hpp"
+
+#include <stdlib.h> 
 
 namespace alisp
 {
@@ -41,55 +41,68 @@ ALObjectPtr get_evnvars()
 ALObjectPtr Fget_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_string(path);
-
-    return Qnil;
+    auto var = eval->eval(t_obj->i(0));
+    assert_string(var);
+    return make_string(utility::env_string(var->to_string().c_str()));
 }
 
 ALObjectPtr Fcheck_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_string(path);
+    auto var= eval->eval(t_obj->i(0));
+    assert_string(var);
 
-    return Qnil;
+    return utility::env_bool(var->to_string().c_str()) ? Qt : Qnil;
 }
 
 ALObjectPtr Fset_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_string(path);
+    assert_size<2>(t_obj);
+    auto var = eval->eval(t_obj->i(0));
+    auto val = eval->eval(t_obj->i(1));
+    assert_string(var);
+    assert_string(val);
 
-    return Qnil;
+    utility::env_set(var->to_string(), val->to_string());
+    
+    return Qt;
 }
 
-ALObjectPtr Flist_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Flist_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator*)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_string(path);
-
-    return Qnil;
+    assert_size<0>(t_obj);
+    return get_evnvars();
 }
 
 ALObjectPtr Fchwd(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_string(path);
+    const auto p = path->to_string();
 
-    return Qnil;
+    if (!fs::exists(p)) {
+        return Qnil;
+    }
+
+    fs::current_path(p);
+
+    return Qt;
 }
 
 ALObjectPtr Fsystem(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    auto command = eval->eval(t_obj->i(0));
+    assert_string(command);
 
-    return Qnil;
+    if (system(command->to_string().c_str())) {
+        return Qt;
+    } else {
+        return Qnil;
+    };
 }
 
 
@@ -97,12 +110,18 @@ ALObjectPtr Fsystem(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
 
 env::ModulePtr init_system(env::Environment *, eval::Evaluator *)
 {
-
     auto Msystem = module_init("system");
     auto sys_ptr = Msystem.get();
 
     module_defvar(sys_ptr, "env-vars", detail::get_evnvars());
-    
+
+    module_defun(sys_ptr, "get-env", &detail::Fget_env);
+    module_defun(sys_ptr, "check-env", &detail::Fcheck_env);
+    module_defun(sys_ptr, "set-env", &detail::Fset_env);
+    module_defun(sys_ptr, "list-env", &detail::Flist_env);
+    module_defun(sys_ptr, "chwd", &detail::Fchwd);
+    module_defun(sys_ptr, "sys", &detail::Fsystem);
+
     return Msystem;
 }
 
