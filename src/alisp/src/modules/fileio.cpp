@@ -20,7 +20,10 @@
 #include "alisp/utility/defines.hpp"
 #include "alisp/utility/files.hpp"
 #include "alisp/utility/string_utils.hpp"
+
 #include <filesystem>
+#include <glob.h>
+#include <string.h>
 
 namespace alisp
 {
@@ -28,13 +31,41 @@ namespace alisp
 namespace detail
 {
 
+std::vector<std::string> glob(const std::string& pattern)
+{
+    using namespace std;
+
+    // glob struct resides on the stack
+    glob_t glob_result;
+    memset(&glob_result, 0, sizeof(glob_result));
+
+    // do the glob operation
+    int return_value = glob(pattern.c_str(), GLOB_TILDE, NULL, &glob_result);
+    if(return_value != 0) {
+        globfree(&glob_result);
+        stringstream ss;
+        ss << "glob() failed with return_value " << return_value << endl;
+        throw std::runtime_error(ss.str());
+    }
+
+    // collect all the filenames into a std::list<std::string>
+    vector<string> filenames;
+    for(size_t i = 0; i < glob_result.gl_pathc; ++i) {
+        filenames.push_back(string(glob_result.gl_pathv[i]));
+    }
+
+    // cleanup
+    globfree(&glob_result);
+
+    // done
+    return filenames;
+}
 
 #ifdef ALISP_WIN
 inline constexpr auto separator = "\\";
 #else
 inline constexpr auto separator = "/";
 #endif
-
 
 
 ALObjectPtr Froot(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
@@ -81,11 +112,18 @@ ALObjectPtr Fentries(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
 
 ALObjectPtr Fglob(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_string(path);
+    namespace fs = std::filesystem;
+    
+    assert_min_size<2>(t_obj);
+    auto pattern = eval->eval(t_obj->i(0));
+    assert_string(pattern);
+    if (std::size(*t_obj) > 1) {
+        auto path = eval->eval(t_obj->i(1));
+        assert_string(path);
+        return make_list(glob(path->to_string() + fs::path::preferred_separator + pattern->to_string()));
+    }
 
-    return Qnil;
+    return make_list(glob(pattern->to_string()));
 }
 
 ALObjectPtr Ftouch(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -395,281 +433,405 @@ ALObjectPtr Fsplit(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fexpand(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_string(path);
 
-    return Qnil;
+    const auto p = fs::absolute(path->to_string());
+    
+    return make_string(p);
 }
 
 ALObjectPtr Ffilename(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_string(path);
 
-    return Qnil;
+    const auto p = fs::path(path->to_string());
+    
+    return make_string(p.filename());
 }
 
 ALObjectPtr Fdirname(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_string(path);
 
-    return Qnil;
+    const auto p = fs::path(path->to_string());
+    
+    return make_string(p.parent_path());
 }
 
 ALObjectPtr Fcommon_parent(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_string(path);
 
     return Qnil;
 }
 
 ALObjectPtr Fext(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_string(path);
 
-    return Qnil;
+    const auto p = fs::path(path->to_string());
+    
+    return make_string(p.extension());
 }
 
 ALObjectPtr Fno_ext(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_string(path);
 
-    return Qnil;
+    const auto p = fs::path(path->to_string());
+    
+    return make_string(p.stem());
 }
 
 ALObjectPtr Fswap_ext(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
+    namespace fs = std::filesystem;
+    
+    assert_size<2>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    auto ext = eval->eval(t_obj->i(1));
+    assert_string(path);
+    assert_string(ext);
 
-    return Qnil;
+    const auto p = fs::path(path->to_string());
+    
+    return make_string(p.stem().string() + "." + ext->to_string());
 }
 
 ALObjectPtr Fbase(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
+    namespace fs = std::filesystem;
+    
+    assert_size<2>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    auto ext = eval->eval(t_obj->i(1));
+    assert_string(path);
+    assert_string(ext);
 
-    return Qnil;
+    const auto p = fs::path(path->to_string());
+    if (fs::is_directory(p)) {
+        return Qnil;
+    }
+    
+    return make_string(p.stem().filename());
 }
 
 ALObjectPtr Frelative(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
+    namespace fs = std::filesystem;
+ 
+    assert_min_size<2>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_string(path);
 
-    return Qnil;
+    const auto p = fs::path(path->to_string());
+
+    if (std::size(*t_obj) > 1) {
+        auto to_path = eval->eval(t_obj->i(1));
+        assert_string(to_path);
+        return make_string(fs::relative(path->to_string(), to_path->to_string()));
+    }
+
+    return make_string(path->to_string());
 }
 
 ALObjectPtr Fshort(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_string(path);
 
     return Qnil;
 }
 
 ALObjectPtr Flong(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_string(path);
 
-    return Qnil;
+    return make_string(fs::canonical(path->to_string()));
 }
 
 ALObjectPtr Fcanonical(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_string(path);
 
-    return Qnil;
+    return make_string(fs::canonical(path->to_string()));
 }
 
 ALObjectPtr Ffull(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    assert_string(path);
+    auto p = fs::path(path->to_string());
+    return make_string(fs::absolute(p));
 }
 
 ALObjectPtr Fexists(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    assert_string(path);
+    auto p = fs::path(path->to_string());
+    return fs::exists(p) ? Qt : Qnil;
 }
 
 ALObjectPtr Fdirecotry(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    assert_string(path);
+    auto p = fs::path(path->to_string());
+    return fs::is_directory(p) ? Qt : Qnil;
 }
 
 ALObjectPtr Ffile(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    assert_string(path);
+    auto p = fs::path(path->to_string());
+    return fs::is_regular_file(p) ? Qt : Qnil;
 }
 
 ALObjectPtr Fsymlink(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    assert_string(path);
+    auto p = fs::path(path->to_string());
+    return fs::is_symlink(p) ? Qt : Qnil;
 }
 
 ALObjectPtr Freadable(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    assert_string(path);
+    auto p = fs::path(path->to_string());
+    
+    return (fs::status(p).permissions() & fs::perms::owner_read) != fs::perms::none ? Qt : Qnil;
 }
 
 ALObjectPtr Fwritable(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    assert_string(path);
+    auto p = fs::path(path->to_string());
+    
+    return (fs::status(p).permissions() & fs::perms::owner_write) != fs::perms::none ? Qt : Qnil;
 }
 
 ALObjectPtr Fexecutable(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    assert_string(path);
+    auto p = fs::path(path->to_string());
+    
+    return (fs::status(p).permissions() & fs::perms::owner_exec) != fs::perms::none ? Qt : Qnil;
 }
 
 ALObjectPtr Fabsolute(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    assert_string(path);
+    auto p = fs::path(path->to_string());
+    return p.is_absolute() ? Qt : Qnil;
 }
 
 ALObjectPtr Fprelative(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    assert_string(path);
+    auto p = fs::path(path->to_string());
+    return p.is_relative() ? Qt : Qnil;
 }
 
-ALObjectPtr Fis_Froot(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fis_root(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
+    
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
-}
-
-ALObjectPtr Fexit(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    assert_string(path);
+    auto p = fs::path(path->to_string());
+    return fs::equivalent(p, fs::current_path().root_path()) ? Qt : Qnil;
 }
 
 ALObjectPtr Fsame(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    namespace fs = std::filesystem;
+    
+    assert_size<2>(t_obj);
+    auto path1 = eval->eval(t_obj->i(0));
+    auto path2 = eval->eval(t_obj->i(1));
+    assert_string(path1);
+    assert_string(path2);
+    const auto p1 = fs::path(path1->to_string());
+    const auto p2 = fs::path(path2->to_string());
+    return fs::equivalent(p1, p2) ? Qt : Qnil;
 }
 
 ALObjectPtr Fparent_of(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    namespace fs = std::filesystem;
+    
+    assert_size<2>(t_obj);
+    auto path1 = eval->eval(t_obj->i(0));
+    auto path2 = eval->eval(t_obj->i(1));
+    assert_string(path1);
+    assert_string(path2);
+    const auto p1 = fs::path(path1->to_string());
+    const auto p2 = fs::path(path2->to_string());
+    return fs::equivalent(p1, p2.parent_path()) ? Qt : Qnil;
 }
 
 ALObjectPtr Fchild_of(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    namespace fs = std::filesystem;
+    
+    assert_size<2>(t_obj);
+    auto path1 = eval->eval(t_obj->i(0));
+    auto path2 = eval->eval(t_obj->i(1));
+    assert_string(path1);
+    assert_string(path2);
+    const auto p1 = fs::path(path1->to_string());
+    const auto p2 = fs::path(path2->to_string());
+    return fs::equivalent(p1, p2.parent_path()) ? Qt : Qnil;
 }
 
 ALObjectPtr Fancestor_of(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    namespace fs = std::filesystem;
+    
+    assert_size<2>(t_obj);
+    auto path1 = eval->eval(t_obj->i(0));
+    auto path2 = eval->eval(t_obj->i(1));
+    assert_string(path1);
+    assert_string(path2);
+    const auto p1 = (path1->to_string());
+    const auto p2 = (path2->to_string());
 
-    return Qnil;
+    auto parts1 = utility::split(p2, fs::path::preferred_separator);
+    auto parts2 = utility::split(p1, fs::path::preferred_separator);
+
+    for (size_t i = 0; i < std::size(parts1); ++i) {
+
+        if (std::size(parts2) <= i) {
+            return Qnil;
+        }
+        
+        if (parts2[i] != parts1[i]) {
+            return Qnil;
+        }
+    }
+    
+    return Qt;
 }
 
 ALObjectPtr Fdescendant_of(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    namespace fs = std::filesystem;
+    
+    assert_size<2>(t_obj);
+    auto path1 = eval->eval(t_obj->i(0));
+    auto path2 = eval->eval(t_obj->i(1));
+    assert_string(path1);
+    assert_string(path2);
+    const auto p1 = (path1->to_string());
+    const auto p2 = (path2->to_string());
 
-    return Qnil;
+    auto parts1 = utility::split(p1, fs::path::preferred_separator);
+    auto parts2 = utility::split(p2, fs::path::preferred_separator);
+
+    for (size_t i = 0; i < std::size(parts1); ++i) {
+
+        if (std::size(parts2) <= i) {
+            return Qnil;
+        }
+        
+        if (parts2[i] != parts1[i]) {
+            return Qnil;
+        }
+    }
+    
+    return Qt;
 }
 
 ALObjectPtr Fhidden(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
-
-    return Qnil;
+    assert_string(path);
+    const auto p = fs::path(path->to_string());
+    return p.filename().string()[0] == '.' ? Qt : Qnil;
 }
 
 ALObjectPtr Fempty(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    namespace fs = std::filesystem;
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
-    assert_stream(path);
+    assert_string(path);
 
-    return Qnil;
+    const auto p = fs::path(path->to_string());
+    
+    return fs::is_empty(p) ? Qt : Qnil;
 }
 
 }  // namespace detail
