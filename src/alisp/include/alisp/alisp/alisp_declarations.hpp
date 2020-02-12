@@ -157,6 +157,7 @@ DEFUN(read_line, "read-line",
 
 
 DEFUN(mapc, "mapc", R"((mapc FUNCTION LIST))");
+DEFUN(mapcar, "mapcar", R"((mapcar FUNCTION LIST))");
 DEFUN(car, "car",
       R"((mapc LIST))");
 DEFUN(cons, "cons",

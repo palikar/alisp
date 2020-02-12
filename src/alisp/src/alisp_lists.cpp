@@ -53,6 +53,26 @@ ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return Qt;
 }
 
+ALObjectPtr Fmapcar(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<2>(obj);
+
+    auto fun_obj = eval->eval(obj->i(0));
+    auto list    = eval->eval(obj->i(1));
+    ALObject::list_type new_l;
+
+    for (auto &el : list->children())
+    {
+        // if (psym(el) or plist(el)) { eval->handle_lambda(fun_obj, make_list(quote(el))); }
+        // else
+        // {
+        new_l.push_back(eval->handle_lambda(fun_obj, make_list(el)));
+        // }
+    }
+
+    return make_list(new_l);
+}
+
 ALObjectPtr Fcar(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);

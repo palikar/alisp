@@ -181,7 +181,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
                 STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
                 auto a = apply_function(func, eval_ptr);
-                // std::cout << dump(a) << "\n";
+                //std::cout << dump(a) << "\n";
                 return eval(a);
             }
             else

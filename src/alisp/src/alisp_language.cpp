@@ -253,10 +253,10 @@ ALObjectPtr Fsetq(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
     return Qt;
 }
 
-ALObjectPtr Feval(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
+ALObjectPtr Feval(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     assert_size<1>(obj);
-    return evl->eval(obj->i(0));
+    return evl->eval(evl->eval(obj->i(0)));
 }
 
 ALObjectPtr Fset(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
