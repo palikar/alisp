@@ -13,6 +13,10 @@ nav:
 - Streams Manipulation: streams_doc.md
 markdown_extensions:
   - admonition
+  - toc:
+      separator: "_"
+      permalink: "#"
+
 extra_css:
   - css/extra.css
 theme: readthedocs

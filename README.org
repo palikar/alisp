@@ -1,0 +1,33 @@
+# #+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+# #+OPTIONS: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
+# #+OPTIONS: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
+# #+OPTIONS: prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t
+
+#+OPTIONS: toc:nil todo:t |:t
+
+#+title: README
+#+date: <2020-02-12 Wed>
+#+author: Stanislav Arnaudov
+#+email: stanislav.arn@gmail.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 26.3 (Org mode 9.3.2)
+
+
+#+BEGIN_EXAMPLE
+[![Documentation Status](https://readthedocs.org/projects/alisp/badge/?version=latest)](https://alisp.readthedocs.io/en/latest/?badge=latest)
+#+END_EXAMPLE
+
+* ALisp
+
+[[./logo.png]]
+
+** Abstract
+ALisp is a interpreted [[https://en.wikipedia.org/wiki/Scheme_(programming_language)][Lisp Scheme]] language. I've developed it on my own around 2019-2020. This is my first try in language design and I have focused on simplicity and ease of development. The design follows relatively closely the one of [[https://www.gnu.org/software/emacs/manual/html_node/eintr/][Emacs Lisp]]. A lot of conventions, syntax and concepts are borrowed from there. ALisp does, however, has it's own features like runtime dynamic modules loading, proper file importing as well as general programming language features that are expected. 
+
+** Building
+
+** Usage
+
+** Acknowledgments
