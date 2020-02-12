@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/283df2678f0a4eaeb93c35b48ed0c483)](https://app.codacy.com/manual/palikar/alisp?utm_source=github.com&utm_medium=referral&utm_content=palikar/alisp&utm_campaign=Badge_Grade_Dashboard)
 [![Documentation Status](https://readthedocs.org/projects/alisp/badge/?version=latest)](https://alisp.readthedocs.io/en/latest/?badge=latest)
 
 
