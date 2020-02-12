@@ -26,8 +26,135 @@
 ** Abstract
 ALisp is a interpreted [[https://en.wikipedia.org/wiki/Scheme_(programming_language)][Lisp Scheme]] language. I've developed it on my own around 2019-2020. This is my first try in language design and I have focused on simplicity and ease of development. The design follows relatively closely the one of [[https://www.gnu.org/software/emacs/manual/html_node/eintr/][Emacs Lisp]]. A lot of conventions, syntax and concepts are borrowed from there. ALisp does, however, has it's own features like runtime dynamic modules loading, proper file importing as well as general programming language features that are expected. 
 
+\\
+
+By now I've developed the core features and even written several small library like modules that enable some "real" programming in the language. Alisp comes with a interpret that is just a binary executable, much like the one of [[https://www.python.org/][Python]]. The interpreter can evaluate files and provides a [[https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop][REPL]] environment.
+
 ** Building
+The project requires C++17 compliant compiler. It is tested with clang-7, gcc-7, gcc-8 and gcc-9. CMake is used as a build system and [[https://conan.io/][conan]] is required as one package is pulled form there. Conan can be isntalled through pip with:
+#+BEGIN_SRC sh
+pip install conan
+#+END_SRC
+This is more or less the only requirement for build the project. Having the [[https://tiswww.case.edu/php/chet/readline/rltop.html][GNU Readline]] on your system is nice but it is not necessary.
+
+\\
+
+Once this is done, the building is "standard":
+#+BEGIN_SRC sh
+git clone https://github.com/palikar/
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE="Release" -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="/usr"
+make -j8 && make install
+#+END_SRC
+This should be enough to get your started with ALisp. You should care to adjust the flags as you desire.
+
+\\
+
+*** Building tests
+The project can also be build with variety of tests and checks. This, however, requires some more tools to be available on the system. Those include [[https://gcovr.com/en/stable/][gcovr]] and [[https://valgrind.org/][valgrind]]. If you have those, you should be ok while running something like:
+#+BEGIN_SRC sh
+mkdir build_test
+cd build_test
+cmake .. -DCMAKE_BUILD_TYPE="Debug" -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="/usr" -DBUILD_TESTING=ON -DBUILD_EXAMPLES=ON -DENABLE_COVERAGE=ON -DVALGRIND_CHECKS=ON
+make -j8
+#+END_SRC
+
+Now you can run several make targets to perform all the tests, checks and coverage.
+
+#+BEGIN_SRC sh
+make test             # runs all of the tests
+make valgrind_checks  # runs all of the valgrind checks and generates reports
+make test_examples    # runs all of the scripts meant for testing
+#+END_SRC
+
+\\
+
+CMake can also be executed with ~-DRUN_PERFORMANCE_TESTS~ which will include several tests that are meant to stress the interpreter a little bit and evaluate its performance.
+
+*** Building the documentation
+Currently the project does not have the most stellar documentation but the setup is there. There are two typed of documentations. The first one is the language specification, references and general description on how to work with the interpreter. This one can be build trough executing:
+#+BEGIN_SRC sh
+make dog_gen    # generates the website with the documentation
+#+END_SRC
+in the root directory.
+
+\\
+
+The source code has its own documentation that is built with [[http://www.doxygen.nl/][Doxygen]].
+#+BEGIN_SRC sh
+mkdir build_doc
+cd build_doc
+cmake .. -DBUILD_DOC=ON
+make doc
+#+END_SRC
+
 
 ** Usage
 
+For a very simple demo of the language, create a file named ~hello.al~ with the following contents:
+#+BEGIN_SRC emacs-lisp
+(defvar a 42)
+(if (== a 42)(println "Hello World!")
+  (println "Hello World, something is wrong with this language :/"))
+#+END_SRC
+The script can be executed like:
+#+BEGIN_SRC
+alisp hello.al
+#+END_SRC
+
+\\
+
+The interpreter has a man-page-like help that can be useful but it's not as polished as I wanted it to be. The useful parts of the help are:
+#+BEGIN_EXAMPLE
+DESCRIPTION
+The alisp programming language.
+
+SYNOPSIS
+        alisp [-v] [-h] [-i] [-d] [-l] [-Q] [-I <include>]... [-W <warnings>]...
+              [-e <expr>] [<file> [<args>]...]
+
+OPTIONS
+        -v, --version
+                    Show the version and build information of the current
+                    executable
+
+        -h, --help  Print help information
+        -i, --interactive
+                    Start interactive mode after file evaluation
+
+        -d, --parse-debug
+                    Debug output from the parser
+
+        -l, --eval-debug
+                    Debug output from the evaluator
+
+        -Q, --quick-start
+                    Do not loady any scripts on initialization
+
+        -I <include>
+                    Extra include directories for module imports.
+
+        -W <warnings>
+                    Warning types that should be enabled.
+
+        <expr>      Input string to evaluate
+        <file>      Input file
+        <args>...   Arguments for the script being ran.
+
+#+END_EXAMPLE
+The ~-l~ and ~-d~ flags are there for debugging purposes.
+
+\\
+
+See the [[https://alisp.readthedocs.io/en/latest/][documentation]] for more information.
+
+
 ** Acknowledgments
+I've learned a ton while developing Lisp. Here are some of the sources that I've taken inspiration from:
+- [[https://github.com/ChaiScript/ChaiScript/][ChaiScript]] - a lot of the things I've leaned about C++ comes from this project. It also taught me about practical parsing, interpreter design and a good dose of template meta programming.
+- [[https://github.com/ChaiScript/ChaiScript/][Catch2]] - This is the library ALisp uses for its tests
+- [[https://github.com/muellan/clipp][Clipp]] - This is the library ALisp uses for command line arguments handling
+- [[https://www.google.com/search?q=c%2B%2B+rang&ie=utf-8&oe=utf-8&client=firefox-b-e][Rang]] - A simple library for printing text with color on the console.
+- [[https://www.gnu.org/software/emacs/manual/html_node/eintr/][GNU Emacs]] - The whole project is written in Emacs. But, more importantly, the source code of Emacs taught me a lot of things about Lisp interpretation.
+
