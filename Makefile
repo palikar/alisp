@@ -29,3 +29,13 @@ format_project:
 	@echo "Fromating the source directory..."
 	@find ./src/ -iname *.hpp -o -iname *.cpp | xargs clang-format -i -style=file
 
+
+doc_debug:
+	@mkdocs serve
+
+doc_gen:
+	@mkdocs build
+
+clean:
+	@rm -rf site
+
