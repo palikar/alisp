@@ -1,0 +1,11 @@
+site_name: "Alisp: Lisp intrpeter written in c++"
+repo_url: https://github.com/palikar/alisp
+
+copyright: "Copyright (C) 2019-2020 Stanislav Arnaudoc"
+docs_dir: doc
+nav:
+- Home: index.md
+- Documentation: doc.md
+markdown_extensions:
+  - admonition
+theme: readthedocs
