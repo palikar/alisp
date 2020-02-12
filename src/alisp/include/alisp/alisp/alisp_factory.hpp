@@ -174,6 +174,11 @@ inline auto make_list(std::vector<std::string> strs)
     return new_obj;
 }
 
+inline auto make_list(ALObject::list_type elements)
+{
+    return make_object(elements);
+}
+
 inline auto make_prime(Prim::func_type t_function, std::string t_name, std::string t_doc = {})
 {
     auto sym = make_object(ALObject::list_type{})->make_prime(t_function);

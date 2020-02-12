@@ -253,6 +253,12 @@ ALObjectPtr Fsetq(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
     return Qt;
 }
 
+ALObjectPtr Feval(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
+{
+    assert_size<1>(obj);
+    return evl->eval(obj->i(0));
+}
+
 ALObjectPtr Fset(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
 {
     assert_size<2>(obj);
@@ -456,7 +462,10 @@ ALObjectPtr Fletx(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
 
 ALObjectPtr Fexit(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_size<1>(obj);
+    assert_max_size<1>(obj);
+    if ( obj->size() == 0 ) {
+        throw al_exit(0);
+    }
     auto val = evl->eval(obj->i(0));
     assert_int(val);
     throw al_exit(static_cast<int>(val->to_int()));
