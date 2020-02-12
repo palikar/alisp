@@ -13,8 +13,12 @@
   (println "### " name))
 
 (defun warning (name)
-  "Creates a heading"
+  "Creates a warning"
   (print "!!! Warning\n\t" name "\n"))
+
+(defun tip (name)
+  "Creates a not"
+  (print "!!! Tip\n\t" name "\n"))
 
 (defun line (&optional n)
   (if n (dolist (el (range 0 n))
@@ -210,16 +214,27 @@
 (defun generate-files-reference ()
   (heading-1 "File system.")
   (line)
-  (println "Alisp provides a mechanism for working with streams. Streams are abstraction that supports writing and reading and provide unified interface for these operation.")
+  (println "Similar to stream, files are also resource objects. From a programmer perspecive a file is accesed through a poineter line integer object. As in other languages, files can be opend, closed, written to and read from.")
   (line)
 
-  (let ((basic-streams-list '(stream stream-close))
-        (basic-streams-preamble "These functions are used to open and close a stream."))
-    (heading-2 "Opening and closing streams")
-    (println "\n" basic-streams-preamble "\n")
-    (warning "Every stream that was opened must be closed. If a stream is not closed, memory could be leaked.")
+  (let ((basic-files-list '(file-open file-close))
+        (basic-files-preamble "Opening and closing a file is done through these two simple to use functions."))
+    (heading-2 "Opening and closing files")
+    (println "\n" basic-files-preamble "\n")
+    (warning "Every file that was opened must be closed. If a file is not closed properly, memory could be leaked.")
     (line)
-    (expand-and-dump basic-streams-list)))
+    (expand-and-dump basic-files-list))
+
+  
+  (let ((io-files-list '(file-read-line file-write-line file-has-more))
+        (io-files-preamble ""))
+    (heading-2 "Funcitons for basic reading from and writing to files.")
+    (println "\n" io-files-preamble "\n")
+    (tip "If you need more reading and writing functions, attach a stram to the file and work the the stream itself.")
+    (line)
+    (expand-and-dump io-files-list)))
+
+
 
 
 
@@ -228,5 +243,8 @@
 (std-redirect (fileio.f-join root-dir "basic_doc.md") (generate-basic-reference))
 
 (println "Genrating steams...: " "streams_doc.md")
-(std-redirect (fileio.f-join root-dir "basic_doc.md") (generate-streams-reference))
+(std-redirect (fileio.f-join root-dir "streams_doc.md") (generate-streams-reference))
+
+(println "Genrating files...: " "files_doc.md")
+(std-redirect (fileio.f-join root-dir "files_doc.md") (generate-files-reference))
 

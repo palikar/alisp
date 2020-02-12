@@ -1,53 +1,225 @@
-# Streaming system.
+# Basic builit in functions.
+## Language constructs
 
-Alisp provides a mechanism for working with streams. Streams are abstraction that supports writing and reading and provide unified interface for these operation. In ALisp streams are handled through *resource objects*. This means that every strema is identified through a int-object that acts like a pointer to the underlying stream. The intrpterer keeps track of every opened stream and provides acces to each of them throught the resource object (the int value).
+Basic fuctions that provide the backbone of the language. These include global and local variable definition, flow control structures and loops.
 
-## Opening and closing streams
++ *import*: (import NAME [:file file] [:all] [( [(SYM MAPPED)]... )])
 
-These functions are used to open and close a stream.
++ *modref*: (modref MODUE [[MODUE] ...] SYMBOL [[symbol] ...] )
 
-!!! Warning
-	Every stream that was opened must be closed. If a stream is not closed, memory could be leaked.
++ *defun*: (defun NAME (ARGLIST) [DOC] BODY)
 
-+ *stream*: (stream [:from-string STRING] [:from-file FILE])
++ *eval*: (eval FORM)
 
-+ *stream-close*: (stream-close STREAM)
++ *setq*: (setq SYMBOL VALUE)
 
-## Writing.
++ *set*: ((set SYMBOL VALUE))
 
-Functions for writing to streams
++ *setq*: (setq SYMBOL VALUE)
 
++ *quote*: (quote OBJECT)
 
-+ *stream-write*: (stream-write VALUE)
++ *function*: (funttion OBJECT)
 
-+ *stream-write-line*: (stream-write-line VALUE)
++ *lambda*: (lambda (ARGLIST) BODY)
 
-+ *stream-write-lines*: (stream-write-line VALUE [[VALUE] ...])
++ *if*: (if CONDITION THEN ELSE)
 
-## Reading.
++ *while*: (while CONDITION BODY)
 
-Functions for reading from streams
++ *dolist*: (dolist (SYMBOL LIST) BODY)
 
++ *cond*: (cond [[CODITION BODY] ... ])
 
-+ *stream-read*: (stream-read)
++ *when*: (when CONDITION BODY)
 
-+ *stream-read-line*: (stream-read-line)
++ *unless*: (unless CONDITION BODY)
 
-+ *stream-read-lines*: (stream-read-lines)
++ *let*: (let ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)
 
-## Redirecting standrad output and input.
++ *let**: (let* ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)
 
-The sandard input and output streams of the process can be redirected from any compatable stream. This way, you can use functions that will normaly pring to the standard output, but have the stream redirected to a file for example.
++ *or*: (or [[VALUE]...])
 
++ *and*: (and [[VALUE]...])
 
-+ *with-cout*: (with-cout STREAM)
++ *not*: (not VALUE)
 
-+ *with-cin*: (with-cin STREAM)
++ *parse-int*: (parse-int STRING)
 
-## Utilities
++ *parse-float*: (parse-float STRING)
 
++ *to-string*: (to-string VALUE)
 
-Some utility functions for working with streams
++ *to-char*: (to-char INT)
 
-+ *stream-content*: ((content STRREAM)
++ *funcall*: (funcall SYMBOL LIST)
+
++ *backquote*: (`LIST)
+
++ *return*: (return [VALUE])
+
++ *exit*: (exit [VALUE])
+
+## Printing
+
+Functions to interact with the stanard input and output.
+
++ *print*: (print VALUE [[VALUE] ...])
+
++ *println*: (println VALUE [[VALUE] ...])
+
++ *eprint*: (eprint VALUE [[VALUE] ...])
+
++ *eprintln*: (eprintln VALUE [[VALUE] ...])
+
++ *read-line*: (read-line)
+
+## Lists
+
+Functions to interact with the stanard input and output.
+
++ *length*: (length LIST)
+
++ *cons*: (cons LIST)
+
++ *head*: (head LIST)
+
++ *last*: (last LIST)
+
++ *init*: (init LIST)
+
++ *tail*: (tail LIST)
+
++ *nth*: (nth LIST INDEX)
+
++ *mapc*: (mapc FUNCTION LIST)
+
++ *mapcar*: (mapcar FUNCTION LIST)
+
++ *push*: (push LIST ELEMENT)
+
++ *delete*: (delete LIST ELEMENT)
+
++ *remove*: (remove LIST ELEMENT)
+
++ *range*: (range FROM TO)
+
+## Object Properties
+
+Functions for accessing the properties of objects.
+
++ *prop-get*: (prop-get SYM PROPERTY)
+
++ *prop-set*: (prop-set SYM PROPERTY VALUE)
+
++ *prop-list*: (prop-list SYM)
+
+## Object Properties
+
+Functions for type inspecting. These functions can be used to check whether an object is from a certain type.
+
++ *pstring*: (pstring SYMBOL)
+
++ *plist*: (plist SYMBOL)
+
++ *pint*: (pint SYMBOL)
+
++ *preal*: (preal SYMBOL)
+
++ *psym*: (psym SYMBOL)
+
++ *pfunction*: (pfunction SYMBOL)
+
+## Strings
+
+Functions for basic string handling.
+
++ *string-length*: (string-length STRING)
+
++ *string-contains*: (string-contains STRING SUBSTRING)
+
++ *string-endswith*: (string-contains STRING SUFFIX)
+
++ *string-startswith*: (string-contains STRING PREFIX)
+
++ *string-length*: (string-length STRING)
+
++ *string-capitalize*: (string-capitalize STRING)
+
++ *string-find*: (string-find STRING SUBSTRING)
+
++ *string-replace*: (string-replace STRING SUBSTRING NEWSTRING)
+
++ *string-replaceall*: (string-replaceall STRING SUBSTRING NEWSTRING)
+
++ *string-split*: (string-split STRING DELIMETER)
+
++ *string-substring*: (string-substring STRING FROM TO)
+
++ *string-splitlines*: (string-splitlines STRING)
+
++ *string-upper*: (string-upper STRING)
+
++ *string-lower*: (string-lower STRING)
+
++ *string-strip*: (string-strip STRING)
+
++ *string-join*: (string-join STRING [[STRING] ...])
+
++ *char-isalpha*: (char-isalpha CHAR)
+
++ *char-isdigit*: (char-isdigit CHAR)
+
+## Basic Math
+
+Functions that realise simple math operations.
+
++ *+*: (+ [[VALUE]...])
+
++ *-*: (- [[VALUE]...])
+
++ */*: (/ [[VALUE]...])
+
++ ***: (* [[VALUE]...])
+
++ *<*: (< VALUE1 VALUE2)
+
++ *<=*: (<= VALUE1 VALUE2)
+
++ *>*: (> VALUE1 VALUE2)
+
++ *>=*: (>= VALUE1 VALUE2)
+
++ *==*: (== VALUE1 VALUE2)
+
++ *!=*: (!= VALUE1 VALUE2)
+
++ *mod*: (mod VALUE1)
+
++ *pow*: (pow VALUE1 VALUE2)
+
++ *min*: (min [[VALUE]...])
+
++ *max*: (max [[VALUE]...])
+
++ *round*: (round VALUE PLACES)
+
+## Algorithms
+
+Several functions for basic algorithms for working with lists.
+
++ *slice*: (slice LIST FROM TO)
+
++ *sort*: (sort LIST)
+
++ *sort*: (sort LIST)
+
++ *zip*: (zip [[LIST] ...])
+
++ *filter*: (filter FUNCTION LIST)
+
++ *any*: (any FUNCTION LIST)
+
++ *all*: (all FUNCTION LIST)
 
