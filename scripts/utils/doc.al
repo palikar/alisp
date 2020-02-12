@@ -26,15 +26,15 @@
     (print "\n")))
 
 (defun bold (name)
-  (print "*" name "*"))
+  (print "**" name "**"))
 
 (defun dump-doc-list (&rest sym)
   (dolist (el sym)    
-    (print "+ ")
+    (print "#### ")
     (bold (prop-get el "--name--" ))
     (print ": ")
     (let ((lines (string-splitlines (prop-get el "--doc--" ))))
-      (print (nth lines 0) "\n")
+      (print "*" (nth lines 0) "*" "\n")
       (mapc println (tail lines)))
     (print "\n")))
 
@@ -233,10 +233,6 @@
     (tip "If you need more reading and writing functions, attach a stram to the file and work the the stream itself.")
     (line)
     (expand-and-dump io-files-list)))
-
-
-
-
 
 
 (println "Genrating basic...: " "basic_doc.md")
