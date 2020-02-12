@@ -30,16 +30,16 @@ bool env_bool(const char *t_name)
 
 std::string env_string(const char *t_name)
 {
-    auto e =  std::getenv(t_name) ;
+    auto e = std::getenv(t_name);
     if (e != nullptr) { return std::string{ e }; }
     return {};
 }
 
 
-void env_set(const std::string& t_name, const std::string& t_val)
+void env_set(const std::string &t_name, const std::string &t_val)
 {
     std::string new_env = (t_name + '=' + t_val);
-    
+
     putenv(new_env.data());
 }
 
@@ -47,17 +47,18 @@ std::unordered_map<std::string, std::string> env_list()
 {
 
     std::unordered_map<std::string, std::string> m;
-    
-    int i = 1;
+
+    int i   = 1;
     char *s = *environ;
 
-    for (; s; i++) {
+    for (; s; i++)
+    {
         auto v = utility::split(s, '=');
-        m.insert({v[0], v[1]});
-        s = *(environ+i);
+        m.insert({ v[0], v[1] });
+        s = *(environ + i);
     }
-    
+
     return m;
 }
 
-}
+}  // namespace alisp::utility

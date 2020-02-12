@@ -143,9 +143,9 @@ int main(int argc, char *argv[])
     if (opts.show_help)
     {
         std::cout << clipp::make_man_page(cli, "alisp", fmt)
-            .prepend_section("DESCRIPTION", "The alisp programming language.")
-            .append_section("ENVIRONMENT VARIABLES", "\n\tALPATH:\t  \n\n\tALISPRC:\t  \n\n")
-            .append_section("LICENSE", "GPLv3");
+                       .prepend_section("DESCRIPTION", "The alisp programming language.")
+                       .append_section("ENVIRONMENT VARIABLES", "\n\tALPATH:\t  \n\n\tALISPRC:\t  \n\n")
+                       .append_section("LICENSE", "GPLv3");
         return 0;
     }
 

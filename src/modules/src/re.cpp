@@ -3,8 +3,6 @@
 #include "alisp/alisp/alisp_module_helpers.hpp"
 
 
-
-
 ALISP_EXPORT alisp::env::ModulePtr init_re(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     auto Mre = alisp::module_init("re");

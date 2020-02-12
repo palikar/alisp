@@ -36,6 +36,6 @@ std::string env_string(const char *t_name);
 
 std::unordered_map<std::string, std::string> env_list();
 
-void env_set(const std::string& t_name, const std::string& t_val);
+void env_set(const std::string &t_name, const std::string &t_val);
 
-}
+}  // namespace alisp::utility

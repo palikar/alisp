@@ -134,9 +134,7 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
             if (hash::hash(std::string_view(postfix)) == hash::hash(".so"))
             {
                 env->load_module(eval, eval_file.string(), module_name);
-                if (import_all) {
-                    env->import_root_scope(module_name, env->current_module());
-                }
+                if (import_all) { env->import_root_scope(module_name, env->current_module()); }
                 return Qt;
             }
 
@@ -144,11 +142,8 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
             env->alias_module(module_name, import_as);
             env::detail::ModuleChange mc{ *env, module_name };
             eval->eval_file(eval_file);
-            if (import_all)
-            {
-                env->import_root_scope(module_name, mc.old_module());
-            }
-            
+            if (import_all) { env->import_root_scope(module_name, mc.old_module()); }
+
             return Qt;
         }
     }
@@ -463,9 +458,7 @@ ALObjectPtr Fletx(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
 ALObjectPtr Fexit(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     assert_max_size<1>(obj);
-    if ( obj->size() == 0 ) {
-        throw al_exit(0);
-    }
+    if (obj->size() == 0) { throw al_exit(0); }
     auto val = evl->eval(obj->i(0));
     assert_int(val);
     throw al_exit(static_cast<int>(val->to_int()));

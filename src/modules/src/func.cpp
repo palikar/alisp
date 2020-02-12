@@ -3,8 +3,6 @@
 #include "alisp/alisp/alisp_module_helpers.hpp"
 
 
-
-
 ALISP_EXPORT alisp::env::ModulePtr init_func(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     auto Mfunc = alisp::module_init("func");

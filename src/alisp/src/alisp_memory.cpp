@@ -29,23 +29,22 @@ namespace alisp
 
 ALObjectPtr MemoryHelpers::allocate_buffer(size_t t_size)
 {
-    unsigned char* memory = static_cast<unsigned char*>(malloc(t_size));
-    auto new_id = memory::memory_registry.put_resource({memory, t_size})->id;
+    unsigned char *memory = static_cast<unsigned char *>(malloc(t_size));
+    auto new_id           = memory::memory_registry.put_resource({ memory, t_size })->id;
     return resource_to_object(new_id);
-
 }
 
 memory::MemoryBuffer &MemoryHelpers::get_buffer(ALObjectPtr t_buffer)
 {
-    
+
     return memory::memory_registry[object_to_resource(t_buffer)];
 }
 
 
 void MemoryHelpers::release_buffer(ALObjectPtr t_buffer)
 {
-    const auto id                 = object_to_resource(t_buffer);
-    auto buff = memory::memory_registry[id];
+    const auto id = object_to_resource(t_buffer);
+    auto buff     = memory::memory_registry[id];
     free(buff.m_ptr);
     memory::memory_registry.destroy_resource(id);
 }

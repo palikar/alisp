@@ -28,9 +28,18 @@
 namespace alisp
 {
 
-namespace env{ class Environment; }
-namespace env{ class Module; }
-namespace eval{ class Evaluator; }
+namespace env
+{
+class Environment;
+}
+namespace env
+{
+class Module;
+}
+namespace eval
+{
+class Evaluator;
+}
 
 using module_init_func = std::shared_ptr<env::Module> (*)(env::Environment *, eval::Evaluator *);
 

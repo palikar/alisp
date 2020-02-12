@@ -56,7 +56,7 @@ ALObjectPtr Fwith_cout(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     auto obj = eval->eval(t_obj->i(0));
     assert_int(obj);
     assert_stream(obj);
-    
+
     StreamsHelper::rebind_cout(obj);
 
     CoutRestore cout;
@@ -70,7 +70,7 @@ ALObjectPtr Fwith_cin(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
     auto obj = eval->eval(t_obj->i(0));
     assert_int(obj);
     assert_stream(obj);
-    
+
     StreamsHelper::rebind_cout(obj);
 
     CinRestore cout;
@@ -98,13 +98,14 @@ ALObjectPtr Fstream_write(ALObjectPtr t_obj, env::Environment *, eval::Evaluator
     auto str_obj = eval->eval(t_obj->i(1));
 
     auto stream = StreamsHelper::get_stream(stream_obj);
-    
-    make_visit(str_obj,
-               type(ALObjectType::INT_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_int(); },
-               type(ALObjectType::REAL_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_real(); },
-               type(ALObjectType::STRING_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_string(); },
-               type(ALObjectType::SYMBOL) >>= [stream](ALObjectPtr obj) { *stream << obj->to_string(); });
-    
+
+    make_visit(
+      str_obj,
+      type(ALObjectType::INT_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_int(); },
+      type(ALObjectType::REAL_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_real(); },
+      type(ALObjectType::STRING_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_string(); },
+      type(ALObjectType::SYMBOL) >>= [stream](ALObjectPtr obj) { *stream << obj->to_string(); });
+
     return Qt;
 }
 
@@ -114,14 +115,15 @@ ALObjectPtr Fstream_write_line(ALObjectPtr t_obj, env::Environment *, eval::Eval
     auto stream_obj = eval->eval(t_obj->i(0));
     assert_int(stream_obj);
     assert_stream(stream_obj);
-    
+
     auto str_obj = eval->eval(t_obj->i(1));
-    auto stream = StreamsHelper::get_stream(stream_obj);
-    make_visit(str_obj,
-               type(ALObjectType::INT_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_int(); },
-               type(ALObjectType::REAL_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_real(); },
-               type(ALObjectType::STRING_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_string(); },
-               type(ALObjectType::SYMBOL) >>= [stream](ALObjectPtr obj) { *stream << obj->to_string(); });
+    auto stream  = StreamsHelper::get_stream(stream_obj);
+    make_visit(
+      str_obj,
+      type(ALObjectType::INT_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_int(); },
+      type(ALObjectType::REAL_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_real(); },
+      type(ALObjectType::STRING_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_string(); },
+      type(ALObjectType::SYMBOL) >>= [stream](ALObjectPtr obj) { *stream << obj->to_string(); });
 
     (*stream) << '\n';
     return Qt;
@@ -139,16 +141,17 @@ ALObjectPtr Fstream_write_lines(ALObjectPtr t_obj, env::Environment *, eval::Eva
     auto str_objs = eval->eval(t_obj->i(1));
     assert_list(str_objs);
     auto eval_objs = eval_transform(eval, str_objs);
-    for (auto &el : *eval_objs) {
+    for (auto &el : *eval_objs)
+    {
 
-        make_visit(el,
-                   type(ALObjectType::INT_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_int(); },
-                   type(ALObjectType::REAL_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_real(); },
-                   type(ALObjectType::STRING_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_string(); },
-                   type(ALObjectType::SYMBOL) >>= [stream](ALObjectPtr obj) { *stream << obj->to_string(); });
-        
+        make_visit(
+          el,
+          type(ALObjectType::INT_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_int(); },
+          type(ALObjectType::REAL_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_real(); },
+          type(ALObjectType::STRING_VALUE) >>= [stream](ALObjectPtr obj) { *stream << obj->to_string(); },
+          type(ALObjectType::SYMBOL) >>= [stream](ALObjectPtr obj) { *stream << obj->to_string(); });
+
         (*stream) << '\n';
-
     }
     return Qt;
 }
@@ -192,7 +195,7 @@ ALObjectPtr Fstream_read_lines(ALObjectPtr t_obj, env::Environment *, eval::Eval
 
     ALObject::list_type lines{};
     while (stream->hasmore()) { lines.push_back(make_string((*stream).get_line())); }
-    
+
     return make_object(lines);
 }
 

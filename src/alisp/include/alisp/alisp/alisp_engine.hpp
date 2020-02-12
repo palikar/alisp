@@ -100,7 +100,6 @@ class LanguageEngine
 
 
   public:
-    
     LanguageEngine(std::vector<EngineSettings> t_setting    = {},
                    std::vector<std::string> t_cla           = {},
                    std::vector<std::string> t_extra_imports = {},

@@ -115,11 +115,11 @@ inline void assert_byte(ALObjectPtr obj)
 inline void assert_byte_array(ALObjectPtr obj)
 {
     if (!obj->is_list()) throw argument_error("Object cannot be intrepreted as byte-array.");
-    for (auto & el : *obj) {
+    for (auto &el : *obj)
+    {
         auto val = el->to_int();
         if (!(0 <= val and val <= 255)) throw argument_error("Object cannot be intrepreted as byte-array.");
     }
 }
 
 }  // namespace alisp
-

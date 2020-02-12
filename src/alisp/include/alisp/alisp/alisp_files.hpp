@@ -54,7 +54,7 @@ inline management::Registry<FileObj *, FILE_REGISTRY_TAG> files_registry;
 
 struct FileHelpers
 {
-    
+
   public:
     static ALObjectPtr open_file(ALObjectPtr t_file, ALObjectPtr t_output, ALObjectPtr t_input);
 

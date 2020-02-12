@@ -28,10 +28,15 @@ namespace dynmoduels
 {
 
 AlispDynModule::AlispDynModule(const std::string &t_module_name, const std::string_view &t_filename)
-    : m_dlmodule(t_filename), m_init_func(m_dlmodule, "init_" + t_module_name) {}
-
-std::shared_ptr<env::Module> AlispDynModule::init_dynmod(env::Environment *env, eval::Evaluator *eval) { return m_init_func.m_symbol(env, eval); }
-
+  : m_dlmodule(t_filename), m_init_func(m_dlmodule, "init_" + t_module_name)
+{
 }
 
+std::shared_ptr<env::Module> AlispDynModule::init_dynmod(env::Environment *env, eval::Evaluator *eval)
+{
+    return m_init_func.m_symbol(env, eval);
 }
+
+}  // namespace dynmoduels
+
+}  // namespace alisp

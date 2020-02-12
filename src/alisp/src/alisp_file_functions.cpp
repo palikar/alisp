@@ -38,7 +38,7 @@ ALObjectPtr Ffile_close(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *
     auto file = eval->eval(t_obj->i(0));
     assert_int(file);
     assert_file(file);
-    
+
     FileHelpers::close_file(file);
     return Qt;
 }

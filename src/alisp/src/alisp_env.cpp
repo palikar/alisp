@@ -88,8 +88,9 @@ void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
 
     NameValidator::validate_object_name(name);
 
-    if (scope.count(name)) {
-        scope.at(name) =  t_val;
+    if (scope.count(name))
+    {
+        scope.at(name) = t_val;
         // throw environment_error("Variable alredy exists: " + name);
     }
 
@@ -169,11 +170,11 @@ bool Environment::load_builtin_module(const std::string &t_module_name, eval::Ev
 
 void Environment::load_module(eval::Evaluator *eval, const std::string t_file, const std::string t_name)
 {
-    auto loaded_mod = m_loaded_modules.insert( { t_name,  std::make_unique<dynmoduels::AlispDynModule>(t_name, t_file)}).first->second.get();
-    auto mod_ptr = loaded_mod->init_dynmod(this, eval);
+    auto loaded_mod = m_loaded_modules.insert({ t_name, std::make_unique<dynmoduels::AlispDynModule>(t_name, t_file) }).first->second.get();
+    auto mod_ptr    = loaded_mod->init_dynmod(this, eval);
     define_module(t_name, std::move(mod_ptr));
     alias_module(t_name, t_name);
-    }
+}
 
 void Environment::stack_dump() const
 {

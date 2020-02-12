@@ -18,7 +18,7 @@
 #include "alisp/alisp/alisp_module_helpers.hpp"
 #include "alisp/utility/env.hpp"
 
-#include <stdlib.h> 
+#include <stdlib.h>
 
 namespace alisp
 {
@@ -31,9 +31,7 @@ ALObjectPtr get_evnvars()
 {
     ALObject::list_type list_env;
 
-    for (auto& [name, var] : utility::env_list()) {
-        list_env.push_back(make_object(name, var));
-    }
+    for (auto &[name, var] : utility::env_list()) { list_env.push_back(make_object(name, var)); }
 
     return make_object(list_env);
 }
@@ -49,7 +47,7 @@ ALObjectPtr Fget_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
 ALObjectPtr Fcheck_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(t_obj);
-    auto var= eval->eval(t_obj->i(0));
+    auto var = eval->eval(t_obj->i(0));
     assert_string(var);
 
     return utility::env_bool(var->to_string().c_str()) ? Qt : Qnil;
@@ -64,11 +62,11 @@ ALObjectPtr Fset_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     assert_string(val);
 
     utility::env_set(var->to_string(), val->to_string());
-    
+
     return Qt;
 }
 
-ALObjectPtr Flist_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator*)
+ALObjectPtr Flist_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
 {
     assert_size<0>(t_obj);
     return get_evnvars();
@@ -77,15 +75,13 @@ ALObjectPtr Flist_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator*)
 ALObjectPtr Fchwd(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
-    
+
     assert_size<1>(t_obj);
     auto path = eval->eval(t_obj->i(0));
     assert_string(path);
     const auto p = path->to_string();
 
-    if (!fs::exists(p)) {
-        return Qnil;
-    }
+    if (!fs::exists(p)) { return Qnil; }
 
     fs::current_path(p);
 
@@ -98,15 +94,15 @@ ALObjectPtr Fsystem(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
     auto command = eval->eval(t_obj->i(0));
     assert_string(command);
 
-    if (system(command->to_string().c_str())) {
-        return Qt;
-    } else {
+    if (system(command->to_string().c_str())) { return Qt; }
+    else
+    {
         return Qnil;
     };
 }
 
 
-}
+}  // namespace detail
 
 env::ModulePtr init_system(env::Environment *, eval::Evaluator *)
 {

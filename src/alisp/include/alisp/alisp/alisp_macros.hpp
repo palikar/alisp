@@ -19,7 +19,7 @@
 #ifdef ALISP_HAS_DECLSPEC
 #define ALISP_EXPORT extern "C" __declspec(dllexport)
 #else
-#define ALISP_EXPORT extern "C" 
+#define ALISP_EXPORT extern "C"
 #endif
 
 
@@ -33,13 +33,13 @@
     inline auto var = env::Environment::g_prime_values.insert({ sym_name, __VA_ARGS__ }).first->second
 
 
-#define DEFUN(name, sym, doc)                                           \
-    extern ALObjectPtr F##name(ALObjectPtr, env::Environment *, eval::Evaluator *); \
+#define DEFUN(name, sym, doc)                                                                                      \
+    extern ALObjectPtr F##name(ALObjectPtr, env::Environment *, eval::Evaluator *);                                \
     inline auto P##name = env::Environment::g_global_symbol_table.insert({ sym, make_symbol(sym) }).first->second; \
     inline auto Q##name = env::Environment::g_prime_values.insert({ sym, make_prime(&F##name, sym, doc) }).first->second
 
 
-#define APP_FUNCTION_(NAME, FUN, TYPE)                                  \
+#define APP_FUNCTION_(NAME, FUN, TYPE)                                          \
     ALObjectPtr NAME(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl) \
     {                                                                           \
         assert_size<1>(obj);                                                    \
