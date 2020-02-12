@@ -19,6 +19,7 @@ matrix:
             - lcov
             - gcovr
             - catch
+            - valgrind
 
     - name: "gcc 9 Debug (Cov)"
       os: linux
@@ -36,24 +37,7 @@ matrix:
             - lcov
             - gcovr
             - catch
-
-    - name: "clang 7 Debug"
-      os: linux
-      sudo: false
-      env: COVERAGE=0 CXX_EXE=/usr/bin/clang++-7  CC_EXE=/usr/bin/clang++-7 CMAKE_OPTS="-DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -DENABLE_TESTING=ON -DBUILD_EXAMPLES=ON -DENABLE_COVERAGE=ON -DVALGRIND_CHECKS=ON"
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - libx11-dev
-            - libxrandr-dev
-            - libudev-dev
-            - clang
-            - lcov
-            - gcovr
-            - catch
-
+            - valgrind
 install:
   pip install --user conan cmake
   

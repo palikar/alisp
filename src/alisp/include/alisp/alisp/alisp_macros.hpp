@@ -35,13 +35,13 @@
 
 #define DEFUN(name, sym, doc)                                                                                      \
     extern ALObjectPtr F##name(ALObjectPtr, env::Environment *, eval::Evaluator *);                                \
-    inline auto P##name = env::Environment::g_global_symbol_table.insert({ sym, make_symbol(sym) }).first->second; \
-    inline auto Q##name = env::Environment::g_prime_values.insert({ sym, make_prime(&F##name, sym, doc) }).first->second
+    inline auto Q##name = env::Environment::g_global_symbol_table.insert({ sym, make_symbol(sym) }).first->second; \
+    inline auto P##name = env::Environment::g_prime_values.insert({ sym, make_prime(&F##name, sym, doc) }).first->second
 
 
-#define APP_FUNCTION_(NAME, FUN, TYPE)                                          \
+#define APP_FUNCTION_(NAME, FUN, TYPE)                                  \
     ALObjectPtr NAME(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl) \
-    {                                                                           \
+    {                                                                   \
         assert_size<1>(obj);                                                    \
         auto num = evl->eval(obj->i(0));                                        \
         assert_number(num);                                                     \

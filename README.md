@@ -1,4 +1,5 @@
-[![Documentation Status](https://readthedocs.org/projects/alisp/badge/?version=latest)](https://alisp.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.org/palikar/alisp.svg?branch=master)](https://travis-ci.org/palikar/alisp)
+    [![Documentation Status](https://readthedocs.org/projects/alisp/badge/?version=latest)](https://alisp.readthedocs.io/en/latest/?badge=latest)
     [![CodeFactor](https://www.codefactor.io/repository/github/palikar/alisp/badge)](https://www.codefactor.io/repository/github/palikar/alisp)
     [![Codacy Badge](https://api.codacy.com/project/badge/Grade/283df2678f0a4eaeb93c35b48ed0c483)](https://app.codacy.com/manual/palikar/alisp?utm_source=github.com&utm_medium=referral&utm_content=palikar/alisp&utm_campaign=Badge_Grade_Dashboard)
     [![ScoreMe](http://readme-score-api.herokuapp.com/score.svg?url=https%3a%2f%2fgithub.com%2fpalikar%2fctgraph%2f)](http://clayallsopp.github.io/readme-score?url=https%3a%2f%2fgithub.com%2fpalikar%2fctgraph%2f)
