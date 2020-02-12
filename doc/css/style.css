@@ -1,0 +1,29 @@
+kbd {
+    padding: 3px 5px;
+    border: solid 1px #ccc;
+    background-color: #fcfcfc;
+    border-radius: 3px;
+    box-shadow: inset 0 -1px 0 #bbb;
+    display: inline-block;
+}
+
+code {
+    font-size: 90%;
+}
+
+
+body {
+    font-size: 17pt !;
+}
+
+
+div.autodoc-docstring {
+    padding-left: 20px;
+    margin-bottom: 30px;
+    border-left: 5px solid rgba(230, 230, 230);
+}
+
+div.autodoc-members {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
