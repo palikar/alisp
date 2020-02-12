@@ -30,11 +30,12 @@
 
 (defun dump-doc-list (&rest sym)
   (dolist (el sym)    
-    (print "#### ")
+    (print "> ##### ")
     (bold (prop-get el "--name--" ))
-    (print ": ")
+    (print " : ")
     (let ((lines (string-splitlines (prop-get el "--doc--" ))))
       (print "*" (nth lines 0) "*" "\n")
+      (print "Aliquam erat volutpat.  Nunc eleifend leo vitae magna.  In id erat non orci commodo lobortis.  Proin neque massa, cursus ut, gravida ut, lobortis eget, lacus.  Sed diam.  Praesent fermentum tempor tellus.  Nullam tempus.  Mauris ac felis vel velit tristique imperdiet.  Donec at pede.  Etiam vel neque nec dui dignissim bibendum.  Vivamus id enim.  Phasellus neque orci, porta a, aliquet quis, semper a, massa.  Phasellus purus.  Pellentesque tristique imperdiet tortor.  Nam euismod tellus id erat.")
       (mapc println (tail lines)))
     (print "\n")))
 
