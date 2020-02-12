@@ -196,12 +196,12 @@ DEFUN(close_stream, "stream-close",
       R"((stream-close STREAM))");
 // DEFUN(with_stream, "with-streaRm(())");
 DEFUN(with_cout, "with-cout",
-      R"((wiht-cout STREAM))");
+      R"((with-cout STREAM))");
 DEFUN(with_cin, "with-cin",
-      R"((wiht-cin STREAM))");
+      R"((with-cin STREAM))");
 
 DEFUN(stream_content, "stream-content",
-      R"(((with-cout))");
+      R"(((content STRREAM))");
 
 DEFUN(stream_write, "stream-write",
       R"((stream-write VALUE))");
@@ -248,7 +248,7 @@ DEFUN(prop_get, "prop-get",
 DEFUN(prop_set, "prop-set",
       R"((prop-set SYM PROPERTY VALUE))");
 DEFUN(prop_list, "prop-list",
-      R"((prop-get SYM))");
+      R"((prop-list SYM))");
 
 
 /*  ____               _ _           _             */
@@ -341,7 +341,7 @@ DEFUN(string_contains, "string-contains",
       R"((string-contains STRING SUBSTRING))");
 DEFUN(string_endswith, "string-endswith",
       R"((string-contains STRING SUFFIX))");
-DEFUN(string_startswith, "string-starts-with",
+DEFUN(string_startswith, "string-startswith",
       R"((string-contains STRING PREFIX))");
 DEFUN(string_length, "string-length",
       R"((string-length STRING))");

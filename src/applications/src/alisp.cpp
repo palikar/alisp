@@ -209,7 +209,6 @@ int main(int argc, char *argv[])
     return interactive(alisp_engine);
 }
 
-
 int interactive(alisp::LanguageEngine &alisp_engine)
 {
     namespace fs = std::filesystem;
