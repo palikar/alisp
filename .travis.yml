@@ -1,0 +1,77 @@
+language: cpp
+
+matrix:
+  include:
+    
+    - name: "gcc 9 Debug "
+      os: linux
+      sudo: false
+      env: COVERAGE=0 CXX_EXE=/usr/bin/g++-9 CC_EXE=/usr/bin/gcc-9 CMAKE_OPTS="-DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -DENABLE_TESTING=ON -DBUILD_EXAMPLES=ON -DENABLE_COVERAGE=ON -DVALGRIND_CHECKS=ON"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - libx11-dev
+            - libxrandr-dev
+            - libudev-dev
+            - g++-9
+            - lcov
+            - gcovr
+            - catch
+
+    - name: "gcc 9 Debug (Cov)"
+      os: linux
+      sudo: false
+      env: COVERAGE=1 CXX_EXE=/usr/bin/g++-9 CC_EXE=/usr/bin/gcc-9 CMAKE_OPTS="-DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -DENABLE_TESTING=ON -DBUILD_EXAMPLES=ON -DENABLE_COVERAGE=ON -DVALGRIND_CHECKS=ON"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - libx11-dev
+            - libxrandr-dev
+            - libudev-dev
+            - g++-9
+            - lcov
+            - gcovr
+            - catch
+
+    - name: "clang 7 Debug"
+      os: linux
+      sudo: false
+      env: COVERAGE=0 CXX_EXE=/usr/bin/clang++-7  CC_EXE=/usr/bin/clang++-7 CMAKE_OPTS="-DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON -DENABLE_TESTING=ON -DBUILD_EXAMPLES=ON -DENABLE_COVERAGE=ON -DVALGRIND_CHECKS=ON"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - libx11-dev
+            - libxrandr-dev
+            - libudev-dev
+            - clang
+            - lcov
+            - gcovr
+            - catch
+
+install:
+  pip install --user conan cmake
+  
+script:
+  - $CXX_EXE --version
+  - which cmake
+  - cmake --version
+  - export CXX=$CXX_EXE
+  - export CC=$CC_EXE
+  - echo $CXX
+  - echo $CMAKE_OPTS
+  - $CXX --version
+  - mkdir build
+  - cd build
+  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan 
+  - cmake  $CMAKE_OPTS ..
+  - VERBOSE=1 cmake --build . -- -j2
+  - make test
+  - make valgrind_checks
+  - if [ "${COVERAGE}" = "1" ]; then make alisp_coverage_xml ; fi
+  
