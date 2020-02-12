@@ -1,5 +1,6 @@
 site_name: "Alisp: Lisp intrpeter written in C++"
 site_author: "Stanislav Arnaudov"
+site_favicon: favicon.ico
 repo_url: https://github.com/palikar/alisp
 edit_uri: edit/master/doc/
 copyright: "Copyright (C) 2019-2020 Stanislav Arnaudoc"
@@ -12,7 +13,6 @@ nav:
 - Streams Manipulation: streams_doc.md
 markdown_extensions:
   - admonition
-  - mkautodoc
 extra_css:
   - css/extra.css
 theme: readthedocs
