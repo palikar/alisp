@@ -789,6 +789,27 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
         CHECK(res->i(2)->to_int() == 4);
     }
 
+    SECTION("contains")
+    {
+        std::string input{ "(contains '(1 2 3 4) 3)" };
+        auto par_res = pars.parse(input, "__TEST__");
+
+        auto res = eval.eval(par_res[0]);
+
+        CHECK( is_truthy(res) );   
+    }
+
+    SECTION("contains [2]")
+    {
+        std::string input{ "(contains '(1 2 3 4) 7)" };
+        auto par_res = pars.parse(input, "__TEST__");
+
+        auto res = eval.eval(par_res[0]);
+
+        CHECK( is_falsy(res) );
+        
+    }
+
     SECTION("delete")
     {
         std::string input{ "(delete '(1 2 3 4) 3)" };

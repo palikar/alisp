@@ -18,7 +18,6 @@ target_include_directories(alisp_language_test
     PRIVATE ../src
     )
 
-target_compile_definitions(alisp_language_test PUBLIC LINK_MODULES)
 target_compile_definitions(alisp_language_test PUBLIC AL_PRELUDE_DIR=\"${PRELUDE_DIR}\")
 
 target_link_libraries(alisp_language_test
@@ -28,9 +27,6 @@ target_link_libraries(alisp_language_test
     dl
     PUBLIC
     alisp_language
-    alisp_util
-    alisp_streams
-    alisp_management
     )
 
 target_link_libraries(alisp_language_test PRIVATE alisp_fileio

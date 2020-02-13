@@ -35,6 +35,8 @@ option(BUILD_EXAMPLES "Enable targets for running the example scripts" FALSE)
 option(MANUAL_MEMORY "Use raw pointers instead of smart ones" FALSE)
 option(VALGRIND_CHECKS "Enable Valgrind tools to perform checks on the application " FALSE)
 option(RUN_PERFORMANCE_TESTS "Build support for the performance tests" FALSE)
+option(DISABLE_DYN_MODULES "Dont't build the dynamic modules" FALSE)
+option(DISABLE_DEFAULT_MODULES "Dont't build the builtin modules" FALSE)
 
 
 set(TIME_CHECK_SAMPLES 10 CACHE STRING "How many time to perform the timing check") 
