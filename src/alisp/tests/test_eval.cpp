@@ -402,6 +402,24 @@ TEST_CASE("Evaluator Test [math]", "[eval]")
         CHECK(res->to_int() == -1);
     }
 
+    SECTION("max [double]")
+    {
+
+        std::string input{ "(max 10.8 3.1 -1.0 5.4)" };
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        CHECK(res->to_real() == 10.8);
+    }
+
+    SECTION("min [double]")
+    {
+
+        std::string input{ "(min 10.0 3.0 -1.0 5.0)" };
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        CHECK(res->to_real() == -1.0);
+    }
+
     SECTION("+ real")
     {
         std::string input{ "(+ 10 10.4)" };
@@ -520,6 +538,9 @@ TEST_CASE("Evaluator Test [printing]", "[eval]")
         input = "(print 1.2)";
         eval.eval(pars.parse(input, "__TEST__")[0]);
 
+        input = "(print 'nil)";
+        eval.eval(pars.parse(input, "__TEST__")[0]);
+
         input = "(print \"sadasd\")";
         eval.eval(pars.parse(input, "__TEST__")[0]);
 
@@ -534,12 +555,15 @@ TEST_CASE("Evaluator Test [printing]", "[eval]")
         eval.eval(pars.parse(input, "__TEST__")[0]);
     }
 
-    SECTION("println,print")
+    SECTION("eprintln, eprint")
     {
         std::string input{ "(dump 1)" };
         eval.eval(pars.parse(input, "__TEST__")[0]);
 
         input = "(dump 1.2)";
+        eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        input = "(eprint 'nil)";
         eval.eval(pars.parse(input, "__TEST__")[0]);
 
         input = "(dump \"sadasd\")";
@@ -559,6 +583,51 @@ TEST_CASE("Evaluator Test [printing]", "[eval]")
         eval.eval(pars.parse(input, "__TEST__")[0]);
     }
 
+    SECTION("dumpcredits, dumplicense")
+    {
+        std::string input{ "(dumplicense)" };
+        eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        input = "(dumpcredits)";
+        eval.eval(pars.parse(input, "__TEST__")[0]);
+    }
+
+
+    std::cout.clear();
+}
+
+TEST_CASE("Evaluator Test [e-printing]", "[eval]")
+{
+    using namespace alisp;
+
+    env::Environment env;
+    auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto &pars = *p;
+    eval::Evaluator eval(env, p.get());
+
+    std::cout.setstate(std::ios_base::failbit);
+
+    SECTION("println,print")
+    {
+        std::string input{ "(eprint 1)" };
+        eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        input = "(eprint 1.2)";
+        eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        input = "(eprint \"sadasd\")";
+        eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        input = "(eprintln 1.2)";
+        eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        input = "(eprintln \"sadasd\")";
+        eval.eval(pars.parse(input, "__TEST__")[0]);
+
+
+        input = "(println 1.2)";
+        eval.eval(pars.parse(input, "__TEST__")[0]);
+    }
 
     std::cout.clear();
 }
@@ -674,6 +743,27 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
         // CHECK ( res->i(1)->to_int() == 3 );
         // CHECK ( res->i(2)->to_int() == 4 );
         // CHECK ( res->i(3)->to_int() == 5 );
+    }
+
+    SECTION("mapcar")
+    {
+        std::string input{ "(mapcar (lambda (x) (+ 1 x)) '(1 2 3 4))" };
+        auto par_res = pars.parse(input, "__TEST__");
+
+        auto res = eval.eval(par_res[0]);
+
+        CHECK(is_truthy(res));
+
+        CHECK ( res->is_list() );
+        CHECK ( res->i(0)->is_int() );
+        CHECK ( res->i(1)->is_int() );
+        CHECK ( res->i(2)->is_int() );
+        CHECK ( res->i(3)->is_int() );
+
+        CHECK ( res->i(0)->to_int() == 2 );
+        CHECK ( res->i(1)->to_int() == 3 );
+        CHECK ( res->i(2)->to_int() == 4 );
+        CHECK ( res->i(3)->to_int() == 5 );
     }
 
     SECTION("car")
@@ -797,6 +887,17 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
         auto res = eval.eval(par_res[0]);
 
         CHECK( is_truthy(res) );   
+    }
+
+    SECTION("contains")
+    {
+        std::string input{ "(length '(1 2 3 4 5))" };
+        auto par_res = pars.parse(input, "__TEST__");
+
+        auto res = eval.eval(par_res[0]);
+
+        CHECK( res->is_int() );   
+        CHECK( res->to_int() == 5 );   
     }
 
     SECTION("contains [2]")

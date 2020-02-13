@@ -32,4 +32,6 @@ add_dynmodule(alisp_module_random random src/random.cpp)
 add_dynmodule(alisp_module_re re src/re.cpp)
 add_dynmodule(alisp_module_xml xml src/xml.cpp)
 
-
+if(ENABLE_TESTING)
+    add_subdirectory(tests)
+endif()

@@ -231,6 +231,21 @@ TEST_CASE("Common Test [equal]", "[equal]")
     }
 }
 
+TEST_CASE("Common Resoureces [to resource]", "[resource]")
+{
+    using namespace alisp;
+
+
+    SECTION("simple equal")
+    {
+
+        CHECK( 32 == object_to_resource(make_int(32)) );
+        CHECK( 32 == resource_to_object(32)->to_int() );
+        
+        
+    }
+}
+
 
 TEST_CASE("Common Test [print]", "[common]")
 {
@@ -259,3 +274,4 @@ TEST_CASE("Common Test [print]", "[common]")
         std::cout.clear();
     }
 }
+
