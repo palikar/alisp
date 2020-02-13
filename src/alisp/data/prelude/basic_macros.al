@@ -23,6 +23,7 @@
      (stream-close str)
      (file-close file)))
 
+
 ;; (defmacro std-redirect (file &rest body)
 ;;   `(let* ((file (file-open file :out))
 ;;           (str (stream :from-file file)))

@@ -64,7 +64,7 @@ TEST_CASE("Props Test [list]", "[prop]")
 
     std::cout.setstate(std::ios_base::failbit);
 
-    std::string input{ "(defvar s 42) (prop-set s \"p\" 12) (assert (string-equals \"p\" (nth (prop-list s) 1)))" };
+    std::string input{ "(defvar s 42) (prop-set s \"p\" 12) (assert (contains (prop-list s) \"p\"))" };
     CHECK( engine.eval_statement(input).first );
 
     std::cout.clear();

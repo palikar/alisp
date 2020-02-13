@@ -149,6 +149,21 @@ ALObjectPtr Fnth(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list->i(static_cast<ALObject::list_type::size_type>(index->to_int()));
 }
 
+ALObjectPtr Fcontains(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<2>(obj);
+    auto list = eval->eval(obj->i(0));
+    assert_list(list);
+    auto element = eval->eval(obj->i(1));
+
+    for (auto& el : *list) {
+        if (equal(el, element)) { return Qt; }
+    }
+
+
+    return Qnil;
+}
+
 // inplace
 ALObjectPtr Fdelete(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {

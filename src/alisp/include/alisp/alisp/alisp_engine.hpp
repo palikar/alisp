@@ -150,7 +150,6 @@ class LanguageEngine
 
         if (fs::is_directory(detail::prelude_directory))
         {
-
             for (auto &al_file : fs::directory_iterator(detail::prelude_directory)) { eval_file(al_file, false); }
         }
 

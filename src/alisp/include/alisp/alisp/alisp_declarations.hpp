@@ -135,6 +135,7 @@ DEFUN(remove, "remove", R"((remove LIST ELEMENT))");
 DEFUN(nth, "nth", R"((nth LIST INDEX))");
 DEFUN(range, "range", R"((range FROM TO))");
 DEFUN(length, "length", R"((length LIST))");
+DEFUN(contains, "contains", R"((contains LIST ELEMENT))");
 
 
 /*  ____  _                                 */
