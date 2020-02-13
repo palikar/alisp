@@ -37,7 +37,7 @@ TEST_CASE("Xml Test", "[xml]")
     using namespace alisp;
 
     env::Environment env;
-    auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     eval::Evaluator eval(env, p.get());
 
     auto xml = init_xml(&env, &eval);

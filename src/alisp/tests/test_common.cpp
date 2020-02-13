@@ -239,10 +239,8 @@ TEST_CASE("Common Resoureces [to resource]", "[resource]")
     SECTION("simple equal")
     {
 
-        CHECK( 32 == object_to_resource(make_int(32)) );
-        CHECK( 32 == resource_to_object(32)->to_int() );
-        
-        
+        CHECK(32 == object_to_resource(make_int(32)));
+        CHECK(32 == resource_to_object(32)->to_int());
     }
 }
 
@@ -274,4 +272,3 @@ TEST_CASE("Common Test [print]", "[common]")
         std::cout.clear();
     }
 }
-

@@ -36,7 +36,7 @@ TEST_CASE("Casting Test [int]", "[cast]")
     std::cout.setstate(std::ios_base::failbit);
 
     std::string input{ "(assert (== 12 (parse-int \"12\") ))" };
-    CHECK( engine.eval_statement(input).first );
+    CHECK(engine.eval_statement(input).first);
 
     std::cout.clear();
 }
@@ -49,7 +49,7 @@ TEST_CASE("Casting Test [float]", "[cast]")
     std::cout.setstate(std::ios_base::failbit);
 
     std::string input{ "(assert (== 12.2 (parse-float \"12.2\") ))" };
-    CHECK( engine.eval_statement(input).first );
+    CHECK(engine.eval_statement(input).first);
 
     std::cout.clear();
 }
@@ -66,8 +66,8 @@ TEST_CASE("Casting Test [string]", "[cast]")
  (assert (string-equals "12"   (to-string 12)))
  (assert (string-equals "12"   (to-string "12")))
 )b";
-    
-    CHECK( engine.eval_statement(input).first );
+
+    CHECK(engine.eval_statement(input).first);
 
     std::cout.clear();
 }

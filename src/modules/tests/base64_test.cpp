@@ -37,7 +37,7 @@ TEST_CASE("Base64 Test", "[base64]")
     using namespace alisp;
 
     env::Environment env;
-    auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     eval::Evaluator eval(env, p.get());
 
     auto base64 = init_base64(&env, &eval);

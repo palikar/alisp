@@ -37,7 +37,7 @@ ALObjectPtr Fstring_equals(ALObjectPtr obj, env::Environment *, eval::Evaluator 
     assert_string(str_1);
     assert_string(str_2);
 
-    return str_1->to_string().compare(str_2->to_string()) == 0 ?  Qt : Qnil;
+    return str_1->to_string().compare(str_2->to_string()) == 0 ? Qt : Qnil;
 }
 
 

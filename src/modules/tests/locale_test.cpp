@@ -37,7 +37,7 @@ TEST_CASE("Locale Test", "[locale]")
     using namespace alisp;
 
     env::Environment env;
-    auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     eval::Evaluator eval(env, p.get());
 
     auto locale = init_locale(&env, &eval);

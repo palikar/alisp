@@ -156,7 +156,8 @@ ALObjectPtr Fcontains(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
     assert_list(list);
     auto element = eval->eval(obj->i(1));
 
-    for (auto& el : *list) {
+    for (auto &el : *list)
+    {
         if (equal(el, element)) { return Qt; }
     }
 

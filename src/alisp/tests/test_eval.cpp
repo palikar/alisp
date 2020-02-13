@@ -754,16 +754,16 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
 
         CHECK(is_truthy(res));
 
-        CHECK ( res->is_list() );
-        CHECK ( res->i(0)->is_int() );
-        CHECK ( res->i(1)->is_int() );
-        CHECK ( res->i(2)->is_int() );
-        CHECK ( res->i(3)->is_int() );
+        CHECK(res->is_list());
+        CHECK(res->i(0)->is_int());
+        CHECK(res->i(1)->is_int());
+        CHECK(res->i(2)->is_int());
+        CHECK(res->i(3)->is_int());
 
-        CHECK ( res->i(0)->to_int() == 2 );
-        CHECK ( res->i(1)->to_int() == 3 );
-        CHECK ( res->i(2)->to_int() == 4 );
-        CHECK ( res->i(3)->to_int() == 5 );
+        CHECK(res->i(0)->to_int() == 2);
+        CHECK(res->i(1)->to_int() == 3);
+        CHECK(res->i(2)->to_int() == 4);
+        CHECK(res->i(3)->to_int() == 5);
     }
 
     SECTION("car")
@@ -886,7 +886,7 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
 
         auto res = eval.eval(par_res[0]);
 
-        CHECK( is_truthy(res) );   
+        CHECK(is_truthy(res));
     }
 
     SECTION("contains")
@@ -896,8 +896,8 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
 
         auto res = eval.eval(par_res[0]);
 
-        CHECK( res->is_int() );   
-        CHECK( res->to_int() == 5 );   
+        CHECK(res->is_int());
+        CHECK(res->to_int() == 5);
     }
 
     SECTION("contains [2]")
@@ -907,8 +907,7 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
 
         auto res = eval.eval(par_res[0]);
 
-        CHECK( is_falsy(res) );
-        
+        CHECK(is_falsy(res));
     }
 
     SECTION("delete")

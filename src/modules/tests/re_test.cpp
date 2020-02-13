@@ -37,7 +37,7 @@ TEST_CASE("Re Test", "[re]")
     using namespace alisp;
 
     env::Environment env;
-    auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     eval::Evaluator eval(env, p.get());
 
     auto re = init_re(&env, &eval);

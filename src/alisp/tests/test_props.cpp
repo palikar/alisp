@@ -36,7 +36,7 @@ TEST_CASE("Props Test [get]", "[prop]")
     std::cout.setstate(std::ios_base::failbit);
 
     std::string input{ "(assert (string-equals \"println\" (prop-get  println \"--name--\")))" };
-    CHECK( engine.eval_statement(input).first );
+    CHECK(engine.eval_statement(input).first);
 
     std::cout.clear();
 }
@@ -50,11 +50,10 @@ TEST_CASE("Props Test [set]", "[prop]")
     std::cout.setstate(std::ios_base::failbit);
 
     std::string input{ "(defvar s 42) (prop-set s \"p\" 12) (assert (== 12 (prop-get s \"p\")))" };
-    CHECK( engine.eval_statement(input).first );
+    CHECK(engine.eval_statement(input).first);
 
     std::cout.clear();
 }
-
 
 
 TEST_CASE("Props Test [list]", "[prop]")
@@ -65,8 +64,7 @@ TEST_CASE("Props Test [list]", "[prop]")
     std::cout.setstate(std::ios_base::failbit);
 
     std::string input{ "(defvar s 42) (prop-set s \"p\" 12) (assert (contains (prop-list s) \"p\"))" };
-    CHECK( engine.eval_statement(input).first );
+    CHECK(engine.eval_statement(input).first);
 
     std::cout.clear();
 }
-
