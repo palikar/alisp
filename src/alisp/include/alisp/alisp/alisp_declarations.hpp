@@ -89,6 +89,7 @@ DEFUN(backquote, "backquote", R"((`LIST))");
 DEFUN(signal, "signal", R"((signal SYMBOL LIST))");
 DEFUN(return, "return", R"((return [VALUE]))");
 DEFUN(exit, "exit", R"((exit [VALUE]))");
+DEFUN(assert, "assert", R"((assert FORM))");
 
 // /*  ____       _       _   _              */
 // /* |  _ \ _ __(_)_ __ | |_(_)_ __   __ _  */

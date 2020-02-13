@@ -465,6 +465,23 @@ ALObjectPtr Fexit(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     return Qnil;
 }
 
+
+ALObjectPtr Fassert(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+{
+    assert_size<1>(obj);
+    auto val = evl->eval(obj->i(0));
+
+    if (is_falsy(val)) {
+        throw signal_exception(
+            make_symbol("assert"),
+            make_object(make_string("Assertion failed."),
+                        make_string(dump(obj->i(0))),
+                        make_string(dump(val))));
+    }
+    return Qt;
+}
+
+
 ALObjectPtr Freturn(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     assert_size<1>(obj);
