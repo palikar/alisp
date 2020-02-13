@@ -2,6 +2,7 @@
     [![Documentation Status](https://readthedocs.org/projects/alisp/badge/?version=latest)](https://alisp.readthedocs.io/en/latest/?badge=latest)
     [![CodeFactor](https://www.codefactor.io/repository/github/palikar/alisp/badge)](https://www.codefactor.io/repository/github/palikar/alisp)
     [![Codacy Badge](https://api.codacy.com/project/badge/Grade/283df2678f0a4eaeb93c35b48ed0c483)](https://app.codacy.com/manual/palikar/alisp?utm_source=github.com&utm_medium=referral&utm_content=palikar/alisp&utm_campaign=Badge_Grade_Dashboard)
+    [![codecov](https://codecov.io/gh/palikar/alisp/branch/master/graph/badge.svg)](https://codecov.io/gh/palikar/alisp)
     [![ScoreMe](http://readme-score-api.herokuapp.com/score.svg?url=https%3a%2f%2fgithub.com%2fpalikar%2fctgraph%2f)](http://clayallsopp.github.io/readme-score?url=https%3a%2f%2fgithub.com%2fpalikar%2fctgraph%2f)
     [![Licence](https://img.shields.io/github/license/palikar/alisp)](https://github.com/palikar/alisp/)
     [![Version](https://img.shields.io/github/v/tag/palikar/alisp)](https://github.com/palikar/alisp/)
