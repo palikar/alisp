@@ -60,6 +60,6 @@ script:
   - make test
   - make valgrind_checks
   - make alisp_coverage_xml
-  - if [ "${COVERAGE}" = "1" ]; then bash <(curl -s https://codecov.io/bash)  -f graph_coverage_xml.xml -t 23fdf1fc-d0ee-4005-94b0-14f135f261f9 ; fi
+  - if [ "${COVERAGE}" = "1" ]; then bash <(curl -s https://codecov.io/bash)  -f alisp_coverage_xml.xml -t 09845e6b-3f0a-47ad-843b-aa13c58aa4b5 ; fi
  
   
