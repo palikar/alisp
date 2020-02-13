@@ -163,6 +163,7 @@ class LanguageEngine
         try
         {
             do_eval(command, "__EVAL__", true);
+            return { true, 0 };
         }
         catch (al_exit &ex)
         {
@@ -171,6 +172,7 @@ class LanguageEngine
         catch (...)
         {
             handle_errors_lippincott<false>();
+            return { false, 0 };
         }
         return { true, 0 };
     }
