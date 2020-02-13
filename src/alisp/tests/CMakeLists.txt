@@ -7,6 +7,7 @@ add_executable(alisp_language_test
     test_env.cpp
     test_common.cpp
     test_eval.cpp
+    test_props.cpp
     test_algs.cpp
     test_engine.cpp
     ${LAN_SOURCES})

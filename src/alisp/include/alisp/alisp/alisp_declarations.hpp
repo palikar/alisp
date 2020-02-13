@@ -245,6 +245,7 @@ DEFUN(round, "round", R"((round VALUE PLACES))");
 /* |____/ \__|_|  |_|_| |_|\__, |___/ */
 /*                         |___/      */
 
+DEFUN(string_equals, "string-equals", R"((string-equals STRING1 STRING2))");
 DEFUN(string_contains, "string-contains", R"((string-contains STRING SUBSTRING))");
 DEFUN(string_endswith, "string-endswith", R"((string-contains STRING SUFFIX))");
 DEFUN(string_startswith, "string-startswith", R"((string-contains STRING PREFIX))");

@@ -29,6 +29,18 @@
 namespace alisp
 {
 
+ALObjectPtr Fstring_equals(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<2>(obj);
+    auto str_1 = eval->eval(obj->i(0));
+    auto str_2 = eval->eval(obj->i(1));
+    assert_string(str_1);
+    assert_string(str_2);
+
+    return str_1->to_string().compare(str_2->to_string()) == 0 ?  Qt : Qnil;
+}
+
+
 ALObjectPtr Fstring_contains(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);

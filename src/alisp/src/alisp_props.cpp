@@ -39,7 +39,7 @@ ALObjectPtr Fprop_set(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
     assert_string(prop);
     auto &prop_name = prop->to_string();
 
-    if (!target->prop_exists(prop_name)) { return Qnil; }
+    // if (!target->prop_exists(prop_name)) { return Qnil; }
 
     target->set_prop(prop_name, eval->eval(obj->i(2)));
 
