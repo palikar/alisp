@@ -365,6 +365,16 @@ TEST_CASE("Evaluator Test [math]", "[eval]")
 
         CHECK(res->to_real() == 16);
     }
+
+    SECTION("round")
+    {
+
+        std::string input{ "(round 2.123 2)" };
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        CHECK(res->to_real() == 2.12);
+    }
+
     SECTION("mod")
     {
 
@@ -372,6 +382,24 @@ TEST_CASE("Evaluator Test [math]", "[eval]")
         auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
 
         CHECK(res->to_int() == 1);
+    }
+
+    SECTION("max")
+    {
+
+        std::string input{ "(max 10 3 -1 5)" };
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        CHECK(res->to_int() == 10);
+    }
+
+    SECTION("min")
+    {
+
+        std::string input{ "(min 10 3 -1 5)" };
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        CHECK(res->to_int() == -1);
     }
 
     SECTION("+ real")

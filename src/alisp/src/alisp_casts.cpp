@@ -78,7 +78,10 @@ ALObjectPtr Fto_string(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
       is_function() >>= [](ALObjectPtr obj) { return make_string(obj->get_prop("--name--")->to_string()); },
       is_char() >>= [](ALObjectPtr obj) { return make_string(std::string(1, char(obj->to_int()))); },
       type(ALObjectType::INT_VALUE) >>= [](ALObjectPtr obj) { return make_string(std::to_string(obj->to_int())); },
-      type(ALObjectType::REAL_VALUE) >>= [](ALObjectPtr obj) { return make_string(std::to_string(obj->to_real())); },
+      type(ALObjectType::REAL_VALUE) >>= [](ALObjectPtr obj) {
+                                             std::stringstream ss;
+                                             ss << obj->to_real();
+                                             return make_string(ss.str());},
       type(ALObjectType::STRING_VALUE) >>= [](ALObjectPtr obj) { return make_string(obj->to_string()); },
       type(ALObjectType::SYMBOL) >>= [](ALObjectPtr obj) { return make_string(obj->to_string()); },
       any_pattern() >>= [](ALObjectPtr) { return Qnil; }
