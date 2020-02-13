@@ -1,4 +1,4 @@
-macro(add_module NAME SRC)    
+macro(add_module NAME SRC)
     add_library(${NAME} ${SRC})
 
     target_include_directories(${NAME}
