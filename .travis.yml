@@ -2,7 +2,6 @@ language: cpp
 
 matrix:
   include:
-    
     - name: "gcc 9 Debug "
       os: linux
       sudo: false
@@ -11,7 +10,9 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
+            - deadsnakes 
           packages:
+            - python3.7
             - libx11-dev
             - libxrandr-dev
             - libudev-dev
@@ -20,7 +21,6 @@ matrix:
             - gcovr
             - catch
             - valgrind
-
     - name: "gcc 9 Debug (Cov)"
       os: linux
       sudo: false
@@ -38,8 +38,11 @@ matrix:
             - gcovr
             - catch
             - valgrind
+
 install:
-  pip install --user conan cmake
+  - pip install --user conan cmake
+  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan 
+
   
 script:
   - $CXX_EXE --version
@@ -52,10 +55,12 @@ script:
   - $CXX --version
   - mkdir build
   - cd build
-  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan 
   - cmake  $CMAKE_OPTS ..
   - VERBOSE=1 cmake --build . -- -j2
   - make test
   - make valgrind_checks
-  - if [ "${COVERAGE}" = "1" ]; then make alisp_coverage_xml; bash <(curl -s https://codecov.io/bash)  fi
+  - make alisp_coverage_xml
+
+after_success:
+  -  if [ "${COVERAGE}" = "1" ]; then bash <(curl -s https://codecov.io/bash) -f alisp_coverage_xml.xml -t 09845e6b-3f0a-47ad-843b-aa13c58aa4b5 ; fi
   
