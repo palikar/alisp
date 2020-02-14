@@ -161,6 +161,8 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
         if (!func->check_function_flag()) { throw eval_error("Head of a list must be bound to function"); }
 
+#ifdef ENABLE_STACK_TRACE
+        
         env::detail::CallTracer tracer{ env };
 
         if (obj->prop_exists("--line--")) {
@@ -171,8 +173,9 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
             tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag());
         } else {
             tracer.function_name("anonymous", false);
-        }        
-
+        }
+        
+#endif
         try
         {
 
@@ -222,7 +225,9 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
         }
         catch (...)
         {
+#ifdef ENABLE_STACK_TRACE
             tracer.dump();
+#endif
             throw;
         }
 

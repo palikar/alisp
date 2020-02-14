@@ -99,7 +99,17 @@ set(PRELUDE_DIR ${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}/prelude)
 
 target_compile_definitions(alisp_language PUBLIC AL_PRELUDE_DIR=\"${PRELUDE_DIR}\")
 
+if(ENABLE_STACK_TRACE)
+    target_compile_definitions(alisp_language PUBLIC ENABLE_STACK_TRACE)
+endif(ENABLE_STACK_TRACE)
 
+if(ENABLE_LINE_TRACE)
+    target_compile_definitions(alisp_language PUBLIC ENABLE_LINE_TRACE)
+endif(ENABLE_LINE_TRACE)
+
+if(ENABLE_OBJECT_DOC)
+    target_compile_definitions(alisp_language PUBLIC ENABLE_OBJECT_DOC)
+endif(ENABLE_OBJECT_DOC)
 
 install(TARGETS alisp_language 
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/

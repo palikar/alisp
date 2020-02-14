@@ -105,9 +105,11 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, 
     NameValidator::validate_object_name(name);
 
     if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name); }
-
     t_value->set_prop("--module--", make_string(m_active_module.get().name()));
+    
+#ifdef ENABLE_OBJECT_DOC
     t_value->set_prop("--doc--", make_string(t_doc));
+#endif
 
     scope.insert({ name, t_value });
 }
@@ -126,7 +128,10 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
     new_fun->set_function_flag();
     new_fun->set_prop("--module--", make_string(m_active_module.get().name()));
     new_fun->set_prop("--name--", make_string(name));
+
+#ifdef ENABLE_OBJECT_DOC
     new_fun->set_prop("--doc--", make_string(t_doc));
+#endif
 
     scope.insert({ name, new_fun });
 }
@@ -146,7 +151,10 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
     new_fun->set_macro_flag();
     new_fun->set_prop("--module--", make_string(m_active_module.get().name()));
     new_fun->set_prop("--name--", make_string(name));
+
+#ifdef ENABLE_OBJECT_DOC
     new_fun->set_prop("--doc--", make_string(t_doc));
+#endif
 
     scope.insert({ name, new_fun });
 }
@@ -239,6 +247,8 @@ void Environment::stack_dump() const
 
 void Environment::callstack_dump() const
 {
+    
+#ifdef ENABLE_STACK_TRACE
     using namespace fmt;
     using namespace std;
 
@@ -255,6 +265,8 @@ void Environment::callstack_dump() const
         }
     }
     cout << format("+{:-^48}+", "") << '\n';
+#endif
+    
 }
 
 }  // namespace env

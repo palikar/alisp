@@ -179,11 +179,13 @@ inline auto make_list(ALObject::list_type elements)
     return make_object(elements);
 }
 
-inline auto make_prime(Prim::func_type t_function, std::string t_name, std::string t_doc = {})
+inline auto make_prime(Prim::func_type t_function, std::string t_name, [[maybe_unused]] std::string t_doc = {})
 {
     auto sym = make_object(ALObject::list_type{})->make_prime(t_function);
     sym->set_prop("--name--", make_string(t_name));
+#ifdef ENABLE_OBJECT_DOC
     sym->set_prop("--doc--", make_string(t_doc));
+#endif
     return sym;
 }
 

@@ -879,7 +879,9 @@ template<class Environment> class ALParser : public ParserBase
         }
 
         ALObject::list_type objs;
+#ifdef ENABLE_LINE_TRACE
         const auto line = position.line;
+#endif
         while (true)
         {
 
@@ -913,7 +915,9 @@ template<class Environment> class ALParser : public ParserBase
         }
 
         auto new_list = make_object(objs);
+#ifdef ENABLE_LINE_TRACE
         new_list->set_prop("--line--", make_int(line));
+#endif
         return new_list;
     }
 
