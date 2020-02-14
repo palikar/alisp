@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 
       clipp::repeatable(clipp::option("-W") & clipp::word("warnings", opts.warnings)) % "Warning types that should be enabled.",
 
-      clipp::option("-e", "--eval") & opts.eval << clipp::value("expr") % "Input string to evaluate",
+      (clipp::option("-e", "--eval") & opts.eval << clipp::value("expr")) % "Input string to evaluate",
 
 
       opts.input << clipp::opt_value("file") % "Input file" & !(opts.args << clipp::opt_values("args")) % "Arguments for the script being ran."
@@ -209,6 +209,7 @@ int main(int argc, char *argv[])
     if (!opts.eval.empty())
     {
         auto [succ, val] = alisp_engine.eval_statement(opts.eval);
+        if (opts.interactive) { interactive(alisp_engine); }
         return val;
     }
 
