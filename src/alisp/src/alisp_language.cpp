@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <string>
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_env.hpp"
@@ -128,7 +129,7 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
         {
             const auto eval_file = fs::path(path->to_string()) / fs::path(module_file + postfix);
 
-            AL_DEBUG("Testing module file: " + eval_file.string());
+            AL_DEBUG("Testing module file: "s += eval_file.string());
 
             if (!fs::exists(eval_file)) { continue; }
 
@@ -190,7 +191,7 @@ ALObjectPtr Fdefun(ALObjectPtr obj, env::Environment *env, eval::Evaluator *)
 ALObjectPtr Fmodref(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
-    AL_DEBUG("Referecing symbol in module: " + dump(obj));
+    AL_DEBUG("Referecing symbol in module: "s += dump(obj));
     size_t curr_index = 0;
     auto curr_mod     = env->get_module(env->current_module());
     while (curr_index < obj->length() - 1)

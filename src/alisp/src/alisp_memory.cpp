@@ -31,7 +31,7 @@ ALObjectPtr MemoryHelpers::allocate_buffer(size_t t_size)
 {
     unsigned char *memory = static_cast<unsigned char *>(malloc(t_size));
     auto new_id           = memory::memory_registry.put_resource({ memory, t_size })->id;
-    AL_DEBUG("New memory buffer: " + std::to_string(new_id));
+    AL_DEBUG("New memory buffer: "s += std::to_string(new_id));
     return resource_to_object(new_id);
 }
 
@@ -45,7 +45,7 @@ memory::MemoryBuffer &MemoryHelpers::get_buffer(ALObjectPtr t_buffer)
 void MemoryHelpers::release_buffer(ALObjectPtr t_buffer)
 {
     const auto id = object_to_resource(t_buffer);
-    AL_DEBUG("Releasing buffer: " + std::to_string(id));
+    AL_DEBUG("Releasing buffer: "s += std::to_string(id));
     auto buff     = memory::memory_registry[id];
     free(buff.m_ptr);
     memory::memory_registry.destroy_resource(id);

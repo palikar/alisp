@@ -30,7 +30,7 @@ namespace al
 
 void init_streams()
 {
-    AL_DEBUG("Initing the streams. Binding cout and cin");
+    AL_DEBUG("Initing the streams. Binding cout and cin"s);
     cout_id = streams_registry.put_resource(dynamic_cast<streams::ALStream *>(streams::CoutStream::get_instance()))->id;
     cin_id  = streams_registry.put_resource(dynamic_cast<streams::ALStream *>(streams::CinStream::get_instance()))->id;
 }
@@ -45,14 +45,14 @@ void reset_system_streams()
 
 void StreamsHelper::rebind_cout(ALObjectPtr t_stream)
 {
-    AL_DEBUG("Rebinging cout.");
+    AL_DEBUG("Rebinging cout."s);
     const auto id = object_to_resource(t_stream);
     al::cout      = *al::streams_registry[id];
 }
 
 void StreamsHelper::rebind_cin(ALObjectPtr t_stream)
 {
-    AL_DEBUG("Rebinging cin.");
+    AL_DEBUG("Rebinging cin."s);
     const auto id = object_to_resource(t_stream);
     al::cin       = *al::streams_registry[id];
 }
@@ -66,7 +66,7 @@ ALObjectPtr StreamsHelper::create_string_stream(ALObjectPtr t_string)
 {
     streams::StringStream *new_stream = new streams::StringStream(t_string->to_string());
     auto new_id                       = al::streams_registry.put_resource(dynamic_cast<streams::ALStream *>(new_stream))->id;
-    AL_DEBUG("New string stream: " + std::to_string(new_id));
+    AL_DEBUG("New string stream: "s += std::to_string(new_id));
     return resource_to_object(new_id);
 }
 
@@ -74,14 +74,14 @@ ALObjectPtr StreamsHelper::create_file_stream(ALObjectPtr t_file)
 {
     streams::FileStream *new_stream = new streams::FileStream(FileHelpers::get_file(t_file).m_file);
     auto new_id                     = al::streams_registry.put_resource(dynamic_cast<streams::ALStream *>(new_stream))->id;
-    AL_DEBUG("New file stream: " + std::to_string(new_id));
+    AL_DEBUG("New file stream: "s += std::to_string(new_id));
     return resource_to_object(new_id);
 }
 
 void StreamsHelper::close_stream(ALObjectPtr t_stream)
 {
     const auto id                 = object_to_resource(t_stream);
-    AL_DEBUG("Closing stream: " + std::to_string(id));
+    AL_DEBUG("Closing stream: "s += std::to_string(id));
     streams::ALStream *old_stream = al::streams_registry[id];
     delete old_stream;
     al::streams_registry.destroy_resource(id);

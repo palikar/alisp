@@ -27,6 +27,7 @@
 #include <memory>
 #include <unordered_map>
 
+
 #include "alisp/utility/meta.hpp"
 #include "alisp/utility/vector_view.hpp"
 
@@ -34,6 +35,7 @@
 
 namespace alisp
 {
+using namespace std::string_literals;
 
 enum class ALObjectType
 {

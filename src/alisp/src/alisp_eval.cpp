@@ -50,7 +50,7 @@ Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser) : env
 
 void Evaluator::put_argument(ALObjectPtr param, ALObjectPtr arg)
 {
-    AL_DEBUG("Putting argument: " + dump(param) + " -> " + dump(arg));
+    AL_DEBUG("Putting argument: "s += dump(param) + " -> " + dump(arg));
     
     this->env.put(param, arg);
 }
@@ -149,7 +149,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
     case ALObjectType::SYMBOL:
     {
-        AL_DEBUG("Evaluating symbol: " + dump(obj));
+        AL_DEBUG("Evaluating symbol: "s += dump(obj));
         return env.find(obj);
     }
 
@@ -175,7 +175,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
         }
 
 #endif
-        AL_DEBUG("Calling funcion: " + dump(func));
+        AL_DEBUG("Calling funcion: "s += dump(obj->i(0)));
         
         try
         {
@@ -194,7 +194,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
                 STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
                 auto a = apply_function(func, eval_ptr);
-                // std::cout << dump(a) << "\n";
+                AL_DEBUG("Macro expansion: "s += dump(a));
                 return eval(a);
             }
             else
@@ -270,7 +270,7 @@ ALObjectPtr Evaluator::apply_function(ALObjectPtr func, ALObjectPtr args)
 
 ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
 {
-    AL_DEBUG("Calling lambda: " + dump(func));
+    AL_DEBUG("Calling lambda: "s += dump(func));
     
     auto obj = func;
     if (psym(func)) { obj = eval(func); }
@@ -287,7 +287,7 @@ ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
 
 void Evaluator::eval_file(const std::string &t_file)
 {
-    AL_DEBUG("Evaluating file: " + t_file);
+    AL_DEBUG("Evaluating file: "s += t_file);
     
     auto file_content = utility::load_file(t_file);
 
@@ -300,7 +300,7 @@ void Evaluator::handle_signal(int t_c)
 {
     if (t_c == SIGINT)
     {
-        AL_DEBUG("Handling a SIGINT");
+        AL_DEBUG("Handling a SIGINT"s);
 
         if ((m_status_flags & ACTIVE_EVALUATION_FLAG) == 0)
         {

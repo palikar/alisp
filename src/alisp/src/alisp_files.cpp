@@ -34,7 +34,7 @@ ALObjectPtr FileHelpers::open_file(ALObjectPtr t_file, ALObjectPtr t_output, ALO
     new_obj->set_prop("file-output", t_output);
     new_obj->set_prop("file-input", t_input);
 
-    AL_DEBUG("Opening a new file: " + t_file->to_string());
+    AL_DEBUG("Opening a new file: "s += t_file->to_string());
 
     return new_obj;
 }
@@ -48,7 +48,7 @@ void FileHelpers::close_file(ALObjectPtr t_file)
 {
     const auto id = object_to_resource(t_file);
     auto file     = files::files_registry[id];
-    AL_DEBUG("Closing file: " + file->m_path);
+    AL_DEBUG("Closing file: "s += file->m_path);
     file->m_file.close();
     delete file;
     files::files_registry.destroy_resource(id);

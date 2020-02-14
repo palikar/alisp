@@ -23,6 +23,7 @@
 #include <array>
 #include <iostream>
 #include <string_view>
+#include <string>
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_macros.hpp"
@@ -161,13 +162,13 @@ class Environment
 
     void define_module(const std::string t_name, const std::string)
     {
-        AL_DEBUG("Creating a new module: " + t_name);
+        AL_DEBUG("Creating a new module: "s += t_name);
         auto new_mod = std::make_shared<Module>(t_name);
         m_modules.insert({ t_name, new_mod });
     }
 
     void define_module(const std::string t_name, ModulePtr t_mod) {
-        AL_DEBUG("Adding a new module: " + t_name);
+        AL_DEBUG("Adding a new module: "s += t_name);
         m_modules.insert({ t_name, std::move(t_mod) });
     }
 
@@ -175,7 +176,7 @@ class Environment
 
     void alias_module(const std::string &t_name, const std::string t_alias)
     {
-        AL_DEBUG("Aliasing a module: " + t_name + " -> " + t_alias);
+        AL_DEBUG("Aliasing a module: "s += t_name + " -> " + t_alias);
         m_active_module.get().add_module(m_modules.at(t_name), std::move(t_alias));
     }
 
@@ -195,13 +196,13 @@ class Environment
     void import_root_scope(const std::string &t_from, const std::string &t_to)
     {
         
-        AL_DEBUG("Importing module symbols: " + t_from + " -> " + t_to);
+        AL_DEBUG("Importing module symbols: "s += t_from + " -> " + t_to);
         auto &from_root = m_modules.at(t_from)->get_root();
         auto &to_root   = m_modules.at(t_to)->get_root();
 
         for (auto &[name, sym] : from_root)
         {
-            AL_DEBUG("Adding a symbol: " + name);
+            AL_DEBUG("Adding a symbol: "s += name);
             if (!sym->prop_exists("--module--")) { continue; }
             if (sym->get_prop("--module--")->to_string().compare(t_from) == 0) { to_root.insert({ name, sym }); }
         }

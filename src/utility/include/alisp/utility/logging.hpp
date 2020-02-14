@@ -91,14 +91,11 @@ template<typename... Logs> class LogKeeper : Logs...
 
     template<typename Logger> void do_log(Logger &&logger, LogEntry t_entry, LogCategory t_category)
     {
-
         if (logger.category == t_category || logger.category == LogCategory::ANY)
         {
 
             if (!m_debug and t_category == LogCategory::DEBUG) { return; }
             if (!m_standard and t_category != LogCategory::DEBUG) { return; }
-
-
             logger.log(t_entry);
         }
     }
