@@ -197,7 +197,7 @@ ALObjectPtr Fgeq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
         return Qnil;
 }
 
-ALObjectPtr Feq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Feq_math(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     assert_min_size<0>(obj);
 

@@ -37,9 +37,10 @@
     void operator=(const TypeName &) = delete;    \
     void operator=(TypeName &&) = delete
 
-#define ALISP_RAII_OBJECT(TypeName)             \
-    TypeName(TypeName &&) = default;            \
-    TypeName &operator=(TypeName &&) = default; \
+#define ALISP_RAII_OBJECT(TypeName)                     \
+    TypeName(TypeName &&) = default;                    \
+    TypeName &operator=(TypeName &&) = default;         \
+    TypeName &operator=(const TypeName &) = default;    \
     TypeName(const TypeName &)       = delete
 
 

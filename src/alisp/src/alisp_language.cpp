@@ -240,11 +240,16 @@ ALObjectPtr Flambda(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 
 ALObjectPtr Fsetq(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
 {
-    assert_size<2>(obj);
-    assert_symbol(obj->i(0));
+    assert_min_size<2>(obj);
 
-    auto new_val = evl->eval(obj->i(1));
-    env->update(obj->i(0), new_val);
+    const auto len = std::size(*obj);
+    for (size_t i = 0; i < len; i += 1) {
+        assert_symbol(obj->i(i));
+        if ( i+1 >= len) { return Qnil;}
+        auto new_val = evl->eval(obj->i(1 + 1));
+        env->update(obj->i(i), new_val);
+    }
+    
     return Qt;
 }
 
@@ -478,6 +483,25 @@ ALObjectPtr Fassert(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     }
     return Qt;
 }
+
+ALObjectPtr Feq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+{
+    assert_size<2>(obj);
+    auto ob_1 = evl->eval(obj->i(0));
+    auto ob_2 = evl->eval(obj->i(1));
+
+    return eq(ob_1, ob_2) ? Qt : Qnil;
+}
+
+ALObjectPtr Fequal(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+{
+    assert_size<2>(obj);
+    auto ob_1 = evl->eval(obj->i(0));
+    auto ob_2 = evl->eval(obj->i(1));
+
+    return equal(ob_1, ob_2) ? Qt : Qnil;
+}
+
 
 
 ALObjectPtr Freturn(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)

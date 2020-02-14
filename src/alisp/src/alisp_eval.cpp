@@ -183,7 +183,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
             else if (func->check_macro_flag())
             {
 
-                // env::detail::FunctionCall fc{ env, func };
+                env::detail::MacroCall fc{ env };
 
                 STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
                 auto a = apply_function(func, eval_ptr);

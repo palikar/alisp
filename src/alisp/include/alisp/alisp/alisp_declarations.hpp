@@ -53,12 +53,12 @@ DEFSYM(Qcomma, ",");
 DEFSYM(Qcomma_at, ",@");
 
 
-// /*  _                                                ____                _                   _        */
-// /* | |    __ _ _ __   __ _ _   _  __ _  __ _  ___   / ___|___  _ __  ___| |_ _ __ _   _  ___| |_ ___  */
-// /* | |   / _` | '_ \ / _` | | | |/ _` |/ _` |/ _ \ | |   / _ \| '_ \/ __| __| '__| | | |/ __| __/ __| */
-// /* | |__| (_| | | | | (_| | |_| | (_| | (_| |  __/ | |__| (_) | | | \__ \ |_| |  | |_| | (__| |_\__ \ */
-// /* |_____\__,_|_| |_|\__, |\__,_|\__,_|\__, |\___|  \____\___/|_| |_|___/\__|_|   \__,_|\___|\__|___/ */
-// /*                   |___/             |___/                                                          */
+/*  _                                                ____                _                   _        */
+/* | |    __ _ _ __   __ _ _   _  __ _  __ _  ___   / ___|___  _ __  ___| |_ _ __ _   _  ___| |_ ___  */
+/* | |   / _` | '_ \ / _` | | | |/ _` |/ _` |/ _ \ | |   / _ \| '_ \/ __| __| '__| | | |/ __| __/ __| */
+/* | |__| (_| | | | | (_| | |_| | (_| | (_| |  __/ | |__| (_) | | | \__ \ |_| |  | |_| | (__| |_\__ \ */
+/* |_____\__,_|_| |_|\__, |\__,_|\__,_|\__, |\___|  \____\___/|_| |_|___/\__|_|   \__,_|\___|\__|___/ */
+/*                   |___/             |___/                                                          */
 
 
 DEFUN(import, "import", R"((import NAME [:file file] [:all] [( [(SYM MAPPED)]... )]))");
@@ -70,7 +70,7 @@ DEFUN(defmacro, "defmacro", R"((defmacro NAME (ARGLIST) [DOC] BODY))");
 DEFUN(defvar, "defvar", R"((defvar NAME VALUE [DOC]))");
 
 DEFUN(eval, "eval", R"((eval FORM))");
-DEFUN(setq, "setq", R"((setq SYMBOL VALUE))");
+DEFUN(setq, "setq", R"((setq SYMBOL VALUE [[SYMBOL VALUE] ... ]))");
 DEFUN(set, "set", R"(((set SYMBOL VALUE)))");
 DEFUN(quote, "quote", R"((quote OBJECT))");
 DEFUN(function, "function", R"((funttion OBJECT))");
@@ -90,6 +90,8 @@ DEFUN(signal, "signal", R"((signal SYMBOL LIST))");
 DEFUN(return, "return", R"((return [VALUE]))");
 DEFUN(exit, "exit", R"((exit [VALUE]))");
 DEFUN(assert, "assert", R"((assert FORM))");
+DEFUN(eq, "eq", R"((equal FORM1 FORM2))");
+DEFUN(equal, "equal", R"((equal FORM1 FORM2))");
 
 // /*  ____       _       _   _              */
 // /* |  _ \ _ __(_)_ __ | |_(_)_ __   __ _  */
@@ -226,7 +228,7 @@ DEFUN(gt, ">", R"((> VALUE1 VALUE2))");
 DEFUN(geq, ">=", R"((>= VALUE1 VALUE2))");
 DEFUN(lt, "<", R"((< VALUE1 VALUE2))");
 DEFUN(leq, "<=", R"((<= VALUE1 VALUE2))");
-DEFUN(eq, "==", R"((== VALUE1 VALUE2))");
+DEFUN(eq_math, "==", R"((== VALUE1 VALUE2))");
 DEFUN(neq, "!=", R"((!= VALUE1 VALUE2))");
 DEFUN(mod, "mod", R"((mod VALUE1))");
 DEFUN(pow, "pow", R"((pow VALUE1 VALUE2))");

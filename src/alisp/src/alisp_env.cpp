@@ -90,8 +90,8 @@ void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
 
     if (scope.count(name))
     {
-        scope.at(name) = t_val;
-        // throw environment_error("Variable alredy exists: " + name);
+        // scope.at(name) = t_val;
+        throw environment_error("Variable alredy exists: " + name);
     }
 
     scope.insert({ name, t_val });

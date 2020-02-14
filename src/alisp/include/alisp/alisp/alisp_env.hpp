@@ -338,11 +338,18 @@ struct ScopePushPop
     explicit ScopePushPop(Environment &t_env) : m_env(t_env) { m_env.new_scope(); }
     ~ScopePushPop() { m_env.destroy_scope(); }
 
-    ScopePushPop(ScopePushPop &&) = default;
-    ScopePushPop &operator=(ScopePushPop &&) = default;
-    ScopePushPop(const ScopePushPop &)       = delete;
-    ScopePushPop &operator=(const ScopePushPop &) = delete;
+    ALISP_RAII_OBJECT(ScopePushPop);
+  private:
+    Environment &m_env;
+};
 
+struct MacroCall
+{
+  public:
+    explicit MacroCall(Environment &t_env) : m_env(t_env) { m_env.new_scope(); }
+    ~MacroCall() { m_env.destroy_scope(); }
+
+    ALISP_RAII_OBJECT(MacroCall);
   private:
     Environment &m_env;
 };
