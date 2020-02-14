@@ -143,9 +143,9 @@ int main(int argc, char *argv[])
     if (opts.show_help)
     {
         std::cout << clipp::make_man_page(cli, "alisp", fmt)
-                       .prepend_section("DESCRIPTION", "The alisp programming language.")
-                       .append_section("ENVIRONMENT VARIABLES", "\n\tALPATH:\t  \n\n\tALISPRC:\t  \n\n")
-                       .append_section("LICENSE", "GPLv3");
+            .prepend_section("DESCRIPTION", "The alisp programming language.")
+            .append_section("ENVIRONMENT VARIABLES", ENV_VAR_HELP)
+            .append_section("LICENSE", std::string("\t").append(AL_LICENSE));
         return 0;
     }
 
@@ -188,6 +188,12 @@ int main(int argc, char *argv[])
 
         if (!std::filesystem::is_regular_file(file_path))
         {
+            if (file_path.string()[0] == '-') {
+                std::cout << "Can\'t interpter input: " << file_path.string() << "\n";
+                std::cout << "Usage:" << clipp::usage_lines(cli, "alisp") << "\n";
+                return 1;
+            }
+            
             std::cerr << '\"' << file_path << "\" is not a file."
                       << "\n";
             return 0;

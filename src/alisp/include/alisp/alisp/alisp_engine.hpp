@@ -154,6 +154,11 @@ class LanguageEngine
         }
 
         auto alisprc = fs::path(m_home_directory) / ".alisprc";
+
+        if (utility::env_bool(ENV_VAR_RC)) {
+            alisprc = fs::path(m_home_directory) / utility::env_string(ENV_VAR_RC);
+        }
+        
         if (fs::is_regular_file(alisprc)) { eval_file(alisprc, false); }
     }
 
