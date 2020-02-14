@@ -25,6 +25,7 @@ namespace warnings
 
 void init_warning(std::vector<std::string> t_enabled_warning)
 {
+    AL_DEBUG("Initing the warnings");
 
     for (auto &warn : t_enabled_warning)
     {

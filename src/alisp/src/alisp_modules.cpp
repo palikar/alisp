@@ -41,6 +41,7 @@ namespace env
 void init_modules()
 {
 #ifdef LINK_MODULES
+    AL_DEBUG("Adding builltin modules.");
 
     Environment::g_builtin_modules.insert({ "system", ModuleImport{ &init_system } });
     Environment::g_builtin_modules.insert({ "fileio", ModuleImport{ &init_fileio } });

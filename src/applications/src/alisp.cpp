@@ -68,6 +68,8 @@ struct Options
     std::vector<std::string> includes;
     std::vector<std::string> warnings;
 
+    bool debug_logging{ false };
+    
     bool parse_debug{ false };
     bool eval_debug{ false };
     bool version{ false };
@@ -81,28 +83,28 @@ Options opts{};
 int main(int argc, char *argv[])
 {
 
-    alisp::logging::init_logging();
-
-
     auto cli = (
 
-      opts.version << clipp::option("-v", "--version") % "Show the version and build information of the current executable",
-      opts.show_help << clipp::option("-h", "--help") % "Print help information",
-      opts.interactive << clipp::option("-i", "--interactive") % "Start interactive mode after file evaluation",
-      opts.parse_debug << clipp::option("-d", "--parse-debug") % "Debug output from the parser",
-      opts.eval_debug << clipp::option("-l", "--eval-debug") % "Debug output from the evaluator",
-      opts.quick << clipp::option("-Q", "--quick-start") % "Do not loady any scripts on initialization",
+        opts.version << clipp::option("-v", "--version") % "Show the version and build information of the current executable.",
+        opts.show_help << clipp::option("-h", "--help") % "Print help information.",
+        opts.interactive << clipp::option("-i", "--interactive") % "Start interactive mode after file evaluation.",
+        opts.parse_debug << clipp::option("-d", "--parse-debug") % "Debug output from the parser.",
+        opts.eval_debug << clipp::option("-l", "--eval-debug") % "Debug output from the evaluator.",
+        opts.quick << clipp::option("-Q", "--quick-start") % "Do not loady any scripts on initialization.",
 
-      clipp::repeatable(clipp::option("-I") & clipp::word("include", opts.includes)) % "Extra include directories for module imports.",
+#ifdef DEUBG_LOGGING
+        opts.debug_logging << clipp::option("-DL", "--debug-logging") % "Enable lots of debuggin output.",
+#endif
 
-      clipp::repeatable(clipp::option("-W") & clipp::word("warnings", opts.warnings)) % "Warning types that should be enabled.",
+        clipp::repeatable(clipp::option("-I") & clipp::word("include", opts.includes)) % "Extra include directories for module imports.",
 
-      (clipp::option("-e", "--eval") & opts.eval << clipp::value("expr")) % "Input string to evaluate",
+        clipp::repeatable(clipp::option("-W") & clipp::word("warnings", opts.warnings)) % "Warning types that should be enabled.",
 
+        (clipp::option("-e", "--eval") & opts.eval << clipp::value("expr")) % "Input string to evaluate",
 
-      opts.input << clipp::opt_value("file") % "Input file" & !(opts.args << clipp::opt_values("args")) % "Arguments for the script being ran."
+        opts.input << clipp::opt_value("file") % "Input file" & !(opts.args << clipp::opt_values("args")) % "Arguments for the script being ran."
 
-    );
+        );
 
 
     auto fmt = clipp::doc_formatting{}
@@ -143,9 +145,9 @@ int main(int argc, char *argv[])
     if (opts.show_help)
     {
         std::cout << clipp::make_man_page(cli, "alisp", fmt)
-            .prepend_section("DESCRIPTION", "The alisp programming language.")
-            .append_section("ENVIRONMENT VARIABLES", ENV_VAR_HELP)
-            .append_section("LICENSE", std::string("\t").append(AL_LICENSE));
+                       .prepend_section("DESCRIPTION", "The alisp programming language.")
+                       .append_section("ENVIRONMENT VARIABLES", ENV_VAR_HELP)
+                       .append_section("LICENSE", std::string("\t").append(AL_LICENSE));
         return 0;
     }
 
@@ -154,6 +156,8 @@ int main(int argc, char *argv[])
         std::cout << alisp::get_build_info();
         return 0;
     }
+
+    alisp::logging::init_logging(opts.debug_logging);
 
     // std::cout << "File:" << opts.input << "\n";
     // std::cout << "Eval:" << opts.eval << "\n";
@@ -188,12 +192,13 @@ int main(int argc, char *argv[])
 
         if (!std::filesystem::is_regular_file(file_path))
         {
-            if (file_path.string()[0] == '-') {
+            if (file_path.string()[0] == '-')
+            {
                 std::cout << "Can\'t interpter input: " << file_path.string() << "\n";
                 std::cout << "Usage:" << clipp::usage_lines(cli, "alisp") << "\n";
                 return 1;
             }
-            
+
             std::cerr << '\"' << file_path << "\" is not a file."
                       << "\n";
             return 0;

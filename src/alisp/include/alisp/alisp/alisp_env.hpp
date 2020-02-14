@@ -81,7 +81,9 @@ struct CellStack
 using AlispDynModulePtr = std::unique_ptr<dynmoduels::AlispDynModule>;
 
 class Module;
+
 class Environment;
+
 using ModulePtr = std::shared_ptr<Module>;
 
 class Module
@@ -159,16 +161,21 @@ class Environment
 
     void define_module(const std::string t_name, const std::string)
     {
+        AL_DEBUG("Creating a new module: " + t_name);
         auto new_mod = std::make_shared<Module>(t_name);
         m_modules.insert({ t_name, new_mod });
     }
 
-    void define_module(const std::string t_name, ModulePtr t_mod) { m_modules.insert({ t_name, std::move(t_mod) }); }
+    void define_module(const std::string t_name, ModulePtr t_mod) {
+        AL_DEBUG("Adding a new module: " + t_name);
+        m_modules.insert({ t_name, std::move(t_mod) });
+    }
 
     void load_module(eval::Evaluator *eval, const std::string t_file, const std::string t_name);
 
     void alias_module(const std::string &t_name, const std::string t_alias)
     {
+        AL_DEBUG("Aliasing a module: " + t_name + " -> " + t_alias);
         m_active_module.get().add_module(m_modules.at(t_name), std::move(t_alias));
     }
 
@@ -187,11 +194,14 @@ class Environment
 
     void import_root_scope(const std::string &t_from, const std::string &t_to)
     {
+        
+        AL_DEBUG("Importing module symbols: " + t_from + " -> " + t_to);
         auto &from_root = m_modules.at(t_from)->get_root();
         auto &to_root   = m_modules.at(t_to)->get_root();
 
         for (auto &[name, sym] : from_root)
         {
+            AL_DEBUG("Adding a symbol: " + name);
             if (!sym->prop_exists("--module--")) { continue; }
             if (sym->get_prop("--module--")->to_string().compare(t_from) == 0) { to_root.insert({ name, sym }); }
         }
@@ -241,7 +251,7 @@ class Environment
     void callstack_dump() const;
 
 #ifdef ENABLE_OBJECT_DOC
-    
+
     void trace_call(std::string t_trace, bool is_prime = false) { m_stack_trace.push_back({ std::move(t_trace), is_prime }); }
 
     void trace_unwind()
@@ -250,7 +260,7 @@ class Environment
     }
 
     auto get_stack_trace() -> auto & { return m_stack_trace; }
-    
+
 #endif
 };
 
@@ -266,23 +276,20 @@ struct CallTracer
     std::string m_function;
     std::string m_args;
     bool m_is_prime = false;
-    size_t m_line = 0;
+    size_t m_line   = 0;
 
   public:
     explicit CallTracer(Environment &t_env) : m_env(t_env) {}
 
     ~CallTracer() { m_env.trace_unwind(); }
 
-    void line(ALObject::int_type t_line ) {
-        m_line = static_cast<size_t>(t_line);
-    }
+    void line(ALObject::int_type t_line) { m_line = static_cast<size_t>(t_line); }
 
     void function_name(std::string t_func, bool t_is_prime = false)
     {
         m_is_prime = t_is_prime;
         m_function = std::move(t_func);
-        m_env.trace_call("(" + m_function + "):" + std::to_string(m_line),
-                         t_is_prime);
+        m_env.trace_call("(" + m_function + "):" + std::to_string(m_line), t_is_prime);
     }
 
     void dump()
@@ -354,6 +361,7 @@ struct ScopePushPop
     ~ScopePushPop() { m_env.destroy_scope(); }
 
     ALISP_RAII_OBJECT(ScopePushPop);
+
   private:
     Environment &m_env;
 };
@@ -365,6 +373,7 @@ struct MacroCall
     ~MacroCall() { m_env.destroy_scope(); }
 
     ALISP_RAII_OBJECT(MacroCall);
+
   private:
     Environment &m_env;
 };

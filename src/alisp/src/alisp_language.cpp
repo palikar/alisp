@@ -126,8 +126,9 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
     {
         for (auto &postfix : { "", ".so", ".al" })
         {
-
             const auto eval_file = fs::path(path->to_string()) / fs::path(module_file + postfix);
+
+            AL_DEBUG("Testing module file: " + eval_file.string());
 
             if (!fs::exists(eval_file)) { continue; }
 
@@ -189,7 +190,7 @@ ALObjectPtr Fdefun(ALObjectPtr obj, env::Environment *env, eval::Evaluator *)
 ALObjectPtr Fmodref(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
-
+    AL_DEBUG("Referecing symbol in module: " + dump(obj));
     size_t curr_index = 0;
     auto curr_mod     = env->get_module(env->current_module());
     while (curr_index < obj->length() - 1)
@@ -243,13 +244,14 @@ ALObjectPtr Fsetq(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
     assert_min_size<2>(obj);
 
     const auto len = std::size(*obj);
-    for (size_t i = 0; i < len; i += 2) {
+    for (size_t i = 0; i < len; i += 2)
+    {
         assert_symbol(obj->i(i));
-        if ( i+1 >= len) { return Qnil;}
+        if (i + 1 >= len) { return Qnil; }
         auto new_val = evl->eval(obj->i(i + 1));
         env->update(obj->i(i), new_val);
     }
-    
+
     return Qt;
 }
 
@@ -470,7 +472,6 @@ ALObjectPtr Fexit(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     return Qnil;
 }
 
-
 ALObjectPtr Fassert(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     assert_size<1>(obj);
@@ -501,8 +502,6 @@ ALObjectPtr Fequal(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
     return equal(ob_1, ob_2) ? Qt : Qnil;
 }
-
-
 
 ALObjectPtr Freturn(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {

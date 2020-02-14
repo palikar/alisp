@@ -44,14 +44,14 @@ void Evaluator::end_evaluation()
     --m_eval_depth;
 }
 
-
 Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser) : env(env_), m_eval_depth(0), m_parser(t_parser), m_status_flags(0)
 {
 }
 
-
 void Evaluator::put_argument(ALObjectPtr param, ALObjectPtr arg)
 {
+    AL_DEBUG("Putting argument: " + dump(param) + " -> " + dump(arg));
+    
     this->env.put(param, arg);
 }
 
@@ -149,6 +149,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
     case ALObjectType::SYMBOL:
     {
+        AL_DEBUG("Evaluating symbol: " + dump(obj));
         return env.find(obj);
     }
 
@@ -162,20 +163,20 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
         if (!func->check_function_flag()) { throw eval_error("Head of a list must be bound to function"); }
 
 #ifdef ENABLE_STACK_TRACE
-        
+
         env::detail::CallTracer tracer{ env };
 
-        if (obj->prop_exists("--line--")) {
-            tracer.line(obj->get_prop("--line--")->to_int());
-        }
+        if (obj->prop_exists("--line--")) { tracer.line(obj->get_prop("--line--")->to_int()); }
 
-        if (func->prop_exists("--name--")) {
-            tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag());
-        } else {
+        if (func->prop_exists("--name--")) { tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag()); }
+        else
+        {
             tracer.function_name("anonymous", false);
         }
-        
+
 #endif
+        AL_DEBUG("Calling funcion: " + dump(func));
+        
         try
         {
 
@@ -269,6 +270,8 @@ ALObjectPtr Evaluator::apply_function(ALObjectPtr func, ALObjectPtr args)
 
 ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
 {
+    AL_DEBUG("Calling lambda: " + dump(func));
+    
     auto obj = func;
     if (psym(func)) { obj = eval(func); }
 
@@ -284,6 +287,8 @@ ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
 
 void Evaluator::eval_file(const std::string &t_file)
 {
+    AL_DEBUG("Evaluating file: " + t_file);
+    
     auto file_content = utility::load_file(t_file);
 
     auto parse_result = m_parser->parse(file_content, t_file);
@@ -291,11 +296,12 @@ void Evaluator::eval_file(const std::string &t_file)
     for (auto sexp : parse_result) { eval(sexp); }
 }
 
-
 void Evaluator::handle_signal(int t_c)
 {
     if (t_c == SIGINT)
     {
+        AL_DEBUG("Handling a SIGINT");
+
         if ((m_status_flags & ACTIVE_EVALUATION_FLAG) == 0)
         {
             throw interrupt_error();
@@ -311,11 +317,11 @@ void Evaluator::set_evaluation_flag()
 {
     m_status_flags |= ACTIVE_EVALUATION_FLAG;
 }
+
 void Evaluator::reset_evaluation_flag()
 {
     m_status_flags &= ~ACTIVE_EVALUATION_FLAG;
 }
-
 
 void Evaluator::check_status()
 {
@@ -326,14 +332,12 @@ void Evaluator::check_status()
     }
 }
 
-
 detail::EvalDepthTrack::EvalDepthTrack(Evaluator &t_eval) : m_eval(t_eval)
 {
     m_eval.check_status();
     m_eval.new_evaluation();
     m_eval.set_evaluation_flag();
 }
-
 
 detail::EvalDepthTrack::~EvalDepthTrack()
 {

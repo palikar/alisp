@@ -34,7 +34,6 @@ enum class LogCategory
     ERROR
 };
 
-
 struct LogEntry
 {
     std::string file_name;
@@ -42,7 +41,6 @@ struct LogEntry
     int line_number;
     std::string message;
 };
-
 
 template<LogCategory t_category> struct StdLog
 {
@@ -61,7 +59,6 @@ struct NoopLog
     void log(LogEntry) {}
 };
 
-
 template<LogCategory t_category> struct ErrLog
 {
     static const LogCategory category = t_category;
@@ -71,7 +68,6 @@ template<LogCategory t_category> struct ErrLog
         std::cerr << '[' << t_entry.file_name << ':' << t_entry.function_name << ':' << t_entry.line_number << "] " << t_entry.message << "\n";
     }
 };
-
 
 template<typename... Logs> class LogKeeper : Logs...
 {
@@ -119,6 +115,7 @@ inline standard_logger LOGGER;
         ::alisp::logging::LOGGER.create_entry(MSG, __FILE__, __FUNCTION__, __LINE__, ::alisp::logging::LogCategory::TAG); \
     } while (false)
 #else
+
 using standard_logger = LogKeeper<NoopLog>;
 
 #define AL_LOG(MSG, TAG) \
@@ -126,6 +123,7 @@ using standard_logger = LogKeeper<NoopLog>;
     {                    \
         (void)0;         \
     } while (false)
+
 #endif
 
 

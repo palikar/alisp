@@ -960,7 +960,6 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
     }
 
     std::cout.clear();
-    
 }
 
 
@@ -969,7 +968,7 @@ TEST_CASE("Evaluator Test [function call]", "[eval]")
     using namespace alisp;
 
     std::cout.setstate(std::ios_base::failbit);
-    
+
     env::Environment env;
     auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     auto &pars = *p;

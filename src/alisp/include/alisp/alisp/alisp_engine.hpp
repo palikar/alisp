@@ -122,18 +122,20 @@ class LanguageEngine
     {
         namespace fs = std::filesystem;
 
+        AL_DEBUG("Initing the interpreter system.");
+
         env::init_modules();
-        logging::init_logging();
         al::init_streams();
         warnings::init_warning(m_warnings);
 
-
         env::update_prime(Qcommand_line_args, make_list(m_argv));
+        AL_DEBUG("CLI arguments: " + dump(Vcommand_line_args));
 
         std::string al_path    = utility::env_string(ENV_VAR_MODPATHS);
         const auto add_modules = [&](auto &path) { Vmodpaths->children().push_back(make_string(path)); };
         if (!al_path.empty())
         {
+            AL_DEBUG("ALPATH used: " + al_path.string());
             auto paths = utility::split(al_path, ':');
             std::for_each(std::begin(paths), std::end(paths), add_modules);
         }
@@ -146,26 +148,33 @@ class LanguageEngine
 
     void load_init_scripts()
     {
+        AL_DEBUG("Loading init scripts");
         namespace fs = std::filesystem;
 
         if (fs::is_directory(detail::prelude_directory))
         {
-            for (auto &al_file : fs::directory_iterator(detail::prelude_directory)) { eval_file(al_file, false); }
+            AL_DEBUG("Loading directory: " + detail::prelude_directory.string());
+            for (auto &al_file : fs::directory_iterator(detail::prelude_directory)) {
+                AL_DEBUG("Loading file: " + al_file.string());
+                eval_file(al_file, false);
+            }
         }
 
         auto alisprc = fs::path(m_home_directory) / ".alisprc";
 
-        if (utility::env_bool(ENV_VAR_RC)) {
-            alisprc = fs::path(m_home_directory) / utility::env_string(ENV_VAR_RC);
+        if (utility::env_bool(ENV_VAR_RC)) { alisprc = fs::path(m_home_directory) / utility::env_string(ENV_VAR_RC); }
+
+        if (fs::is_regular_file(alisprc)) {
+            AL_DEBUG("Loading file: " + alisprc.string());
+            eval_file(alisprc, false);
         }
-        
-        if (fs::is_regular_file(alisprc)) { eval_file(alisprc, false); }
     }
 
     std::pair<bool, int> eval_statement(std::string &command, bool exit_on_error = true)
     {
         try
         {
+            AL_DEBUG("Evaluating statement: " + command);
             do_eval(command, "__EVAL__", true);
             return { true, 0 };
         }
@@ -177,14 +186,13 @@ class LanguageEngine
         {
             handle_errors_lippincott<false>();
             if (exit_on_error) { return { false, 0 }; }
-            
         }
         return { true, 0 };
     }
 
     void eval_file(const std::filesystem::path &t_path, bool insert_mod_path = true)
     {
-
+        AL_DEBUG("Evaluating file: " + t_path);
         namespace fs = std::filesystem;
         if (insert_mod_path)
         {
@@ -192,12 +200,13 @@ class LanguageEngine
             if (t_path.has_parent_path()) { Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path()))); }
             else
             {
+                AL_DEBUG("Adding path to the modpaths: " + fs::absolute(fs::current_path()).string());
                 Vmodpaths->children().push_back(make_string(fs::absolute(fs::current_path())));
             }
         }
 
         try
-        {
+        {            
             auto file_content = utility::load_file(t_path);
             do_eval(file_content, t_path);
         }
@@ -211,8 +220,11 @@ class LanguageEngine
 
     const std::string &get_home() const { return m_home_directory; }
 
-
-    void handle_signal(int t_c) { m_evaluator.handle_signal(t_c); };
+    
+    void handle_signal(int t_c) {
+        AL_DEBUG("Receiving signal: " + std::to_string(t_c));
+        m_evaluator.handle_signal(t_c);
+    };
 };
 
 

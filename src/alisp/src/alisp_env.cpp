@@ -43,6 +43,8 @@ ALObjectPtr Environment::find(const ALObjectPtr t_sym)
 
     const auto name = t_sym->to_string();
 
+    AL_DEBUG("Finding a symbol: " + name);
+
     for (auto &scope : utility::reverse(m_stack.current_frame()))
     {
         if (scope.count(name)) { return scope.at(name); };
@@ -102,11 +104,13 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, 
     auto &scope = m_active_module.get().root_scope();
     auto name   = t_sym->to_string();
 
+    AL_DEBUG("New variable: " + name);
+
     NameValidator::validate_object_name(name);
 
     if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name); }
     t_value->set_prop("--module--", make_string(m_active_module.get().name()));
-    
+
 #ifdef ENABLE_OBJECT_DOC
     t_value->set_prop("--doc--", make_string(t_doc));
 #endif
@@ -119,6 +123,8 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
 
     auto &scope = m_active_module.get().root_scope();
     auto name   = t_sym->to_string();
+
+    AL_DEBUG("Defining function: " + name);
 
     NameValidator::validate_object_name(name);
 
@@ -142,6 +148,8 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
     auto &scope = m_active_module.get().root_scope();
     auto name   = t_sym->to_string();
 
+    AL_DEBUG("Defining macro: " + name);
+    
     NameValidator::validate_object_name(name);
 
     if (scope.count(name)) { throw environment_error("Function alredy exists: " + name); }
@@ -178,6 +186,7 @@ bool Environment::load_builtin_module(const std::string &t_module_name, eval::Ev
 
 void Environment::load_module(eval::Evaluator *eval, const std::string t_file, const std::string t_name)
 {
+    AL_DEBUG("Loading dyn modules: " + t_name + " from " + t_file);
     auto loaded_mod = m_loaded_modules.insert({ t_name, std::make_unique<dynmoduels::AlispDynModule>(t_name, t_file) }).first->second.get();
     auto mod_ptr    = loaded_mod->init_dynmod(this, eval);
     define_module(t_name, std::move(mod_ptr));
@@ -247,7 +256,7 @@ void Environment::stack_dump() const
 
 void Environment::callstack_dump() const
 {
-    
+
 #ifdef ENABLE_STACK_TRACE
     using namespace fmt;
     using namespace std;
@@ -266,7 +275,6 @@ void Environment::callstack_dump() const
     }
     cout << format("+{:-^48}+", "") << '\n';
 #endif
-    
 }
 
 }  // namespace env

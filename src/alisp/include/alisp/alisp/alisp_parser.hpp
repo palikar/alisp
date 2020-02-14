@@ -745,8 +745,8 @@ template<class Environment> class ALParser : public ParserBase
 
         switch (word_hash)
         {
-          case hash::hash("--FILE--"): return make_string(m_file);
-          case hash::hash("--LINE--"): return make_int(position.line);
+        case hash::hash("--FILE--"): return make_string(m_file);
+        case hash::hash("--LINE--"): return make_int(position.line);
         }
 
         return env::intern(std::string(word));
@@ -819,20 +819,20 @@ template<class Environment> class ALParser : public ParserBase
             ++position;
             switch (*position)
             {
-              case '\'': ++position; return make_char(static_cast<ALObject::int_type>('\''));
-              case '\"': ++position; return make_char(static_cast<ALObject::int_type>('\"'));
-              case 'a': ++position; return make_char(static_cast<ALObject::int_type>('\a'));
-              case 'b': ++position; return make_char(static_cast<ALObject::int_type>('\b'));
-              case 't': ++position; return make_char(static_cast<ALObject::int_type>('\t'));
-              case 'n': ++position; return make_char(static_cast<ALObject::int_type>('\n'));
-              case 'v': ++position; return make_char(static_cast<ALObject::int_type>('\v'));
-              case 'f': ++position; return make_char(static_cast<ALObject::int_type>('\f'));
-              case 'r': ++position; return make_char(static_cast<ALObject::int_type>('\r'));
-              case 'e': ++position; return make_char(static_cast<ALObject::int_type>(27));
-              case 'd': ++position; return make_char(static_cast<ALObject::int_type>(127));
-              case 's': ++position; return make_char(static_cast<ALObject::int_type>(' '));
-              case '\\': ++position; return make_char(static_cast<ALObject::int_type>('\\'));
-              default: PARSE_ERROR("Unknown escape sequence \'?\'");
+            case '\'': ++position; return make_char(static_cast<ALObject::int_type>('\''));
+            case '\"': ++position; return make_char(static_cast<ALObject::int_type>('\"'));
+            case 'a': ++position; return make_char(static_cast<ALObject::int_type>('\a'));
+            case 'b': ++position; return make_char(static_cast<ALObject::int_type>('\b'));
+            case 't': ++position; return make_char(static_cast<ALObject::int_type>('\t'));
+            case 'n': ++position; return make_char(static_cast<ALObject::int_type>('\n'));
+            case 'v': ++position; return make_char(static_cast<ALObject::int_type>('\v'));
+            case 'f': ++position; return make_char(static_cast<ALObject::int_type>('\f'));
+            case 'r': ++position; return make_char(static_cast<ALObject::int_type>('\r'));
+            case 'e': ++position; return make_char(static_cast<ALObject::int_type>(27));
+            case 'd': ++position; return make_char(static_cast<ALObject::int_type>(127));
+            case 's': ++position; return make_char(static_cast<ALObject::int_type>(' '));
+            case '\\': ++position; return make_char(static_cast<ALObject::int_type>('\\'));
+            default: PARSE_ERROR("Unknown escape sequence \'?\'");
             }
         }
         else
@@ -851,13 +851,13 @@ template<class Environment> class ALParser : public ParserBase
 
         switch (*position)
         {
-          case '\'': ++position; return parse_function_quote();
-          case 'b':
-          case 'B': ++position; return parse_integer<2>();
-          case 'o':
-          case 'O': ++position; return parse_integer<8>();
-          case 'x':
-          case 'X': ++position; return parse_integer<16>();
+        case '\'': ++position; return parse_function_quote();
+        case 'b':
+        case 'B': ++position; return parse_integer<2>();
+        case 'o':
+        case 'O': ++position; return parse_integer<8>();
+        case 'x':
+        case 'X': ++position; return parse_integer<16>();
         }
 
         PARSE_ERROR("Unknown syntax after #.");
@@ -887,10 +887,7 @@ template<class Environment> class ALParser : public ParserBase
 
             auto next_obj = parse_next();
 
-            if (next_obj)
-            {
-                objs.emplace_back(next_obj);
-            }
+            if (next_obj) { objs.emplace_back(next_obj); }
             else
             {
                 PARSE_ERROR("Malformed list. Cannot parse element.");
