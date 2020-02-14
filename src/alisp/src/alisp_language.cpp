@@ -232,8 +232,8 @@ ALObjectPtr Flambda(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
     assert_list(obj->i(0));
 
     auto new_lambda = make_object(obj->i(0), splice(obj, 1));
-    // auto new_lambda = obj;
     new_lambda->set_function_flag();
+    new_lambda->set_prop("--name--", make_string("lambda"));
 
     return new_lambda;
 }

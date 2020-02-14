@@ -40,6 +40,8 @@ TEST_CASE("Evaluator Test [simple]", "[eval]")
     auto &pars = *p;
     eval::Evaluator eval(env, p.get());
 
+    std::cout.setstate(std::ios_base::failbit);
+
     SECTION("int")
     {
         std::string input{ "42" };
@@ -75,6 +77,8 @@ TEST_CASE("Evaluator Test [simple]", "[eval]")
 
         CHECK(res->is_sym());
     }
+
+    std::cout.clear();
 }
 
 
@@ -325,6 +329,8 @@ TEST_CASE("Evaluator Test [math]", "[eval]")
     auto &pars = *p;
     eval::Evaluator eval(env, p.get());
 
+    std::cout.setstate(std::ios_base::failbit);
+
     SECTION("+")
     {
         std::string input{ "(+ 10 10)" };
@@ -507,7 +513,6 @@ TEST_CASE("Evaluator Test [math]", "[eval]")
         CHECK(res->to_int() == 4);
     }
 
-
     SECTION(">>")
     {
         std::string input{ "(>> 8 1)" };
@@ -516,6 +521,8 @@ TEST_CASE("Evaluator Test [math]", "[eval]")
         CHECK(res->is_int());
         CHECK(res->to_int() == 4);
     }
+
+    std::cout.clear();
 }
 
 
@@ -529,6 +536,7 @@ TEST_CASE("Evaluator Test [printing]", "[eval]")
     eval::Evaluator eval(env, p.get());
 
     std::cout.setstate(std::ios_base::failbit);
+    std::cerr.setstate(std::ios_base::failbit);
 
     SECTION("println,print")
     {
@@ -593,10 +601,11 @@ TEST_CASE("Evaluator Test [printing]", "[eval]")
     }
 
 
+    std::cerr.clear();
     std::cout.clear();
 }
 
-TEST_CASE("Evaluator Test [e-printing]", "[eval]")
+TEST_CASE("Evaluator Test [eprinting]", "[eval]")
 {
     using namespace alisp;
 
@@ -605,9 +614,9 @@ TEST_CASE("Evaluator Test [e-printing]", "[eval]")
     auto &pars = *p;
     eval::Evaluator eval(env, p.get());
 
-    std::cout.setstate(std::ios_base::failbit);
+    std::cerr.setstate(std::ios_base::failbit);
 
-    SECTION("println,print")
+    SECTION("eprintln, eprint")
     {
         std::string input{ "(eprint 1)" };
         eval.eval(pars.parse(input, "__TEST__")[0]);
@@ -625,12 +634,13 @@ TEST_CASE("Evaluator Test [e-printing]", "[eval]")
         eval.eval(pars.parse(input, "__TEST__")[0]);
 
 
-        input = "(println 1.2)";
+        input = "(eprintln 1.2)";
         eval.eval(pars.parse(input, "__TEST__")[0]);
     }
 
-    std::cout.clear();
+    std::cerr.clear();
 }
+
 
 TEST_CASE("Evaluator Test [logic]", "[eval]")
 {
@@ -675,6 +685,7 @@ TEST_CASE("Evaluator Test [predicates]", "[eval]")
     auto &pars = *p;
     eval::Evaluator eval(env, p.get());
 
+    std::cout.setstate(std::ios_base::failbit);
 
     SECTION("pfunction")
     {
@@ -712,6 +723,8 @@ TEST_CASE("Evaluator Test [predicates]", "[eval]")
         auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
         CHECK(is_truthy(res));
     }
+
+    std::cout.clear();
 }
 
 
@@ -723,6 +736,8 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
     auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     auto &pars = *p;
     eval::Evaluator eval(env, p.get());
+
+    std::cout.setstate(std::ios_base::failbit);
 
     SECTION("mapc")
     {
@@ -924,7 +939,6 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
         CHECK(res->i(2)->to_int() == 4);
     }
 
-
     SECTION("range")
     {
         std::string input{ "(range 1 10)" };
@@ -944,6 +958,9 @@ TEST_CASE("Evaluator Test [lists]", "[eval]")
         CHECK(res->i(7)->to_int() == 8);
         CHECK(res->i(8)->to_int() == 9);
     }
+
+    std::cout.clear();
+    
 }
 
 
@@ -951,6 +968,8 @@ TEST_CASE("Evaluator Test [function call]", "[eval]")
 {
     using namespace alisp;
 
+    std::cout.setstate(std::ios_base::failbit);
+    
     env::Environment env;
     auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     auto &pars = *p;
@@ -964,6 +983,8 @@ TEST_CASE("Evaluator Test [function call]", "[eval]")
 
     CHECK(res->is_int());
     CHECK(res->to_int() == 42);
+
+    std::cout.clear();
 }
 
 

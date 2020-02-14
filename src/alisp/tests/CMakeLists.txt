@@ -29,8 +29,8 @@ target_link_libraries(alisp_language_test
     alisp_language
     )
 
-target_link_libraries(alisp_language_test PRIVATE alisp_fileio
-    alisp_math alisp_time alisp_system alisp_platform)
+# target_link_libraries(alisp_language_test PRIVATE alisp_fileio
+#     alisp_math alisp_time alisp_system alisp_platform)
 
 include(CTest)
 include(Catch)
