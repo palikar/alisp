@@ -157,7 +157,7 @@ class LanguageEngine
         if (fs::is_regular_file(alisprc)) { eval_file(alisprc, false); }
     }
 
-    std::pair<bool, int> eval_statement(std::string &command)
+    std::pair<bool, int> eval_statement(std::string &command, bool exit_on_error = true)
     {
         try
         {
@@ -166,12 +166,13 @@ class LanguageEngine
         }
         catch (al_exit &ex)
         {
-            return { false, ex.value() };
+            if (exit_on_error) { return { false, ex.value() }; }
         }
         catch (...)
         {
             handle_errors_lippincott<false>();
-            return { false, 0 };
+            if (exit_on_error) { return { false, 0 }; }
+            
         }
         return { true, 0 };
     }

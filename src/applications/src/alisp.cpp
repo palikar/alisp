@@ -234,7 +234,7 @@ int interactive(alisp::LanguageEngine &alisp_engine)
             break;
         }
 
-        auto [succ, val] = alisp_engine.eval_statement(command.value());
+        auto [succ, val] = alisp_engine.eval_statement(command.value(), false);
 
         if (!succ) { return val; }
     }
