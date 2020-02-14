@@ -45,7 +45,7 @@ void Evaluator::end_evaluation()
 }
 
 
-Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser) : env(env_), m_parser(t_parser), m_status_flags(0)
+Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser) : env(env_), m_eval_depth(0), m_parser(t_parser), m_status_flags(0)
 {
 }
 
@@ -163,6 +163,9 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
         env::detail::CallTracer tracer{ env };
 
+        if (obj->prop_exists("--line--")) {
+            tracer.line(obj->get_prop("--line--")->to_int());
+        }
 
         if (func->prop_exists("--name--")) {
             tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag());

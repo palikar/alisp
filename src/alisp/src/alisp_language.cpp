@@ -243,10 +243,10 @@ ALObjectPtr Fsetq(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
     assert_min_size<2>(obj);
 
     const auto len = std::size(*obj);
-    for (size_t i = 0; i < len; i += 1) {
+    for (size_t i = 0; i < len; i += 2) {
         assert_symbol(obj->i(i));
         if ( i+1 >= len) { return Qnil;}
-        auto new_val = evl->eval(obj->i(1 + 1));
+        auto new_val = evl->eval(obj->i(i + 1));
         env->update(obj->i(i), new_val);
     }
     

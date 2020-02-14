@@ -258,18 +258,23 @@ struct CallTracer
     std::string m_function;
     std::string m_args;
     bool m_is_prime = false;
+    size_t m_line = 0;
 
   public:
     explicit CallTracer(Environment &t_env) : m_env(t_env) {}
 
     ~CallTracer() { m_env.trace_unwind(); }
 
+    void line(ALObject::int_type t_line ) {
+        m_line = static_cast<size_t>(t_line);
+    }
 
     void function_name(std::string t_func, bool t_is_prime = false)
     {
         m_is_prime = t_is_prime;
         m_function = std::move(t_func);
-        m_env.trace_call("(" + m_function + ")", t_is_prime);
+        m_env.trace_call("(" + m_function + "):" + std::to_string(m_line),
+                         t_is_prime);
     }
 
     void dump()

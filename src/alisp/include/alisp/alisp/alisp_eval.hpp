@@ -33,7 +33,7 @@ class Evaluator
 {
   private:
     env::Environment &env;
-    size_t m_eval_depth = 0;
+    size_t m_eval_depth;
     parser::ParserBase *m_parser;
 
     int m_signal;

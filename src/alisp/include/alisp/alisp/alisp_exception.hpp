@@ -150,7 +150,18 @@ struct eval_error : public al_exception
 struct argument_error : public al_exception
 {
   public:
-    argument_error(const std::string &t_why) : al_exception(t_why, SignalTag::INVALID_ARGUMENTS) { m_signal_name = "eval-signal"; }
+    argument_error(const std::string &t_why, ALObjectPtr t_obj = nullptr)  : al_exception(format(t_why, t_obj), SignalTag::INVALID_ARGUMENTS) { m_signal_name = "eval-signal"; }
+  private:
+
+    static std::string format(const std::string &t_why, ALObjectPtr obj) {
+        std::ostringstream ss;
+        ss << t_why << '\n';
+        if (obj) {
+            ss << "\tFound: " << dump(obj) << '\n';
+        }         
+        return ss.str();
+    }
+    
 };
 
 struct module_error : public al_exception
