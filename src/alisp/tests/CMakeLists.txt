@@ -36,3 +36,29 @@ include(CTest)
 include(Catch)
 
 catch_discover_tests(alisp_language_test)
+
+if(ENABLE_ASAN)
+    
+    add_executable(alisp_fuzzy_test
+        fuzzy_test.cpp
+        ${LAN_SOURCES})
+    
+    target_include_directories(alisp_fuzzy_test
+        PUBLIC ../include
+        PRIVATE ../src
+        )
+    target_compile_options(alisp_fuzzy_test
+        PUBLIC -fsanitize=address,fuzzer)
+
+    target_link_libraries(alisp_fuzzy_test
+        PRIVATE
+        project_options
+        project_warnings
+        -fsanitize=address,fuzzer
+        dl
+        PUBLIC
+        alisp_language)
+
+    
+    
+endif()
