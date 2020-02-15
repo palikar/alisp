@@ -34,26 +34,34 @@ inline auto module_init(std::string t_name)
     return std::make_shared<env::Module>(std::move(t_name));
 }
 
-inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_type fun)
+inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_type fun, std::string t_doc = {})
 {
     auto &new_fun = t_module->get_root().insert({ std::move(t_name), make_prime(fun, t_name) }).first->second;
     new_fun->set_function_flag();
+    new_fun->set_prop("--doc--", make_string(t_doc));
+    new_fun->set_prop("--name--", make_string(t_name));
     new_fun->set_prop("--module--", make_string(t_module->name()));
 }
 
-inline void module_defvar(env::Module *t_module, std::string t_name, ALObjectPtr val)
+inline void module_defvar(env::Module *t_module, std::string t_name, ALObjectPtr val, std::string t_doc = {})
 {
     auto &new_var = t_module->get_root().insert({ std::move(t_name), std::move(val) }).first->second;
     new_var->set_prop("--module--", make_string(t_module->name()));
+    new_var->set_prop("--doc--", make_string(t_doc));
 }
 
-inline void module_defconst(env::Module *t_module, std::string t_name, ALObjectPtr val)
+inline void module_defconst(env::Module *t_module, std::string t_name, ALObjectPtr val, std::string t_doc = {})
 {
     auto &new_var = t_module->get_root().insert({ std::move(t_name), std::move(val) }).first->second;
     new_var->set_const_flag();
     new_var->set_prop("--module--", make_string(t_module->name()));
+    new_var->set_prop("--doc--", make_string(t_doc));
 }
 
+inline void module_doc(env::Module *t_module, std::string t_doc)
+{
+    module_defconst(t_module, "--doc--", make_string(t_doc));
+}
 
 inline void module_dump(env::Module *t_module)
 {
