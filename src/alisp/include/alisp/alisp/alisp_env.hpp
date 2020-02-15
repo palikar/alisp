@@ -158,7 +158,7 @@ class Environment
     {
     }
 
-    ~Environment() {}
+    ~Environment() { g_symbol_table.clear(); }
 
     void define_module(const std::string t_name, const std::string)
     {
