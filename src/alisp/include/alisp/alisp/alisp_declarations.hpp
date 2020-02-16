@@ -61,38 +61,218 @@ DEFSYM(Qcomma_at, ",@");
 /*                   |___/             |___/                                                          */
 
 
-DEFUN(import, "import", R"((import NAME [:file file] [:all] [( [(SYM MAPPED)]... )])
+DEFUN(import, "import", R"((import MODULE [:file file] [:all] [( [(SYM MAPPED)]... )])
+
+Import the module MODULE. MODULE should be a symbol and the imported
+module should be in a file with the name of this symbol. The file
+should be located somewhere on the ALISPPATH. An alternative file name
+can be given through the :file keyword-argument. If the :all
+keyword-argument is given. all of the symbols in MODULE will be
+imported in the root scope of the current module. The last argument is
+an optional list of mappings between symbols in the imported modules
+and new symbols to be imported in the current module.
+
+Example:
+```elisp
+(import 'fileio)
+(import 'fileio :all)
+(import 'fileio :file "../fileio.al")
+(import 'fileio :all (f-exists exists))
+```
+)");
+
+DEFUN(modref, "modref", R"((modref MODUE [[MODUE] ...] SYMBOL [[symbol] ...] )
+
+Refrence a symbol in another module. The function can also be used to
+reference symbols from submodules. That is, if a module imports
+another module for itself, symbols in it can also be referenced. In
+most circumstances you won't need this function as there is a
+syntactic sugar for it - the dot syntax.
+
+Example:
+```elisp
+(import 'fileio)
+
+; those two are equivalent
+((modref fileio f-exists) "../file.al")
+(fileio.f-exists "../file.al")
+```
+
+The last argument of `modref` must be the symbol name. The previous
+arguments should module names.
+)");
+
+
+DEFUN(defun, "defun", R"((defun NAME (ARGLIST) [DOC] [BODY])
+
+Define a new functions with a name `NAME` in the current
+module. `ARGLIST` should be a valid argument list definition. `DOC` is
+an optional docscring and `BODY` is a list of forms to be evaluated
+when the function is called.
+
+Example:
+```elisp
+(defun fun (x)
+   "This is a new function"
+   (println x))
+```
+ )");
+DEFUN(defmacro, "defmacro", R"((defmacro NAME (ARGLIST) [DOC] BODY)
+
+Define a new macro with a name `NAME` in the current
+module. `ARGLIST` should be a valid argument list definition. `DOC` is
+an optional docscring and `BODY` is a list of forms to be evaluated
+when the function is called. As oppose to a function, the arguments of
+a macro are not evaluated when the macro is called.
+
+Example:
+```elisp
+(defmacro inc (x)
+    `(setq x (+ 1 ,x)))
+```
+)");
+
+DEFUN(defvar, "defvar", R"((defvar NAME VALUE [DOC])
+
+Define a new variable with a name `NAME` in the current
+module. `VALUE` is the initial value of the variable and `DOC` is an
+optional docstring. A variable *has* to be defines before used. A
+variable defined through `defvar` will live till the end of the
+program.
+
+Example:
+```elisp
+(defvar new-var 42)
+```
 
 )");
-DEFUN(modref, "modref", R"((modref MODUE [[MODUE] ...] SYMBOL [[symbol] ...] ))");
+
+DEFUN(eval, "eval", R"((eval FORM)
+
+Evaluate the form `FORM`. The usual form for evaluation apply.
+)");
+
+DEFUN(setq, "setq", R"((setq SYMBOL VALUE [[SYMBOL VALUE] ... ])
+
+Set the value of the variable pointed by `SYMBOL` to
+`VALUE`. `SYMBOL` will not be evaluated. `setq` can also be used to
+set the value of multiple variables at once. All of the variables
+should be defined beforehand.
+
+Example:
+```elisp
+(defvar new-var 42)
+(setq new-var 43)
+```
+)");
 
 
-DEFUN(defun, "defun", R"((defun NAME (ARGLIST) [DOC] BODY))");
-DEFUN(defmacro, "defmacro", R"((defmacro NAME (ARGLIST) [DOC] BODY))");
-DEFUN(defvar, "defvar", R"((defvar NAME VALUE [DOC]))");
+DEFUN(set, "set", R"(((set FORM VALUE))
 
-DEFUN(eval, "eval", R"((eval FORM))");
-DEFUN(setq, "setq", R"((setq SYMBOL VALUE [[SYMBOL VALUE] ... ]))");
-DEFUN(set, "set", R"(((set SYMBOL VALUE)))");
-DEFUN(quote, "quote", R"((quote OBJECT))");
-DEFUN(function, "function", R"((funttion OBJECT))");
-DEFUN(lambda, "lambda", R"((lambda (ARGLIST) BODY))");
-DEFUN(if, "if", R"((if CONDITION THEN ELSE))");
-DEFUN(while, "while", R"((while CONDITION BODY))");
-DEFUN(dolist, "dolist", R"((dolist (SYMBOL LIST) BODY))");
+Set the value of the variable pointed by `FORM` to `VALUE`. `FORM`
+will be evaluated and should return a symbol. `setq` can also be used
+to set the value of multiple variables at once. All of the variables
+should be defined beforehand.
+
+Example:
+```elisp
+(defvar new-var 42)
+(set 'new-var 43)
+```
+)");
+
+DEFUN(quote, "quote", R"((quote FORM)
+
+Return `FORM`, without evaluating it. `(quote x)` yields ‘x’. `x is a
+syntactic sugar for this function.
+)");
+
+DEFUN(function, "function", R"((funtion OBJECT)
+
+Return `OBJECT`, without evaluating it but setting its function flag
+to true. `function` should be used to quote lambdas and other
+callables.
+)");
+
+DEFUN(lambda, "lambda", R"((lambda (ARGLIST) BODY)
+
+
+)");
+
+DEFUN(if, "if", R"((if CONDITION THEN ELSE)
+
+Evaluate `CONDITION` and if its value is *truthy*, evaluate and return
+the value of `THEN`. Otherwise evaluate and return the value of
+`ELSE`.
+)");
+
+DEFUN(while, "while", R"((while CONDITION BODY)
+
+Evaluate `BODY` as long as `CONDITION` evaluates to a value that is
+*truthy*. `while` returns `nil`.
+)");
+
+DEFUN(dolist, "dolist", R"((dolist (SYMBOL LIST) BODY)
+
+Evaluate `BODY` for each symbol in `LIST` while bonding the respective
+element to `SYMBOL`.
+
+Example:
+```elisp
+(dolist (s '(1 2 3 4))
+   (println s))
+```
+
+)");
 DEFUN(cond, "cond", R"((cond [[CODITION BODY] ... ]))");
-DEFUN(unless, "unless", R"((unless CONDITION BODY))");
-DEFUN(when, "when", R"((when CONDITION BODY))");
-DEFUN(progn, "progn", R"((progn BODY))");
-DEFUN(letx, "let*", R"((let* ([[VAR]...] [[(VAR VALUE)] ...] ) BODY))");
-DEFUN(let, "let", R"((let ([[VAR]...] [[(VAR VALUE)] ...] ) BODY))");
-DEFUN(funcall, "funcall", R"((funcall SYMBOL LIST))");
+DEFUN(unless, "unless", R"((unless CONDITION BODY)
+
+Evaluate `BODY` if `CONDITION` evaluates to *falsey* value.
+)");
+
+DEFUN(when, "when", R"((when CONDITION BODY)
+
+Evaluate `BODY` if `CONDITION` evaluates to *truthy* value.
+)");
+
+DEFUN(progn, "progn", R"((progn BODY)
+
+Evaluate the forms in `BODY` sequentially and return the value of the
+last one.
+)");
+
+DEFUN(letx, "let*", R"((let* ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)
+
+)");
+DEFUN(let, "let", R"((let ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)
+
+)");
+
+DEFUN(funcall, "funcall", R"((funcall SYMBOL LIST)
+
+Call the function pointed by `SYMBOL` and pass the symbols in `LIST`
+as arguments.
+)");
+
 DEFUN(backquote, "backquote", R"((`LIST))");
 DEFUN(signal, "signal", R"((signal SYMBOL LIST))");
-DEFUN(return, "return", R"((return [VALUE]))");
-DEFUN(exit, "exit", R"((exit [VALUE]))");
+DEFUN(return, "return", R"((return [FROM])
+
+Return an optional value from a function. If `FROM` is given, it will
+be evaluated and its value will be the return value of the
+function. Otherwise `nil` is the returned value.
+
+)");
+DEFUN(exit, "exit", R"((exit [FORM])
+
+Exit the program. If `FORM` is given, its value will be the return
+code of the process. Otherwise the return code will be 0.
+)");
+
 DEFUN(assert, "assert", R"((assert FORM))");
+
 DEFUN(eq, "eq", R"((equal FORM1 FORM2))");
+
 DEFUN(equal, "equal", R"((equal FORM1 FORM2))");
 
 // /*  ____       _       _   _              */
