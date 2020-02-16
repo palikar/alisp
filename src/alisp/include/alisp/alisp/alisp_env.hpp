@@ -153,7 +153,7 @@ class Environment
 
     size_t m_call_depth;
 
-#ifdef ENABLE_OBJECT_DOC
+#ifdef ENABLE_STACK_TRACE
     std::vector<std::tuple<std::string, bool>> m_stack_trace;  // name, is_prime
 #endif
 
@@ -256,7 +256,7 @@ class Environment
 
     void callstack_dump() const;
 
-#ifdef ENABLE_OBJECT_DOC
+#ifdef ENABLE_STACK_TRACE
 
     void trace_call(std::string t_trace, bool is_prime = false) { m_stack_trace.push_back({ std::move(t_trace), is_prime }); }
 
@@ -274,7 +274,7 @@ class Environment
 namespace detail
 {
 
-#ifdef ENABLE_OBJECT_DOC
+#ifdef ENABLE_STACK_TRACE
 
 struct CallTracer
 {
