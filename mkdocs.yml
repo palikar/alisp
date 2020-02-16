@@ -5,21 +5,19 @@ repo_url: https://github.com/palikar/alisp
 edit_uri: edit/master/doc/
 copyright: "Copyright (C) 2019-2020 Stanislav Arnaudoc"
 docs_dir: doc
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      separator: "_"
+      permalink: "#"
+extra_css:
+  - css/extra.css
+  - css/style.css
 nav:
 - Home: index.md
 - Language Reference: reference.md
 - Basic Documentation: basic_doc.md
 - File Manipulation: files_doc.md
 - Streams Manipulation: streams_doc.md
-markdown_extensions:
-  - admonition
-  - toc:
-      separator: "_"
-      permalink: "#"
-
-extra_css:
-  - css/extra.css
 theme: readthedocs
-plugins:
-    - search
-    

@@ -506,7 +506,10 @@ ALObjectPtr Fequal(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Freturn(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_size<1>(obj);
+    assert_min_size<1>(obj);
+    if (std::size(*obj) == 0) {
+        throw al_return(Qnil);
+    }
     auto val = evl->eval(obj->i(0));
     throw al_return(val);
     return Qnil;
