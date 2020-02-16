@@ -175,11 +175,19 @@ void Environment::activate_module(const std::string &t_name)
 
 bool Environment::load_builtin_module(const std::string &t_module_name, eval::Evaluator *eval)
 {
+    AL_DEBUG("Loading builitng dyn module: "s += t_module_name);
     auto module_import = g_builtin_modules.find(t_module_name);
 
     if (module_import == std::end(g_builtin_modules)) { return false; }
     auto new_mod = module_import->second.function(this, eval);
     m_modules.insert({ t_module_name, new_mod });
+
+    detail::ModuleChange mc{ *this, t_module_name };
+    for (auto& eval_str : new_mod->eval_strings()) {
+        eval->eval_string(eval_str);
+    }
+
+
 
     return true;
 }

@@ -61,7 +61,9 @@ DEFSYM(Qcomma_at, ",@");
 /*                   |___/             |___/                                                          */
 
 
-DEFUN(import, "import", R"((import NAME [:file file] [:all] [( [(SYM MAPPED)]... )]))");
+DEFUN(import, "import", R"((import NAME [:file file] [:all] [( [(SYM MAPPED)]... )])
+
+)");
 DEFUN(modref, "modref", R"((modref MODUE [[MODUE] ...] SYMBOL [[symbol] ...] ))");
 
 

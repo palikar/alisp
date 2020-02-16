@@ -296,6 +296,15 @@ void Evaluator::eval_file(const std::string &t_file)
     for (auto sexp : parse_result) { eval(sexp); }
 }
 
+void Evaluator::eval_string(std::string &t_eval)
+{
+    AL_DEBUG("Evaluating string: "s += t_file);
+    
+    auto parse_result = m_parser->parse(t_eval, "--EVAL--");
+    
+    for (auto sexp : parse_result) { eval(sexp); }
+}
+
 void Evaluator::handle_signal(int t_c)
 {
     if (t_c == SIGINT)

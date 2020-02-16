@@ -47,6 +47,7 @@ class Evaluator
     Evaluator(env::Environment &env_, parser::ParserBase *t_parser);
 
     void eval_file(const std::string &t_file);
+    void eval_string(std::string &t_eval);
 
     ALObjectPtr eval(ALObjectPtr obj);
     ALObjectPtr eval_function(ALObjectPtr func, ALObjectPtr args);

@@ -5,16 +5,30 @@ macro(add_module NAME SRC)
         PUBLIC include
         PRIVATE src)
 
-    target_link_libraries(${NAME}
-        PRIVATE
-        project_options
-        project_warnings
-        alisp_util
-        alisp_management
-        alisp_streams
-        )
+    if(NOT BUILD_SHARED_LIBS)
 
-    
+        
+        target_link_libraries(${NAME}
+            PRIVATE
+            project_options
+            project_warnings
+            alisp_util
+            alisp_management
+            alisp_streams
+            alisp_language
+            )
+    else()
+        target_link_libraries(${NAME}
+            PRIVATE
+            project_options
+            project_warnings
+            alisp_util
+            alisp_management
+            alisp_streams
+            )
+    endif()
+
+
     install(TARGETS ${NAME} 
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
         RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
@@ -22,7 +36,7 @@ macro(add_module NAME SRC)
         INCLUDES DESTINATION      ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
         ARCHIVE DESTINATION       ${CMAKE_INSTALL_SHAREDSTATEDIR}
         )
-    
+
 endmacro()
 
 
@@ -72,29 +86,26 @@ target_link_libraries(alisp_language
     )
 
 if(NOT DISABLE_DEFAULT_MODULES)
+
     add_module(alisp_fileio src/modules/fileio.cpp)
-    target_link_libraries(alisp_language PUBLIC alisp_fileio)
-
     add_module(alisp_math src/modules/math.cpp)
-    target_link_libraries(alisp_language PUBLIC alisp_math)
-
     add_module(alisp_time src/modules/time.cpp)
-    target_link_libraries(alisp_language PUBLIC alisp_time)
-
     add_module(alisp_system src/modules/system.cpp)
-    target_link_libraries(alisp_language PUBLIC alisp_system)
-
     add_module(alisp_platform src/modules/platform.cpp)
-    target_link_libraries(alisp_language PUBLIC alisp_platform)
-
     add_module(alisp_memory src/modules/memory.cpp)
+
+    target_link_libraries(alisp_language PUBLIC alisp_fileio)
+    target_link_libraries(alisp_language PUBLIC alisp_math)
+    target_link_libraries(alisp_language PUBLIC alisp_time)
+    target_link_libraries(alisp_language PUBLIC alisp_system)
+    target_link_libraries(alisp_language PUBLIC alisp_platform)
     target_link_libraries(alisp_language PUBLIC alisp_memory)
 
     target_compile_definitions(alisp_language PUBLIC LINK_MODULES)
     
 endif()
 
-    
+
 set(PRELUDE_DIR ${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}/prelude)
 
 target_compile_definitions(alisp_language PUBLIC AL_PRELUDE_DIR=\"${PRELUDE_DIR}\")

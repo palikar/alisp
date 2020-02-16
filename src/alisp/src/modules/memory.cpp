@@ -24,6 +24,11 @@
 namespace alisp
 {
 
+
+// extern ALObjectPtr  MemoryHelpers::allocate_buffer(size_t t_size);
+// extern memory::MemoryBuffer & MemoryHelpers::get_buffer(ALObjectPtr t_buffer);
+// extern void  MemoryHelpers::release_buffer(ALObjectPtr t_buffer);
+
 namespace detail
 {
 

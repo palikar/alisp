@@ -43,6 +43,11 @@ inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_t
     new_fun->set_prop("--module--", make_string(t_module->name()));
 }
 
+inline void module_eval(env::Module *t_module, std::string t_eval)
+{
+    t_module->eval_string(std::move(t_eval));
+}
+
 inline void module_defvar(env::Module *t_module, std::string t_name, ALObjectPtr val, std::string t_doc = {})
 {
     auto &new_var = t_module->get_root().insert({ std::move(t_name), std::move(val) }).first->second;

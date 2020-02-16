@@ -94,11 +94,16 @@ class Module
     detail::CellStack::Scope m_root_scope;
     std::unordered_map<std::string, ModulePtr> m_modules;
     std::string m_name;
+    std::vector<std::string> m_evals;
 
   public:
     Module(std::string t_name) : m_name(std::move(t_name)) {}
 
     detail::CellStack::Scope &root_scope() { return m_root_scope; }
+
+    std::vector<std::string>&eval_strings() { return m_evals; }
+
+    void eval_string(std::string t_eval) { m_evals.push_back(std::move(t_eval)); }
 
     const std::string &name() { return m_name; }
 
