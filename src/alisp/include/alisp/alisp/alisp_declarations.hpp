@@ -224,7 +224,9 @@ Example:
 ```
 
 )");
+
 DEFUN(cond, "cond", R"((cond [[CODITION BODY] ... ]))");
+
 DEFUN(unless, "unless", R"((unless CONDITION BODY)
 
 Evaluate `BODY` if `CONDITION` evaluates to *falsey* value.
@@ -241,10 +243,35 @@ Evaluate the forms in `BODY` sequentially and return the value of the
 last one.
 )");
 
+DEFUN(let, "let", R"((let ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)
+
+Bind local variables and execute `BODY`. The second argument is a list
+of forms like `(VARIABLE VALUE)`. Each `VALUE` will be evaluated and
+its value will be bound to `VARIABLE`. `nil` variables can also be
+declared without initial value.
+
+Example:
+```elisp
+
+(let ((var-1 42)
+      (var-2 "43")
+       var-3)         ; nil variable
+   (println var-1)    ; 42
+   (println var-2))   ; 43
+
+```
+)");
+
 DEFUN(letx, "let*", R"((let* ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)
 
-)");
-DEFUN(let, "let", R"((let ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)
+Bind local variables and execute `BODY`. In contrast `let`, each
+variable can be used in the definition of the following variables. 
+
+(let ((var-1 42)
+      (var-2 var-1)
+       var-3)         ; nil variable
+   (println var-1)    ; 42
+   (println var-2))   ; 43
 
 )");
 
@@ -254,8 +281,28 @@ Call the function pointed by `SYMBOL` and pass the symbols in `LIST`
 as arguments.
 )");
 
-DEFUN(backquote, "backquote", R"((`LIST))");
-DEFUN(signal, "signal", R"((signal SYMBOL LIST))");
+DEFUN(backquote, "backquote", R"((backquote LIST)
+
+Backquote the list `LIST`. `LIST is syntactic sugar for this function.
+
+Example:
+```elisp
+
+`(val-1 ,val-2 ,@(val-3 val-3 )) ; '(val-1 (eval val-2) val-3 val-3)
+```
+)");
+
+DEFUN(signal, "signal", R"((signal SYMBOL LIST)
+
+Emit a signal with symbol `SYMBOL` and some arbitrary data stores in
+`LIST`.
+
+Example:
+```elisp
+(signal 'my-error '("there was an error" 42))
+```
+)");
+
 DEFUN(return, "return", R"((return [FROM])
 
 Return an optional value from a function. If `FROM` is given, it will
@@ -269,11 +316,33 @@ Exit the program. If `FORM` is given, its value will be the return
 code of the process. Otherwise the return code will be 0.
 )");
 
-DEFUN(assert, "assert", R"((assert FORM))");
+DEFUN(assert, "assert", R"((assert FORM)
 
-DEFUN(eq, "eq", R"((equal FORM1 FORM2))");
+Assert that the value of `FORM` is *truthy*. If not, an assert signal
+is emitted.
 
-DEFUN(equal, "equal", R"((equal FORM1 FORM2))");
+Example:
+```elisp
+(assert t)
+(assert nil)
+```
+
+)");
+
+DEFUN(eq, "eq", R"((equal FORM1 FORM2)
+
+Check if the values of `FORM1` and `FORM2` point to the same
+object. If the values are ints or doubles, the actual values will be
+tested for equality and `t` is return if they are equal. In all other
+cases, return `t` only if the two objects are the same i.e a change in
+one of the objects, will also change the other one.
+)");
+
+DEFUN(equal, "equal", R"((equal FORM1 FORM2)
+
+Return `t` if `FORM1`a and `FORM2` have the same value. Return `nil`
+otherwise.
+)");
 
 // /*  ____       _       _   _              */
 // /* |  _ \ _ __(_)_ __ | |_(_)_ __   __ _  */
