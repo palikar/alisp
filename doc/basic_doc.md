@@ -15,7 +15,7 @@ an optional list of mappings between symbols in the imported modules
 and new symbols to be imported in the current module.
 
 Example:
-```el
+```elisp
 (import 'fileio)
 (import 'fileio :all)
 (import 'fileio :file "../fileio.al")
@@ -164,9 +164,33 @@ Evaluate `BODY` if `CONDITION` evaluates to *falsey* value.
 
 > ##### **let** : *(let ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)*
 
+Bind local variables and execute `BODY`. The second argument is a list
+of forms like `(VARIABLE VALUE)`. Each `VALUE` will be evaluated and
+its value will be bound to `VARIABLE`. `nil` variables can also be
+declared without initial value.
+
+Example:
+```elisp
+
+(let ((var-1 42)
+      (var-2 "43")
+       var-3)         ; nil variable
+   (println var-1)    ; 42
+   (println var-2))   ; 43
+
+```
 
 
 > ##### **let*** : *(let* ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)*
+
+Bind local variables and execute `BODY`. In contrast `let`, each
+variable can be used in the definition of the following variables. 
+
+(let ((var-1 42)
+      (var-2 var-1)
+       var-3)         ; nil variable
+   (println var-1)    ; 42
+   (println var-2))   ; 43
 
 
 
@@ -190,7 +214,16 @@ Call the function pointed by `SYMBOL` and pass the symbols in `LIST`
 as arguments.
 
 
-> ##### **backquote** : *(`LIST)*
+> ##### **backquote** : *(backquote LIST)*
+
+Backquote the list `LIST`. `LIST is syntactic sugar for this function.
+
+Example:
+```elisp
+
+`(val-1 ,val-2 ,@(val-3 val-3 )) ; '(val-1 (eval val-2) val-3 val-3)
+```
+
 
 > ##### **return** : *(return [FROM])*
 

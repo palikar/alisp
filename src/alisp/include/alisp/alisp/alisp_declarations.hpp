@@ -34,23 +34,22 @@ namespace alisp
 /*  \____\___/|_| |_|___/\__\__,_|_| |_|\__|___/ */
 
 
-DEFVAR(Qt, Vt, "t", make_list(Qt));
-DEFVAR(Qnil, Vnil, "nil", make_object(Qnil));
+DEFVAR(Qt, Vt, "t", make_object(Qt, "Used to represent truthy value."));
+DEFVAR(Qnil, Vnil, "nil", make_object(Qnil, "Used to represent falsey value."));
 
-DEFVAR(Qmodpaths,
-       Vmodpaths,
-       "--modpaths--",
-       make_object("", "/home/arnaud/code/alisp/scripts/libs/", "/home/arnaud/temp/alisp/scripts/libs/", AL_EXTRA_MODPATHS));
+DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--", make_object("", AL_EXTRA_MODPATHS));
 DEFVAR(Qcurrent_module, Vcurrent_module, "--module--", make_string(""));
 DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--", make_list());
-
 DEFVAR(Qlicense, Vlicense, "--al-license--", make_string(AL_LICENSE));
 
-DEFSYM(Qoptional, "&optional");
-DEFSYM(Qrest, "&rest");
+DEFSYM(Qoptional, "&optional", R"(Used in an argument list to signify that the next arguments are optional.)");
+DEFSYM(Qrest, "&rest", R"(Used in an argument list to signify that the next arguemnt should be
+bound to any left arguments by function call.)");
+DEFSYM(Qcomma, ",", R"(Used by the backquote syntax in order to evaluate and expression.)");
+DEFSYM(Qcomma_at, ",@", R"(Used by the backquote syntax in order to slice in a list inside of
+another list.)");
 
-DEFSYM(Qcomma, ",");
-DEFSYM(Qcomma_at, ",@");
+
 
 
 /*  _                                                ____                _                   _        */
@@ -225,7 +224,21 @@ Example:
 
 )");
 
-DEFUN(cond, "cond", R"((cond [[CODITION BODY] ... ]))");
+DEFUN(cond, "cond", R"((cond [ ( [CODITION BODY] ) ... ])
+
+Chooses what to evaluate among an arbitrary number of
+alternatives. Each clause must a list. The first element of each list
+will be evaluated and if its value is truthy, the rest of the elements
+of the corresponging list will also be evaluated. The evaluation of
+`cond` is then finished.
+
+Example:
+```elisp
+(cond
+((== (1  2)) (println "This won't print"))
+((== (2  2)) (println "This will print")))
+```
+)");
 
 DEFUN(unless, "unless", R"((unless CONDITION BODY)
 
@@ -352,19 +365,56 @@ otherwise.
 // /*                                 |___/  */
 
 
-DEFUN(print, "print", R"((print VALUE [[VALUE] ...]))");
-DEFUN(println, "println", R"((println VALUE [[VALUE] ...]))");
-DEFUN(eprint, "eprint", R"((eprint VALUE [[VALUE] ...]))");
-DEFUN(eprintln, "eprintln", R"((eprintln VALUE [[VALUE] ...]))");
+DEFUN(print, "print", R"((print FORM [[FORM] ...])
 
-DEFUN(dump, "dump", R"(())");
-DEFUN(dumpstack, "dumpstack", R"(())");
-DEFUN(dumpcallstack, "dumpcallstack", R"(())");
+Print the value of VALUE of form on the standard output stream.
+)");
 
-DEFUN(dumplicense, "dumplicense", R"((dumplicense))");
-DEFUN(dumpcredits, "dumpcredits", R"((dumpcredits))");
+DEFUN(println, "println", R"((println VALUE [[VALUE] ...])
 
-DEFUN(read_line, "read-line", R"((read-line))");
+Print the value of VALUE of form on the standard output stream and put a new
+line character.
+)");
+
+DEFUN(eprint, "eprint", R"((eprint VALUE [[VALUE] ...])
+
+Print the value of VALUE of form on the standard error stream.
+)");
+
+DEFUN(eprintln, "eprintln", R"((eprintln VALUE [[VALUE] ...])
+
+Print the value of VALUE of form on the standard error stream and put a new
+line character.
+)");
+
+DEFUN(dump, "dump", R"((dump FORM))");
+DEFUN(dumpstack, "dumpstack", R"((dumpstack)
+
+Print a formatted version of the current state of the execution
+environment. This is where the stack frames and the scopes live.
+
+)");
+DEFUN(dumpcallstack, "dumpcallstack", R"((dumpcallstack)
+
+Print a formatted version of the current call stack on the standard
+output. This function is meant for debugging.
+)");
+
+DEFUN(dumplicense, "dumplicense", R"((dumplicense)
+
+Print the license of Alisp on the standard output.
+
+)");
+
+DEFUN(dumpcredits, "dumpcredits", R"((dumpcredits)
+
+Print the contributors information for Alisp on the standard output.
+)");
+
+DEFUN(read_line, "read-line", R"((read-line)
+
+Read a single line form the standard input stream and return it.
+)");
 
 
 /*  _     _     _        */

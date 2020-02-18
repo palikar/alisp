@@ -116,11 +116,15 @@ template<typename... T> inline auto make_object(T &&... args)
     return detail::ALObjectHelper::get(std::forward<T>(args)...);
 }
 
-template<typename T> inline auto make_symbol(T name)
+template<typename T> inline auto make_symbol(T name, [[maybe_unused]] std::string t_doc = {})
 {
     static_assert(std::is_constructible_v<std::string, T>, "Name must be string like type.");
-
-    return detail::ALObjectHelper::get(std::string(name), true);
+    
+    auto new_obj = detail::ALObjectHelper::get(std::string(name), true);
+#ifdef ENABLE_OBJECT_DOC
+    new_obj->set_prop("--doc--", detail::ALObjectHelper::get(std::move(t_doc)));
+#endif
+    return new_obj;
 }
 
 template<typename T> inline auto make_int(T value)
@@ -182,9 +186,9 @@ inline auto make_list(ALObject::list_type elements)
 inline auto make_prime(Prim::func_type t_function, std::string t_name, [[maybe_unused]] std::string t_doc = {})
 {
     auto sym = make_object(ALObject::list_type{})->make_prime(t_function);
-    sym->set_prop("--name--", make_string(t_name));
+    sym->set_prop("--name--", make_string(std::move(t_name)));
 #ifdef ENABLE_OBJECT_DOC
-    sym->set_prop("--doc--", make_string(t_doc));
+    sym->set_prop("--doc--", make_string(std::move(t_doc)));
 #endif
     return sym;
 }
