@@ -22,6 +22,11 @@ nav:
 - Streams Manipulation: streams_doc.md
 - Modules:
     - Index: './modules/index.md'
-    - Json : './modules/json.md'
+    - Fileio : './modules/fileio.md'
+    - Math : './modules/math.md'
+    - Memory : './modules/memory.md'
+    - Platform : './modules/platform.md'
+    - System : './modules/system.md'
+    - Time : './modules/time.md'
 
 theme: readthedocs

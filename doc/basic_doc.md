@@ -494,7 +494,7 @@ Set the property with name PROPERTY of SYM to VALUE.
 Return a list with all of the properties of SYM.
 
 
-## Object Properties
+## Object predicates
 
 Functions for type inspecting. These functions can be used to check whether an object is from a certain type.
 
@@ -574,33 +574,121 @@ Functions that realise simple math operations.
 
 - ###**+** : *(+ [[VALUE]...])*
 
+Retrun the sum of the values of all the provided arguments. 
+
+Example:
+```elisp
+(+ 10 20 30)
+```
+
+
 - ###**-** : *(- [[VALUE]...])*
 
-- ###**/** : *(/ [[VALUE]...])*
+Subsract the values of the folloring arguments from the value of the
+first argument.
+
+Example:
+```elisp
+(- 10 20 30)
+```
+
+
+- ###**/** : *(/ [[VALUE]...])(- [[VALUE]...])*
+
+Devide the value of the first argument to the values of the following
+arguements.
+
+Example:
+```elisp
+(/ 10 20 30)
+```
+
 
 - ###***** : *(* [[VALUE]...])*
 
+Retrun the product of the values of all the provided arguments. 
+
+Example:
+```elisp
+(* 10 20 30)
+```
+
+
 - ###**<** : *(< VALUE1 VALUE2)*
+
+Return `t` if `VALUE1` is less in value than `VALUE2`. Return `nil`
+otherwise.
+
 
 - ###**<=** : *(<= VALUE1 VALUE2)*
 
+Return `t` if `VALUE1` is less or equal in value than `VALUE2`. Return `nil`
+otherwise.
+
+
 - ###**>** : *(> VALUE1 VALUE2)*
+
+Return `t` if `VALUE1` is grater in value than `VALUE2`. Return `nil`
+otherwise.
+
 
 - ###**>=** : *(>= VALUE1 VALUE2)*
 
+Return `t` if `VALUE1` is grater or equal in value than `VALUE2`. Return `nil`
+otherwise.
+
+
 - ###**==** : *(== VALUE1 VALUE2)*
+
+Return `t` if `VALUE1` is equal in value than `VALUE2`. Return `nil`
+otherwise.
+
 
 - ###**!=** : *(!= VALUE1 VALUE2)*
 
-- ###**mod** : *(mod VALUE1)*
+Return `t` if `VALUE1` is not equal in value than `VALUE2`. Return `nil`
+otherwise.
+
+
+- ###**mod** : *(mod VALUE1 VALUE2)*
+
+Return the remainder by devision of `VALUE1` to `VALUE2`
+
 
 - ###**pow** : *(pow VALUE1 VALUE2)*
 
+Return `VALUE1` to the power of `VALUE2`.
+
+
 - ###**min** : *(min [[VALUE]...])*
+
+Evaluate the provided arguemnts and return the minimum value.
+
+Example:
+```elisp
+(min 10 20 30) ; 10
+```
+
 
 - ###**max** : *(max [[VALUE]...])*
 
-- ###**round** : *(round VALUE PLACES)*
+Evaluate the provided arguemnts and return the maximum value.
+
+Example:
+```elisp
+(max 10 20 30) ; 30
+```
+
+
+- ###**round** : *(round VALUE PLACE)*
+
+Round the real value `VALUE` to the `PALCE`-th decimal place.
+
+Example:
+```elisp
+(round 42.1345 2) ; 42.13
+```
+
 
 ## Algorithms
 
@@ -608,15 +696,59 @@ Several functions of basic algorithms for working with lists.
 
 - ###**slice** : *(slice LIST FROM TO)*
 
-- ###**sort** : *(sort LIST)*
+Select a subsection of the list `LIST` and return a new list with the
+elements of the subsection.
+
+Example:
+```elisp
+(slice '(10 20 30  40 50 60 70 80 90) 1 5) 
+```
+
 
 - ###**sort** : *(sort LIST)*
+
+Sort the elements of `LIST` in ascending order. This function will
+change LIST and won't generate a new object.
+
+Example:
+```elisp
+(sort '(20 12 2 43 56 10 68 30))
+```
+
+
+- ###**sort** : *(sort LIST)*
+
+Sort the elements of `LIST` in ascending order. This function will
+change LIST and won't generate a new object.
+
+Example:
+```elisp
+(sort '(20 12 2 43 56 10 68 30))
+```
+
 
 - ###**zip** : *(zip [[LIST] ...])*
 
-- ###**filter** : *(filter FUNCTION LIST)*
+Take mutliple lists and build pairs of their elements at corresponding
+positions. The pairs are put into a new list and this list is
+returned.
 
-- ###**any** : *(any FUNCTION LIST)*
 
-- ###**all** : *(all FUNCTION LIST)*
+- ###**filter** : *(filter PREDICATE LIST)*
+
+Collect the elements of `LIST` that fullfil the predicate `PREDICATE`
+and return a new list of them.
+
+
+- ###**any** : *(any PREDICATE LIST)*
+
+Return `t` if at leas one of the elements in `LIST` fulfull the
+predicate `PREDICATE`. Return `nil` otherwise.
+
+
+- ###**all** : *(all PREDICATE LIST)*
+
+Return `t` if all elements in `LIST` fulfull the predicate
+`PREDICATE`. Return `nil` otherwise.
+
 

@@ -3,7 +3,7 @@
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
+n the Free Software Foundation; either version 2 of the License, or
  (at your option) any prior version.
 
  This program is distributed in the hope that it will be useful,
@@ -713,25 +713,145 @@ Return `t` if FORM evaluate to a falsey value and `nil` otherwise.
 /* | |  | | (_| | |_| | | | */
 /* |_|  |_|\__,_|\__|_| |_| */
 
-DEFUN(plus, "+", R"((+ [[VALUE]...]))");
-DEFUN(minus, "-", R"((- [[VALUE]...]))");
-DEFUN(dev, "/", R"((/ [[VALUE]...]))");
-DEFUN(multiply, "*", R"((* [[VALUE]...]))");
-DEFUN(gt, ">", R"((> VALUE1 VALUE2))");
-DEFUN(geq, ">=", R"((>= VALUE1 VALUE2))");
-DEFUN(lt, "<", R"((< VALUE1 VALUE2))");
-DEFUN(leq, "<=", R"((<= VALUE1 VALUE2))");
-DEFUN(eq_math, "==", R"((== VALUE1 VALUE2))");
-DEFUN(neq, "!=", R"((!= VALUE1 VALUE2))");
-DEFUN(mod, "mod", R"((mod VALUE1))");
-DEFUN(pow, "pow", R"((pow VALUE1 VALUE2))");
+DEFUN(plus, "+", R"((+ [[VALUE]...])
 
-DEFUN(leftshift, "<<", R"((<< VALUE))");
-DEFUN(rightshift, ">>", R"((>> VALUE))");
+Retrun the sum of the values of all the provided arguments. 
 
-DEFUN(min, "min", R"((min [[VALUE]...]))");
-DEFUN(max, "max", R"((max [[VALUE]...]))");
-DEFUN(round, "round", R"((round VALUE PLACES))");
+Example:
+```elisp
+(+ 10 20 30)
+```
+)");
+
+DEFUN(minus, "-", R"((- [[VALUE]...])
+
+Subsract the values of the folloring arguments from the value of the
+first argument.
+
+Example:
+```elisp
+(- 10 20 30)
+```
+)");
+
+DEFUN(dev, "/", R"((/ [[VALUE]...])(- [[VALUE]...])
+
+Devide the value of the first argument to the values of the following
+arguements.
+
+Example:
+```elisp
+(/ 10 20 30)
+```
+)");
+
+DEFUN(multiply, "*", R"((* [[VALUE]...])
+
+Retrun the product of the values of all the provided arguments. 
+
+Example:
+```elisp
+(* 10 20 30)
+```
+)");
+
+DEFUN(gt, ">", R"((> VALUE1 VALUE2)
+
+Return `t` if `VALUE1` is grater in value than `VALUE2`. Return `nil`
+otherwise.
+)");
+
+DEFUN(geq, ">=", R"((>= VALUE1 VALUE2)
+
+Return `t` if `VALUE1` is grater or equal in value than `VALUE2`. Return `nil`
+otherwise.
+)");
+
+DEFUN(lt, "<", R"((< VALUE1 VALUE2)
+
+Return `t` if `VALUE1` is less in value than `VALUE2`. Return `nil`
+otherwise.
+)");
+
+DEFUN(leq, "<=", R"((<= VALUE1 VALUE2)
+
+Return `t` if `VALUE1` is less or equal in value than `VALUE2`. Return `nil`
+otherwise.
+)");
+
+DEFUN(eq_math, "==", R"((== VALUE1 VALUE2)
+
+Return `t` if `VALUE1` is equal in value than `VALUE2`. Return `nil`
+otherwise.
+)");
+
+DEFUN(neq, "!=", R"((!= VALUE1 VALUE2)
+
+Return `t` if `VALUE1` is not equal in value than `VALUE2`. Return `nil`
+otherwise.
+)");
+
+DEFUN(mod, "mod", R"((mod VALUE1 VALUE2)
+
+Return the remainder by devision of `VALUE1` to `VALUE2`
+)");
+
+DEFUN(pow, "pow", R"((pow VALUE1 VALUE2)
+
+Return `VALUE1` to the power of `VALUE2`.
+)");
+
+DEFUN(round, "round", R"((round VALUE PLACE)
+
+Round the real value `VALUE` to the `PALCE`-th decimal place.
+
+Example:
+```elisp
+(round 42.1345 2) ; 42.13
+```
+)");
+
+DEFUN(leftshift, "<<", R"((<< VALUE1 VALUE2)
+
+Shift the bits of `VALUE` to the left `VALUE2` times.
+
+Example:
+```elisp
+(>> 16 2)   ;  4
+```
+)");
+
+DEFUN(rightshift, ">>", R"((>> VALUE1 VALU2)
+
+Shift the bits of `VALUE` to the right `VALUE2` times.
+
+Example:
+```elisp
+(<< 2 2)   ;  8
+```
+)");
+
+DEFUN(min, "min", R"((min [[VALUE]...])
+
+Evaluate the provided arguemnts and return the minimum value.
+
+Example:
+```elisp
+(min 10 20 30) ; 10
+```
+)");
+
+DEFUN(max, "max", R"((max [[VALUE]...])
+
+Evaluate the provided arguemnts and return the maximum value.
+
+Example:
+```elisp
+(max 10 20 30) ; 30
+```
+)");
+
+
 
 
 /*  ____  _        _                  */
@@ -770,12 +890,52 @@ DEFUN(char_isdigit, "char-isdigit", R"((char-isdigit CHAR))");
 /*            |___/                                       */
 
 
-DEFUN(slice, "slice", R"((slice LIST FROM TO))");
-DEFUN(sort, "sort", R"((sort LIST))");
-DEFUN(zip, "zip", R"((zip [[LIST] ...]))");
-DEFUN(filter, "filter", R"((filter FUNCTION LIST))");
-DEFUN(any, "any", R"((any FUNCTION LIST))");
-DEFUN(all, "all", R"((all FUNCTION LIST))");
+DEFUN(slice, "slice", R"((slice LIST FROM TO)
+
+Select a subsection of the list `LIST` and return a new list with the
+elements of the subsection.
+
+Example:
+```elisp
+(slice '(10 20 30  40 50 60 70 80 90) 1 5) 
+```
+)");
+
+DEFUN(sort, "sort", R"((sort LIST)
+
+Sort the elements of `LIST` in ascending order. This function will
+change LIST and won't generate a new object.
+
+Example:
+```elisp
+(sort '(20 12 2 43 56 10 68 30))
+```
+)");
+
+DEFUN(zip, "zip", R"((zip [[LIST] ...])
+
+Take mutliple lists and build pairs of their elements at corresponding
+positions. The pairs are put into a new list and this list is
+returned.
+)");
+
+DEFUN(filter, "filter", R"((filter PREDICATE LIST)
+
+Collect the elements of `LIST` that fullfil the predicate `PREDICATE`
+and return a new list of them.
+)");
+
+DEFUN(any, "any", R"((any PREDICATE LIST)
+
+Return `t` if at leas one of the elements in `LIST` fulfull the
+predicate `PREDICATE`. Return `nil` otherwise.
+)");
+
+DEFUN(all, "all", R"((all PREDICATE LIST)
+
+Return `t` if all elements in `LIST` fulfull the predicate
+`PREDICATE`. Return `nil` otherwise.
+)");
 
 /*  ____                      */
 /* |  _ \ __ _ _ __ ___  ___  */

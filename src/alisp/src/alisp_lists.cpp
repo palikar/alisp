@@ -242,9 +242,9 @@ ALObjectPtr Frange(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     const auto step = [&obj, &eval]() {
         if (std::size(*obj) > 2)
         {
-            auto step = eval->eval(obj->i(2));
-            assert_int(step);
-            return step->to_int();
+            auto step_obj = eval->eval(obj->i(2));
+            assert_int(step_obj);
+            return step_obj->to_int();
         }
         return static_cast<ALObject::int_type>(1);
     }();
