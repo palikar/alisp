@@ -110,7 +110,7 @@ template<bool evaluation> void Evaluator::handle_argument_bindings(ALObjectPtr p
             }
             else if (!opt)
             {
-                throw argument_error("The function do not accept optional arguments.");
+                throw argument_error("The function requires more arguments than the provided ones.");
             }
             else
             {
@@ -125,9 +125,9 @@ template<bool evaluation> void Evaluator::handle_argument_bindings(ALObjectPtr p
     }
 
 
-    if (prev_opt_or_rest) { throw argument_error("Parameters end with &optional or &rest."); }
+    if (prev_opt_or_rest) { throw argument_error("The argument list ends with &optional or &rest."); }
 
-    if (index < arg_cnt) { throw argument_error("Not enough argument for the function."); }
+    if (index < arg_cnt) { throw argument_error("Too many arguments provided for the function call."); }
 }
 
 ALObjectPtr Evaluator::eval(ALObjectPtr obj)
