@@ -20,4 +20,8 @@ nav:
 - Basic Documentation: basic_doc.md
 - File Manipulation: files_doc.md
 - Streams Manipulation: streams_doc.md
+- Modules:
+    - Index: './modules/index.md'
+    - Json : './modules/json.md'
+
 theme: readthedocs

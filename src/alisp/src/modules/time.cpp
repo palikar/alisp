@@ -27,6 +27,11 @@ env::ModulePtr init_time(env::Environment *, eval::Evaluator *)
 {
 
     auto Mtime = module_init("time");
+    auto time_ptr = Mtime.get();
+
+    module_doc(time_ptr, R"(The `time` module provides utility functions for working with time
+and dates.)");
+    
     return Mtime;
 }
 

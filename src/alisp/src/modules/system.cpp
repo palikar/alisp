@@ -109,6 +109,8 @@ env::ModulePtr init_system(env::Environment *, eval::Evaluator *)
     auto Msystem = module_init("system");
     auto sys_ptr = Msystem.get();
 
+    module_doc(sys_ptr, "The `os` modules allows you to access common OS functions through Alisp.");
+
     module_defvar(sys_ptr, "env-vars", detail::get_evnvars());
 
     module_defun(sys_ptr, "get-env", &detail::Fget_env);

@@ -842,6 +842,8 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
     auto Mfileio = module_init("fileio");
     auto fio_ptr = Mfileio.get();
 
+    module_doc(fio_ptr, R"(The `fileio` moudule provides utilities for working with file paths, files, directories and some basic IO functions.)");
+
     module_defvar(fio_ptr, "f-directory-separator", make_string(detail::separator));
 
     module_defun(fio_ptr, "f-expand-user", &detail::Fexpand_user);

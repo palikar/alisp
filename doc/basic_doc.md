@@ -604,7 +604,7 @@ Functions that realise simple math operations.
 
 ## Algorithms
 
-Several functions for basic algorithms for working with lists.
+Several functions of basic algorithms for working with lists.
 
 - ###**slice** : *(slice LIST FROM TO)*
 

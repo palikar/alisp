@@ -1,4 +1,9 @@
 (import 'fileio)
+(import 'math)
+(import 'memory)
+(import 'platform)
+(import 'system)
+(import 'time)
 
 (defun heading-1 (name)
   "Creates a heading"
@@ -19,6 +24,10 @@
 (defun tip (name)
   "Creates a not"
   (print "!!! Tip\n\t" name "\n"))
+
+(defun link (to text)
+  "Creates a not"
+  (print "[" text "](" to ")" ))
 
 (defun line (&optional n)
   (if n (dolist (el (range 0 n))
@@ -132,7 +141,7 @@
 (defvar math-preamble "Functions that realise simple math operations.")
 (defvar math-list '(+ - / * < <= > >= == != mod pow min max round))
 
-(defvar alg-preamble "Several functions for basic algorithms for working with lists.")
+(defvar alg-preamble "Several functions of basic algorithms for working with lists.")
 (defvar alg-list '(slice sort sort zip filter any all))
 
 (defun generate-basic-reference ()
@@ -171,6 +180,7 @@
   (expand-and-dump alg-list))
 
 (defun generate-streams-reference ()
+
   (heading-1 "Streaming system.")
   (line)
   (println "Alisp provides a mechanism for working with streams. Streams are abstraction that supports writing and reading and provide unified interface for these operation. In ALisp streams are handled through *resource objects*. This means that every strema is identified through a int-object that acts like a pointer to the underlying stream. The intrpterer keeps track of every opened stream and provides acces to each of them throught the resource object (the int value).")
@@ -234,6 +244,24 @@
     (line)
     (expand-and-dump io-files-list)))
 
+(defun generate-modules-index ()
+  (heading-2 "Builtin Modules")
+  (line)
+
+  (let ( (modules '(fileio math memory platform system time))
+         (preamble "Builtin Modules are built into the Alisp interpreter and can be always imported. These modules are meant to provide common functionality like working with files, basic OS-operations, math functions, etc."))
+    (println preamble)
+    (line)
+    
+    (dolist (mod modules)
+      (print "* ")
+      (link (string-join "./modules/" (to-string mod) ".md") (to-string mod))
+      (print " - " (modref mod '--doc--))
+      (line))))
+
+(defun generate-fileio-module ()
+  
+  )
 
 (println "Genrating basic...: " "basic_doc.md")
 (std-redirect (fileio.f-join root-dir "basic_doc.md") (generate-basic-reference))
@@ -244,3 +272,7 @@
 (println "Genrating files...: " "files_doc.md")
 (std-redirect (fileio.f-join root-dir "files_doc.md") (generate-files-reference))
 
+(println "Generating builting modules index..." "modules/index.md")
+(std-redirect (fileio.f-join root-dir "modules/index.md") (generate-modules-index))
+
+(generate-fileio-module)

@@ -33,6 +33,10 @@ env::ModulePtr init_platform(env::Environment *, eval::Evaluator *)
     auto Mplatform = module_init("platform");
     auto plat_ptr  = Mplatform.get();
 
+    module_doc(plat_ptr, R"(The `platform` module exposes infomration about the Alisp
+interpreter, the underlying operating system and information about it
+as well as how the intrpterter was compiled.)");
+
     module_defvar(plat_ptr, "os", make_string(ALISP_OS_NAME));
     module_defvar(plat_ptr, "alisp-version", make_string(alisp::BuildInfo::version()));
     module_defvar(plat_ptr, "alisp-version-major", make_int(alisp::BuildInfo::version_major()));

@@ -102,6 +102,9 @@ env::ModulePtr init_math(env::Environment *, eval::Evaluator *)
     auto Mmath    = module_init("math");
     auto math_ptr = Mmath.get();
 
+    module_doc(math_ptr, R"(The `math` provides more complicated math functions. Often these
+function are just wrappers around the standard C++ functions)");
+
     module_defvar(math_ptr, "PI", make_double(detail::PI));
     module_defvar(math_ptr, "E", make_double(detail::E));
     module_defvar(math_ptr, "TAU", make_double(detail::TAU));
