@@ -589,17 +589,25 @@ Example:
 /* |____/ \__|_|  \___|\__,_|_| |_| |_|___/ */
 
 DEFUN(stream, "stream", R"((stream [:from-string STRING] [:from-file FILE]))");
+
 DEFUN(close_stream, "stream-close", R"((stream-close STREAM))");
+
 DEFUN(with_cout, "with-cout", R"((with-cout STREAM))");
+
 DEFUN(with_cin, "with-cin", R"((with-cin STREAM))");
 
 DEFUN(stream_content, "stream-content", R"(((content STREAM))");
 
 DEFUN(stream_write, "stream-write", R"((stream-write VALUE))");
+
 DEFUN(stream_write_line, "stream-write-line", R"((stream-write-line VALUE))");
+
 DEFUN(stream_write_lines, "stream-write-lines", R"((stream-write-line VALUE [[VALUE] ...]))");
+
 DEFUN(stream_read, "stream-read", R"((stream-read))");
+
 DEFUN(stream_read_line, "stream-read-line", R"((stream-read-line))");
+
 DEFUN(stream_read_lines, "stream-read-lines", R"((stream-read-lines))");
 
 
@@ -609,11 +617,51 @@ DEFUN(stream_read_lines, "stream-read-lines", R"((stream-read-lines))");
 /* |  _| | | |  __/\__ \ */
 /* |_|   |_|_|\___||___/ */
 
-DEFUN(file_open, "file-open", R"((file-open PATH [:out] [:in]))");
-DEFUN(file_close, "file-close", R"((file-close FILE))");
-DEFUN(file_read_line, "file-read-line", R"((file-read-line FILE VALUE))");
-DEFUN(file_write_line, "file-write-line", R"((file-write-line FILE))");
-DEFUN(file_has_more, "file-has-more", R"((file-has-more))");
+DEFUN(file_open, "file-open", R"((file-open PATH [:out] [:in])
+
+Open a file from the filesystem. If `:out` is specified, the file will
+be opened for writing. If `:in` is specified the file will be opened
+for reading. Provind both keyword arguemnts is also possible. The
+function returns a resrouse descriptor that can be used to access the underlying file.
+
+```elisp
+(defvar file-1 (file-open "./file-1.al" :out)
+(defvar file-2 (file-open "./file-2.al" :in)
+```
+)");
+
+DEFUN(file_close, "file-close", R"((file-close FILE)
+
+Close an opened file and release the file descriptor. `FILE` should be
+a valid resource descriptor pointing to a file.
+
+```elisp
+(defvar file-1 (file-open "./file-1.al" :out)
+(file-close file-1)
+```
+)");
+
+DEFUN(file_read_line, "file-read-line", R"((file-read-line FILE)
+
+Read a single line from a file an return it.`FILE` should be a valid
+resource descriptor pointing to a file. This function also moves the
+position of the underlying file stream after the read line.
+
+)");
+
+DEFUN(file_write_line, "file-write-line", R"((file-write-line FILE STRING)
+
+Write `STRING` to a file, followed by a new line. `FILE` should be
+a valid resource descriptor pointing to a file.
+
+)");
+
+DEFUN(file_has_more, "file-has-more", R"((file-has-more FILE)
+
+Check if there is more data to read of a `FILE`. `FILE` should be a
+valid resource descriptor pointing to a file. Return `t` if the stream
+pointer has reached to the end of the file and `nil` otherwise.
+)");
 
 
 /*  ____                       */
