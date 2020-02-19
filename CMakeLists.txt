@@ -40,7 +40,7 @@ option(DISABLE_DEFAULT_MODULES "Dont't build the builtin modules" FALSE)
 option(ENABLE_STACK_TRACE "Build Alisp with support for tracing function calls" TRUE)
 option(ENABLE_LINE_TRACE "Enable line tracing for each list object" TRUE)
 option(ENABLE_OBJECT_DOC "Enable adding documentaion for each objet" TRUE)
-
+option(ENABLE_LTO "Enable Link Time Optimization" FALSE)
 
 set(TIME_CHECK_SAMPLES 10 CACHE STRING "How many time to perform the timing check") 
 
@@ -60,6 +60,12 @@ add_library(project_options INTERFACE)
 
 target_compile_features(project_options INTERFACE cxx_std_17)
 
+
+
+if (ENABLE_LTO)
+    add_definitions(-flto)
+    set(LINKER_FLAGS "${LINKER_FLAGS} -flto")
+endif()
 
 if(ONLY_COVERAGE OR ENABLE_COVERAGE)
     target_compile_options(project_options INTERFACE --coverage -O0 -g)

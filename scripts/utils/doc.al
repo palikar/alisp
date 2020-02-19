@@ -177,7 +177,9 @@
 
   (heading-2 "Algorithms")
   (println "\n" alg-preamble "\n")
-  (expand-and-dump alg-list))
+  (expand-and-dump alg-list)
+  
+  )
 
 (defun generate-streams-reference ()
 

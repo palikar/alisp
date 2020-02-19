@@ -239,7 +239,6 @@ template<class Environment> class ALParser : public ParserBase
         return digit < base ? digit : -1;
     }
 
-
     template<typename number_type, int m_radix> struct WholeNumberParser
     {
         number_type m_num = 0;
@@ -346,7 +345,6 @@ template<class Environment> class ALParser : public ParserBase
 
         number_type get_num() { return exp ? (base_sign * m_base) * std::pow(number_type(10), exp_sign * m_num) : base_sign * m_num; }
     };
-
 
     template<typename string_type> struct StringParser
     {
@@ -542,7 +540,6 @@ template<class Environment> class ALParser : public ParserBase
             return true;
         }
     };
-
 
     void skip_empty()
     {
@@ -745,8 +742,8 @@ template<class Environment> class ALParser : public ParserBase
 
         switch (word_hash)
         {
-        case hash::hash("--FILE--"): return make_string(m_file);
-        case hash::hash("--LINE--"): return make_int(position.line);
+          case hash::hash("--FILE--"): return make_string(m_file);
+          case hash::hash("--LINE--"): return make_int(position.line);
         }
 
         return env::intern(std::string(word));
@@ -914,6 +911,7 @@ template<class Environment> class ALParser : public ParserBase
         auto new_list = make_object(objs);
 #ifdef ENABLE_LINE_TRACE
         new_list->set_prop("--line--", make_int(line));
+        // new_list->set_prop("--file--", m_file);
 #endif
         return new_list;
     }

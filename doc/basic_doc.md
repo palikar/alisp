@@ -534,39 +534,95 @@ Functions for basic string handling.
 
 - ###**string-length** : *(string-length STRING)*
 
+Return the length of the provided string.
+
+
 - ###**string-contains** : *(string-contains STRING SUBSTRING)*
+
+Return `t` if `STRING` contains `SUBSTRING` as a substring. Return `nil` otherwise.
+
 
 - ###**string-endswith** : *(string-contains STRING SUFFIX)*
 
+Return `t` if `STRING` ends with `SUFFIX`. Return `nil` otherwise.
+
+
 - ###**string-startswith** : *(string-contains STRING PREFIX)*
+
+Return `t` if `STRING` starts with `PREFIX`. Return `nil` otherwise.
+
 
 - ###**string-length** : *(string-length STRING)*
 
+Return the length of the provided string.
+
+
 - ###**string-capitalize** : *(string-capitalize STRING)*
+
+Capitalized the first letter of the provided string.
+
 
 - ###**string-find** : *(string-find STRING SUBSTRING)*
 
+Return the first index where `SUBSTRING` is contained in `STRINGE`.
+
+
 - ###**string-replace** : *(string-replace STRING SUBSTRING NEWSTRING)*
+
+Replace one occurrence of `SUBSTRING` in STRING with `NEWSTRING`. The
+new string is returned.
+
 
 - ###**string-replaceall** : *(string-replaceall STRING SUBSTRING NEWSTRING)*
 
+Replace all occurrences of `SUBSTRING` in STRING with `NEWSTRING`. The
+new string is returned.
+
+
 - ###**string-split** : *(string-split STRING DELIMETER)*
+
+Split `STRING` based on `DELIMETER` and return a list of the parts.
+
 
 - ###**string-substring** : *(string-substring STRING FROM TO)*
 
+Return a new string that is the subsection [`FROM`, `TO`) of `STRING`.
+
+
 - ###**string-splitlines** : *(string-splitlines STRING)*
+
+Split `STRING` based on `\n` and return a list of the lines.
+
 
 - ###**string-upper** : *(string-upper STRING)*
 
+Capitalize every letter of `STRING`.
+
+
 - ###**string-lower** : *(string-lower STRING)*
+
+Lower every letter of `STRING`.
+
 
 - ###**string-strip** : *(string-strip STRING)*
 
+Remove and trailing or preceding whitespace of string.
+
+
 - ###**string-join** : *(string-join STRING [[STRING] ...])*
+
+Concatenate the provided string to a new string.
+
 
 - ###**char-isalpha** : *(char-isalpha CHAR)*
 
+Check if the character CHAR is a letter.
+
+
 - ###**char-isdigit** : *(char-isdigit CHAR)*
+
+Check if the character CHAR is a digit.
+
 
 ## Basic Math
 
