@@ -30,7 +30,7 @@
 
 (defun dump-doc-list (&rest sym)
   (dolist (el sym)    
-    (print "> ##### ")
+    (print "- ###")
     (bold (prop-get el "--name--" ))
     (print " : ")
     (let ((lines (string-splitlines (prop-get el "--doc--" ))))
@@ -136,7 +136,7 @@
 (defvar alg-list '(slice sort sort zip filter any all))
 
 (defun generate-basic-reference ()
-  (heading-1 "Basic builit in functions.")
+  (heading-1 "Basic builtin functions.")
   
   (heading-2 "Language constructs")
   (println "\n" constructs-preamble "\n")

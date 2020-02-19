@@ -61,6 +61,20 @@ ALObjectPtr Fprop_get(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
     return target->get_prop(prop_name);
 }
 
+
+ALObjectPtr Fprop_exists(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<2>(obj);
+
+    auto target = eval->eval(obj->i(0));
+
+    auto prop = eval->eval(obj->i(1));
+    assert_string(prop);
+    auto &prop_name = prop->to_string();
+
+    return target->prop_exists(prop_name) ? Qt : Qnil;
+}
+
 ALObjectPtr Fprop_list(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);

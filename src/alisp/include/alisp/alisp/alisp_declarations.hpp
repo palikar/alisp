@@ -265,13 +265,11 @@ declared without initial value.
 
 Example:
 ```elisp
-
 (let ((var-1 42)
       (var-2 "43")
        var-3)         ; nil variable
    (println var-1)    ; 42
    (println var-2))   ; 43
-
 ```
 )");
 
@@ -280,12 +278,14 @@ DEFUN(letx, "let*", R"((let* ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)
 Bind local variables and execute `BODY`. In contrast `let`, each
 variable can be used in the definition of the following variables. 
 
-(let ((var-1 42)
+Example:
+```elisp
+(let* ((var-1 42)
       (var-2 var-1)
        var-3)         ; nil variable
    (println var-1)    ; 42
    (println var-2))   ; 43
-
+```
 )");
 
 DEFUN(funcall, "funcall", R"((funcall SYMBOL LIST)
@@ -424,21 +424,164 @@ Read a single line form the standard input stream and return it.
 /* |_____|_|___/\__|___/ */
 
 
-DEFUN(mapc, "mapc", R"((mapc FUNCTION LIST))");
-DEFUN(mapcar, "mapcar", R"((mapcar FUNCTION LIST))");
-DEFUN(car, "car", R"((mapc LIST))");
-DEFUN(cons, "cons", R"((cons LIST))");
-DEFUN(head, "head", R"((head LIST))");
-DEFUN(last, "last", R"((last LIST))");
-DEFUN(init, "init", R"((init LIST))");
-DEFUN(tail, "tail", R"((tail LIST))");
-DEFUN(push, "push", R"((push LIST ELEMENT))");
-DEFUN(delete, "delete", R"((delete LIST ELEMENT))");
-DEFUN(remove, "remove", R"((remove LIST ELEMENT))");
-DEFUN(nth, "nth", R"((nth LIST INDEX))");
-DEFUN(range, "range", R"((range FROM TO))");
-DEFUN(length, "length", R"((length LIST))");
-DEFUN(contains, "contains", R"((contains LIST ELEMENT))");
+DEFUN(mapc, "mapc", R"((mapc FUNCTION LIST)
+
+Call FUNCTION for each element of LIST. The element is passed as an
+argument to the function. `mapc` return `t` and its executed only for side effects.
+
+Example:
+```elisp
+(mapc println '(1 2 3 4 5))
+(mapc (lambda (x) (print x)) '(1 2 3 4 5))
+```
+)");
+
+DEFUN(mapcar, "mapcar", R"((mapcar FUNCTION LIST)
+
+
+Call FUNCTION for each element of LIST while collecting the results of
+the calls and building a new list. The new list is returned.
+
+Example:
+```elisp
+(mapcar (lambda (x) (+ x 1)) '(1 2 3 4 5))
+```
+)");
+
+DEFUN(car, "car", R"((mapc LIST)
+
+Return the fist element of the list LIST.
+
+Example:
+```elisp
+(car '(1 2 3 4 5))
+```
+)");
+
+DEFUN(cons, "cons", R"((cons LIST)
+
+Return a sublist of LIST with all of its elements but the first one.
+
+Example:
+```elisp
+(cons '(1 2 3 4 5))
+```
+)");
+
+DEFUN(head, "head", R"((head LIST)
+
+Return the fist element of the list LIST.
+
+Example:
+```elisp
+(head '(1 2 3 4 5))
+```
+)");
+
+DEFUN(last, "last", R"((last LIST)
+
+Return the last element of the list LIST.
+
+Example:
+```elisp
+(last '(1 2 3 4 5))
+```
+)");
+
+DEFUN(init, "init", R"((init LIST)
+
+Return a sublist of LIST with all of its elements but the last one.
+
+Example:
+```elisp
+(init '(1 2 3 4 5))
+```
+)");
+
+DEFUN(tail, "tail", R"((tail LIST)
+
+Return a sublist of LIST with all of its elements but the first one.
+
+Example:
+```elisp
+(tail '(1 2 3 4 5))
+```
+)");
+
+DEFUN(push, "push", R"((push LIST ELEMENT)
+
+Add ELEMENT to the end of the LIST. This function changes the LIST
+rather than to create a new one.
+
+Example:
+```elisp
+(push '(1 2 3 4 5) 6)
+```
+)");
+
+DEFUN(delete, "delete", R"((delete LIST ELEMENT)
+
+Remove an element from LIST that is equal (with `equal`) to
+ELEMENT. This function operates inplace, so list is changed and no new
+list is created. 
+Example:
+```elisp
+(delete '(1 2 3 4 5) 5)
+```
+)");
+
+DEFUN(remove, "remove", R"((remove LIST ELEMENT)
+
+Remove an element from LIST that is equal (with `equal`) to
+ELEMENT. This function __does not__ operate inplace, so a new list is
+created.
+
+Example:
+```elisp
+(delete '(1 2 3 4 5) 5)
+```
+
+)");
+
+DEFUN(nth, "nth", R"((nth LIST INDEX)
+
+Return the element of LIST that is at position INDEX.
+
+Example:
+```elisp
+(nth '(1 2 3 4 5) 1)
+```
+)");
+
+DEFUN(range, "range", R"((range FROM TO STEP)
+
+Generate the range of numbers [FROM, TO) with a step STEP. All of
+the arguments must be ints.
+
+Example:
+```elisp
+(range 0 100 2)
+```
+)");
+DEFUN(length, "length", R"((length LIST)
+
+Return the number of elements in LIST.
+
+Example:
+```elisp
+(length '(1 2 3 4 5))
+```
+)");
+DEFUN(contains, "contains", R"((contains LIST ELEMENT)
+
+Check if LIST contains ELEMENT (according to `equal`). If yes, return
+`t`, and `nil` otherwise.
+
+Example:
+```elisp
+(contains '(1 2 3 4 5) 3)
+```
+)");
 
 
 /*  ____  _                                 */
@@ -449,11 +592,10 @@ DEFUN(contains, "contains", R"((contains LIST ELEMENT))");
 
 DEFUN(stream, "stream", R"((stream [:from-string STRING] [:from-file FILE]))");
 DEFUN(close_stream, "stream-close", R"((stream-close STREAM))");
-// DEFUN(with_stream, "with-streaRm(())");
 DEFUN(with_cout, "with-cout", R"((with-cout STREAM))");
 DEFUN(with_cin, "with-cin", R"((with-cin STREAM))");
 
-DEFUN(stream_content, "stream-content", R"(((content STRREAM))");
+DEFUN(stream_content, "stream-content", R"(((content STREAM))");
 
 DEFUN(stream_write, "stream-write", R"((stream-write VALUE))");
 DEFUN(stream_write_line, "stream-write-line", R"((stream-write-line VALUE))");
@@ -484,9 +626,25 @@ DEFUN(file_has_more, "file-has-more", R"((file-has-more))");
 /*                 |_| */
 
 
-DEFUN(prop_get, "prop-get", R"((prop-get SYM PROPERTY))");
-DEFUN(prop_set, "prop-set", R"((prop-set SYM PROPERTY VALUE))");
-DEFUN(prop_list, "prop-list", R"((prop-list SYM))");
+DEFUN(prop_get, "prop-get", R"((prop-get SYM PROPERTY)
+
+Return the property with name PROPERTY of SYM.
+)");
+
+DEFUN(prop_set, "prop-set", R"((prop-set SYM PROPERTY VALUE)
+
+Set the property with name PROPERTY of SYM to VALUE.
+)");
+
+DEFUN(prop_exists, "prop-exists", R"((prop-get SYM PROPERTY)
+
+Return `t` if SYM has the property PROPERTY and `nil` otherwise.
+)");
+
+DEFUN(prop_list, "prop-list", R"((prop-list SYM)
+
+Return a list with all of the properties of SYM.
+)");
 
 
 /*  ____               _ _           _             */
@@ -496,12 +654,35 @@ DEFUN(prop_list, "prop-list", R"((prop-list SYM))");
 /* |_|   |_|  \___|\__,_|_|\___\__,_|\__\___||___/ */
 
 
-DEFUN(pfunction, "pfunction", R"((pfunction SYMBOL))");
-DEFUN(psym, "psym", R"((psym SYMBOL))");
-DEFUN(plist, "plist", R"((plist SYMBOL))");
-DEFUN(pint, "pint", R"((pint SYMBOL))");
-DEFUN(preal, "preal", R"((preal SYMBOL))");
-DEFUN(pstring, "pstring", R"((pstring SYMBOL))");
+DEFUN(pfunction, "pfunction", R"((pfunction FORM)
+
+Return `t` if FORM is a function and `nil` otherwise.
+)");
+
+DEFUN(psym, "psym", R"((psym FORM)
+
+Return `t` if FORM is a symbol and `nil` otherwise.
+)");
+
+DEFUN(plist, "plist", R"((plist FORM)
+
+Return `t` if FORM is a list and `nil` otherwise.
+)");
+
+DEFUN(pint, "pint", R"((pint FORM)
+
+Return `t` if FORM is a integer value and `nil` otherwise.
+)");
+
+DEFUN(preal, "preal", R"((preal FORM)
+
+Return `t` if FORM is a real value and `nil` otherwise.
+)");
+
+DEFUN(pstring, "pstring", R"((pstring FORM)
+
+Return `t` if FORM is a string and `nil` otherwise.
+)");
 
 /*  _                _       */
 /* | |    ___   __ _(_) ___  */
@@ -510,9 +691,22 @@ DEFUN(pstring, "pstring", R"((pstring SYMBOL))");
 /* |_____\___/ \__, |_|\___| */
 /*             |___/         */
 
-DEFUN(or, "or", R"((or [[VALUE]...]))");
-DEFUN(and, "and", R"((and [[VALUE]...]))");
-DEFUN(not, "not", R"((not VALUE))");
+DEFUN(or, "or", R"((or [[VALUE]...])
+
+Return `t` if at least one of the arguments evaluates to a truthy
+value. The arguments are lazily evaluated.
+
+)");
+DEFUN(and, "and", R"((and [[VALUE]...])
+
+Return `t` if all of the arguments evaluates to a truthy
+value. The arguments are lazily evaluated.
+)");
+
+DEFUN(not, "not", R"((not FORM)
+
+Return `t` if FORM evaluate to a falsey value and `nil` otherwise. 
+)");
 
 
 /*  __  __       _   _      */
@@ -592,10 +786,48 @@ DEFUN(all, "all", R"((all FUNCTION LIST))");
 /* |_|   \__,_|_|  |___/\___| */
 
 
-DEFUN(int_parse, "parse-int", R"((parse-int STRING))");
-DEFUN(float_parse, "parse-float", R"((parse-float STRING))");
-DEFUN(to_string, "to-string", R"((to-string VALUE))");
-DEFUN(to_char, "to-char", R"((to-char INT))");
+DEFUN(int_parse, "parse-int", R"((parse-int STRING)
+
+Return the int value represented by STRING.
+
+Example:
+```elisp
+(parse-int "12")
+```
+)");
+
+DEFUN(float_parse, "parse-float", R"((parse-float STRING)
+
+Return the real value represented by STRING.
+
+Example:
+```elisp
+(parse-int "12.32")
+)");
+
+DEFUN(to_string, "to-string", R"((to-string VALUE)
+
+Convert VALUE to string
+
+Example:
+```elisp
+(to-string 42)
+(to-string 42.32)
+(to-string "string")
+```
+)");
+
+DEFUN(to_char, "to-char", R"((to-char INT)
+
+Convert INT to a character (ASCII encoding). INT must be a value in
+the range [0, 255].
+
+Example:
+```elisp
+(to-char 65)
+(to-char 97)
+```
+)");
 
 
 }  // namespace alisp
