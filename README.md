@@ -164,3 +164,10 @@ I&rsquo;ve learned a ton while developing Lisp. Here are some of the sources tha
 -   [Clipp](https://github.com/muellan/clipp) - This is the library ALisp uses for command line arguments handling
 -   [Rang](https://www.google.com/search?q=c%2B%2B+rang&ie=utf-8&oe=utf-8&client=firefox-b-e) - A simple library for printing text with color on the console.
 -   [GNU Emacs](https://www.gnu.org/software/emacs/manual/html_node/eintr/) - The whole project is written in Emacs. But, more importantly, the source code of Emacs taught me a lot of things about Lisp interpretation.
+
+
+## License
+
+Copyright © 2011-2020 Stanislav Arnaudov.
+
+Distributed under the GNU General Public License, version 2

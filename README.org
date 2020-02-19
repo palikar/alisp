@@ -169,3 +169,7 @@ I've learned a ton while developing Lisp. Here are some of the sources that I've
 - [[https://www.google.com/search?q=c%2B%2B+rang&ie=utf-8&oe=utf-8&client=firefox-b-e][Rang]] - A simple library for printing text with color on the console.
 - [[https://www.gnu.org/software/emacs/manual/html_node/eintr/][GNU Emacs]] - The whole project is written in Emacs. But, more importantly, the source code of Emacs taught me a lot of things about Lisp interpretation.
 
+** License
+Copyright © 2011-2020 Stanislav Arnaudov.
+
+Distributed under the GNU General Public License, version 2
