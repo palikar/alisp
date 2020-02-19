@@ -176,7 +176,7 @@ env::ModulePtr init_memory(env::Environment *, eval::Evaluator *)
 
     module_doc(mem_ptr, R"(The `memory` modules provides utilities for working with raw memory
 buffers. Memory buffers are just places in memory that are filled with bytes.)");
-    
+
     module_defun(mem_ptr, "buffer-allocate", &detail::Fallocate_buffer);
     module_defun(mem_ptr, "buffer-release", &detail::Frelease_buffer);
     module_defun(mem_ptr, "buffer-mmap", &detail::Fmmap);

@@ -69,7 +69,7 @@ struct Options
     std::vector<std::string> warnings;
 
     bool debug_logging{ false };
-    
+
     bool parse_debug{ false };
     bool eval_debug{ false };
     bool version{ false };
@@ -85,26 +85,26 @@ int main(int argc, char *argv[])
 
     auto cli = (
 
-        opts.version << clipp::option("-v", "--version") % "Show the version and build information of the current executable.",
-        opts.show_help << clipp::option("-h", "--help") % "Print help information.",
-        opts.interactive << clipp::option("-i", "--interactive") % "Start interactive mode after file evaluation.",
-        opts.parse_debug << clipp::option("-d", "--parse-debug") % "Debug output from the parser.",
-        opts.eval_debug << clipp::option("-l", "--eval-debug") % "Debug output from the evaluator.",
-        opts.quick << clipp::option("-Q", "--quick-start") % "Do not loady any scripts on initialization.",
+      opts.version << clipp::option("-v", "--version") % "Show the version and build information of the current executable.",
+      opts.show_help << clipp::option("-h", "--help") % "Print help information.",
+      opts.interactive << clipp::option("-i", "--interactive") % "Start interactive mode after file evaluation.",
+      opts.parse_debug << clipp::option("-d", "--parse-debug") % "Debug output from the parser.",
+      opts.eval_debug << clipp::option("-l", "--eval-debug") % "Debug output from the evaluator.",
+      opts.quick << clipp::option("-Q", "--quick-start") % "Do not loady any scripts on initialization.",
 
 #ifdef DEUBG_LOGGING
-        opts.debug_logging << clipp::option("-DL", "--debug-logging") % "Enable lots of debuggin output.",
+      opts.debug_logging << clipp::option("-DL", "--debug-logging") % "Enable lots of debuggin output.",
 #endif
 
-        clipp::repeatable(clipp::option("-I") & clipp::word("include", opts.includes)) % "Extra include directories for module imports.",
+      clipp::repeatable(clipp::option("-I") & clipp::word("include", opts.includes)) % "Extra include directories for module imports.",
 
-        clipp::repeatable(clipp::option("-W") & clipp::word("warnings", opts.warnings)) % "Warning types that should be enabled.",
+      clipp::repeatable(clipp::option("-W") & clipp::word("warnings", opts.warnings)) % "Warning types that should be enabled.",
 
-        (clipp::option("-e", "--eval") & opts.eval << clipp::value("expr")) % "Input string to evaluate",
+      (clipp::option("-e", "--eval") & opts.eval << clipp::value("expr")) % "Input string to evaluate",
 
-        opts.input << clipp::opt_value("file") % "Input file" & !(opts.args << clipp::opt_values("args")) % "Arguments for the script being ran."
+      opts.input << clipp::opt_value("file") % "Input file" & !(opts.args << clipp::opt_values("args")) % "Arguments for the script being ran."
 
-        );
+    );
 
 
     auto fmt = clipp::doc_formatting{}

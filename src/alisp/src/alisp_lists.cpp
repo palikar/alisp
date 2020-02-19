@@ -224,7 +224,7 @@ ALObjectPtr Fremq(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     new_children.reserve(std::size(children));
 
     std::copy_if(
-        std::begin(children), std::end(children), std::back_inserter(new_children), [element](ALObjectPtr t_obj) { return !eq(element, t_obj); });
+      std::begin(children), std::end(children), std::back_inserter(new_children), [element](ALObjectPtr t_obj) { return !eq(element, t_obj); });
 
     return make_object(new_children);
 }
@@ -235,19 +235,20 @@ ALObjectPtr Frange(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     auto start = eval->eval(obj->i(0));
     auto end   = eval->eval(obj->i(1));
-    
+
     assert_int(start);
     assert_int(end);
 
-    const auto step = [&obj, &eval](){
-        if (std::size(*obj) > 2) {
-            auto step   = eval->eval(obj->i(2));
+    const auto step = [&obj, &eval]() {
+        if (std::size(*obj) > 2)
+        {
+            auto step = eval->eval(obj->i(2));
             assert_int(step);
             return step->to_int();
         }
         return static_cast<ALObject::int_type>(1);
     }();
-    
+
     ALObject::list_type nums;
     for (auto i = start->to_int(); i < end->to_int(); i += step) { nums.push_back(make_int(i)); }
 

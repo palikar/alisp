@@ -80,7 +80,7 @@ ALObjectPtr StreamsHelper::create_file_stream(ALObjectPtr t_file)
 
 void StreamsHelper::close_stream(ALObjectPtr t_stream)
 {
-    const auto id                 = object_to_resource(t_stream);
+    const auto id = object_to_resource(t_stream);
     AL_DEBUG("Closing stream: "s += std::to_string(id));
     streams::ALStream *old_stream = al::streams_registry[id];
     delete old_stream;

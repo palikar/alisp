@@ -154,7 +154,8 @@ class LanguageEngine
         if (fs::is_directory(detail::prelude_directory))
         {
             AL_DEBUG("Loading directory: "s += detail::prelude_directory);
-            for (auto &al_file : fs::directory_iterator(detail::prelude_directory)) {
+            for (auto &al_file : fs::directory_iterator(detail::prelude_directory))
+            {
                 AL_DEBUG("Loading file: "s += al_file.path().string());
                 eval_file(al_file, false);
             }
@@ -164,7 +165,8 @@ class LanguageEngine
 
         if (utility::env_bool(ENV_VAR_RC)) { alisprc = fs::path(m_home_directory) / utility::env_string(ENV_VAR_RC); }
 
-        if (fs::is_regular_file(alisprc)) {
+        if (fs::is_regular_file(alisprc))
+        {
             AL_DEBUG("Loading file: "s += alisprc.string());
             eval_file(alisprc, false);
         }
@@ -206,7 +208,7 @@ class LanguageEngine
         }
 
         try
-        {            
+        {
             auto file_content = utility::load_file(t_path);
             do_eval(file_content, t_path);
         }
@@ -220,8 +222,9 @@ class LanguageEngine
 
     const std::string &get_home() const { return m_home_directory; }
 
-    
-    void handle_signal(int t_c) {
+
+    void handle_signal(int t_c)
+    {
         AL_DEBUG("Receiving signal: "s += std::to_string(t_c));
         m_evaluator.handle_signal(t_c);
     };

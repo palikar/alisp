@@ -211,7 +211,7 @@ TEST_CASE("Common Test [equal]", "[equal]")
 
         CHECK(!eq(make_object("string"), make_object("string")));
         CHECK(!eq(make_object("string"), make_object("string-1")));
-        
+
         CHECK(eq(make_object(1), make_object(1)));
         CHECK(eq(make_object(12), make_object(12)));
 

@@ -101,7 +101,7 @@ class Module
 
     detail::CellStack::Scope &root_scope() { return m_root_scope; }
 
-    std::vector<std::string>&eval_strings() { return m_evals; }
+    std::vector<std::string> &eval_strings() { return m_evals; }
 
     void eval_string(std::string t_eval) { m_evals.push_back(std::move(t_eval)); }
 
@@ -172,7 +172,8 @@ class Environment
         m_modules.insert({ t_name, new_mod });
     }
 
-    void define_module(const std::string t_name, ModulePtr t_mod) {
+    void define_module(const std::string t_name, ModulePtr t_mod)
+    {
         AL_DEBUG("Adding a new module: "s += t_name);
         m_modules.insert({ t_name, std::move(t_mod) });
     }
@@ -200,7 +201,7 @@ class Environment
 
     void import_root_scope(const std::string &t_from, const std::string &t_to)
     {
-        
+
         AL_DEBUG("Importing module symbols: "s += t_from + " -> " + t_to);
         auto &from_root = m_modules.at(t_from)->get_root();
         auto &to_root   = m_modules.at(t_to)->get_root();

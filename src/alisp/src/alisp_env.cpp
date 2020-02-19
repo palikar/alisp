@@ -149,7 +149,7 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
     auto name   = t_sym->to_string();
 
     AL_DEBUG("Defining macro: "s += name);
-    
+
     NameValidator::validate_object_name(name);
 
     if (scope.count(name)) { throw environment_error("Function alredy exists: " + name); }
@@ -183,10 +183,7 @@ bool Environment::load_builtin_module(const std::string &t_module_name, eval::Ev
     m_modules.insert({ t_module_name, new_mod });
 
     detail::ModuleChange mc{ *this, t_module_name };
-    for (auto& eval_str : new_mod->eval_strings()) {
-        eval->eval_string(eval_str);
-    }
-
+    for (auto &eval_str : new_mod->eval_strings()) { eval->eval_string(eval_str); }
 
 
     return true;

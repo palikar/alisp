@@ -46,7 +46,7 @@ void MemoryHelpers::release_buffer(ALObjectPtr t_buffer)
 {
     const auto id = object_to_resource(t_buffer);
     AL_DEBUG("Releasing buffer: "s += std::to_string(id));
-    auto buff     = memory::memory_registry[id];
+    auto buff = memory::memory_registry[id];
     free(buff.m_ptr);
     memory::memory_registry.destroy_resource(id);
 }

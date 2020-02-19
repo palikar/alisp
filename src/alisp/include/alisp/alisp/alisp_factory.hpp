@@ -119,7 +119,7 @@ template<typename... T> inline auto make_object(T &&... args)
 template<typename T> inline auto make_symbol(T name, [[maybe_unused]] std::string t_doc = {})
 {
     static_assert(std::is_constructible_v<std::string, T>, "Name must be string like type.");
-    
+
     auto new_obj = detail::ALObjectHelper::get(std::string(name), true);
 #ifdef ENABLE_OBJECT_DOC
     new_obj->set_prop("--doc--", detail::ALObjectHelper::get(std::move(t_doc)));

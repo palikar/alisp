@@ -453,8 +453,8 @@ inline bool eq(ALObjectPtr t_lhs, ALObjectPtr t_rhs)
       t_lhs,
       type(ALObjectType::INT_VALUE) >>= [t_rhs](ALObjectPtr t_obj) { return t_obj->to_int() == t_rhs->to_int(); },
       type(ALObjectType::REAL_VALUE) >>= [t_rhs](ALObjectPtr t_obj) { return real_equal(t_obj, t_rhs); },
-      type(ALObjectType::STRING_VALUE) or type(ALObjectType::SYMBOL)
-      or type(ALObjectType::LIST) >>= [t_rhs](ALObjectPtr t_obj) { return t_rhs == t_obj; });
+      type(ALObjectType::STRING_VALUE) or type(ALObjectType::SYMBOL) or type(ALObjectType::LIST) >>=
+      [t_rhs](ALObjectPtr t_obj) { return t_rhs == t_obj; });
 }
 
 
