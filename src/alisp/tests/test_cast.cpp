@@ -71,3 +71,22 @@ TEST_CASE("Casting Test [string]", "[cast]")
 
     std::cout.clear();
 }
+
+
+TEST_CASE("Casting Test [char]", "[cast]")
+{
+    using namespace alisp;
+    LanguageEngine engine;
+
+    std::cout.setstate(std::ios_base::failbit);
+
+    std::string input = R"b(
+ (assert (== ?a (to-char "a")))
+ (assert (== ?a (to-char 97)))
+ 
+)b";
+
+    CHECK(engine.eval_statement(input).first);
+
+    std::cout.clear();
+}

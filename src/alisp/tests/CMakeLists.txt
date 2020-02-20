@@ -11,6 +11,8 @@ add_executable(alisp_language_test
     test_algs.cpp
     test_cast.cpp
     test_engine.cpp
+    test_files.cpp
+    test_memory.cpp
     ${LAN_SOURCES})
 
 target_include_directories(alisp_language_test
@@ -18,7 +20,15 @@ target_include_directories(alisp_language_test
     PRIVATE ../src
     )
 
+
+set(EXAMPLE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../data/tests/simple_file.al")
+set(TEXT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../data/tests/example_text_file.txt")
+set(OUTPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../data/tests/output_text_file.txt")
+
 target_compile_definitions(alisp_language_test PUBLIC AL_PRELUDE_DIR=\"${PRELUDE_DIR}\")
+target_compile_definitions(alisp_language_test PUBLIC EXAMPLE_FILE=\"${EXAMPLE_FILE}\")
+target_compile_definitions(alisp_language_test PUBLIC TEXT_FILE=\"${TEXT_FILE}\")
+target_compile_definitions(alisp_language_test PUBLIC OUTPUT_FILE=\"${OUTPUT_FILE}\")
 
 target_link_libraries(alisp_language_test
     PRIVATE
@@ -58,7 +68,5 @@ if(ENABLE_ASAN)
         dl
         PUBLIC
         alisp_language)
-
-    
     
 endif()
