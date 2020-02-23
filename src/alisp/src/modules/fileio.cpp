@@ -110,7 +110,6 @@ ALObjectPtr Fdirectories(ALObjectPtr t_obj, env::Environment *, eval::Evaluator 
 
     return make_object(entries);
 }
-
 ALObjectPtr Fentries(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
@@ -279,6 +278,19 @@ ALObjectPtr Fwith_temp_file(ALObjectPtr t_obj, env::Environment *env, eval::Eval
     FileHelpers::close_file(id);
     fs::remove(path);
     return res;
+}
+
+ALObjectPtr Ftemp_file_name(ALObjectPtr t_obj, env::Environment*, eval::Evaluator*)
+{
+    assert_size<0>(t_obj);
+    return make_string(FileHelpers::temp_file_path());
+}
+
+ALObjectPtr Ftemp_file(ALObjectPtr t_obj, env::Environment*, eval::Evaluator*)
+{
+    assert_size<0>(t_obj);
+    auto path = FileHelpers::temp_file_path();
+    return FileHelpers::put_file(path, std::fstream(path, std::ios::out), false, true);
 }
 
 ALObjectPtr Fread_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -858,6 +870,8 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
     module_defvar(fio_ptr, "f-directory-separator", make_string(detail::separator));
 
     module_defun(fio_ptr, "f-with-temp-file", &detail::Fwith_temp_file);
+    module_defun(fio_ptr, "f-temp-file-name", &detail::Ftemp_file_name);
+    module_defun(fio_ptr, "f-temp-file", &detail::Ftemp_file);
 
     module_defun(fio_ptr, "f-expand-user", &detail::Fexpand_user);
     module_defun(fio_ptr, "f-root", &detail::Froot);
