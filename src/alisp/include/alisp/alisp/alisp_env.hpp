@@ -47,7 +47,7 @@ namespace alisp
 namespace env
 {
 
-extern ALObjectPtr intern(const std::string &name);
+extern ALObjectPtr intern(std::string name);
 extern void update_prime(ALObjectPtr t_sym, ALObjectPtr t_val);
 
 namespace detail
@@ -189,6 +189,8 @@ class Environment
     void activate_module(const std::string &t_name);
 
     const std::string &current_module() { return m_active_module.get().name(); }
+
+    Module &current_module_ref() { return m_active_module; }
 
     Module *get_module(const std::string &t_name)
     {

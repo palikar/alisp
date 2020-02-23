@@ -355,6 +355,11 @@ Return `t` if `FORM1`a and `FORM2` have the same value. Return `nil`
 otherwise.
 )");
 
+DEFUN(sym_list, "symbols-list", R"((symbols-list [PACKAGE])
+
+Return a list the symbols that are defines in PACKAGE.
+)");
+
 // /*  ____       _       _   _              */
 // /* |  _ \ _ __(_)_ __ | |_(_)_ __   __ _  */
 // /* | |_) | '__| | '_ \| __| | '_ \ / _` | */

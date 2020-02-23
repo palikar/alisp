@@ -24,7 +24,7 @@
 namespace alisp
 {
 
-ALObjectPtr env::intern(const std::string &name)
+ALObjectPtr env::intern(std::string name)
 {
 
     if (env::Environment::g_global_symbol_table.count(name)) { return env::Environment::g_global_symbol_table.at(name); }
