@@ -1,9 +1,4 @@
 (import 'fileio :as 'files)
 
-
-(files.read-file)
-(dump files.file-separator)
-(dump files.temp-dir)
-
-;; (import 'math)
-;; (println (math.sin-new 123))
+(dump files.f-temp-file-name)
+(dump files.f-directory-separator)
