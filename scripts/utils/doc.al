@@ -54,97 +54,99 @@
 (if (== 0 (length --argv--)) (exit 1)
   (setq root-dir (fileio.f-canonical (nth --argv-- 0))))
 
-(defvar constructs-preamble "Basic fuctions that provide the backbone of the language. These include global and local variable definition, flow control structures and loops.")
-(defvar language-constructs-list
-  '(import
-    modref
-    defun
-    eval
-    setq
-    set
-    setq
-    quote
-    function
-    lambda
-    if
-    while
-    dolist
-    cond
-    when
-    unless
-    let
-    let*
-    or
-    and
-    not
-    parse-int
-    parse-float
-    to-string
-    to-char
-    funcall
-    backquote
-    return
-    exit))
-
-(defvar printing-preamble "Functions to interact with the stanard input and output.")
-(defvar printing-list
-  '(print
-    println
-    eprint
-    eprintln
-    read-line))
-
-(defvar lists-preamble "Functions to interact with the stanard input and output.")
-(defvar lists-list
-  '(
-    length
-    cons
-    head
-    last
-    init
-    tail
-    nth
-    mapc
-    mapcar
-    push
-    delete
-    remove
-    range))
-
-(defvar props-preamble "Functions for accessing the properties of objects.")
-(defvar props-list '(prop-get prop-set prop-list))
-
-(defvar predicates-preamble "Functions for type inspecting. These functions can be used to check whether an object is from a certain type.")
-(defvar predicates-list '(pstring plist pint preal psym pfunction))
-
-(defvar strings-preamble "Functions for basic string handling.")
-(defvar strings-list
-  '(string-length
-    string-contains
-    string-endswith
-    string-startswith
-    string-length
-    string-capitalize
-    string-find
-    string-replace
-    string-replaceall
-    string-split
-    string-substring
-    string-splitlines
-    string-upper
-    string-lower
-    string-strip
-    string-join
-    char-isalpha
-    char-isdigit))
-
-(defvar math-preamble "Functions that realise simple math operations.")
-(defvar math-list '(+ - / * < <= > >= == != mod pow min max round))
-
-(defvar alg-preamble "Several functions of basic algorithms for working with lists.")
-(defvar alg-list '(slice sort sort zip filter any all))
-
 (defun generate-basic-reference ()
+  
+  (defvar constructs-preamble "Basic fuctions that provide the backbone of the language. These include global and local variable definition, flow control structures and loops.")
+  (defvar language-constructs-list
+    '(import
+      modref
+      defun
+      eval
+      setq
+      set
+      setq
+      quote
+      function
+      lambda
+      if
+      while
+      dolist
+      cond
+      when
+      unless
+      let
+      let*
+      or
+      and
+      not
+      parse-int
+      parse-float
+      to-string
+      to-char
+      funcall
+      backquote
+      return
+      exit))
+
+  (defvar printing-preamble "Functions to interact with the stanard input and output.")
+  (defvar printing-list
+    '(print
+      println
+      eprint
+      eprintln
+      read-line))
+
+  (defvar lists-preamble "Functions to interact with the stanard input and output.")
+  (defvar lists-list
+    '(
+      length
+      cons
+      head
+      last
+      init
+      tail
+      nth
+      mapc
+      mapcar
+      push
+      delete
+      remove
+      range))
+
+  (defvar props-preamble "Functions for accessing the properties of objects.")
+  (defvar props-list '(prop-get prop-set prop-list))
+
+  (defvar predicates-preamble "Functions for type inspecting. These functions can be used to check whether an object is from a certain type.")
+  (defvar predicates-list '(pstring plist pint preal psym pfunction))
+
+  (defvar strings-preamble "Functions for basic string handling.")
+  (defvar strings-list
+    '(string-length
+      string-contains
+      string-endswith
+      string-startswith
+      string-length
+      string-capitalize
+      string-find
+      string-replace
+      string-replaceall
+      string-split
+      string-substring
+      string-splitlines
+      string-upper
+      string-lower
+      string-strip
+      string-join
+      char-isalpha
+      char-isdigit))
+
+  (defvar math-preamble "Functions that realise simple math operations.")
+  (defvar math-list '(+ - / * < <= > >= == != mod pow min max round))
+
+  (defvar alg-preamble "Several functions of basic algorithms for working with lists.")
+  (defvar alg-list '(slice sort sort zip filter any all))
+
+  
   (heading-1 "Basic builtin functions.")
 
   (heading-2 "Language constructs")
@@ -178,7 +180,7 @@
   (heading-2 "Algorithms")
   (println "\n" alg-preamble "\n")
   (expand-and-dump alg-list)
-  
+
   )
 
 (defun generate-streams-reference ()
@@ -261,7 +263,6 @@
       (print " - " (modref mod '--doc--))
       (line))))
 
-
 (defmacro generate-module (title module)
   (let* ((syms (symbols-list module))
          (len (length syms)))
@@ -307,6 +308,3 @@
 
 (println "Generating module...: " "modules/time.md")
 (std-redirect (fileio.f-join root-dir "modules/time.md") (generate-module "Time" time))
-
-
-
