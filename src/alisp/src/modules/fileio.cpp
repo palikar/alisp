@@ -261,13 +261,24 @@ ALObjectPtr Fmkdir(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     return val ? Qt : Qnil;
 }
 
-ALObjectPtr Ftemp_file(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fwith_temp_file(ALObjectPtr t_obj, env::Environment *env, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
-    auto path = eval->eval(t_obj->i(0));
-    assert_string(path);
+    namespace fs = std::filesystem;
+    
+    assert_min_size<1>(t_obj);
+    auto sym = eval->eval(t_obj->i(0));
+    assert_symbol(sym);
 
-    return Qnil;
+    auto path = FileHelpers::temp_file_path();
+    auto id = FileHelpers::put_file(path, std::fstream(path, std::ios::out), false, true);
+
+    env::detail::ScopePushPop scope{*env};
+    env->put(sym, id);
+
+    auto res = eval_list(eval, t_obj, 1);
+    FileHelpers::close_file(id);
+    fs::remove(path);
+    return res;
 }
 
 ALObjectPtr Fread_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -846,6 +857,8 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
 
     module_defvar(fio_ptr, "f-directory-separator", make_string(detail::separator));
 
+    module_defun(fio_ptr, "f-with-temp-file", &detail::Fwith_temp_file);
+
     module_defun(fio_ptr, "f-expand-user", &detail::Fexpand_user);
     module_defun(fio_ptr, "f-root", &detail::Froot);
     module_defun(fio_ptr, "f-directories", &detail::Fdirectories);
@@ -857,7 +870,6 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
     module_defun(fio_ptr, "f-make-symlink", &detail::Fmake_symlink);
     module_defun(fio_ptr, "f-delete", &detail::Fdelete);
     module_defun(fio_ptr, "f-mkdir", &detail::Fmkdir);
-    module_defun(fio_ptr, "f-temp-file", &detail::Ftemp_file);
     module_defun(fio_ptr, "f-read-bytes", &detail::Fread_bytes);
     module_defun(fio_ptr, "f-read-text", &detail::Fread_text);
     module_defun(fio_ptr, "f-write-text", &detail::Fwrite_text);

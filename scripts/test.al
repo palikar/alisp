@@ -32,3 +32,7 @@
 ;; (funcall 'println "hello")
 
 (mapc 'print '(1 2 3 4 5 "asd"))
+
+(with-temp-file 'temp
+  
+  )
