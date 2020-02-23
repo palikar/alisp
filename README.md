@@ -168,6 +168,6 @@ I&rsquo;ve learned a ton while developing Lisp. Here are some of the sources tha
 
 ## License
 
-Copyright © 2011-2020 Stanislav Arnaudov.
+Copyright © 2019-2020 Stanislav Arnaudov.
 
 Distributed under the GNU General Public License, version 2
