@@ -39,12 +39,11 @@
 
 (defun dump-doc-list (&rest sym)
   (dolist (el sym)    
-    (print "- ###")
+    (print "- ")
     (bold (prop-get el "--name--" ))
     (print " : ")
-    (dump (prop-list el))
     (let ((lines (string-splitlines (prop-get el "--doc--" ))))
-      (print "*" (nth lines 0) "*" "\n")
+      when (print "*" (nth lines 0) "*" "\n")
       (mapc println (tail lines)))
     (print "\n")))
 
@@ -262,14 +261,52 @@
       (print " - " (modref mod '--doc--))
       (line))))
 
-;; (println "Genrating basic...: " "basic_doc.md")
-;; (std-redirect (fileio.f-join root-dir "basic_doc.md") (generate-basic-reference))
+
+(defmacro generate-module (title module)
+  (let* ((syms (symbols-list module))
+         (len (length syms)))
+    (heading-3 title)
+    (line)
+    (dolist (i (range 0 len))
+      (let ((sym (modref module (nth syms i))))
+        (when (pfunction sym)
+          (dump-doc-list sym))))
+
+    (dolist (i (range 0 len))
+      (let ((sym (modref module (nth syms i))))
+        (when (or (pint sym) (pstring sym) (preal sym))
+          (dump-doc-list sym))))))
+
+
+(println "Genrating basic...: " "basic_doc.md")
+(std-redirect (fileio.f-join root-dir "basic_doc.md") (generate-basic-reference))
 
 (println "Genrating steams...: " "streams_doc.md")
 (std-redirect (fileio.f-join root-dir "streams_doc.md") (generate-streams-reference))
 
-;; (println "Genrating files...: " "files_doc.md")
-;; (std-redirect (fileio.f-join root-dir "files_doc.md") (generate-files-reference))
+(println "Genrating files...: " "files_doc.md")
+(std-redirect (fileio.f-join root-dir "files_doc.md") (generate-files-reference))
 
 (println "Generating modules index...: " "modules/index.md")
 (std-redirect (fileio.f-join root-dir "modules/index.md") (generate-modules-index))
+
+(println "Generating module...: " "modules/fileio.md")
+(std-redirect (fileio.f-join root-dir "modules/fileio.md") (generate-module "Filio" fileio))
+
+(println "Generating module...: " "modules/system.md")
+(std-redirect (fileio.f-join root-dir "modules/system.md") (generate-module "System" system))
+
+(println "Generating module...: " "modules/math.md")
+(std-redirect (fileio.f-join root-dir "modules/math.md") (generate-module "Math" math))
+
+(println "Generating module...: " "modules/memory.md")
+(std-redirect (fileio.f-join root-dir "modules/memory.md") (generate-module "Memory" memory))
+
+(println "Generating module...: " "modules/platform.md")
+(std-redirect (fileio.f-join root-dir "modules/platform.md") (generate-module "Platform" platform))
+
+(println "Generating module...: " "modules/time.md")
+(std-redirect (fileio.f-join root-dir "modules/time.md") (generate-module "Time" time))
+
+
+

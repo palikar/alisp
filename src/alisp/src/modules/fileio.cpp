@@ -872,7 +872,6 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
     module_defun(fio_ptr, "f-with-temp-file", &detail::Fwith_temp_file);
     module_defun(fio_ptr, "f-temp-file-name", &detail::Ftemp_file_name);
     module_defun(fio_ptr, "f-temp-file", &detail::Ftemp_file);
-
     module_defun(fio_ptr, "f-expand-user", &detail::Fexpand_user);
     module_defun(fio_ptr, "f-root", &detail::Froot);
     module_defun(fio_ptr, "f-directories", &detail::Fdirectories);

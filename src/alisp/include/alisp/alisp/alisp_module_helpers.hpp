@@ -36,7 +36,7 @@ inline auto module_init(std::string t_name)
 
 inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_type fun, std::string t_doc = {})
 {
-    auto &new_fun = t_module->get_root().insert({ std::move(t_name), make_prime(fun, t_name) }).first->second;
+    auto &new_fun = t_module->get_root().insert({ t_name, make_prime(fun, t_name) }).first->second;
     new_fun->set_function_flag();
     new_fun->set_prop("--doc--", make_string(t_doc));
     new_fun->set_prop("--name--", make_string(t_name));
@@ -50,16 +50,18 @@ inline void module_eval(env::Module *t_module, std::string t_eval)
 
 inline void module_defvar(env::Module *t_module, std::string t_name, ALObjectPtr val, std::string t_doc = {})
 {
-    auto &new_var = t_module->get_root().insert({ std::move(t_name), std::move(val) }).first->second;
+    auto &new_var = t_module->get_root().insert({ t_name, std::move(val) }).first->second;
+    new_var->set_prop("--name--", make_string(t_name));
     new_var->set_prop("--module--", make_string(t_module->name()));
     new_var->set_prop("--doc--", make_string(t_doc));
 }
 
 inline void module_defconst(env::Module *t_module, std::string t_name, ALObjectPtr val, std::string t_doc = {})
 {
-    auto &new_var = t_module->get_root().insert({ std::move(t_name), std::move(val) }).first->second;
+    auto &new_var = t_module->get_root().insert({ t_name, std::move(val) }).first->second;
     new_var->set_const_flag();
     new_var->set_prop("--module--", make_string(t_module->name()));
+    new_var->set_prop("--name--", make_string(t_name));
     new_var->set_prop("--doc--", make_string(t_doc));
 }
 
