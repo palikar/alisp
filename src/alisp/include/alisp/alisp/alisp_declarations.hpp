@@ -449,7 +449,7 @@ Example:
 DEFUN(car, "car", R"((mapc LIST)
 
 Return the fist element of the list LIST.
-
+ 
 Example:
 ```elisp
 (car '(1 2 3 4 5))
@@ -517,6 +517,17 @@ Example:
 ```
 )");
 
+DEFUN(shove, "shove", R"((shove LIST ELEMENT)
+
+Add ELEMENT at the beginning of the LIST. This function changes the LIST
+rather than to create a new one.
+
+Example:
+```elisp
+(shove '(1 2 3 4 5) 0)
+```
+)");
+
 DEFUN(delete, "delete", R"((delete LIST ELEMENT)
 
 Remove an element from LIST that is equal (with `equal`) to
@@ -570,6 +581,27 @@ Example:
 (length '(1 2 3 4 5))
 ```
 )");
+
+DEFUN(clear, "clear", R"((clear LIST)
+
+Remove all elements from `LIST`.
+
+Example:
+```elisp
+(clear '(1 2 3 4 5))
+```
+)");
+
+DEFUN(list, "list", R"((list [[ELEMENT] ...])
+
+Creates a list with arbitrary  number of elements.
+
+Example:
+```elisp
+(list 1 2 3)
+```
+)");
+
 DEFUN(contains, "contains", R"((contains LIST ELEMENT)
 
 Check if LIST contains ELEMENT (according to `equal`). If yes, return

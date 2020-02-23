@@ -131,7 +131,7 @@ install(TARGETS alisp_language
     )
 
 install(DIRECTORY ./data/prelude/ DESTINATION ${PRELUDE_DIR})
-
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/libs/" DESTINATION ${IMPORT_PATHS})
 
 
 if(ENABLE_TESTING)

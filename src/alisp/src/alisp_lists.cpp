@@ -126,6 +126,18 @@ ALObjectPtr Fpush(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list;
 }
 
+ALObjectPtr Fshove(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<2>(obj);
+    auto list = eval->eval(obj->i(0));
+    assert_list(list);
+    auto element = eval->eval(obj->i(1));
+
+    list->children().insert(std::begin(list->children()), element);
+
+    return list;
+}
+
 ALObjectPtr Flength(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
@@ -163,6 +175,23 @@ ALObjectPtr Fcontains(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
 
 
     return Qnil;
+}
+
+ALObjectPtr Fclear(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(obj);
+    auto list = eval->eval(obj->i(0));
+    assert_list(list);
+    list->children().clear();
+    return list;
+}
+
+ALObjectPtr Flist(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
+{
+    assert_min_size<0>(obj);
+    ALObject::list_type new_list{};
+    for (auto el : *obj) { new_list.push_back(el); }
+    return make_list(new_list);
 }
 
 // inplace
