@@ -7,7 +7,7 @@ Creates an empty queue"
     q))
 
 (defun queue-p (queue)
-  "()queue-p QUEUE)
+  "(queue-p QUEUE)
 
 Check if `QUEUE` is a queue. "
   (prop-exists queue "--queue--"))
@@ -86,4 +86,3 @@ Remove all elements in the queue.
 "
   (when (queue-p queue)
     (clear queue)))
-
