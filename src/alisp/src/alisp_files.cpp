@@ -39,10 +39,10 @@ ALObjectPtr FileHelpers::open_file(ALObjectPtr t_file, ALObjectPtr t_output, ALO
     return new_obj;
 }
 
-ALObjectPtr FileHelpers::put_file(std::string t_path, std::fstream&& t_stream, bool t_input, bool t_output)
+ALObjectPtr FileHelpers::put_file(std::string t_path, std::fstream &&t_stream, bool t_input, bool t_output)
 {
-    namespace fs = std::filesystem;
-    auto file_ptr = new files::FileObj{fs::path(t_path), std::move(t_stream), t_output, t_input };
+    namespace fs  = std::filesystem;
+    auto file_ptr = new files::FileObj{ fs::path(t_path), std::move(t_stream), t_output, t_input };
 
     auto new_id  = files::files_registry.emplace_resource(file_ptr)->id;
     auto new_obj = resource_to_object(new_id);
@@ -54,17 +54,15 @@ ALObjectPtr FileHelpers::put_file(std::string t_path, std::fstream&& t_stream, b
     AL_DEBUG("Putting a new file: "s += t_path.string());
 
     return new_obj;
-
 }
 
 std::string FileHelpers::temp_file_path(std::string t_prefix)
 {
-    for (int count = 0; count < 1000; ++count) {
+    for (int count = 0; count < 1000; ++count)
+    {
         const auto p = std::filesystem::temp_directory_path()
-            / fmt::format("{}-{}-{:04x}", t_prefix, std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()), count);
-        if (!std::filesystem::exists(p)) {
-            return p;
-        }
+                       / fmt::format("{}-{}-{:04x}", t_prefix, std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()), count);
+        if (!std::filesystem::exists(p)) { return p; }
     }
 
     return "";

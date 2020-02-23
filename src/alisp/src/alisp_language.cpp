@@ -516,22 +516,22 @@ ALObjectPtr Freturn(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 ALObjectPtr Fsym_list(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
 {
     assert_max_size<1>(obj);
-    if (std::size(*obj) == 1) {
+    if (std::size(*obj) == 1)
+    {
         ALObject::list_type syms;
         auto package = evl->eval(obj->i(0));
         assert_symbol(package);
         auto mod = env->get_module(package->to_string());
-        for (auto& [sym, _] : mod->get_root()) { syms.push_back(env::intern(sym)); }
+        for (auto &[sym, _] : mod->get_root()) { syms.push_back(env::intern(sym)); }
         return make_list(syms);
     }
 
     ALObject::list_type syms;
     auto mod = env->current_module_ref();
-    for (auto& [sym, _] : mod.get_root()) { syms.push_back(env::intern(sym)); }
-    for (auto& [sym, _] : env::Environment::g_global_symbol_table) { syms.push_back(env::intern(sym)); }
-    
+    for (auto &[sym, _] : mod.get_root()) { syms.push_back(env::intern(sym)); }
+    for (auto &[sym, _] : env::Environment::g_global_symbol_table) { syms.push_back(env::intern(sym)); }
+
     return make_list(syms);
-    
 }
 
 

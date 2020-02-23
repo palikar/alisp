@@ -263,15 +263,15 @@ ALObjectPtr Fmkdir(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 ALObjectPtr Fwith_temp_file(ALObjectPtr t_obj, env::Environment *env, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
-    
+
     assert_min_size<1>(t_obj);
     auto sym = eval->eval(t_obj->i(0));
     assert_symbol(sym);
 
     auto path = FileHelpers::temp_file_path();
-    auto id = FileHelpers::put_file(path, std::fstream(path, std::ios::out), false, true);
+    auto id   = FileHelpers::put_file(path, std::fstream(path, std::ios::out), false, true);
 
-    env::detail::ScopePushPop scope{*env};
+    env::detail::ScopePushPop scope{ *env };
     env->put(sym, id);
 
     auto res = eval_list(eval, t_obj, 1);
@@ -280,13 +280,13 @@ ALObjectPtr Fwith_temp_file(ALObjectPtr t_obj, env::Environment *env, eval::Eval
     return res;
 }
 
-ALObjectPtr Ftemp_file_name(ALObjectPtr t_obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Ftemp_file_name(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
 {
     assert_size<0>(t_obj);
     return make_string(FileHelpers::temp_file_path());
 }
 
-ALObjectPtr Ftemp_file(ALObjectPtr t_obj, env::Environment*, eval::Evaluator*)
+ALObjectPtr Ftemp_file(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
 {
     assert_size<0>(t_obj);
     auto path = FileHelpers::temp_file_path();

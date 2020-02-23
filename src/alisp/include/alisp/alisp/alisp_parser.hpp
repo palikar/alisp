@@ -742,8 +742,8 @@ template<class Environment> class ALParser : public ParserBase
 
         switch (word_hash)
         {
-          case hash::hash("--FILE--"): return make_string(m_file);
-          case hash::hash("--LINE--"): return make_int(position.line);
+        case hash::hash("--FILE--"): return make_string(m_file);
+        case hash::hash("--LINE--"): return make_int(position.line);
         }
 
         return env::intern(std::string(word));

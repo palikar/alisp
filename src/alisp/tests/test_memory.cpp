@@ -37,12 +37,11 @@ TEST_CASE("Memory Test [simple]", "[memory]")
 
     auto input = R"((import 'memory) (defvar mem (memory.buffer-allocate 32))
 (memory.buffer-release mem))"s;
-    
-    CHECK( engine.eval_statement(input).first );
-    
+
+    CHECK(engine.eval_statement(input).first);
+
     std::cout.clear();
 }
-
 
 
 TEST_CASE("Memory Test [reading and writing 1]", "[memory]")
@@ -58,9 +57,9 @@ TEST_CASE("Memory Test [reading and writing 1]", "[memory]")
 (memory.buffer-nth-set mem 1 128)
 (assert (== (memory.buffer-nth-get mem 1 ) 128))
 (memory.buffer-release mem))"s;
-    
-    CHECK( engine.eval_statement(input).first );
-    
+
+    CHECK(engine.eval_statement(input).first);
+
     std::cout.clear();
 }
 
@@ -78,9 +77,9 @@ TEST_CASE("Memory Test [reading and writing 2]", "[memory]")
 (memory.buffer-fill mem 128)
 (assert (== (memory.buffer-nth-get mem 1 ) 128))
 (memory.buffer-release mem))"s;
-    
-    CHECK( engine.eval_statement(input).first );
-    
+
+    CHECK(engine.eval_statement(input).first);
+
     std::cout.clear();
 }
 
@@ -103,8 +102,8 @@ TEST_CASE("Memory Test [reading and writing 3]", "[memory]")
 (memory.buffer-release mem-1)
 (memory.buffer-release mem-2)
 )"s;
-    
-    CHECK( engine.eval_statement(input).first );
-    
+
+    CHECK(engine.eval_statement(input).first);
+
     std::cout.clear();
 }

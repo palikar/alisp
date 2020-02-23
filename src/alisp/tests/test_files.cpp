@@ -34,9 +34,9 @@ TEST_CASE("Evaluating Files Test [simple]", "[files]")
     LanguageEngine engine;
 
     std::cout.setstate(std::ios_base::failbit);
-    
-    CHECK_NOTHROW( engine.eval_file(EXAMPLE_FILE) );
-    
+
+    CHECK_NOTHROW(engine.eval_file(EXAMPLE_FILE));
+
     std::cout.clear();
 }
 
@@ -48,16 +48,16 @@ TEST_CASE("Reading Files Test [simple]", "[files]")
 
     std::cout.setstate(std::ios_base::failbit);
 
-    
+
     auto input = R"((defvar file-1  (file-open ")"s += std::string(TEXT_FILE) += R"(" :in) )
 (assert (string-equals "line 1" (file-read-line file-1)))
 (assert (string-equals "line 2" (file-read-line file-1)))
 (assert (string-equals "line 3" (file-read-line file-1)))
 (file-close file-1)
 )"s;
-    
-    CHECK( engine.eval_statement(input, true).first );
-    
+
+    CHECK(engine.eval_statement(input, true).first);
+
     std::cout.clear();
 }
 
@@ -76,7 +76,7 @@ TEST_CASE("Writing Files Test [simple]", "[files]")
 (file-close file-1)
 )"s;
 
-    CHECK( engine.eval_statement(input, true).first );
+    CHECK(engine.eval_statement(input, true).first);
 
     input = R"((defvar file-in  (file-open ")"s += std::string(OUTPUT_FILE) += R"(" :in) )
 (assert (string-equals "line 1" (file-read-line file-in)))
@@ -85,14 +85,14 @@ TEST_CASE("Writing Files Test [simple]", "[files]")
 (file-close file-in)
 )"s;
 
-    
+
     input = R"((defvar file-in  (file-open ")"s += std::string(OUTPUT_FILE) += R"(" :in) )
 (while (file-has-more file-in)
 (println (file-read-line file-in)))
 (file-close file-in)
 )"s;
 
-    CHECK( engine.eval_statement(input, true).first );
+    CHECK(engine.eval_statement(input, true).first);
 
     std::cout.clear();
 }
