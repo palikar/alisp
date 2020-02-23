@@ -187,9 +187,11 @@ inline auto make_prime(Prim::func_type t_function, std::string t_name, [[maybe_u
 {
     auto sym = make_object(ALObject::list_type{})->make_prime(t_function);
     sym->set_prop("--name--", make_string(std::move(t_name)));
+
 #ifdef ENABLE_OBJECT_DOC
     sym->set_prop("--doc--", make_string(std::move(t_doc)));
 #endif
+    
     return sym;
 }
 

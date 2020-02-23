@@ -42,6 +42,7 @@
     (print "- ###")
     (bold (prop-get el "--name--" ))
     (print " : ")
+    (dump (prop-list el))
     (let ((lines (string-splitlines (prop-get el "--doc--" ))))
       (print "*" (nth lines 0) "*" "\n")
       (mapc println (tail lines)))
@@ -261,14 +262,14 @@
       (print " - " (modref mod '--doc--))
       (line))))
 
-(println "Genrating basic...: " "basic_doc.md")
-(std-redirect (fileio.f-join root-dir "basic_doc.md") (generate-basic-reference))
+;; (println "Genrating basic...: " "basic_doc.md")
+;; (std-redirect (fileio.f-join root-dir "basic_doc.md") (generate-basic-reference))
 
 (println "Genrating steams...: " "streams_doc.md")
 (std-redirect (fileio.f-join root-dir "streams_doc.md") (generate-streams-reference))
 
-(println "Genrating files...: " "files_doc.md")
-(std-redirect (fileio.f-join root-dir "files_doc.md") (generate-files-reference))
+;; (println "Genrating files...: " "files_doc.md")
+;; (std-redirect (fileio.f-join root-dir "files_doc.md") (generate-files-reference))
 
 (println "Generating modules index...: " "modules/index.md")
 (std-redirect (fileio.f-join root-dir "modules/index.md") (generate-modules-index))

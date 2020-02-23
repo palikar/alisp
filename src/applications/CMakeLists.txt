@@ -13,6 +13,7 @@ target_link_libraries(alisp
     PRIVATE
     project_options
     project_warnings
+    language_options
     PUBLIC
     alisp_util
     alisp_language

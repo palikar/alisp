@@ -12,22 +12,25 @@ macro(add_module NAME SRC)
             PRIVATE
             project_options
             project_warnings
+            language_options
             alisp_util
             alisp_management
             alisp_streams
             alisp_language
             )
     else()
+        
         target_link_libraries(${NAME}
             PRIVATE
+            language_options
             project_options
             project_warnings
             alisp_util
             alisp_management
-            alisp_streams
-            )
+            alisp_streams)
+        
     endif()
-
+    
 
     install(TARGETS ${NAME} 
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
@@ -38,6 +41,24 @@ macro(add_module NAME SRC)
         )
 
 endmacro()
+
+add_library(language_options INTERFACE)
+
+set(PRELUDE_DIR ${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}/prelude)
+
+target_compile_definitions(language_options INTERFACE AL_PRELUDE_DIR=\"${PRELUDE_DIR}\")
+
+if(ENABLE_STACK_TRACE)
+    target_compile_definitions(language_options INTERFACE ENABLE_STACK_TRACE)
+endif(ENABLE_STACK_TRACE)
+
+if(ENABLE_LINE_TRACE)
+    target_compile_definitions(language_options INTERFACE ENABLE_LINE_TRACE)
+endif(ENABLE_LINE_TRACE)
+
+if(ENABLE_OBJECT_DOC)
+    target_compile_definitions(language_options INTERFACE ENABLE_OBJECT_DOC)
+endif(ENABLE_OBJECT_DOC)
 
 
 add_library(alisp_language
@@ -76,6 +97,7 @@ target_link_libraries(alisp_language
     PRIVATE
     project_options
     project_warnings
+    language_options
     dl
     PUBLIC
     ${CMAKE_DL_LIBS}
@@ -84,6 +106,7 @@ target_link_libraries(alisp_language
     alisp_management
     fmt::fmt
     )
+
 
 if(NOT DISABLE_DEFAULT_MODULES)
 
@@ -104,23 +127,6 @@ if(NOT DISABLE_DEFAULT_MODULES)
     target_compile_definitions(alisp_language PUBLIC LINK_MODULES)
     
 endif()
-
-
-set(PRELUDE_DIR ${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}/prelude)
-
-target_compile_definitions(alisp_language PUBLIC AL_PRELUDE_DIR=\"${PRELUDE_DIR}\")
-
-if(ENABLE_STACK_TRACE)
-    target_compile_definitions(alisp_language PUBLIC ENABLE_STACK_TRACE)
-endif(ENABLE_STACK_TRACE)
-
-if(ENABLE_LINE_TRACE)
-    target_compile_definitions(alisp_language PUBLIC ENABLE_LINE_TRACE)
-endif(ENABLE_LINE_TRACE)
-
-if(ENABLE_OBJECT_DOC)
-    target_compile_definitions(alisp_language PUBLIC ENABLE_OBJECT_DOC)
-endif(ENABLE_OBJECT_DOC)
 
 install(TARGETS alisp_language 
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
