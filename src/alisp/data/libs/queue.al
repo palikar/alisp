@@ -50,7 +50,7 @@ Return the first element of the queue.
 Return the element of the queue at position `INDEX`.
 "
   (when (queue-p queue)
-    (nth queue n)))
+    (nth queue (- (length queue) n 1))))
 
 (defun queue-last (queue)
   "(queue-last QUEUE)
