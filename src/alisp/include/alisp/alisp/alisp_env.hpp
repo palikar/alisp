@@ -147,8 +147,8 @@ class Environment
 
   private:
     detail::CellStack m_stack;
-    std::unordered_map<std::string, ModulePtr> m_modules;
     std::unordered_map<std::string, AlispDynModulePtr> m_loaded_modules;
+    std::unordered_map<std::string, ModulePtr> m_modules;
     std::reference_wrapper<Module> m_active_module;
 
     size_t m_call_depth;
