@@ -61,7 +61,7 @@ add_library(project_options INTERFACE)
 target_compile_features(project_options INTERFACE cxx_std_17)
 
 
-if (ENABLE_LTO OR NOT CMAKE_BUILD_TYPE MATCHES DEBUG)
+if (ENABLE_LTO)
     add_definitions(-flto)
     set(LINKER_FLAGS "${LINKER_FLAGS} -flto")
 endif()
