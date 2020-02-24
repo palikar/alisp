@@ -104,7 +104,6 @@
 
 - **f-absolute** : **
 
-- **--doc--** : **
 
 - **f-directory-separator** : **
 

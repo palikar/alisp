@@ -312,8 +312,15 @@ ALObjectPtr Fif(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 ALObjectPtr Fwhile(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     assert_min_size<1>(obj);
+    
+    try {
+        while (is_truthy(evl->eval(obj->i(0)))) {
+            try {
+                eval_list(evl, obj, 1);
+            } catch (al_continue&) { continue;}
+        }
+    } catch (al_break&) {}
 
-    while (is_truthy(evl->eval(obj->i(0)))) { eval_list(evl, obj, 1); }
     return Qt;
 }
 
@@ -353,13 +360,16 @@ ALObjectPtr Fdolist(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl
     env::detail::ScopePushPop spp{ *env };
 
     env->put(bound_sym, Qnil);
-
-    for (auto list_element : list->children())
-    {
-        env->update(bound_sym, list_element);
-
-        eval_list(evl, obj, 1);
-    }
+    
+    try {
+        for (auto list_element : list->children())
+        {
+            try {
+                env->update(bound_sym, list_element);
+                eval_list(evl, obj, 1);
+            } catch (al_continue&) { continue;}            
+        }
+    } catch (al_break&) {}
 
     return Qt;
 }
@@ -510,6 +520,20 @@ ALObjectPtr Freturn(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     if (std::size(*obj) == 0) { throw al_return(Qnil); }
     auto val = evl->eval(obj->i(0));
     throw al_return(val);
+    return Qnil;
+}
+
+ALObjectPtr Fbreak(ALObjectPtr obj, env::Environment *, eval::Evaluator*)
+{
+    assert_size<0>(obj);
+    throw al_break();
+    return Qnil;
+}
+
+ALObjectPtr Fcontinue(ALObjectPtr obj, env::Environment *, eval::Evaluator*)
+{
+    assert_size<0>(obj);
+    throw al_continue();
     return Qnil;
 }
 

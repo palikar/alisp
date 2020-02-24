@@ -321,6 +321,17 @@ be evaluated and its value will be the return value of the
 function. Otherwise `nil` is the returned value.
 
 )");
+
+DEFUN(break, "break", R"((break)
+
+Break out of a loop.
+)");
+
+DEFUN(continue, "continue", R"((continue)
+
+Start a new loop iteration.
+)");
+
 DEFUN(exit, "exit", R"((exit [FORM])
 
 Exit the program. If `FORM` is given, its value will be the return

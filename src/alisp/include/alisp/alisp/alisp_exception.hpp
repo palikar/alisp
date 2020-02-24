@@ -269,7 +269,6 @@ struct al_return : public al_exception
     ALObjectPtr m_value;
 };
 
-
 struct al_exit : public al_exception
 {
   public:

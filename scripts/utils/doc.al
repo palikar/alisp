@@ -5,6 +5,8 @@
 (import 'system)
 (import 'time)
 
+(import 'json)
+
 (defun heading-1 (name)
   "Creates a heading"
   (println "# " name))
@@ -39,20 +41,18 @@
 
 (defun dump-doc-list (&rest sym)
   (dolist (el sym)    
-    (print "- ")
-    (bold (prop-get el "--name--" ))
-    (print " : ")
-    (let ((lines (string-splitlines (prop-get el "--doc--" ))))
-      when (print "*" (nth lines 0) "*" "\n")
-      (mapc println (tail lines)))
+    (let ((name (prop-get el "--name--" )))
+      (when (not (string-startswith name "--"))
+        (print "- ")
+        (bold name)
+        (print " : ")
+        (let ((lines (string-splitlines (prop-get el "--doc--" ))))
+          when (print "*" (nth lines 0) "*" "\n")
+          (mapc println (tail lines)))))
     (print "\n")))
 
 (defmacro expand-and-dump (syms)
   `(dump-doc-list ,@(eval syms)))
-
-(defvar root-dir "")
-(if (== 0 (length --argv--)) (exit 1)
-  (setq root-dir (fileio.f-canonical (nth --argv-- 0))))
 
 (defun generate-basic-reference ()
   
@@ -278,6 +278,11 @@
         (when (or (pint sym) (pstring sym) (preal sym))
           (dump-doc-list sym))))))
 
+
+(defvar root-dir
+  (if (== 0 (length --argv--))
+      (exit 1)
+    (fileio.f-canonical (nth --argv-- 0))))
 
 (println "Genrating basic...: " "basic_doc.md")
 (std-redirect (fileio.f-join root-dir "basic_doc.md") (generate-basic-reference))
