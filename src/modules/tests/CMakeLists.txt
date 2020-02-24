@@ -34,6 +34,7 @@ target_link_libraries(alisp_modules_test
     PRIVATE
     project_options
     project_warnings
+    language_options
     PUBLIC
     alisp_language
     )
