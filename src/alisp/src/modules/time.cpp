@@ -32,8 +32,8 @@ namespace ch = std::chrono;
 
 typedef std::chrono::duration<ALObject::real_type> al_seconds;
 
-static constexpr int SYSTEM_CLOCK = 1;
-static constexpr int STEADY_CLOCK = 2;
+static constexpr int SYSTEM_CLOCK   = 1;
+static constexpr int STEADY_CLOCK   = 2;
 static constexpr int HIGH_RES_CLOCK = 3;
 
 static constexpr int clocks_per_sec = CLOCKS_PER_SEC;
@@ -60,25 +60,28 @@ ALObjectPtr Fnow(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto clock = eval->eval(t_obj->i(0));
     assert_int(clock);
 
-    switch (static_cast<int>(clock->to_int())) {
-      case SYSTEM_CLOCK : {
-          const auto time_now = al_seconds(ch::system_clock::now().time_since_epoch()).count();
-          return make_real(time_now);
-      }
+    switch (static_cast<int>(clock->to_int()))
+    {
+    case SYSTEM_CLOCK:
+    {
+        const auto time_now = al_seconds(ch::system_clock::now().time_since_epoch()).count();
+        return make_real(time_now);
+    }
 
-      case STEADY_CLOCK : {
-          const auto time_now = al_seconds(ch::steady_clock::now().time_since_epoch()).count();
-          return make_real(time_now);
-      }
+    case STEADY_CLOCK:
+    {
+        const auto time_now = al_seconds(ch::steady_clock::now().time_since_epoch()).count();
+        return make_real(time_now);
+    }
 
-      case HIGH_RES_CLOCK : {
-          const auto time_now = al_seconds(ch::high_resolution_clock::now().time_since_epoch()).count();
-          return make_real(time_now);
-      }
+    case HIGH_RES_CLOCK:
+    {
+        const auto time_now = al_seconds(ch::high_resolution_clock::now().time_since_epoch()).count();
+        return make_real(time_now);
+    }
     }
 
     return nullptr;
-
 }
 
 ALObjectPtr Fnow_ns(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -89,22 +92,25 @@ ALObjectPtr Fnow_ns(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
     auto clock = eval->eval(t_obj->i(0));
     assert_int(clock);
 
-    switch (static_cast<int>(clock->to_int())) {
-      case SYSTEM_CLOCK : {
-          return make_int(ch::system_clock::now().time_since_epoch().count());
-      }
+    switch (static_cast<int>(clock->to_int()))
+    {
+    case SYSTEM_CLOCK:
+    {
+        return make_int(ch::system_clock::now().time_since_epoch().count());
+    }
 
-      case STEADY_CLOCK : {
-          return  make_int(ch::steady_clock::now().time_since_epoch().count());
-      }
+    case STEADY_CLOCK:
+    {
+        return make_int(ch::steady_clock::now().time_since_epoch().count());
+    }
 
-      case HIGH_RES_CLOCK : {
-          return make_int(ch::high_resolution_clock::now().time_since_epoch().count());
-      }
+    case HIGH_RES_CLOCK:
+    {
+        return make_int(ch::high_resolution_clock::now().time_since_epoch().count());
+    }
     }
 
     return nullptr;
-
 }
 
 ALObjectPtr Fgmtime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -139,14 +145,14 @@ ALObjectPtr Fmktime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
     assert_numbers(time_tup);
 
     std::tm tm;
-    tm.tm_sec = static_cast<int>(time_tup->i(0)->to_int());
-    tm.tm_min = static_cast<int>(time_tup->i(1)->to_int());
-    tm.tm_hour = static_cast<int>(time_tup->i(2)->to_int());
-    tm.tm_mday = static_cast<int>(time_tup->i(3)->to_int());
-    tm.tm_mon = static_cast<int>(time_tup->i(4)->to_int());
-    tm.tm_year = static_cast<int>(time_tup->i(5)->to_int());
-    tm.tm_wday = static_cast<int>(time_tup->i(6)->to_int());
-    tm.tm_yday = static_cast<int>(time_tup->i(7)->to_int());
+    tm.tm_sec   = static_cast<int>(time_tup->i(0)->to_int());
+    tm.tm_min   = static_cast<int>(time_tup->i(1)->to_int());
+    tm.tm_hour  = static_cast<int>(time_tup->i(2)->to_int());
+    tm.tm_mday  = static_cast<int>(time_tup->i(3)->to_int());
+    tm.tm_mon   = static_cast<int>(time_tup->i(4)->to_int());
+    tm.tm_year  = static_cast<int>(time_tup->i(5)->to_int());
+    tm.tm_wday  = static_cast<int>(time_tup->i(6)->to_int());
+    tm.tm_yday  = static_cast<int>(time_tup->i(7)->to_int());
     tm.tm_isdst = static_cast<int>(time_tup->i(8)->to_int());
 
     return make_int(std::mktime(&tm));
@@ -165,14 +171,14 @@ ALObjectPtr Fstrftime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
     assert_string(time_fmt);
 
     std::tm tm;
-    tm.tm_sec = static_cast<int>(time_tup->i(0)->to_int());
-    tm.tm_min = static_cast<int>(time_tup->i(1)->to_int());
-    tm.tm_hour = static_cast<int>(time_tup->i(2)->to_int());
-    tm.tm_mday = static_cast<int>(time_tup->i(3)->to_int());
-    tm.tm_mon = static_cast<int>(time_tup->i(4)->to_int());
-    tm.tm_year = static_cast<int>(time_tup->i(5)->to_int());
-    tm.tm_wday = static_cast<int>(time_tup->i(6)->to_int());
-    tm.tm_yday = static_cast<int>(time_tup->i(7)->to_int());
+    tm.tm_sec   = static_cast<int>(time_tup->i(0)->to_int());
+    tm.tm_min   = static_cast<int>(time_tup->i(1)->to_int());
+    tm.tm_hour  = static_cast<int>(time_tup->i(2)->to_int());
+    tm.tm_mday  = static_cast<int>(time_tup->i(3)->to_int());
+    tm.tm_mon   = static_cast<int>(time_tup->i(4)->to_int());
+    tm.tm_year  = static_cast<int>(time_tup->i(5)->to_int());
+    tm.tm_wday  = static_cast<int>(time_tup->i(6)->to_int());
+    tm.tm_yday  = static_cast<int>(time_tup->i(7)->to_int());
     tm.tm_isdst = static_cast<int>(time_tup->i(8)->to_int());
 
     char mbstr[512];
@@ -180,9 +186,8 @@ ALObjectPtr Fstrftime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
 #endif
-    if (auto size = std::strftime(mbstr, sizeof(mbstr), time_fmt->to_string().c_str(), &tm); size!= 0) {
-        return make_string(std::string(mbstr, size));
-    }
+    if (auto size = std::strftime(mbstr, sizeof(mbstr), time_fmt->to_string().c_str(), &tm); size != 0)
+    { return make_string(std::string(mbstr, size)); }
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
@@ -195,7 +200,8 @@ ALObjectPtr Fctime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     assert_max_size<1>(t_obj);
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto time = eval->eval(t_obj->i(0));
         assert_int(time);
         std::time_t time_t(time->to_int());
@@ -256,7 +262,7 @@ ALObjectPtr Fsleep(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     return Qt;
 }
 
-}
+}  // namespace details
 
 env::ModulePtr init_time(env::Environment *, eval::Evaluator *)
 {
@@ -271,7 +277,7 @@ and dates.)");
     module_defconst(time_ptr, "high-res-clock", make_int(details::HIGH_RES_CLOCK));
 
     module_defconst(time_ptr, "high-res-clock", make_int(details::clocks_per_sec));
-    
+
     module_defun(time_ptr, "t-time", &details::Ftime);
     module_defun(time_ptr, "t-ctime", &details::Fctime);
     module_defun(time_ptr, "t-gmtime", &details::Fgmtime);
@@ -282,7 +288,7 @@ and dates.)");
 
     module_defun(time_ptr, "t-clock-time", &details::Fnow);
     module_defun(time_ptr, "t-clock-time-ns", &details::Fnow_ns);
-    
+
     module_defun(time_ptr, "t-ns", &details::Fns);
     module_defun(time_ptr, "t-ms", &details::Fms);
     module_defun(time_ptr, "t-s", &details::Fs);
