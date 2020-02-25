@@ -559,12 +559,14 @@ ALObjectPtr Fcontinue(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 ALObjectPtr Fsym_list(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
 {
     assert_max_size<1>(obj);
+    
     if (std::size(*obj) == 1)
     {
-        ALObject::list_type syms;
         auto package = evl->eval(obj->i(0));
         assert_symbol(package);
+        ALObject::list_type syms;
         auto mod = env->get_module(package->to_string());
+        if(mod == nullptr) { return Qnil; }
         for (auto &[sym, _] : mod->get_root()) { syms.push_back(env::intern(sym)); }
         return make_list(syms);
     }
