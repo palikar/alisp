@@ -34,8 +34,15 @@ static constexpr int SYSTEM_CLOCK = 1;
 static constexpr int STEADY_CLOCK = 2;
 static constexpr int HIGH_RES_CLOCK = 3;
 // static constexpr int GPS_CLOCK = 4;
-// static constexpr int LOCAL_CLOCK = 4;
+// static constexpr int LOCAL_CLOCK = 5;
 
+ALObjectPtr Ftime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
+{
+    assert_size<0>(t_obj);
+    std::time_t result = std::time(nullptr);
+    return make_int(result);
+    
+}
 
 ALObjectPtr Fnow(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
@@ -76,16 +83,15 @@ ALObjectPtr Fnow_ns(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
     
     switch (static_cast<int>(clock->to_int())) {
       case SYSTEM_CLOCK : {
-          auto res =  make_int(ch::system_clock::now().time_since_epoch().count());
-          res->set_prop("--clock--", make_int(SYSTEM_CLOCK));
+          return make_int(ch::system_clock::now().time_since_epoch().count());          
       }
 
       case STEADY_CLOCK : {
-          break;
+          return  make_int(ch::steady_clock::now().time_since_epoch().count());
       }
 
       case HIGH_RES_CLOCK : {
-          break;
+          return make_int(ch::high_resolution_clock::now().time_since_epoch().count());
       }
     }
 
@@ -95,33 +101,24 @@ ALObjectPtr Fnow_ns(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
 
 ALObjectPtr Fgmtime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    namespace ch = std::chrono;
-    
+    namespace ch = std::chrono;    
     assert_size<1>(t_obj);
     auto time = eval->eval(t_obj->i(0));
-    // assert_int(time);
+    assert_int(time);
+    std::time_t time_t(time->to_int());
+    auto res = std::gmtime(&time_t);
+    return make_object(res->tm_sec, res->tm_min, res->tm_hour, res->tm_mday, res->tm_mon, res->tm_year, res->tm_wday, res->tm_yday, res->tm_isdst);   
+}
 
-
-    switch (static_cast<int>(time->get_prop("--clock--")->to_int())) {
-      case SYSTEM_CLOCK : {
-          auto time_t = ch::system_clock::to_time_t(ch::time_point<ch::system_clock>(ch::duration<ALObject::int_type>(static_cast<ALObject::int_type>(time->to_real()))));
-          auto gm = std::gmtime(&time_t);
-          std::cout << gm->tm_hour << "\n";
-          
-      }
-
-      case STEADY_CLOCK : {
-          break;
-      }
-
-      case HIGH_RES_CLOCK : {
-          break;
-      }
-    }
-    
-    
-    return nullptr;
-    
+ALObjectPtr Flocaltime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    namespace ch = std::chrono;    
+    assert_size<1>(t_obj);
+    auto time = eval->eval(t_obj->i(0));
+    assert_int(time);
+    std::time_t time_t(time->to_int());
+    auto res = std::localtime(&time_t);
+    return make_object(res->tm_sec, res->tm_min, res->tm_hour, res->tm_mday, res->tm_mon, res->tm_year, res->tm_wday, res->tm_yday, res->tm_isdst);   
 }
 
 
@@ -144,9 +141,12 @@ and dates.)");
     module_defconst(time_ptr, "steady-clock", make_int(details::STEADY_CLOCK));
     module_defconst(time_ptr, "high-res-clock", make_int(details::HIGH_RES_CLOCK));
 
+    module_defun(time_ptr, "t-ctime", &details::Ftime);
+    module_defun(time_ptr, "t-gmtime", &details::Fgmtime);
+    module_defun(time_ptr, "t-localtime", &details::Flocaltime);
+
     module_defun(time_ptr, "t-now", &details::Fnow);
     module_defun(time_ptr, "t-now-ns", &details::Fnow_ns);
-    module_defun(time_ptr, "t-gmtime", &details::Fgmtime);
 
     return Mtime;
 }
