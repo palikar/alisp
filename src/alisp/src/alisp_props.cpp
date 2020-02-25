@@ -31,12 +31,12 @@ namespace alisp
 
 ALObjectPtr Fprop_set(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<3>(obj);
+    CHECK(assert_size<3>(obj));
 
     auto target = eval->eval(obj->i(0));
 
     auto prop = eval->eval(obj->i(1));
-    assert_string(prop);
+    CHECK(assert_string(prop));
     auto &prop_name = prop->to_string();
 
     // if (!target->prop_exists(prop_name)) { return Qnil; }
@@ -48,12 +48,12 @@ ALObjectPtr Fprop_set(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
 
 ALObjectPtr Fprop_get(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<2>(obj);
+    CHECK(assert_size<2>(obj));
 
     auto target = eval->eval(obj->i(0));
 
     auto prop = eval->eval(obj->i(1));
-    assert_string(prop);
+    CHECK(assert_string(prop));
     auto &prop_name = prop->to_string();
 
     if (!target->prop_exists(prop_name)) { return Qnil; }
@@ -64,12 +64,12 @@ ALObjectPtr Fprop_get(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
 
 ALObjectPtr Fprop_exists(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<2>(obj);
+    CHECK(assert_size<2>(obj));
 
     auto target = eval->eval(obj->i(0));
 
     auto prop = eval->eval(obj->i(1));
-    assert_string(prop);
+    CHECK(assert_string(prop));
     auto &prop_name = prop->to_string();
 
     return target->prop_exists(prop_name) ? Qt : Qnil;
@@ -77,7 +77,7 @@ ALObjectPtr Fprop_exists(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
 
 ALObjectPtr Fprop_list(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    CHECK(assert_size<1>(obj));
 
     auto target = eval->eval(obj->i(0));
     ALObject::list_type props;

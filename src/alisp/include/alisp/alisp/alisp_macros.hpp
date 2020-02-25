@@ -126,8 +126,11 @@
 
 
 #ifdef DISABLE_CHECKS
-#define CHECK(EXR) do{(void)0;} while (false)
+#define CHECK(EXR) \
+    do             \
+    {              \
+        (void)0;   \
+    } while (false)
 #else
 #define CHECK(EXR) EXR
 #endif
-

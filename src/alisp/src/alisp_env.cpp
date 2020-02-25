@@ -66,7 +66,7 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
         if (scope.count(name))
         {
             auto &sym = scope.at(name);
-            if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); }
+            CHECK(if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); });
             sym = t_value;
             return;
         };
@@ -75,7 +75,7 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
     if (m_active_module.get().root_scope().count(name))
     {
         auto &sym = m_active_module.get().root_scope().at(name);
-        if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); }
+        CHECK(if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); });
         sym = t_value;
         return;
     };
@@ -93,7 +93,7 @@ void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
     if (scope.count(name))
     {
         scope.at(name) = t_val;
-        warn::warn_env("Putting an already existent variable in the env: "s +=  name);
+        warn::warn_env("Putting an already existent variable in the env: "s += name);
         // throw environment_error("Variable alredy exists: " + name);
     }
 
@@ -109,7 +109,7 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, 
 
     NameValidator::validate_object_name(name);
 
-    if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name); }
+    CHECK(if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name); });
     t_value->set_prop("--module--", make_string(m_active_module.get().name()));
 
 #ifdef ENABLE_OBJECT_DOC
@@ -129,7 +129,7 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
 
     NameValidator::validate_object_name(name);
 
-    if (scope.count(name)) { throw environment_error("Function alredy exists: " + name); }
+    CHECK(if (scope.count(name)) { throw environment_error("Function alredy exists: " + name); });
 
     auto new_fun = make_object(t_params, t_body);
     new_fun->set_function_flag();
@@ -153,7 +153,7 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
 
     NameValidator::validate_object_name(name);
 
-    if (scope.count(name)) { throw environment_error("Function alredy exists: " + name); }
+    CHECK(if (scope.count(name)) { throw environment_error("Function alredy exists: " + name); });
 
     auto new_fun = make_object(t_params, t_body);
     new_fun->set_function_flag();
@@ -178,9 +178,9 @@ bool Environment::load_builtin_module(const std::string &t_module_name, eval::Ev
 {
     auto module_import = g_builtin_modules.find(t_module_name);
     if (module_import == std::end(g_builtin_modules)) { return false; }
-    
+
     AL_DEBUG("Loading builitng dyn module: "s += t_module_name);
-    
+
     auto new_mod = module_import->second.function(this, eval);
     m_modules.insert({ t_module_name, new_mod });
 

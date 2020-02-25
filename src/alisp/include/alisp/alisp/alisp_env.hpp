@@ -119,7 +119,7 @@ class Module
     {
         auto sym = m_root_scope.find(t_name);
         if (sym != std::end(m_root_scope)) { return sym->second; };
-        warn::warn_env(("Referencing non existent symbol "s +=  t_name) += " in module"s += m_name );
+        warn::warn_env(("Referencing non existent symbol "s += t_name) += " in module"s += m_name);
         return nullptr;
     }
 
@@ -127,7 +127,7 @@ class Module
     {
         auto mod = m_modules.find(t_name);
         if (mod != std::end(m_modules)) { return mod->second.get(); };
-        warn::warn_env("Referencing non existen module:"s +=  t_name);
+        warn::warn_env("Referencing non existen module:"s += t_name);
         return nullptr;
     }
 };
@@ -185,8 +185,9 @@ class Environment
 
     void alias_module(const std::string &t_name, const std::string t_alias)
     {
-        if (m_modules.find(t_name) == m_modules.end()) {
-            warn::warn_env("Referencing non existen module:"s +=  t_name);
+        if (m_modules.find(t_name) == m_modules.end())
+        {
+            CHECK(warn::warn_env("Referencing non existen module:"s += t_name););
             return;
         }
         AL_DEBUG("Aliasing a module: "s += t_name + " -> " + t_alias);
@@ -203,7 +204,7 @@ class Environment
     {
         auto mod = m_modules.find(t_name);
         if (mod != std::end(m_modules)) { return mod->second.get(); };
-        warn::warn_env("Referencing non existen module:"s +=  t_name);
+        warn::warn_env("Referencing non existen module:"s += t_name);
         return nullptr;
     }
 
@@ -275,7 +276,11 @@ class Environment
 
     void trace_unwind()
     {
-        if (!std::empty(m_stack_trace)) { m_stack_trace.pop_back(); return; }
+        if (!std::empty(m_stack_trace))
+        {
+            m_stack_trace.pop_back();
+            return;
+        }
 
         warn::warn_env("Unwinding an empty stack.");
     }
@@ -359,7 +364,7 @@ struct FunctionCall
             return;
         }
 
-        warn::warn_env("Calling a function without --module-- property."); 
+        warn::warn_env("Calling a function without --module-- property.");
     }
     ~FunctionCall()
     {

@@ -65,7 +65,8 @@ void warning_internal(WarnTypes t_type, std::string_view t_msg);
 
 }  // namespace warnings
 
-namespace warn{
+namespace warn
+{
 inline void warn_math(std::string_view t_msg)
 {
     warnings::warning_internal(warnings::WarnTypes::MATH, std::move(t_msg));
@@ -91,6 +92,6 @@ inline void warn_env(std::string_view t_msg)
     warnings::warning_internal(warnings::WarnTypes::ENV, std::move(t_msg));
 }
 
-}
+}  // namespace warn
 
 }  // namespace alisp

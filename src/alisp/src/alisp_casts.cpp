@@ -31,9 +31,9 @@ namespace alisp
 
 ALObjectPtr Fint_parse(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    CHECK(assert_size<1>(obj));
     auto str_1 = eval->eval(obj->i(0));
-    assert_string(str_1);
+    CHECK(assert_string(str_1));
     try
     {
         return make_int(std::stoi(str_1->to_string()));
@@ -51,9 +51,9 @@ ALObjectPtr Fint_parse(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
 
 ALObjectPtr Ffloat_parse(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    CHECK(assert_size<1>(obj));
     auto str_1 = eval->eval(obj->i(0));
-    assert_string(str_1);
+    CHECK(assert_string(str_1));
     try
     {
         return make_double(std::stod(str_1->to_string()));
@@ -71,7 +71,7 @@ ALObjectPtr Ffloat_parse(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
 
 ALObjectPtr Fto_string(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
+    CHECK(assert_size<1>(t_obj));
 
     return make_visit(
       eval->eval(t_obj->i(0)),
@@ -93,7 +93,7 @@ ALObjectPtr Fto_string(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
 
 ALObjectPtr Fto_char(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(t_obj);
+    CHECK(assert_size<1>(t_obj));
 
     auto ch = eval->eval(t_obj->i(0));
 

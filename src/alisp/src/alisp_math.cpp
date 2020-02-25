@@ -39,7 +39,7 @@ ALObjectPtr Fmultiply(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     auto eval_obj = eval_transform(evl, obj);
 
-    assert_numbers(eval_obj);
+    CHECK(assert_numbers(eval_obj));
 
     if (are_objects_int(eval_obj))
     {
@@ -59,7 +59,7 @@ ALObjectPtr Fplus(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     auto eval_obj = eval_transform(evl, obj);
 
-    assert_numbers(eval_obj);
+    CHECK(assert_numbers(eval_obj));
 
     if (are_objects_int(eval_obj))
     {
@@ -80,7 +80,7 @@ ALObjectPtr Fminus(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     auto eval_obj = eval_transform(evl, obj);
 
-    assert_numbers(eval_obj);
+    CHECK(assert_numbers(eval_obj));
 
     if (are_objects_int(eval_obj))
     {
@@ -101,7 +101,7 @@ ALObjectPtr Fdev(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     auto eval_obj = eval_transform(evl, obj);
 
-    assert_numbers(eval_obj);
+    CHECK(assert_numbers(eval_obj));
 
     if (are_objects_int(eval_obj))
     {
@@ -119,33 +119,33 @@ ALObjectPtr Fdev(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Fleftshift(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_size<2>(obj);    
+    CHECK(assert_size<2>(obj));
     auto lhs = evl->eval(obj->i(0));
     auto rhs = evl->eval(obj->i(1));
-    assert_int(rhs);
-    assert_int(lhs);
+    CHECK(assert_int(rhs));
+    CHECK(assert_int(lhs));
     return make_int(SHIFT_LEFT(lhs, rhs));
 }
 
 ALObjectPtr Frightshift(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_size<2>(obj);
+    CHECK(assert_size<2>(obj));
     auto lhs = evl->eval(obj->i(0));
     auto rhs = evl->eval(obj->i(1));
-    assert_int(rhs);
-    assert_int(lhs);
+    CHECK(assert_int(rhs));
+    CHECK(assert_int(lhs));
     return make_int(SHIFT_RIGHT(lhs, rhs));
 }
 
 ALObjectPtr Flt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_size<2>(obj);
+    CHECK(assert_size<2>(obj));
 
     const auto one = evl->eval(obj->i(0));
     const auto two = evl->eval(obj->i(1));
 
-    assert_number(one);
-    assert_number(two);
+    CHECK(assert_number(one));
+    CHECK(assert_number(two));
 
     if (one->to_real() < two->to_real()) { return Qt; }
     else
@@ -157,13 +157,13 @@ ALObjectPtr Flt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Fleq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_min_size<0>(obj);
+    CHECK(assert_min_size<0>(obj));
 
     const auto one = evl->eval(obj->i(0));
     const auto two = evl->eval(obj->i(1));
 
-    assert_number(one);
-    assert_number(two);
+    CHECK(assert_number(one));
+    CHECK(assert_number(two));
 
     if (one->to_real() <= two->to_real()) { return Qt; }
     else
@@ -171,20 +171,19 @@ ALObjectPtr Fleq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
         warn::warn_math("Comparing non-numbers ");
         return Qnil;
     }
-    
 }
 
 ALObjectPtr Fgt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_min_size<0>(obj);
+    CHECK(assert_min_size<0>(obj));
 
     const auto one = evl->eval(obj->i(0));
     const auto two = evl->eval(obj->i(1));
 
-    assert_number(one);
-    assert_number(two);
+    CHECK(assert_number(one));
+    CHECK(assert_number(two));
 
-    if (one->to_real() > two->to_real()) {return Qt;}
+    if (one->to_real() > two->to_real()) { return Qt; }
     else
     {
         warn::warn_math("Comparing non-numbers ");
@@ -194,15 +193,15 @@ ALObjectPtr Fgt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Fgeq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_min_size<0>(obj);
+    CHECK(assert_min_size<0>(obj));
 
     const auto one = evl->eval(obj->i(0));
     const auto two = evl->eval(obj->i(1));
 
-    assert_number(one);
-    assert_number(two);
+    CHECK(assert_number(one));
+    CHECK(assert_number(two));
 
-    if (one->to_real() >= two->to_real()) {return Qt;}
+    if (one->to_real() >= two->to_real()) { return Qt; }
     else
     {
         warn::warn_math("Comparing non-numbers ");
@@ -212,15 +211,15 @@ ALObjectPtr Fgeq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Feq_math(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_min_size<0>(obj);
+    CHECK(assert_min_size<0>(obj));
 
     const auto one = evl->eval(obj->i(0));
     const auto two = evl->eval(obj->i(1));
 
-    assert_number(one);
-    assert_number(two);
+    CHECK(assert_number(one));
+    CHECK(assert_number(two));
 
-    if (one->to_real() == two->to_real()) {return Qt;}
+    if (one->to_real() == two->to_real()) { return Qt; }
     else
     {
         warn::warn_math("Comparing non-numbers ");
@@ -230,32 +229,31 @@ ALObjectPtr Feq_math(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Fneq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_min_size<0>(obj);
+    CHECK(assert_min_size<0>(obj));
 
     const auto one = evl->eval(obj->i(0));
     const auto two = evl->eval(obj->i(1));
 
-    assert_number(one);
-    assert_number(two);
+    CHECK(assert_number(one));
+    CHECK(assert_number(two));
 
-    if (one->to_real() != two->to_real()) {return Qt;}
+    if (one->to_real() != two->to_real()) { return Qt; }
     else
     {
         warn::warn_math("Comparing non-numbers ");
         return Qnil;
     }
-
 }
 
 ALObjectPtr Fmod(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_size<2>(obj);
+    CHECK(assert_size<2>(obj));
 
     const auto one = evl->eval(obj->i(0));
     const auto two = evl->eval(obj->i(1));
 
-    assert_int(one);
-    assert_int(two);
+    CHECK(assert_int(one));
+    CHECK(assert_int(two));
 
     auto res = one->to_int() % two->to_int();
 
@@ -264,23 +262,23 @@ ALObjectPtr Fmod(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Fpow(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_size<2>(obj);
+    CHECK(assert_size<2>(obj));
 
     const auto one = evl->eval(obj->i(0));
     const auto two = evl->eval(obj->i(1));
 
-    assert_number(one);
-    assert_number(two);
+    CHECK(assert_number(one));
+    CHECK(assert_number(two));
 
     return make_object(std::pow(one->to_real(), two->to_real()));
 }
 
 ALObjectPtr Fmin(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_min_size<2>(obj);
+    CHECK(assert_min_size<2>(obj));
 
     auto eval_obj = eval_transform(eval, obj);
-    assert_numbers(eval_obj);
+    CHECK(assert_numbers(eval_obj));
     auto is_int = are_objects_int(eval_obj);
     if (is_int)
     {
@@ -307,10 +305,10 @@ ALObjectPtr Fmin(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fmax(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_min_size<2>(obj);
+    CHECK(assert_min_size<2>(obj));
 
     auto eval_obj = eval_transform(eval, obj);
-    assert_numbers(eval_obj);
+    CHECK(assert_numbers(eval_obj));
     auto is_int = are_objects_int(eval_obj);
     if (is_int)
     {
@@ -337,13 +335,13 @@ ALObjectPtr Fmax(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fround(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_size<2>(obj);
+    CHECK(assert_size<2>(obj));
 
     const auto one = evl->eval(obj->i(0));
     const auto two = evl->eval(obj->i(1));
 
-    assert_number(one);
-    assert_int(two);
+    CHECK(assert_number(one));
+    CHECK(assert_int(two));
 
     return make_double(utility::round_nplaces(one->to_real(), two->to_int()));
 }

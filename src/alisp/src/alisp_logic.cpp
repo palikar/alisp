@@ -49,7 +49,7 @@ ALObjectPtr For(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Fnot(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_size<1>(obj);
+    CHECK(assert_size<1>(obj));
 
     bool sum = is_truthy(evl->eval(obj->i(0)));
     return !sum ? Qt : Qnil;
