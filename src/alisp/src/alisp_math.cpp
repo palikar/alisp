@@ -51,6 +51,7 @@ ALObjectPtr Fmultiply(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
         const ALObject::real_type product = reduce<false>(evl, eval_obj, MUL_OBJ_FUN_D, static_cast<ALObject::real_type>(1));
         return make_double(product);
     }
+    warn::warn_math("Multiplying non-numbers ");
     return Qnil;
 }
 
@@ -70,6 +71,8 @@ ALObjectPtr Fplus(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
         const ALObject::real_type sum = reduce<false>(evl, eval_obj, ADD_OBJ_FUN_D, static_cast<ALObject::real_type>(0));
         return make_double(sum);
     }
+
+    warn::warn_math("Adding non-numbers ");
     return Qnil;
 }
 
@@ -89,6 +92,8 @@ ALObjectPtr Fminus(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
         const ALObject::real_type sum = reduce<false>(evl, eval_obj, SUB_OBJ_FUN_D, eval_obj->i(0)->to_real(), 1);
         return make_double(sum);
     }
+
+    warn::warn_math("Subtracting non-numbers ");
     return Qnil;
 }
 
@@ -108,23 +113,23 @@ ALObjectPtr Fdev(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
         const ALObject::real_type sum = reduce<false>(evl, eval_obj, DIV_OBJ_FUN_D, eval_obj->i(0)->to_real(), 1);
         return make_double(sum);
     }
+    warn::warn_math("Dividing non-numbers ");
     return Qnil;
 }
 
 ALObjectPtr Fleftshift(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-
+    assert_size<2>(obj);    
     auto lhs = evl->eval(obj->i(0));
     auto rhs = evl->eval(obj->i(1));
-
     assert_int(rhs);
     assert_int(lhs);
-
     return make_int(SHIFT_LEFT(lhs, rhs));
 }
 
 ALObjectPtr Frightshift(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
+    assert_size<2>(obj);
     auto lhs = evl->eval(obj->i(0));
     auto rhs = evl->eval(obj->i(1));
     assert_int(rhs);
@@ -134,7 +139,7 @@ ALObjectPtr Frightshift(ALObjectPtr obj, env::Environment *, eval::Evaluator *ev
 
 ALObjectPtr Flt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    assert_min_size<0>(obj);
+    assert_size<2>(obj);
 
     const auto one = evl->eval(obj->i(0));
     const auto two = evl->eval(obj->i(1));
@@ -145,6 +150,7 @@ ALObjectPtr Flt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     if (one->to_real() < two->to_real()) { return Qt; }
     else
     {
+        warn::warn_math("Comparing non-numbers ");
         return Qnil;
     };
 }
@@ -159,10 +165,13 @@ ALObjectPtr Fleq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     assert_number(one);
     assert_number(two);
 
-    if (one->to_real() <= two->to_real())
-        return Qt;
+    if (one->to_real() <= two->to_real()) { return Qt; }
     else
+    {
+        warn::warn_math("Comparing non-numbers ");
         return Qnil;
+    }
+    
 }
 
 ALObjectPtr Fgt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
@@ -175,10 +184,12 @@ ALObjectPtr Fgt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     assert_number(one);
     assert_number(two);
 
-    if (one->to_real() > two->to_real())
-        return Qt;
+    if (one->to_real() > two->to_real()) {return Qt;}
     else
+    {
+        warn::warn_math("Comparing non-numbers ");
         return Qnil;
+    }
 }
 
 ALObjectPtr Fgeq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
@@ -191,10 +202,12 @@ ALObjectPtr Fgeq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     assert_number(one);
     assert_number(two);
 
-    if (one->to_real() >= two->to_real())
-        return Qt;
+    if (one->to_real() >= two->to_real()) {return Qt;}
     else
+    {
+        warn::warn_math("Comparing non-numbers ");
         return Qnil;
+    }
 }
 
 ALObjectPtr Feq_math(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
@@ -207,10 +220,12 @@ ALObjectPtr Feq_math(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     assert_number(one);
     assert_number(two);
 
-    if (one->to_real() == two->to_real())
-        return Qt;
+    if (one->to_real() == two->to_real()) {return Qt;}
     else
+    {
+        warn::warn_math("Comparing non-numbers ");
         return Qnil;
+    }
 }
 
 ALObjectPtr Fneq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
@@ -223,10 +238,13 @@ ALObjectPtr Fneq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     assert_number(one);
     assert_number(two);
 
-    if (one->to_real() != two->to_real())
-        return Qt;
+    if (one->to_real() != two->to_real()) {return Qt;}
     else
+    {
+        warn::warn_math("Comparing non-numbers ");
         return Qnil;
+    }
+
 }
 
 ALObjectPtr Fmod(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)

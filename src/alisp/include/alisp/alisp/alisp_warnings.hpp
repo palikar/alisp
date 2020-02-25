@@ -21,9 +21,10 @@
 #include <string_view>
 #include <vector>
 #include <cctype>
+#include <iostream>
 
 #include "alisp/alisp/alisp_common.hpp"
-#include "alisp/alisp/alisp_object.hpp"
+#include "alisp/utility/logging.hpp"
 
 #include "alisp/utility/hash.hpp"
 
@@ -43,13 +44,17 @@ struct WarningsHelper
     constexpr static std::uint8_t DEPRECATED_BIT = 0x02;
     constexpr static std::uint8_t USER_BIT       = 0x03;
     constexpr static std::uint8_t MATH_BIT       = 0x04;
+    constexpr static std::uint8_t EVAL_BIT       = 0x08;
+    constexpr static std::uint8_t ENV_BIT        = 0x10;
 };
 
 enum class WarnTypes
 {
     IMPORT,
     DEPRECATED,
-    MATH
+    MATH,
+    EVAL,
+    ENV,
 };
 
 void init_warning(std::vector<std::string> t_enabled_warning = {});
@@ -60,6 +65,7 @@ void warning_internal(WarnTypes t_type, std::string_view t_msg);
 
 }  // namespace warnings
 
+namespace warn{
 inline void warn_math(std::string_view t_msg)
 {
     warnings::warning_internal(warnings::WarnTypes::MATH, std::move(t_msg));
@@ -73,6 +79,18 @@ inline void warn_deprecated(std::string_view t_msg)
 inline void warn_import(std::string_view t_msg)
 {
     warnings::warning_internal(warnings::WarnTypes::IMPORT, std::move(t_msg));
+}
+
+inline void warn_eval(std::string_view t_msg)
+{
+    warnings::warning_internal(warnings::WarnTypes::EVAL, std::move(t_msg));
+}
+
+inline void warn_env(std::string_view t_msg)
+{
+    warnings::warning_internal(warnings::WarnTypes::ENV, std::move(t_msg));
+}
+
 }
 
 }  // namespace alisp

@@ -301,7 +301,7 @@ ALObjectPtr Fif(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     if (is_truthy(evl->eval(obj->i(0)))) { return evl->eval(obj->i(1)); }
     else if (obj->length() == 3)
     {
-        return evl->eval(obj->i(2));
+        return eval_list(evl, obj, 2);        
     }
     else
     {
@@ -341,7 +341,6 @@ ALObjectPtr Fwhen(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     if (is_truthy(evl->eval(obj->i(0))))
     {
         return eval_list(evl, obj, 1);
-        ;
     }
     return Qnil;
 }
@@ -353,7 +352,6 @@ ALObjectPtr Funless(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     if (!is_truthy(evl->eval(obj->i(0))))
     {
         return eval_list(evl, obj, 1);
-        ;
     }
     return Qnil;
 }

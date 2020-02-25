@@ -92,8 +92,9 @@ void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
 
     if (scope.count(name))
     {
-        // scope.at(name) = t_val;
-        throw environment_error("Variable alredy exists: " + name);
+        scope.at(name) = t_val;
+        warn::warn_env("Putting an already existent variable in the env: "s +=  name);
+        // throw environment_error("Variable alredy exists: " + name);
     }
 
     scope.insert({ name, t_val });
@@ -175,10 +176,11 @@ void Environment::activate_module(const std::string &t_name)
 
 bool Environment::load_builtin_module(const std::string &t_module_name, eval::Evaluator *eval)
 {
-    AL_DEBUG("Loading builitng dyn module: "s += t_module_name);
     auto module_import = g_builtin_modules.find(t_module_name);
-
     if (module_import == std::end(g_builtin_modules)) { return false; }
+    
+    AL_DEBUG("Loading builitng dyn module: "s += t_module_name);
+    
     auto new_mod = module_import->second.function(this, eval);
     m_modules.insert({ t_module_name, new_mod });
 

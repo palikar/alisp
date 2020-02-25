@@ -31,6 +31,7 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_modules.hpp"
 #include "alisp/alisp/alisp_loadable_modules.hpp"
+#include "alisp/alisp/alisp_warnings.hpp"
 
 #include "alisp/utility/helpers.hpp"
 #include "alisp/utility/macros.hpp"
@@ -118,6 +119,7 @@ class Module
     {
         auto sym = m_root_scope.find(t_name);
         if (sym != std::end(m_root_scope)) { return sym->second; };
+        warn::warn_env(("Referencing non existent symbol "s +=  t_name) += " in module"s += m_name );
         return nullptr;
     }
 
@@ -125,6 +127,7 @@ class Module
     {
         auto mod = m_modules.find(t_name);
         if (mod != std::end(m_modules)) { return mod->second.get(); };
+        warn::warn_env("Referencing non existen module:"s +=  t_name);
         return nullptr;
     }
 };
@@ -182,6 +185,10 @@ class Environment
 
     void alias_module(const std::string &t_name, const std::string t_alias)
     {
+        if (m_modules.find(t_name) == m_modules.end()) {
+            warn::warn_env("Referencing non existen module:"s +=  t_name);
+            return;
+        }
         AL_DEBUG("Aliasing a module: "s += t_name + " -> " + t_alias);
         m_active_module.get().add_module(m_modules.at(t_name), std::move(t_alias));
     }
@@ -196,6 +203,7 @@ class Environment
     {
         auto mod = m_modules.find(t_name);
         if (mod != std::end(m_modules)) { return mod->second.get(); };
+        warn::warn_env("Referencing non existen module:"s +=  t_name);
         return nullptr;
     }
 
@@ -207,6 +215,8 @@ class Environment
         AL_DEBUG("Importing module symbols: "s += t_from + " -> " + t_to);
         auto &from_root = m_modules.at(t_from)->get_root();
         auto &to_root   = m_modules.at(t_to)->get_root();
+
+        if (from_root.empty()) { warn::warn_import("Importing an empty root scope."); }
 
         for (auto &[name, sym] : from_root)
         {
@@ -265,7 +275,9 @@ class Environment
 
     void trace_unwind()
     {
-        if (!std::empty(m_stack_trace)) { m_stack_trace.pop_back(); }
+        if (!std::empty(m_stack_trace)) { m_stack_trace.pop_back(); return; }
+
+        warn::warn_env("Unwinding an empty stack.");
     }
 
     auto get_stack_trace() -> auto & { return m_stack_trace; }
@@ -343,7 +355,11 @@ struct FunctionCall
                 m_prev_mod = m_env.current_module();
                 t_env.activate_module(func_module);
             }
+
+            return;
         }
+
+        warn::warn_env("Calling a function without --module-- property."); 
     }
     ~FunctionCall()
     {
@@ -356,7 +372,6 @@ struct FunctionCall
     FunctionCall(const FunctionCall &)       = delete;
     FunctionCall &operator=(const FunctionCall &) = delete;
 
-    // TODO: trace here
 
   private:
     Environment &m_env;
