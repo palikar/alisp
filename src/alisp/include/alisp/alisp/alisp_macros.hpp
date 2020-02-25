@@ -123,3 +123,11 @@
 #define STACK_ALLOC_OBJECT(NAME, PTR, ...) \
     ALObject NAME(__VA_ARGS__);            \
     auto PTR = ::alisp::detail::ALObjectHelper::init_ptr_temp(&NAME)
+
+
+#ifdef DISABLE_CHECKS
+#define CHECK(EXR) do{(void)0;} while (false)
+#else
+#define CHECK(EXR) EXR
+#endif
+

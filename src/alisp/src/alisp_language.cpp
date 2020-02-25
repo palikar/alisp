@@ -83,58 +83,58 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
     assert_min_size<1>(obj);
 
     auto mod_sym = eval->eval(obj->i(0));
-    assert_symbol(mod_sym);
-    const auto module_name = mod_sym->to_string();
+assert_symbol(mod_sym);
+const auto module_name = mod_sym->to_string();
 
-    bool import_all         = false;
-    std::string module_file = module_name;
-    std::string import_as   = module_name;
+bool import_all         = false;
+std::string module_file = module_name;
+std::string import_as   = module_name;
 
-    if (contains(obj, ":all")) { import_all = true; }
+if (contains(obj, ":all")) { import_all = true; }
 
-    auto [file, file_succ] = get_next(obj, ":file");
-    if (file_succ and pstring(file)) { module_file = file->to_string(); }
+auto [file, file_succ] = get_next(obj, ":file");
+if (file_succ and pstring(file)) { module_file = file->to_string(); }
 
-    auto [name_sexp, as_succ] = get_next(obj, ":as");
-    if (as_succ)
+auto [name_sexp, as_succ] = get_next(obj, ":as");
+if (as_succ)
+{
+    auto new_name = eval->eval(name_sexp);
+    if (psym(new_name)) { import_as = new_name->to_string(); }
+}
+
+if (env->module_loaded(module_name))
+{
+
+    env->alias_module(module_name, import_as);
+
+    if (import_all) { env->import_root_scope(module_name, env->current_module()); }
+
+    return Qt;
+}
+
+// check if this is a built in module
+if (env->load_builtin_module(module_name, eval))
+{
+
+    env->alias_module(module_name, import_as);
+
+    if (import_all) { env->import_root_scope(module_name, env->current_module()); }
+
+    return Qt;
+}
+
+for (auto &path : *Vmodpaths)
+{
+    for (auto &postfix : { "", ".so", ".al" })
     {
-        auto new_name = eval->eval(name_sexp);
-        if (psym(new_name)) { import_as = new_name->to_string(); }
-    }
+        const auto eval_file = fs::path(path->to_string()) / fs::path(module_file + postfix);
 
-    if (env->module_loaded(module_name))
-    {
+        AL_DEBUG("Testing module file: "s += eval_file.string());
 
-        env->alias_module(module_name, import_as);
+        if (!fs::exists(eval_file)) { continue; }
 
-        if (import_all) { env->import_root_scope(module_name, env->current_module()); }
-
-        return Qt;
-    }
-
-    // check if this is a built in module
-    if (env->load_builtin_module(module_name, eval))
-    {
-
-        env->alias_module(module_name, import_as);
-
-        if (import_all) { env->import_root_scope(module_name, env->current_module()); }
-
-        return Qt;
-    }
-
-    for (auto &path : *Vmodpaths)
-    {
-        for (auto &postfix : { "", ".so", ".al" })
-        {
-            const auto eval_file = fs::path(path->to_string()) / fs::path(module_file + postfix);
-
-            AL_DEBUG("Testing module file: "s += eval_file.string());
-
-            if (!fs::exists(eval_file)) { continue; }
-
-            if (hash::hash(std::string_view(postfix)) == hash::hash(".so"))
-            {
+        if (hash::hash(std::string_view(postfix)) == hash::hash(".so"))
+{
                 env->load_module(eval, eval_file.string(), module_name);
                 if (import_all) { env->import_root_scope(module_name, env->current_module()); }
                 return Qt;

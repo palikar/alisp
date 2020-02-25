@@ -60,6 +60,10 @@ if(ENABLE_OBJECT_DOC)
     target_compile_definitions(language_options INTERFACE ENABLE_OBJECT_DOC)
 endif(ENABLE_OBJECT_DOC)
 
+if(DISABLE_RUN_TIME_CHECKS)
+    target_compile_definitions(language_options INTERFACE DISABLE_CHECKS)
+endif(DISABLE_RUN_TIME_CHECKS)
+
 
 add_library(alisp_language
     src/alisp_parser.cpp
