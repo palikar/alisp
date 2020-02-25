@@ -110,6 +110,7 @@ ALObjectPtr Fdirectories(ALObjectPtr t_obj, env::Environment *, eval::Evaluator 
 
     return make_object(entries);
 }
+
 ALObjectPtr Fentries(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
