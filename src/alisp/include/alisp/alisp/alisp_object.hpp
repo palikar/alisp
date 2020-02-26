@@ -513,8 +513,7 @@ struct NameValidator
     }
 };
 
-template<typename... T>
-void signal(ALObjectPtr t_sym, T ... t_data)
+template<typename... T> void signal(ALObjectPtr t_sym, T... t_data)
 {
     throw signal_exception(t_sym, make_object(t_data...));
 }

@@ -95,14 +95,14 @@ static std::string json_escape(const std::string &str)
     {
         switch (i)
         {
-          case '\"': output += "\\\""; break;
-          case '\\': output += "\\\\"; break;
-          case '\b': output += "\\b"; break;
-          case '\f': output += "\\f"; break;
-          case '\n': output += "\\n"; break;
-          case '\r': output += "\\r"; break;
-          case '\t': output += "\\t"; break;
-          default: output += i; break;
+        case '\"': output += "\\\""; break;
+        case '\\': output += "\\\\"; break;
+        case '\b': output += "\\b"; break;
+        case '\f': output += "\\f"; break;
+        case '\n': output += "\\n"; break;
+        case '\r': output += "\\r"; break;
+        case '\t': output += "\\t"; break;
+        default: output += i; break;
         }
     }
     return output;
@@ -153,9 +153,7 @@ struct JSONParser
 
             consume_ws(str, offset);
             if (str.at(offset) != ':')
-            {
-                signal(json::json_signal, std::string("JSON ERROR: Object: Expected colon, found '") + str.at(offset) + "'\n");
-            }
+            { signal(json::json_signal, std::string("JSON ERROR: Object: Expected colon, found '") + str.at(offset) + "'\n"); }
             consume_ws(str, ++offset);
             alisp::ALObjectPtr Value = parse_next(str, offset);
 
@@ -370,9 +368,7 @@ struct JSONParser
     static ALObjectPtr parse_null(const std::string &str, size_t &offset)
     {
         if (str.substr(offset, 4) != "null")
-        {
-            signal(json::json_signal, std::string("JSON ERROR: Null: Expected 'null', found '") + str.substr(offset, 4) + "'");
-        }
+        { signal(json::json_signal, std::string("JSON ERROR: Null: Expected 'null', found '") + str.substr(offset, 4) + "'"); }
         offset += 4;
         return Qnil;
     }
@@ -399,9 +395,6 @@ struct JSONParser
 };
 
 
-
-
-
 inline ALObjectPtr load(const std::string &str)
 {
     size_t offset = 0;
@@ -425,7 +418,8 @@ static std::string dump(ALObjectPtr t_json, long depth = 1, std::string tab = " 
         {
             if (!skip) { s += ",\n"; }
 
-            s += (pad + "\"" + detail::json_escape(utility::erase_substr(t_json->i(i)->to_string(), ":")) + "\" : " + dump(t_json->i(i + 1), depth + 1, tab));
+            s += (pad + "\"" + detail::json_escape(utility::erase_substr(t_json->i(i)->to_string(), ":"))
+                  + "\" : " + dump(t_json->i(i + 1), depth + 1, tab));
             skip = false;
         }
 
@@ -487,7 +481,7 @@ ALObjectPtr Fdump_json(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
 ALObjectPtr Fload_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
-    
+
     assert_size<1>(obj);
     auto file = eval->eval(obj->i(0));
     assert_string(file);
@@ -501,10 +495,10 @@ ALObjectPtr Fload_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
 ALObjectPtr Fdump_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
-    
+
     assert_size<2>(obj);
 
-    auto js = eval->eval(obj->i(0));
+    auto js   = eval->eval(obj->i(0));
     auto file = eval->eval(obj->i(1));
 
     assert_string(file);
@@ -515,7 +509,7 @@ ALObjectPtr Fdump_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
     std::ofstream outfile;
     outfile.open(file->to_string(), std::ios_base::out);
     outfile << json::dump(js);
-    
+
     return Qt;
 }
 
@@ -526,7 +520,9 @@ ALISP_EXPORT alisp::env::ModulePtr init_json(alisp::env::Environment *, alisp::e
     auto Mjson    = alisp::module_init("json");
     auto json_ptr = Mjson.get();
 
-    alisp::module_doc(json_ptr, R"(The `json` module can be used to parse and handle json-formated text. It can transoform JSON to an equvalent representation through s-expressions.
+    alisp::module_doc(
+      json_ptr,
+      R"(The `json` module can be used to parse and handle json-formated text. It can transoform JSON to an equvalent representation through s-expressions.
 
 The s-exp representation that this module uses for an dict-like strucure is (plist)[https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node108.html]. A dictonary with keys and values can be viewed as a list of values like `(:key-1 "value-1" :key-2 "value-2")`. For example, this json snippet:
 ```json
@@ -549,7 +545,7 @@ The resulting representaion can be handeld through some of the functions that th
 
 )");
 
-    
+
     alisp::module_defvar(json_ptr, "json-signal", json::json_signal);
 
     alisp::module_defun(json_ptr, "json-parse", &json::Fparse_json);
