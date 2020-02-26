@@ -1,6 +1,7 @@
 #include "alisp/config.hpp"
 
 #include "alisp/alisp/alisp_module_helpers.hpp"
+#include "alisp/utility/string_utils.hpp"
 
 #include <string>
 #include <vector>
@@ -9,7 +10,7 @@
 #include <cstdint>
 #include <cctype>
 #include <type_traits>
-		
+
 
 namespace json
 {
@@ -88,7 +89,8 @@ template<typename T>
 
 }
 
-struct JSONParser {
+struct JSONParser
+{
 
     static bool isspace(const char c) noexcept
     {
@@ -118,19 +120,22 @@ struct JSONParser {
         consume_ws( str, offset );
         if( str.at(offset) == '}' ) {
             ++offset;
-            return alisp::make_list( object);
+            auto new_obj = alisp::make_list(object);
+            new_obj->set_prop("--json-object--", Qt);
+            return new_obj;
         }
+
 
         for (;offset<str.size();) {
             auto key = alisp::make_symbol(":"s += parse_next( str, offset )->to_string());
-            
+
             consume_ws( str, offset );
             if( str.at(offset) != ':' ) {
                 throw std::runtime_error(std::string("JSON ERROR: Object: Expected colon, found '") + str.at(offset) + "'\n");
             }
             consume_ws( str, ++offset );
             alisp::ALObjectPtr Value = parse_next( str, offset );
-            
+
 
             object.push_back(key);
             object.push_back(Value);
@@ -148,7 +153,9 @@ struct JSONParser {
             }
         }
 
-        return alisp::make_list(object);
+        auto new_obj = alisp::make_list(object);
+        new_obj->set_prop("--json-object--", Qt);
+        return new_obj;
     }
 
     static ALObjectPtr parse_array( const std::string &str, size_t &offset )
@@ -161,7 +168,9 @@ struct JSONParser {
         consume_ws( str, offset );
         if( str.at(offset) == ']' ) {
             ++offset;
-            return make_list(array);
+            auto new_arr = alisp::make_list(array);
+            new_arr->set_prop("--json-array--", Qt);
+            return new_arr;
         }
 
         for (;offset < str.size();) {
@@ -180,7 +189,9 @@ struct JSONParser {
             }
         }
 
-        return make_list(array);
+        auto new_arr = alisp::make_list(array);
+        new_arr->set_prop("--json-array--", Qt);
+        return new_arr;
     }
 
     static ALObjectPtr parse_string( const std::string &str, size_t &offset )
@@ -216,7 +227,9 @@ struct JSONParser {
             }
         }
         ++offset;
-        return make_string(val);
+        auto new_str = alisp::make_string(val);
+        new_str->set_prop("--json-string--", Qt);
+        return new_str;
     }
 
     static ALObjectPtr parse_number( const std::string &str, size_t &offset )
@@ -236,7 +249,7 @@ struct JSONParser {
             if( c >= '0' && c <= '9' ) {
                 val += c;
             } else if( c == '.' && !isDouble ) {
-                val += c; 
+                val += c;
                 isDouble = true;
             } else {
                 break;
@@ -244,12 +257,12 @@ struct JSONParser {
         }
         if( offset < str.size() && (c == 'E' || c == 'e' )) {
             c = str.at(offset++);
-            if( c == '-' ) { 
+            if( c == '-' ) {
                 isExpNegative = true;
             } else if( c == '+' ) {
                 // do nothing
-            } else { 
-                --offset; 
+            } else {
+                --offset;
             }
 
             for (; offset < str.size() ;) {
@@ -324,34 +337,107 @@ struct JSONParser {
 
 };
 
-inline ALObjectPtr Load( const std::string &str ) {
+static std::string json_escape( const std::string &str )
+{
+    std::string output;
+    for(char i : str) {
+        switch( i ) {
+          case '\"': output += "\\\""; break;
+          case '\\': output += "\\\\"; break;
+          case '\b': output += "\\b";  break;
+          case '\f': output += "\\f";  break;
+          case '\n': output += "\\n";  break;
+          case '\r': output += "\\r";  break;
+          case '\t': output += "\\t";  break;
+          default  : output += i; break;
+        }
+    }
+    return output;
+}
+
+inline ALObjectPtr load( const std::string &str )
+{
     size_t offset = 0;
     return JSONParser::parse_next( str, offset );
+}
+
+static std::string dump(ALObjectPtr t_json, long depth = 1, std::string tab = "  ")
+{
+    
+    if (t_json->prop_exists("--json-object--")){
+        std::string pad = "";
+        for( long i = 0; i < depth; ++i, pad += tab ) { }
+
+        std::string s = "{\n";
+        bool skip = true;
+
+        if (std::size(*t_json) == 0) {
+            return "{}";
+        }
+
+        for(size_t i = 0; i < std::size(*t_json) - 1; i+=2) {
+            if( !skip ) { s += ",\n"; }
+            
+            s += ( pad + "\"" + json_escape(utility::erase_substr(t_json->i(i)->to_string(), ":")) + "\" : " + dump(t_json->i(i+1) , depth + 1, tab ) );
+            skip = false;
+            }
+        
+        s += ( "\n" + pad.erase( 0, 2 ) + "}" ) ;
+        return s;
+        
+    } else if (t_json->prop_exists("--json-array--")){
+        std::string s = "[";
+        bool skip = true;
+
+        for(auto& p : *t_json) {
+            if( !skip ) { s += ", "; }
+            s += dump(p, depth + 1, tab );
+            skip = false;
+        }
+        
+        s += "]";
+        return s;
+        
+    } else if (t_json->prop_exists("--json-string--")){
+        return "\"" + json_escape(t_json->to_string()) + "\"";
+    } else if (pint(t_json)) {
+        return std::to_string(t_json->to_int());
+    } else if (preal(t_json)) {
+        return std::to_string(t_json->to_real());
+    } else if(t_json == Qnil) {
+        return "false";
+    } else if(t_json == Qt) {
+        return "true";
+    } 
+    return "";
 }
 
 ALObjectPtr Fparse_json(ALObjectPtr, env::Environment *, eval::Evaluator *)
 {
 
 
-    return Load(R"( {
+    return load(R"( {
 "key-1" : "value-1",
-"key-2" : [1, 2, 3], 
+"key-2" : [1, 2, 3],
 "key-3":true,
 "key-4":false,
 "key-5": [],
 "key-6": {},
-"key-6": {
-   "key-6-1" : "sadasd",
-   "key-6-1" : ["sadasd", "asd"]
+"key-6": null,
+"key-7": {
+   "key-7-1" : "sadasd",
+   "key-7-2" : ["sadasd", "asd"]
 }
 })");
 }
 
 
+ALObjectPtr Fdump_json(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    return make_string(json::dump(eval->eval(obj->i(0))));
 }
 
-
-
+}
 
 ALISP_EXPORT alisp::env::ModulePtr init_json(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
@@ -359,6 +445,10 @@ ALISP_EXPORT alisp::env::ModulePtr init_json(alisp::env::Environment *, alisp::e
     auto json_ptr = Mjson.get();
 
     alisp::module_defun(json_ptr, "json-parse", &json::Fparse_json);
+    alisp::module_defun(json_ptr, "json-dump", &json::Fdump_json);
+
+    alisp::module_defun(json_ptr, "load-file", &json::Fparse_json);
+    alisp::module_defun(json_ptr, "dump-file", &json::Fparse_json);
 
     return Mjson;
 }

@@ -109,5 +109,17 @@ inline std::string trim(const std::string &str)
     return str.substr(first, (last - first + 1));
 }
 
+inline std::string erase_substr(std::string mainStr, const std::string & toErase)
+{
+	// Search for the substring in string
+	size_t pos = mainStr.find(toErase);
+ 
+	if (pos != std::string::npos)
+	{
+		// If found then erase it from string
+		mainStr.erase(pos, toErase.length());
+	}
+    return mainStr;
+}
 
 }  // namespace alisp::utility
