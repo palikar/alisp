@@ -172,6 +172,23 @@ struct Base16 {
 #endif
 };
 
+struct Base32 {
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#endif
+
+    static std::string Encode(const std::string& input)
+    {}
+
+    
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+};
 
 }
 
@@ -213,7 +230,6 @@ ALObjectPtr Fbase64_decode_string(ALObjectPtr obj, env::Environment *, eval::Eva
     }
     return Qnil;
 }
-
 ALObjectPtr Fbase64_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
