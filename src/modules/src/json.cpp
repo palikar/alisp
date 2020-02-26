@@ -548,6 +548,8 @@ The resulting representaion can be handeld through some of the functions that th
 
 
 )");
+
+    
     alisp::module_defvar(json_ptr, "json-signal", json::json_signal);
 
     alisp::module_defun(json_ptr, "json-parse", &json::Fparse_json);

@@ -127,6 +127,21 @@ ALObjectPtr Fbase64_encode_string(ALObjectPtr obj, env::Environment *, eval::Eva
     return make_string(detail::Base64::Encode(str->to_string()));
 }
 
+ALObjectPtr Fbase64_encode_bytes(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(obj);
+
+    auto list = eval->eval(obj->i(0));
+    assert_byte_array(list);
+
+    std::vector<char> v;
+    v.reserve(std::size(*list));
+
+    for (auto& b : *list) { v.emplace_back(static_cast<char>(b->to_int())); }
+    
+    return make_string(detail::Base64::Encode(std::string(v.begin(), v.end())));
+}
+
 ALObjectPtr Fbase64_decode_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
@@ -141,6 +156,23 @@ ALObjectPtr Fbase64_decode_string(ALObjectPtr obj, env::Environment *, eval::Eva
     return Qnil;
 }
 
+ALObjectPtr Fbase64_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(obj);
+
+    auto str = eval->eval(obj->i(0));
+    assert_string(str);
+    std::string out;
+    auto res = detail::Base64::Decode(str->to_string(), out);
+    if (res) {
+
+        ALObject::list_type bytes;
+        for (const char c : out) { bytes.push_back(make_int(static_cast<ALObject::int_type>(c))); }
+        return make_list(bytes);
+    }
+    return Qnil;
+}
+
 }
 
 ALISP_EXPORT alisp::env::ModulePtr init_base64(alisp::env::Environment *, alisp::eval::Evaluator *)
@@ -148,8 +180,13 @@ ALISP_EXPORT alisp::env::ModulePtr init_base64(alisp::env::Environment *, alisp:
     auto Mbase64 = alisp::module_init("base64");
     auto base64_ptr = Mbase64.get();
 
+    alisp::module_doc(base64_ptr, R"(The `base64` module provides several codecs for encoding byte-data.)");
+
     alisp::module_defun(base64_ptr, "base64-encode-string", &base64::Fbase64_encode_string);
+    alisp::module_defun(base64_ptr, "base64-encode-bytes", &base64::Fbase64_encode_bytes);
+    
     alisp::module_defun(base64_ptr, "base64-decode-string", &base64::Fbase64_decode_string);
+    alisp::module_defun(base64_ptr, "base64-decode-bytes", &base64::Fbase64_decode_bytes);
 
     return Mbase64;
 }
