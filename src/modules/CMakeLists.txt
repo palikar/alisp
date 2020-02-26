@@ -7,9 +7,9 @@ macro(add_dynmodule TARGET_NAME NAME SRC)
 
     target_link_libraries(${TARGET_NAME}
         PRIVATE
-        language_options
         project_options
         project_warnings
+        language_options
         alisp_language
         fmt::fmt)
     

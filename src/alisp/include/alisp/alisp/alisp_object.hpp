@@ -31,6 +31,7 @@
 #include "alisp/alisp/alisp_env.hpp"
 #include "alisp/alisp/alisp_pattern_matching.hpp"
 #include "alisp/alisp/alisp_declarations.hpp"
+#include "alisp/alisp/alisp_exception.hpp"
 #include "alisp/utility.hpp"
 
 
@@ -511,5 +512,11 @@ struct NameValidator
         if (valid_object_name(t_name)) { throw illegal_name_error(t_name, "Symbol names should not start with \"--\""); }
     }
 };
+
+template<typename... T>
+void signal(ALObjectPtr t_sym, T ... t_data)
+{
+    throw signal_exception(t_sym, make_object(t_data...));
+}
 
 }  // namespace alisp

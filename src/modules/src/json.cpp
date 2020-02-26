@@ -1,8 +1,11 @@
 #include "alisp/config.hpp"
 
 #include "alisp/alisp/alisp_module_helpers.hpp"
+#include "alisp/alisp/alisp_object.hpp"
 #include "alisp/utility/string_utils.hpp"
+#include "alisp/utility/files.hpp"
 
+#include <filesystem>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -16,6 +19,8 @@ namespace json
 {
 
 using namespace alisp;
+
+auto json_signal = alisp::make_symbol("json-signal");
 
 namespace detail
 {
@@ -82,6 +87,27 @@ template<typename T>[[nodiscard]] auto parse_num(const std::string_view t_str) -
     return exponent ? base * std::pow(T(10), t * static_cast<T>(exponent)) : t;
 }
 
+
+static std::string json_escape(const std::string &str)
+{
+    std::string output;
+    for (char i : str)
+    {
+        switch (i)
+        {
+          case '\"': output += "\\\""; break;
+          case '\\': output += "\\\\"; break;
+          case '\b': output += "\\b"; break;
+          case '\f': output += "\\f"; break;
+          case '\n': output += "\\n"; break;
+          case '\r': output += "\\r"; break;
+          case '\t': output += "\\t"; break;
+          default: output += i; break;
+        }
+    }
+    return output;
+}
+
 }  // namespace detail
 
 struct JSONParser
@@ -127,7 +153,9 @@ struct JSONParser
 
             consume_ws(str, offset);
             if (str.at(offset) != ':')
-            { throw std::runtime_error(std::string("JSON ERROR: Object: Expected colon, found '") + str.at(offset) + "'\n"); }
+            {
+                signal(json::json_signal, std::string("JSON ERROR: Object: Expected colon, found '") + str.at(offset) + "'\n");
+            }
             consume_ws(str, ++offset);
             alisp::ALObjectPtr Value = parse_next(str, offset);
 
@@ -149,7 +177,7 @@ struct JSONParser
             }
             else
             {
-                throw std::runtime_error(std::string("JSON ERROR: Object: Expected comma, found '") + str.at(offset) + "'\n");
+                signal(json::json_signal, std::string("JSON ERROR: Object: Expected comma, found '") + str.at(offset) + "'\n");
             }
         }
 
@@ -192,7 +220,7 @@ struct JSONParser
             }
             else
             {
-                throw std::runtime_error(std::string("JSON ERROR: Array: Expected ',' or ']', found '") + str.at(offset) + "'\n");
+                signal(json::json_signal, std::string("JSON ERROR: Array: Expected ',' or ']', found '") + str.at(offset) + "'\n");
             }
         }
 
@@ -227,7 +255,7 @@ struct JSONParser
                         if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) { val += c; }
                         else
                         {
-                            throw std::runtime_error(std::string("JSON ERROR: String: Expected hex character in unicode escape, found '") + c + "'");
+                            signal(json::json_signal, std::string("JSON ERROR: String: Expected hex character in unicode escape, found '") + c + "'");
                         }
                     }
                     offset += 4;
@@ -293,7 +321,7 @@ struct JSONParser
                 if (c >= '0' && c <= '9') { exp_str += c; }
                 else if (!isspace(c) && c != ',' && c != ']' && c != '}')
                 {
-                    throw std::runtime_error(std::string("JSON ERROR: Number: Expected a number for exponent, found '") + c + "'");
+                    signal(json::json_signal, std::string("JSON ERROR: Number: Expected a number for exponent, found '") + c + "'");
                 }
                 else
                 {
@@ -304,7 +332,7 @@ struct JSONParser
         }
         else if (offset < str.size() && (!isspace(c) && c != ',' && c != ']' && c != '}'))
         {
-            throw std::runtime_error(std::string("JSON ERROR: Number: unexpected character '") + c + "'");
+            signal(json::json_signal, std::string("JSON ERROR: Number: unexpected character '") + c + "'");
         }
         --offset;
 
@@ -334,14 +362,17 @@ struct JSONParser
         }
         else
         {
-            throw std::runtime_error(std::string("JSON ERROR: Bool: Expected 'true' or 'false', found '") + str.substr(offset, 5) + "'");
+            signal(json::json_signal, std::string("JSON ERROR: Bool: Expected 'true' or 'false', found '") + str.substr(offset, 5) + "'");
+            return nullptr;
         }
     }
 
     static ALObjectPtr parse_null(const std::string &str, size_t &offset)
     {
         if (str.substr(offset, 4) != "null")
-        { throw std::runtime_error(std::string("JSON ERROR: Null: Expected 'null', found '") + str.substr(offset, 4) + "'"); }
+        {
+            signal(json::json_signal, std::string("JSON ERROR: Null: Expected 'null', found '") + str.substr(offset, 4) + "'");
+        }
         offset += 4;
         return Qnil;
     }
@@ -362,29 +393,14 @@ struct JSONParser
         default:
             if ((value <= '9' && value >= '0') || value == '-') { return parse_number(str, offset); }
         }
-        throw std::runtime_error(std::string("JSON ERROR: Parse: Unexpected starting character '") + value + "'");
+        signal(json::json_signal, std::string("JSON ERROR: Parse: Unexpected starting character '") + value + "'");
+        return nullptr;
     }
 };
 
-static std::string json_escape(const std::string &str)
-{
-    std::string output;
-    for (char i : str)
-    {
-        switch (i)
-        {
-        case '\"': output += "\\\""; break;
-        case '\\': output += "\\\\"; break;
-        case '\b': output += "\\b"; break;
-        case '\f': output += "\\f"; break;
-        case '\n': output += "\\n"; break;
-        case '\r': output += "\\r"; break;
-        case '\t': output += "\\t"; break;
-        default: output += i; break;
-        }
-    }
-    return output;
-}
+
+
+
 
 inline ALObjectPtr load(const std::string &str)
 {
@@ -409,7 +425,7 @@ static std::string dump(ALObjectPtr t_json, long depth = 1, std::string tab = " 
         {
             if (!skip) { s += ",\n"; }
 
-            s += (pad + "\"" + json_escape(utility::erase_substr(t_json->i(i)->to_string(), ":")) + "\" : " + dump(t_json->i(i + 1), depth + 1, tab));
+            s += (pad + "\"" + detail::json_escape(utility::erase_substr(t_json->i(i)->to_string(), ":")) + "\" : " + dump(t_json->i(i + 1), depth + 1, tab));
             skip = false;
         }
 
@@ -433,7 +449,7 @@ static std::string dump(ALObjectPtr t_json, long depth = 1, std::string tab = " 
     }
     else if (t_json->prop_exists("--json-string--"))
     {
-        return "\"" + json_escape(t_json->to_string()) + "\"";
+        return "\"" + detail::json_escape(t_json->to_string()) + "\"";
     }
     else if (pint(t_json))
     {
@@ -468,6 +484,41 @@ ALObjectPtr Fdump_json(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
     return make_string(json::dump(eval->eval(obj->i(0))));
 }
 
+ALObjectPtr Fload_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    namespace fs = std::filesystem;
+    
+    assert_size<1>(obj);
+    auto file = eval->eval(obj->i(0));
+    assert_string(file);
+
+    if (!fs::exists(file->to_string())) { return Qnil; }
+    if (!fs::is_regular_file(file->to_string())) { return Qnil; }
+
+    return json::load(utility::load_file(file->to_string()));
+}
+
+ALObjectPtr Fdump_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    namespace fs = std::filesystem;
+    
+    assert_size<2>(obj);
+
+    auto js = eval->eval(obj->i(0));
+    auto file = eval->eval(obj->i(1));
+
+    assert_string(file);
+
+    if (!fs::exists(file->to_string())) { return Qnil; }
+    if (!fs::is_regular_file(file->to_string())) { return Qnil; }
+
+    std::ofstream outfile;
+    outfile.open(file->to_string(), std::ios_base::out);
+    outfile << json::dump(js);
+    
+    return Qt;
+}
+
 }  // namespace json
 
 ALISP_EXPORT alisp::env::ModulePtr init_json(alisp::env::Environment *, alisp::eval::Evaluator *)
@@ -475,11 +526,35 @@ ALISP_EXPORT alisp::env::ModulePtr init_json(alisp::env::Environment *, alisp::e
     auto Mjson    = alisp::module_init("json");
     auto json_ptr = Mjson.get();
 
+    alisp::module_doc(json_ptr, R"(The `json` module can be used to parse and handle json-formated text. It can transoform JSON to an equvalent representation through s-expressions.
+
+The s-exp representation that this module uses for an dict-like strucure is (plist)[https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node108.html]. A dictonary with keys and values can be viewed as a list of values like `(:key-1 "value-1" :key-2 "value-2")`. For example, this json snippet:
+```json
+{
+"key-1" : "value-1",
+"key-2" : 42,
+"key-3" : [42 ,42],
+"key-4" : ["42" , "42"]
+}
+```
+
+will be represented throught the following s-expressions structure.
+
+```elisp
+(:key-1 "value-1" :key-2 42 :key-3 (42 42) :key-4 ("42" "42"))
+```
+
+The resulting representaion can be handeld through some of the functions that the module provides.
+
+
+)");
+    alisp::module_defvar(json_ptr, "json-signal", json::json_signal);
+
     alisp::module_defun(json_ptr, "json-parse", &json::Fparse_json);
     alisp::module_defun(json_ptr, "json-dump", &json::Fdump_json);
 
-    alisp::module_defun(json_ptr, "load-file", &json::Fparse_json);
-    alisp::module_defun(json_ptr, "dump-file", &json::Fparse_json);
+    alisp::module_defun(json_ptr, "load-file", &json::Fload_file);
+    alisp::module_defun(json_ptr, "dump-file", &json::Fdump_file);
 
     return Mjson;
 }
