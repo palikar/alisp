@@ -1,13 +1,14 @@
 #include "alisp/config.hpp"
-
 #include "alisp/alisp/alisp_module_helpers.hpp"
 
 
 namespace base64
 {
+using namespace alisp;
 
 namespace detail
 {
+
 
 struct Base64 {
 #ifdef __GNUC__
@@ -58,7 +59,7 @@ struct Base64 {
         return ret;
     }
 
-    static std::string Decode(const std::string& input, std::string& out)
+    static bool Decode(const std::string& input, std::string& out)
     {
         static constexpr unsigned char kDecodingTable[] = {
             64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
@@ -80,7 +81,7 @@ struct Base64 {
         };
 
         size_t in_len = input.size();
-        if (in_len % 4 != 0) return "Input data size is not a multiple of 4";
+        if (in_len % 4 != 0) { return false; }
 
         size_t out_len = in_len / 4 * 3;
         if (input[in_len - 1] == '=') out_len--;
@@ -96,13 +97,13 @@ struct Base64 {
 
             uint32_t triple = (a << 3 * 6) + (b << 2 * 6) + (c << 1 * 6) + (d << 0 * 6);
 
-      if (j < out_len) out[j++] = (triple >> 2 * 8) & 0xFF;
-      if (j < out_len) out[j++] = (triple >> 1 * 8) & 0xFF;
-      if (j < out_len) out[j++] = (triple >> 0 * 8) & 0xFF;
-    }
+            if (j < out_len) out[j++] = (triple >> 2 * 8) & 0xFF;
+            if (j < out_len) out[j++] = (triple >> 1 * 8) & 0xFF;
+            if (j < out_len) out[j++] = (triple >> 0 * 8) & 0xFF;
+        }
 
-    return "";
-  }
+        return true;
+    }
 
 
 #ifdef __GNUC__
@@ -112,18 +113,43 @@ struct Base64 {
 };
 
 
+
+
 }
 
+ALObjectPtr Fbase64_encode_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(obj);
 
+    auto str = eval->eval(obj->i(0));
+    assert_string(str);
+
+    return make_string(detail::Base64::Encode(str->to_string()));
+}
+
+ALObjectPtr Fbase64_decode_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(obj);
+
+    auto str = eval->eval(obj->i(0));
+    assert_string(str);
+    std::string out;
+    auto res = detail::Base64::Decode(str->to_string(), out);
+    if (res) {
+        return make_string(out);
+    }
+    return Qnil;
+}
 
 }
 
 ALISP_EXPORT alisp::env::ModulePtr init_base64(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     auto Mbase64 = alisp::module_init("base64");
-    // auto base64_ptr = Mrandom.get();
+    auto base64_ptr = Mbase64.get();
 
-    // alisp::module_defun(xml_ptr, "xml-parse", &Fparse_xml);
+    alisp::module_defun(base64_ptr, "base64-encode-string", &base64::Fbase64_encode_string);
+    alisp::module_defun(base64_ptr, "base64-decode-string", &base64::Fbase64_decode_string);
 
     return Mbase64;
 }
