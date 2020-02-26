@@ -112,7 +112,65 @@ struct Base64 {
 
 };
 
+struct Base16 {
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#endif
+
+    static std::string Encode(const std::string& input)
+    {
+        static constexpr char hex_digits[] = "0123456789ABCDEF";
+
+        std::string output;
+        output.reserve(input.length() * 2);
+        for (unsigned char c : input)
+        {
+            output.push_back(hex_digits[c >> 4]);
+            output.push_back(hex_digits[c & 15]);
+        }
+        return output;
+    }
+
+    static int hex_value(char hex_digit)
+    {
+        switch (hex_digit) {
+          case '0': case '1': case '2': case '3': case '4':
+          case '5': case '6': case '7': case '8': case '9':
+              return hex_digit - '0';
+
+          case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
+              return hex_digit - 'A' + 10;
+
+          case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
+              return hex_digit - 'a' + 10;
+        }
+        return -1;
+    }
+
+    static bool Decode(const std::string& input, std::string& output)
+    {
+        size_t len = input.length();
+        if (len & 1) { return false; }
+
+        output.reserve(len / 2);
+        for (auto it = input.begin(); it != input.end(); )
+        {
+            int hi = hex_value(*it++);
+            int lo = hex_value(*it++);
+            output.push_back(hi << 4 | lo);
+        }
+        return true;
+    }
+
+    
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+};
 
 
 }
@@ -173,6 +231,64 @@ ALObjectPtr Fbase64_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Eval
     return Qnil;
 }
 
+
+
+ALObjectPtr Fbase16_encode_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(obj);
+
+    auto str = eval->eval(obj->i(0));
+    assert_string(str);
+
+    return make_string(detail::Base16::Encode(str->to_string()));
+}
+
+ALObjectPtr Fbase16_encode_bytes(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(obj);
+
+    auto list = eval->eval(obj->i(0));
+    assert_byte_array(list);
+
+    std::vector<char> v;
+    v.reserve(std::size(*list));
+
+    for (auto& b : *list) { v.emplace_back(static_cast<char>(b->to_int())); }
+    
+    return make_string(detail::Base16::Encode(std::string(v.begin(), v.end())));
+}
+
+ALObjectPtr Fbase16_decode_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(obj);
+
+    auto str = eval->eval(obj->i(0));
+    assert_string(str);
+    std::string out;
+    auto res = detail::Base16::Decode(str->to_string(), out);
+    if (res) {
+        return make_string(out);
+    }
+    return Qnil;
+}
+
+ALObjectPtr Fbase16_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_size<1>(obj);
+
+    auto str = eval->eval(obj->i(0));
+    assert_string(str);
+    std::string out;
+    auto res = detail::Base16::Decode(str->to_string(), out);
+    if (res) {
+
+        ALObject::list_type bytes;
+        for (const char c : out) { bytes.push_back(make_int(static_cast<ALObject::int_type>(c))); }
+        return make_list(bytes);
+    }
+    return Qnil;
+}
+
 }
 
 ALISP_EXPORT alisp::env::ModulePtr init_base64(alisp::env::Environment *, alisp::eval::Evaluator *)
@@ -184,9 +300,14 @@ ALISP_EXPORT alisp::env::ModulePtr init_base64(alisp::env::Environment *, alisp:
 
     alisp::module_defun(base64_ptr, "base64-encode-string", &base64::Fbase64_encode_string);
     alisp::module_defun(base64_ptr, "base64-encode-bytes", &base64::Fbase64_encode_bytes);
-    
     alisp::module_defun(base64_ptr, "base64-decode-string", &base64::Fbase64_decode_string);
     alisp::module_defun(base64_ptr, "base64-decode-bytes", &base64::Fbase64_decode_bytes);
+
+
+    alisp::module_defun(base64_ptr, "base16-encode-string", &base64::Fbase16_encode_string);
+    alisp::module_defun(base64_ptr, "base16-encode-bytes", &base64::Fbase16_encode_bytes);
+    alisp::module_defun(base64_ptr, "base16-decode-string", &base64::Fbase16_decode_string);
+    alisp::module_defun(base64_ptr, "base16-decode-bytes", &base64::Fbase16_decode_bytes);
 
     return Mbase64;
 }
