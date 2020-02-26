@@ -9,7 +9,6 @@ using namespace alisp;
 namespace detail
 {
 
-
 struct Base64 {
 #ifdef __GNUC__
 #pragma GCC diagnostic push
