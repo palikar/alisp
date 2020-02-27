@@ -41,14 +41,14 @@ static constexpr int clocks_per_sec = CLOCKS_PER_SEC;
 
 ALObjectPtr Ftime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
 {
-    CHECK(assert_size<0>(t_obj));
+    AL_CHECK(assert_size<0>(t_obj));
     std::time_t result = std::time(nullptr);
     return make_int(result);
 }
 
 ALObjectPtr Fclock(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
 {
-    CHECK(assert_size<0>(t_obj));
+    AL_CHECK(assert_size<0>(t_obj));
     return make_int(std::clock());
 }
 
@@ -56,9 +56,9 @@ ALObjectPtr Fnow(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
 
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto clock = eval->eval(t_obj->i(0));
-    CHECK(assert_int(clock));
+    AL_CHECK(assert_int(clock));
 
     switch (static_cast<int>(clock->to_int()))
     {
@@ -88,9 +88,9 @@ ALObjectPtr Fnow_ns(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
 {
     namespace ch = std::chrono;
 
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto clock = eval->eval(t_obj->i(0));
-    CHECK(assert_int(clock));
+    AL_CHECK(assert_int(clock));
 
     switch (static_cast<int>(clock->to_int()))
     {
@@ -116,9 +116,9 @@ ALObjectPtr Fnow_ns(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
 ALObjectPtr Fgmtime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto time = eval->eval(t_obj->i(0));
-    CHECK(assert_int(time));
+    AL_CHECK(assert_int(time));
     std::time_t time_t(time->to_int());
     auto res = std::gmtime(&time_t);
     return make_object(res->tm_sec, res->tm_min, res->tm_hour, res->tm_mday, res->tm_mon, res->tm_year, res->tm_wday, res->tm_yday, res->tm_isdst);
@@ -127,9 +127,9 @@ ALObjectPtr Fgmtime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
 ALObjectPtr Flocaltime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto time = eval->eval(t_obj->i(0));
-    CHECK(assert_int(time));
+    AL_CHECK(assert_int(time));
     std::time_t time_t(time->to_int());
     auto res = std::localtime(&time_t);
     return make_object(res->tm_sec, res->tm_min, res->tm_hour, res->tm_mday, res->tm_mon, res->tm_year, res->tm_wday, res->tm_yday, res->tm_isdst);
@@ -138,11 +138,11 @@ ALObjectPtr Flocaltime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
 ALObjectPtr Fmktime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto time_tup = eval->eval(t_obj->i(0));
-    CHECK(assert_list(time_tup));
-    CHECK(assert_size<9>(time_tup));
-    CHECK(assert_numbers(time_tup));
+    AL_CHECK(assert_list(time_tup));
+    AL_CHECK(assert_size<9>(time_tup));
+    AL_CHECK(assert_numbers(time_tup));
 
     std::tm tm;
     tm.tm_sec   = static_cast<int>(time_tup->i(0)->to_int());
@@ -161,14 +161,14 @@ ALObjectPtr Fmktime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
 ALObjectPtr Fstrftime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
-    CHECK(assert_min_size<2>(t_obj));
+    AL_CHECK(assert_min_size<2>(t_obj));
     auto time_tup = eval->eval(t_obj->i(1));
-    CHECK(assert_list(time_tup));
-    CHECK(assert_size<9>(time_tup));
-    CHECK(assert_numbers(time_tup));
+    AL_CHECK(assert_list(time_tup));
+    AL_CHECK(assert_size<9>(time_tup));
+    AL_CHECK(assert_numbers(time_tup));
 
     auto time_fmt = eval->eval(t_obj->i(0));
-    CHECK(assert_string(time_fmt));
+    AL_CHECK(assert_string(time_fmt));
 
     std::tm tm;
     tm.tm_sec   = static_cast<int>(time_tup->i(0)->to_int());
@@ -199,11 +199,11 @@ ALObjectPtr Fstrftime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
 ALObjectPtr Fctime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
-    CHECK(assert_max_size<1>(t_obj));
+    AL_CHECK(assert_max_size<1>(t_obj));
     if (std::size(*t_obj) > 1)
     {
         auto time = eval->eval(t_obj->i(0));
-        CHECK(assert_int(time));
+        AL_CHECK(assert_int(time));
         std::time_t time_t(time->to_int());
         return make_string(std::ctime(&time_t));
     }
@@ -214,9 +214,9 @@ ALObjectPtr Fctime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 ALObjectPtr Fns(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto time = eval->eval(t_obj->i(0));
-    CHECK(assert_int(time));
+    AL_CHECK(assert_int(time));
     auto res = ch::duration_cast<al_seconds>(ch::nanoseconds(time->to_int())).count();
     return make_real(res);
 }
@@ -224,9 +224,9 @@ ALObjectPtr Fns(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 ALObjectPtr Fms(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto time = eval->eval(t_obj->i(0));
-    CHECK(assert_int(time));
+    AL_CHECK(assert_int(time));
     auto res = ch::duration_cast<al_seconds>(ch::milliseconds(time->to_int())).count();
     return make_real(res);
 }
@@ -234,9 +234,9 @@ ALObjectPtr Fms(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 ALObjectPtr Fs(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto time = eval->eval(t_obj->i(0));
-    CHECK(assert_int(time));
+    AL_CHECK(assert_int(time));
     auto res = ch::duration_cast<al_seconds>(ch::seconds(time->to_int())).count();
     return make_real(res);
 }
@@ -244,9 +244,9 @@ ALObjectPtr Fs(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 ALObjectPtr Fhr(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto time = eval->eval(t_obj->i(0));
-    CHECK(assert_int(time));
+    AL_CHECK(assert_int(time));
     auto res = ch::duration_cast<al_seconds>(ch::hours(time->to_int())).count();
     return make_real(res);
 }
@@ -254,7 +254,7 @@ ALObjectPtr Fhr(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 ALObjectPtr Fsleep(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto time = eval->eval(t_obj->i(0));
 
     std::this_thread::sleep_for(std::chrono::milliseconds(time->to_int()));

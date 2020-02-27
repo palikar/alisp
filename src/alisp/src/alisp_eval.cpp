@@ -58,9 +58,9 @@ void Evaluator::put_argument(ALObjectPtr param, ALObjectPtr arg)
 template<bool evaluation> void Evaluator::handle_argument_bindings(ALObjectPtr params, ALObjectPtr args)
 {
 
-    CHECK(if (params->length() == 0 && args->length() != 0) { throw argument_error("Argument\'s lengths do not match."); });
-    CHECK(if (args->length() != 0 && params->length() == 0) { throw argument_error("Argument\'s lengths do not match."); });
-    CHECK(if (args->length() == 0 && params->length() == 0) { return; });
+    AL_CHECK(if (params->length() == 0 && args->length() != 0) { throw argument_error("Argument\'s lengths do not match."); });
+    AL_CHECK(if (args->length() != 0 && params->length() == 0) { throw argument_error("Argument\'s lengths do not match."); });
+    AL_CHECK(if (args->length() == 0 && params->length() == 0) { return; });
 
 
     auto eval_args = args;
@@ -123,8 +123,8 @@ template<bool evaluation> void Evaluator::handle_argument_bindings(ALObjectPtr p
     }
 
 
-    CHECK(if (prev_opt_or_rest) { throw argument_error("The argument list ends with &optional or &rest."); });
-    CHECK(if (index < arg_cnt) { throw argument_error("Too many arguments provided for the function call."); });
+    AL_CHECK(if (prev_opt_or_rest) { throw argument_error("The argument list ends with &optional or &rest."); });
+    AL_CHECK(if (index < arg_cnt) { throw argument_error("Too many arguments provided for the function call."); });
 }
 
 ALObjectPtr Evaluator::eval(ALObjectPtr obj)
@@ -157,7 +157,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
         if (psym(func)) { func = env.find(func); }
 
-        CHECK(if (!func->check_function_flag()) { throw eval_error("Head of a list must be bound to function"); });
+        AL_CHECK(if (!func->check_function_flag()) { throw eval_error("Head of a list must be bound to function"); });
 
 #ifdef ENABLE_STACK_TRACE
 
@@ -273,7 +273,7 @@ ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
     auto obj = func;
     if (psym(func)) { obj = eval(func); }
 
-    CHECK(if (!obj->check_function_flag()) { throw eval_error("Cannot apply a non function object."); });
+    AL_CHECK(if (!obj->check_function_flag()) { throw eval_error("Cannot apply a non function object."); });
 
     env::detail::FunctionCall fc{ env, func };
     if (obj->check_prime_flag()) { return obj->get_prime()(args, &env, this); }

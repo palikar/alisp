@@ -66,7 +66,7 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
         if (scope.count(name))
         {
             auto &sym = scope.at(name);
-            CHECK(if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); });
+            AL_CHECK(if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); });
             sym = t_value;
             return;
         };
@@ -75,7 +75,7 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
     if (m_active_module.get().root_scope().count(name))
     {
         auto &sym = m_active_module.get().root_scope().at(name);
-        CHECK(if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); });
+        AL_CHECK(if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); });
         sym = t_value;
         return;
     };
@@ -109,7 +109,7 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, 
 
     NameValidator::validate_object_name(name);
 
-    CHECK(if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name); });
+    AL_CHECK(if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name); });
     t_value->set_prop("--module--", make_string(m_active_module.get().name()));
 
 #ifdef ENABLE_OBJECT_DOC
@@ -129,7 +129,7 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
 
     NameValidator::validate_object_name(name);
 
-    CHECK(if (scope.count(name)) { throw environment_error("Function alredy exists: " + name); });
+    AL_CHECK(if (scope.count(name)) { throw environment_error("Function alredy exists: " + name); });
 
     auto new_fun = make_object(t_params, t_body);
     new_fun->set_function_flag();
@@ -153,7 +153,7 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
 
     NameValidator::validate_object_name(name);
 
-    CHECK(if (scope.count(name)) { throw environment_error("Function alredy exists: " + name); });
+    AL_CHECK(if (scope.count(name)) { throw environment_error("Function alredy exists: " + name); });
 
     auto new_fun = make_object(t_params, t_body);
     new_fun->set_function_flag();

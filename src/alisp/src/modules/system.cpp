@@ -38,28 +38,28 @@ ALObjectPtr get_evnvars()
 
 ALObjectPtr Fget_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto var = eval->eval(t_obj->i(0));
-    CHECK(assert_string(var));
+    AL_CHECK(assert_string(var));
     return make_string(utility::env_string(var->to_string().c_str()));
 }
 
 ALObjectPtr Fcheck_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto var = eval->eval(t_obj->i(0));
-    CHECK(assert_string(var));
+    AL_CHECK(assert_string(var));
 
     return utility::env_bool(var->to_string().c_str()) ? Qt : Qnil;
 }
 
 ALObjectPtr Fset_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(t_obj));
+    AL_CHECK(assert_size<2>(t_obj));
     auto var = eval->eval(t_obj->i(0));
     auto val = eval->eval(t_obj->i(1));
-    CHECK(assert_string(var));
-    CHECK(assert_string(val));
+    AL_CHECK(assert_string(var));
+    AL_CHECK(assert_string(val));
 
     utility::env_set(var->to_string(), val->to_string());
 
@@ -68,7 +68,7 @@ ALObjectPtr Fset_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
 
 ALObjectPtr Flist_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
 {
-    CHECK(assert_size<0>(t_obj));
+    AL_CHECK(assert_size<0>(t_obj));
     return get_evnvars();
 }
 
@@ -76,9 +76,9 @@ ALObjectPtr Fchwd(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto path = eval->eval(t_obj->i(0));
-    CHECK(assert_string(path));
+    AL_CHECK(assert_string(path));
     const auto p = path->to_string();
 
     if (!fs::exists(p)) { return Qnil; }
@@ -90,9 +90,9 @@ ALObjectPtr Fchwd(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fsystem(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto command = eval->eval(t_obj->i(0));
-    CHECK(assert_string(command));
+    AL_CHECK(assert_string(command));
 
     if (system(command->to_string().c_str())) { return Qt; }
     else

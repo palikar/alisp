@@ -35,14 +35,14 @@ namespace detail
 
 ALObjectPtr Fmmap(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<3>(t_obj));
+    AL_CHECK(assert_size<3>(t_obj));
     auto mem_source = eval->eval(t_obj->i(0));
     auto mem_target = eval->eval(t_obj->i(1));
     auto size       = eval->eval(t_obj->i(2));
 
-    CHECK(assert_memory(mem_source));
-    CHECK(assert_memory(mem_target));
-    CHECK(assert_int(size));
+    AL_CHECK(assert_memory(mem_source));
+    AL_CHECK(assert_memory(mem_target));
+    AL_CHECK(assert_int(size));
 
 
     auto &buf_s = MemoryHelpers::get_buffer(mem_source);
@@ -55,22 +55,22 @@ ALObjectPtr Fmmap(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fget_size(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto mem = eval->eval(t_obj->i(0));
-    CHECK(assert_memory(mem));
+    AL_CHECK(assert_memory(mem));
 
     return make_int(MemoryHelpers::get_buffer(mem).m_size);
 }
 
 ALObjectPtr Fset_nth_byte(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<3>(t_obj));
+    AL_CHECK(assert_size<3>(t_obj));
     auto mem  = eval->eval(t_obj->i(0));
     auto i    = eval->eval(t_obj->i(1));
     auto byte = eval->eval(t_obj->i(2));
-    CHECK(assert_memory(mem));
-    CHECK(assert_int(i));
-    CHECK(assert_byte(byte));
+    AL_CHECK(assert_memory(mem));
+    AL_CHECK(assert_int(i));
+    AL_CHECK(assert_byte(byte));
 
     *(MemoryHelpers::get_buffer(mem).m_ptr + i->to_int()) = static_cast<unsigned char>(byte->to_int());
     return Qt;
@@ -78,24 +78,24 @@ ALObjectPtr Fset_nth_byte(ALObjectPtr t_obj, env::Environment *, eval::Evaluator
 
 ALObjectPtr Fget_nth_byte(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(t_obj));
+    AL_CHECK(assert_size<2>(t_obj));
     auto mem = eval->eval(t_obj->i(0));
     auto i   = eval->eval(t_obj->i(1));
-    CHECK(assert_memory(mem));
-    CHECK(assert_int(i));
+    AL_CHECK(assert_memory(mem));
+    AL_CHECK(assert_int(i));
 
     return make_int(static_cast<ALObject::int_type>(*(MemoryHelpers::get_buffer(mem).m_ptr + i->to_int())));
 }
 
 ALObjectPtr Fget_range(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<3>(t_obj));
+    AL_CHECK(assert_size<3>(t_obj));
     auto mem   = eval->eval(t_obj->i(0));
     auto start = eval->eval(t_obj->i(1));
     auto end   = eval->eval(t_obj->i(2));
-    CHECK(assert_memory(mem));
-    CHECK(assert_int(start));
-    CHECK(assert_int(end));
+    AL_CHECK(assert_memory(mem));
+    AL_CHECK(assert_int(start));
+    AL_CHECK(assert_int(end));
 
     ALObject::list_type bytes;
     auto &buf = MemoryHelpers::get_buffer(mem);
@@ -107,11 +107,11 @@ ALObjectPtr Fget_range(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
 
 ALObjectPtr Ffill_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(t_obj));
+    AL_CHECK(assert_size<2>(t_obj));
     auto mem = eval->eval(t_obj->i(0));
     auto val = eval->eval(t_obj->i(1));
-    CHECK(assert_memory(mem));
-    CHECK(assert_byte(val));
+    AL_CHECK(assert_memory(mem));
+    AL_CHECK(assert_byte(val));
 
     auto &buf = MemoryHelpers::get_buffer(mem);
     for (size_t i = 0; i < buf.m_size; ++i) { *(buf.m_ptr + i) = static_cast<unsigned char>(val->to_int()); }
@@ -121,11 +121,11 @@ ALObjectPtr Ffill_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *
 
 ALObjectPtr Fset_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(t_obj));
+    AL_CHECK(assert_size<2>(t_obj));
     auto mem   = eval->eval(t_obj->i(0));
     auto array = eval->eval(t_obj->i(1));
-    CHECK(assert_memory(mem));
-    CHECK(assert_byte_array(array));
+    AL_CHECK(assert_memory(mem));
+    AL_CHECK(assert_byte_array(array));
 
     auto &buf = MemoryHelpers::get_buffer(mem);
     for (size_t i = 0; i < array->size(); ++i) { *(buf.m_ptr + i) = static_cast<unsigned char>(array->i(i)->to_int()); }
@@ -135,9 +135,9 @@ ALObjectPtr Fset_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
 
 ALObjectPtr Fget_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto mem = eval->eval(t_obj->i(0));
-    CHECK(assert_memory(mem));
+    AL_CHECK(assert_memory(mem));
 
     ALObject::list_type bytes;
     auto &buf = MemoryHelpers::get_buffer(mem);
@@ -148,18 +148,18 @@ ALObjectPtr Fget_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
 
 ALObjectPtr Fallocate_buffer(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto size = eval->eval(t_obj->i(0));
-    CHECK(assert_int(size));
+    AL_CHECK(assert_int(size));
 
     return MemoryHelpers::allocate_buffer(static_cast<size_t>(size->to_int()));
 }
 
 ALObjectPtr Frelease_buffer(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(t_obj));
+    AL_CHECK(assert_size<1>(t_obj));
     auto mem = eval->eval(t_obj->i(0));
-    CHECK(assert_memory(mem));
+    AL_CHECK(assert_memory(mem));
 
     MemoryHelpers::release_buffer(mem);
     return Qt;

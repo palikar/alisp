@@ -35,7 +35,7 @@ namespace alisp
 
 ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(obj));
+    AL_CHECK(assert_size<2>(obj));
 
     auto fun_obj = eval->eval(obj->i(0));
     auto list    = eval->eval(obj->i(1));
@@ -55,7 +55,7 @@ ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fmapcar(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(obj));
+    AL_CHECK(assert_size<2>(obj));
 
     auto fun_obj = eval->eval(obj->i(0));
     auto list    = eval->eval(obj->i(1));
@@ -75,16 +75,16 @@ ALObjectPtr Fmapcar(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fcar(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(obj));
+    AL_CHECK(assert_size<1>(obj));
     auto list = eval->eval(obj->i(0));
     return list->i(0);
 }
 
 ALObjectPtr Fcons(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(obj));
+    AL_CHECK(assert_size<1>(obj));
     auto list = eval->eval(obj->i(0));
-    CHECK(assert_list(list));
+    AL_CHECK(assert_list(list));
     return splice(list, 1);
 }
 
@@ -100,25 +100,25 @@ ALObjectPtr Ftail(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
 
 ALObjectPtr Flast(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(obj));
+    AL_CHECK(assert_size<1>(obj));
     auto list = eval->eval(obj->i(0));
-    CHECK(assert_list(list));
+    AL_CHECK(assert_list(list));
     return list->i(list->length() - 1);
 }
 
 ALObjectPtr Finit(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(obj));
+    AL_CHECK(assert_size<1>(obj));
     auto list = eval->eval(obj->i(0));
-    CHECK(assert_list(list));
+    AL_CHECK(assert_list(list));
     return splice(list, 0, static_cast<ALObject::list_type::difference_type>(list->length() - 1));
 }
 
 ALObjectPtr Fpush(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(obj));
+    AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
-    CHECK(assert_list(list));
+    AL_CHECK(assert_list(list));
     auto element = eval->eval(obj->i(1));
 
     list->children().push_back(element);
@@ -128,9 +128,9 @@ ALObjectPtr Fpush(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fshove(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(obj));
+    AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
-    CHECK(assert_list(list));
+    AL_CHECK(assert_list(list));
     auto element = eval->eval(obj->i(1));
 
     list->children().insert(std::begin(list->children()), element);
@@ -140,20 +140,20 @@ ALObjectPtr Fshove(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Flength(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(obj));
+    AL_CHECK(assert_size<1>(obj));
     auto l = eval->eval(obj->i(0));
-    CHECK(assert_list(l));
+    AL_CHECK(assert_list(l));
 
     return make_int(std::size(*l));
 }
 
 ALObjectPtr Fnth(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(obj));
+    AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
-    CHECK(assert_list(list));
+    AL_CHECK(assert_list(list));
     auto index = eval->eval(obj->i(1));
-    CHECK(assert_int(index));
+    AL_CHECK(assert_int(index));
 
     if (static_cast<ALObject::list_type::size_type>(index->to_int()) >= std::size(list->children()))
     { throw std::runtime_error("Index out of bound!"); }
@@ -163,9 +163,9 @@ ALObjectPtr Fnth(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fcontains(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(obj));
+    AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
-    CHECK(assert_list(list));
+    AL_CHECK(assert_list(list));
     auto element = eval->eval(obj->i(1));
 
     for (auto &el : *list)
@@ -179,16 +179,16 @@ ALObjectPtr Fcontains(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
 
 ALObjectPtr Fclear(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<1>(obj));
+    AL_CHECK(assert_size<1>(obj));
     auto list = eval->eval(obj->i(0));
-    CHECK(assert_list(list));
+    AL_CHECK(assert_list(list));
     list->children().clear();
     return list;
 }
 
 ALObjectPtr Flist(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 {
-    CHECK(assert_min_size<0>(obj));
+    AL_CHECK(assert_min_size<0>(obj));
     ALObject::list_type new_list{};
     for (auto el : *obj) { new_list.push_back(el); }
     return make_list(new_list);
@@ -197,9 +197,9 @@ ALObjectPtr Flist(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 // inplace
 ALObjectPtr Fdelete(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(obj));
+    AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
-    CHECK(assert_list(list));
+    AL_CHECK(assert_list(list));
     auto element = eval->eval(obj->i(1));
 
     auto &children = list->children();
@@ -212,9 +212,9 @@ ALObjectPtr Fdelete(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 // return copy
 ALObjectPtr Fremove(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(obj));
+    AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
-    CHECK(assert_list(list));
+    AL_CHECK(assert_list(list));
     auto element   = eval->eval(obj->i(1));
     auto &children = list->children();
     ALObject::list_type new_children;
@@ -229,9 +229,9 @@ ALObjectPtr Fremove(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 // inplace
 ALObjectPtr Fdelq(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(obj));
+    AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
-    CHECK(assert_list(list));
+    AL_CHECK(assert_list(list));
     auto element = eval->eval(obj->i(1));
 
     auto &children = list->children();
@@ -244,9 +244,9 @@ ALObjectPtr Fdelq(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 // return copy
 ALObjectPtr Fremq(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_size<2>(obj));
+    AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
-    CHECK(assert_list(list));
+    AL_CHECK(assert_list(list));
     auto element   = eval->eval(obj->i(1));
     auto &children = list->children();
     ALObject::list_type new_children;
@@ -260,19 +260,19 @@ ALObjectPtr Fremq(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Frange(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    CHECK(assert_min_size<2>(obj));
+    AL_CHECK(assert_min_size<2>(obj));
 
     auto start = eval->eval(obj->i(0));
     auto end   = eval->eval(obj->i(1));
 
-    CHECK(assert_int(start));
-    CHECK(assert_int(end));
+    AL_CHECK(assert_int(start));
+    AL_CHECK(assert_int(end));
 
     const auto step = [&obj, &eval]() {
         if (std::size(*obj) > 2)
         {
             auto step_obj = eval->eval(obj->i(2));
-            CHECK(assert_int(step_obj));
+            AL_CHECK(assert_int(step_obj));
             return step_obj->to_int();
         }
         return static_cast<ALObject::int_type>(1);

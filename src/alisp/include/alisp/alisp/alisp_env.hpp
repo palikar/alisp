@@ -187,7 +187,7 @@ class Environment
     {
         if (m_modules.find(t_name) == m_modules.end())
         {
-            CHECK(warn::warn_env("Referencing non existen module:"s += t_name););
+            AL_CHECK(warn::warn_env("Referencing non existen module:"s += t_name););
             return;
         }
         AL_DEBUG("Aliasing a module: "s += t_name + " -> " + t_alias);
