@@ -39,6 +39,8 @@ class Evaluator
     int m_signal;
     std::uint_fast32_t m_status_flags;
 
+    std::string m_current_file;
+
     static constexpr std::uint32_t SIGINT_FLAG            = 0x0001;
     static constexpr std::uint32_t ACTIVE_EVALUATION_FLAG = 0x0002;
 
@@ -68,6 +70,9 @@ class Evaluator
     void check_status();
     void set_evaluation_flag();
     void reset_evaluation_flag();
+
+    void set_current_file(std::string t_tile);
+    const std::string &get_current_file();
 };
 
 namespace detail

@@ -195,6 +195,7 @@ class LanguageEngine
     void eval_file(const std::filesystem::path &t_path, bool insert_mod_path = true)
     {
         AL_DEBUG("Evaluating file: "s += t_path);
+        m_evaluator.set_current_file(t_path);
         namespace fs = std::filesystem;
         if (insert_mod_path)
         {

@@ -106,10 +106,7 @@ struct DLModule
 
 struct DLModule
 {
-    explicit DLModule(const std::string_view &t_filename) : m_data(dlopen(t_filename.data(), RTLD_NOW))
-    {
-        if (m_data == nullptr) {}
-    }
+    explicit DLModule(const std::string_view &t_filename) : m_data(dlopen(t_filename.data(), RTLD_NOW)) {}
 
     DLModule(DLModule &&) = default;
     DLModule &operator=(DLModule &&) = default;
@@ -124,10 +121,7 @@ struct DLModule
 
 template<typename T> struct DLSym
 {
-    DLSym(DLModule &t_mod, const std::string_view &t_symbol) : m_symbol(reinterpret_cast<T>(dlsym(t_mod.m_data, t_symbol.data())))
-    {
-        if (!m_symbol) {}
-    }
+    DLSym(DLModule &t_mod, const std::string_view &t_symbol) : m_symbol(reinterpret_cast<T>(dlsym(t_mod.m_data, t_symbol.data()))) {}
 
     T m_symbol;
 };

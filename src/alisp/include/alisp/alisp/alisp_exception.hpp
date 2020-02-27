@@ -90,7 +90,7 @@ struct signal_exception : public al_exception
     static std::string format(ALObjectPtr sym, ALObjectPtr list)
     {
         std::ostringstream ss;
-        ss << "Signal error <" << dump(sym) << "> :";
+        ss << "Signal error <" << sym->to_string() << "> : ";
         ss << dump(list);
         ss << '\n';
         return ss.str();

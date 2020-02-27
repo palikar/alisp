@@ -75,6 +75,27 @@ static ALObjectPtr handle_backquote_list(ALObjectPtr obj, eval::Evaluator *eval)
     return make_object(new_elements);
 }
 
+static bool check_arg_list(ALObjectPtr t_list)
+{
+    for (auto &el : *t_list)
+    {
+        if (!psym(el)) { return false; }
+    }
+
+
+    if (std::count(std::begin(*t_list), std::end(*t_list), Qrest) > 1) { return false; }
+
+
+    if (std::count(std::begin(*t_list), std::end(*t_list), Qoptional) > 1) { return false; }
+
+    auto rest_pos = std::find(std::begin(*t_list), std::end(*t_list), Qrest);
+    auto opt_pos  = std::find(std::begin(*t_list), std::end(*t_list), Qoptional);
+    if (rest_pos != std::end(*t_list) and opt_pos != std::end(*t_list) and rest_pos < opt_pos) { return false; }
+
+
+    return true;
+}
+
 }  // namespace detail
 
 ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
@@ -133,6 +154,8 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
 
             if (!fs::exists(eval_file)) { continue; }
 
+            if (fs::equivalent(eval_file, eval->get_current_file())) { continue; }
+
             if (hash::hash(std::string_view(postfix)) == hash::hash(".so"))
             {
                 env->load_module(eval, eval_file.string(), module_name);
@@ -178,6 +201,11 @@ ALObjectPtr Fdefun(ALObjectPtr obj, env::Environment *env, eval::Evaluator *)
     CHECK(assert_symbol(obj->i(0)));
     CHECK(assert_list(obj->i(1)));
 
+    CHECK(if (!detail::check_arg_list(obj->i(1))) {
+        signal(Qdefun_signal, "Invalud argument list:", dump(obj->i(1)));
+        return Qnil;
+    });
+
     if (obj->size() >= 3 and pstring(obj->i(2)))
     {
         env->define_function(obj->i(0), obj->i(1), splice(obj, 3), obj->i(2)->to_string());
@@ -217,6 +245,11 @@ ALObjectPtr Fdefmacro(ALObjectPtr obj, env::Environment *env, eval::Evaluator *)
     CHECK(assert_symbol(obj->i(0)));
     CHECK(assert_list(obj->i(1)));
 
+    CHECK(if (!detail::check_arg_list(obj->i(1))) {
+        signal(Qdefun_signal, "Invalud argument list:", dump(obj->i(1)));
+        return Qnil;
+    });
+
     if (obj->size() >= 3 and pstring(obj->i(2)))
     {
         env->define_macro(obj->i(0), obj->i(1), splice(obj, 3), obj->i(2)->to_string());
@@ -232,6 +265,11 @@ ALObjectPtr Flambda(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 {
     CHECK(assert_min_size<1>(obj));
     CHECK(assert_list(obj->i(0)));
+
+    CHECK(if (!detail::check_arg_list(obj->i(0))) {
+        signal(Qdefun_signal, "Invalud argument list:", dump(obj->i(1)));
+        return Qnil;
+    });
 
     auto new_lambda = make_object(obj->i(0), splice(obj, 1));
     new_lambda->set_function_flag();

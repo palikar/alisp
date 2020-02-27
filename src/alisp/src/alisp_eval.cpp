@@ -286,7 +286,7 @@ ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
 void Evaluator::eval_file(const std::string &t_file)
 {
     AL_DEBUG("Evaluating file: "s += t_file);
-
+    m_current_file    = t_file;
     auto file_content = utility::load_file(t_file);
 
     auto parse_result = m_parser->parse(file_content, t_file);
@@ -345,6 +345,16 @@ void Evaluator::check_status()
         m_status_flags &= ~SIGINT_FLAG;
         throw interrupt_error();
     }
+}
+
+void Evaluator::set_current_file(std::string t_tile)
+{
+    m_current_file = std::move(t_tile);
+}
+
+const std::string &Evaluator::get_current_file()
+{
+    return m_current_file;
 }
 
 detail::EvalDepthTrack::EvalDepthTrack(Evaluator &t_eval) : m_eval(t_eval)
