@@ -8,8 +8,6 @@ performance_builds:
 	bash generate_builds.sh ./timing_builds.txt
 	python ./plot_performance.py ./
 
-clean:
-	rm -rf build_*
 
 
 plain_build:
@@ -37,5 +35,6 @@ doc_gen:
 	@mkdocs build
 
 clean:
+	rm -rf build_*	
 	@rm -rf site
 

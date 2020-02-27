@@ -68,5 +68,32 @@ ALObjectPtr Fpfunction(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl
     return pfunction(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
+ALObjectPtr Fpfile(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+{
+    AL_CHECK(assert_size<1>(obj));
+    return files::files_registry.belong(object_to_resource(evl->eval(obj->i(0)))) ? Qt : Qnil;
+}
+
+ALObjectPtr Fpstream(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+{
+    AL_CHECK(assert_size<1>(obj));
+    return al::streams_registry.belong(object_to_resource(evl->eval(obj->i(0)))) ? Qt : Qnil;
+}
+
+ALObjectPtr Fpmemory(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+{
+    AL_CHECK(assert_size<1>(obj));
+    return memory::memory_registry.belong(object_to_resource(evl->eval(obj->i(0)))) ? Qt : Qnil;
+}
+
+ALObjectPtr Fpbyte(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+{
+    AL_CHECK(assert_size<1>(obj));
+    auto ob = evl->eval(obj->i(0));
+    if (!pint(ob)) { return Qnil; }
+    const auto val = obj->to_int();
+    return !(0 <= val and val <= 255) ?  Qt : Qnil;
+}
+
 
 }  // namespace alisp

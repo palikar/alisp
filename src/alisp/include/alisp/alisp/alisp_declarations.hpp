@@ -805,6 +805,28 @@ DEFUN(pstring, "pstring", R"((pstring FORM)
 Return `t` if FORM is a string and `nil` otherwise.
 )");
 
+DEFUN(pfile, "pfile", R"((pfile FORM)
+
+Return `t` if FORM is a string and `nil` otherwise.
+)");
+
+DEFUN(pstream, "pstream", R"((pstream FORM)
+
+Return `t` if FORM is a string and `nil` otherwise.
+)");
+
+DEFUN(pmemory, "pmemory", R"((pmemory FORM)
+
+Return `t` if FORM is a string and `nil` otherwise.
+)");
+
+DEFUN(pbyte, "pbyte", R"((pbyte FORM)
+
+Return `t` if FORM is a string and `nil` otherwise.
+)");
+
+
+
 /*  _                _       */
 /* | |    ___   __ _(_) ___  */
 /* | |   / _ \ / _` | |/ __| */
