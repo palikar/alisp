@@ -225,6 +225,18 @@ Example:
 
 )");
 
+DEFUN(dotimes, "dotimes", R"((dotimes (SYMBOL COUNT) BODY)
+
+Evaluate `BODY` once for each integer from 0 (inclusive) to `COUNT` (exclusive), binding the variable `SYMBOL` to the integer for the current iteration.
+
+Example:
+```elisp
+(dotimes (i 100)
+   (println "i:" i ))
+```
+
+)");
+
 DEFUN(cond, "cond", R"((cond [ ( [CODITION BODY] ) ... ])
 
 Chooses what to evaluate among an arbitrary number of
@@ -255,6 +267,18 @@ DEFUN(progn, "progn", R"((progn BODY)
 
 Evaluate the forms in `BODY` sequentially and return the value of the
 last one.
+)");
+
+DEFUN(progn1, "progn1", R"((progn1 BODY)
+
+Evaluate the forms in `BODY` sequentially and return the value of the
+fist one.
+)");
+
+DEFUN(progn2, "progn2", R"((progn2 BODY)
+
+Evaluate the forms in `BODY` sequentially and return the value of the
+second one.
 )");
 
 DEFUN(let, "let", R"((let ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)

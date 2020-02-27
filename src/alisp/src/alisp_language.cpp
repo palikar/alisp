@@ -423,6 +423,47 @@ ALObjectPtr Fdolist(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl
     return Qt;
 }
 
+ALObjectPtr Fdotimes(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
+{
+
+    CHECK(assert_min_size<1>(obj));
+
+    auto var_and_times = obj->i(0);
+    CHECK(assert_list(var_and_times));
+    CHECK(assert_size<2>(var_and_times));
+
+    auto bound_sym = var_and_times->i(0);
+    CHECK(assert_symbol(bound_sym));
+
+    auto times = evl->eval(var_and_times->i(1));
+    CHECK(assert_int(times));
+
+    env::detail::ScopePushPop spp{ *env };
+
+    env->put(bound_sym, Qnil);
+
+    try
+    {
+        for (int i = 0; i < times->to_int(); ++i)
+        {
+            try
+            {
+                env->update(bound_sym, make_int(i));
+                eval_list(evl, obj, 1);
+            }
+            catch (al_continue &)
+            {
+                continue;
+            }
+        }
+    }
+    catch (al_break &)
+    {
+    }
+
+    return Qt;
+}
+
 ALObjectPtr Fcond(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     CHECK(assert_list(obj));
@@ -463,6 +504,16 @@ ALObjectPtr Ffuncall(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 ALObjectPtr Fprogn(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     return eval_list(evl, obj, 0);
+}
+
+ALObjectPtr Fprogn1(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+{
+    return eval_list_1(evl, obj, 0);
+}
+
+ALObjectPtr Fprogn2(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+{
+    return eval_list_2(evl, obj, 0);
 }
 
 ALObjectPtr Flet(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
