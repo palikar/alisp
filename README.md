@@ -164,6 +164,9 @@ I&rsquo;ve learned a ton while developing Lisp. Here are some of the sources tha
 -   [Clipp](https://github.com/muellan/clipp) - This is the library ALisp uses for command line arguments handling
 -   [Rang](https://www.google.com/search?q=c%2B%2B+rang&ie=utf-8&oe=utf-8&client=firefox-b-e) - A simple library for printing text with color on the console.
 -   [GNU Emacs](https://www.gnu.org/software/emacs/manual/html_node/eintr/) - The whole project is written in Emacs. But, more importantly, the source code of Emacs taught me a lot of things about Lisp interpretation.
+-   [TinyXML2](https://github.com/leethomason/tinyxml2) - The XML module of Alisp is using TinyXML2 internally for parsing and handling XML-Data.
+-   [Subprocess](https://github.com/arun11299/cpp-subprocess) - A small C++ library that Alisp uses to spawn processes, expect their output as well as communication with them.
+-   [SimpleJSON](https://github.com/nbsdx/SimpleJSON) - A very simple JSON-Parser that I modified in order to generate an s-expression based on a JSON-formatted input.
 
 
 ## License
