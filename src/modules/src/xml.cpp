@@ -135,9 +135,8 @@ ALISP_EXPORT alisp::env::ModulePtr init_xml(alisp::env::Environment *, alisp::ev
     auto Mxml    = alisp::module_init("xml");
     auto xml_ptr = Mxml.get();
 
-    alisp::module_doc(
-        xml_ptr,
-        R"(The `xml` module enables the handling of XML-formated data. I provides functionality for parsing and dumping s-expressions as XML. )");
+    alisp::module_doc(xml_ptr,
+        R"(The `xml` module enables the handling of XML-formated data. I provides functionality for parsing and dumping s-expressions as XML.)");
 
     alisp::module_defun(xml_ptr, "xml-parse", &xml::Fparse_xml);
     // alisp::module_defun(xml_ptr, "xml-dump", &xml::Fparse_xml);
