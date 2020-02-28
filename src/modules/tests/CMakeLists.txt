@@ -3,26 +3,26 @@ add_executable(alisp_modules_test
 
     base64_test.cpp
     fmt_test.cpp
-    func_test.cpp   
-    http_test.cpp   
-    json_test.cpp   
+    func_test.cpp
+    http_test.cpp
+    json_test.cpp
     locale_test.cpp
     process_test.cpp
-    random_test.cpp 
-    re_test.cpp     
+    random_test.cpp
+    re_test.cpp
     xml_test.cpp
-    
+
     ../src/base64.cpp
     ../src/fmt.cpp
-    ../src/func.cpp   
-    ../src/http.cpp   
-    ../src/json.cpp   
-    ../src/locale.cpp 
+    ../src/func.cpp
+    ../src/http.cpp
+    ../src/json.cpp
+    ../src/locale.cpp
     ../src/process.cpp
-    ../src/random.cpp 
-    ../src/re.cpp     
+    ../src/random.cpp
+    ../src/re.cpp
     ../src/xml.cpp
-    
+
     )
 
 target_include_directories(alisp_modules_test
@@ -37,6 +37,7 @@ target_link_libraries(alisp_modules_test
     language_options
     PUBLIC
     alisp_language
+    tinyxml2
     )
 
 

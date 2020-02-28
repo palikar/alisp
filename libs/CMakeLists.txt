@@ -1,4 +1,4 @@
-add_library(tinyxml tinyxml2.cpp)
+add_library(tinyxml2 tinyxml2.cpp)
 
 
 

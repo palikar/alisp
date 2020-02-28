@@ -38,7 +38,6 @@ template<typename T>
     return t;
 }
 
-
 template<typename T>[[nodiscard]] auto parse_num(const std::string_view t_str) -> typename std::enable_if<!std::is_integral<T>::value, T>::type
 {
     T t = 0;
@@ -87,7 +86,6 @@ template<typename T>[[nodiscard]] auto parse_num(const std::string_view t_str) -
     return exponent ? base * std::pow(T(10), t * static_cast<T>(exponent)) : t;
 }
 
-
 static std::string json_escape(const std::string &str)
 {
     std::string output;
@@ -107,8 +105,6 @@ static std::string json_escape(const std::string &str)
     }
     return output;
 }
-
-}  // namespace detail
 
 struct JSONParser
 {
@@ -236,30 +232,30 @@ struct JSONParser
             {
                 switch (str.at(++offset))
                 {
-                case '\"': val += '\"'; break;
-                case '\\': val += '\\'; break;
-                case '/': val += '/'; break;
-                case 'b': val += '\b'; break;
-                case 'f': val += '\f'; break;
-                case 'n': val += '\n'; break;
-                case 'r': val += '\r'; break;
-                case 't': val += '\t'; break;
-                case 'u':
-                {
-                    val += "\\u";
-                    for (size_t i = 1; i <= 4; ++i)
-                    {
-                        c = str.at(offset + i);
-                        if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) { val += c; }
-                        else
-                        {
-                            signal(json::json_signal, std::string("JSON ERROR: String: Expected hex character in unicode escape, found '") + c + "'");
-                        }
-                    }
-                    offset += 4;
-                }
-                break;
-                default: val += '\\'; break;
+                  case '\"': val += '\"'; break;
+                  case '\\': val += '\\'; break;
+                  case '/': val += '/'; break;
+                  case 'b': val += '\b'; break;
+                  case 'f': val += '\f'; break;
+                  case 'n': val += '\n'; break;
+                  case 'r': val += '\r'; break;
+                  case 't': val += '\t'; break;
+                  case 'u':
+                  {
+                      val += "\\u";
+                      for (size_t i = 1; i <= 4; ++i)
+                      {
+                          c = str.at(offset + i);
+                          if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) { val += c; }
+                          else
+                          {
+                              signal(json::json_signal, std::string("JSON ERROR: String: Expected hex character in unicode escape, found '") + c + "'");
+                          }
+                      }
+                      offset += 4;
+                  }
+                  break;
+                  default: val += '\\'; break;
                 }
             }
             else
@@ -380,20 +376,19 @@ struct JSONParser
         value = str.at(offset);
         switch (value)
         {
-        case '[': return parse_array(str, offset);
-        case '{': return parse_object(str, offset);
-        case '\"': return parse_string(str, offset);
-        case 't':
-        case 'f': return parse_bool(str, offset);
-        case 'n': return parse_null(str, offset);
-        default:
-            if ((value <= '9' && value >= '0') || value == '-') { return parse_number(str, offset); }
+          case '[': return parse_array(str, offset);
+          case '{': return parse_object(str, offset);
+          case '\"': return parse_string(str, offset);
+          case 't':
+          case 'f': return parse_bool(str, offset);
+          case 'n': return parse_null(str, offset);
+          default:
+              if ((value <= '9' && value >= '0') || value == '-') { return parse_number(str, offset); }
         }
         signal(json::json_signal, std::string("JSON ERROR: Parse: Unexpected starting character '") + value + "'");
         return nullptr;
     }
 };
-
 
 inline ALObjectPtr load(const std::string &str)
 {
@@ -464,18 +459,21 @@ static std::string dump(ALObjectPtr t_json, long depth = 1, std::string tab = " 
     return "";
 }
 
+}  // namespace detail
+
+
 ALObjectPtr Fparse_json(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
     auto str = eval->eval(obj->i(0));
     assert_string(str);
-    return load(str->to_string());
+    return detail::load(str->to_string());
 }
 
 ALObjectPtr Fdump_json(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
-    return make_string(json::dump(eval->eval(obj->i(0))));
+    return make_string(detail::dump(eval->eval(obj->i(0))));
 }
 
 ALObjectPtr Fload_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
@@ -489,7 +487,7 @@ ALObjectPtr Fload_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
     if (!fs::exists(file->to_string())) { return Qnil; }
     if (!fs::is_regular_file(file->to_string())) { return Qnil; }
 
-    return json::load(utility::load_file(file->to_string()));
+    return detail::load(utility::load_file(file->to_string()));
 }
 
 ALObjectPtr Fdump_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
@@ -508,7 +506,7 @@ ALObjectPtr Fdump_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
 
     std::ofstream outfile;
     outfile.open(file->to_string(), std::ios_base::out);
-    outfile << json::dump(js);
+    outfile << detail::dump(js);
 
     return Qt;
 }
@@ -541,7 +539,6 @@ will be represented throught the following s-expressions structure.
 ```
 
 The resulting representaion can be handeld through some of the functions that the module provides.
-
 
 )");
 

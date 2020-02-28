@@ -20,8 +20,6 @@ macro(add_dynmodule TARGET_NAME NAME SRC)
     install(TARGETS ${TARGET_NAME} DESTINATION ${IMPORT_PATHS})    
 endmacro()
 
-
-
 add_dynmodule(alisp_module_base64 base64 src/base64.cpp)
 add_dynmodule(alisp_module_fmt fmt src/fmt.cpp)
 add_dynmodule(alisp_module_func func src/func.cpp)
@@ -34,7 +32,7 @@ add_dynmodule(alisp_module_re re src/re.cpp)
 add_dynmodule(alisp_module_xml xml src/xml.cpp)
 
 
-target_link_libraries(alisp_module_xml PUBLIC tinyxml)
+target_link_libraries(alisp_module_xml PUBLIC tinyxml2)
 
 if(ENABLE_TESTING)
     add_subdirectory(tests)

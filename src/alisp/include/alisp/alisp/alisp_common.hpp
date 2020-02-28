@@ -412,7 +412,7 @@ inline std::string dump(ALObjectPtr obj)
         str << "(";
         for (auto ob : *obj) { str << dump(ob) << " "; }
         str.seekp(-1, std::ios_base::end);
-        str << ") ";
+        str << ")";
         break;
     }
 
