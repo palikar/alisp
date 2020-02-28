@@ -19,7 +19,6 @@ static std::mt19937 rand_eng(rand_dev());
 
 }
 
-
 ALObjectPtr Frand_int(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);
@@ -28,11 +27,11 @@ ALObjectPtr Frand_int(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
     auto b = eval->eval(obj->i(1));
     assert_int(b);
 
-    std::uniform_int_distribution<> distr(a->to_int(), b->to_int()+1);
+    std::uniform_int_distribution<> distr(static_cast<int>(a->to_int()),
+                                          static_cast<int>(b->to_int()) + 1);
 
     return make_int(distr(detail::rand_eng));
 }
-
 
 ALObjectPtr Fchoice(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
@@ -40,11 +39,10 @@ ALObjectPtr Fchoice(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     auto a = eval->eval(obj->i(0));
     assert_list(a);
     
-    std::uniform_int_distribution<> distr(0, a->size() - 1);
+    std::uniform_int_distribution<> distr(0, static_cast<int>(a->size()) - 1);
     
-    return a->children()[distr(detail::rand_eng)];
+    return a->children()[static_cast<size_t>(distr(detail::rand_eng))];
 }
-
 
 ALObjectPtr Fsample(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
@@ -53,15 +51,14 @@ ALObjectPtr Fsample(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     assert_list(a);
     auto k = eval->eval(obj->i(1));
     assert_int(k);
-    std::uniform_int_distribution<> distr(0, a->size() - 1);
+    std::uniform_int_distribution<> distr(0, static_cast<int>(a->size()) - 1);
     ALObject::list_type lis;
     for (int i = 0; i < k->to_int(); ++i) {
-        lis.push_back(a->children()[distr(detail::rand_eng)]);
+        lis.push_back(a->children()[static_cast<size_t>(distr(detail::rand_eng))]);
     }
 
     return make_list(lis);
 }
-
 
 ALObjectPtr Funiform(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
@@ -87,7 +84,6 @@ ALObjectPtr Fexponential(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
     return make_real(distr(detail::rand_eng));
 }
 
-
 ALObjectPtr Fgamma(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);
@@ -100,7 +96,6 @@ ALObjectPtr Fgamma(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     return make_real(distr(detail::rand_eng));
 }
-
 
 ALObjectPtr Fgauss(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
@@ -115,7 +110,6 @@ ALObjectPtr Fgauss(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return make_real(distr(detail::rand_eng));
 }
 
-
 ALObjectPtr Flognorm(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);
@@ -128,7 +122,6 @@ ALObjectPtr Flognorm(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     return make_real(distr(detail::rand_eng));
 }
-
 
 ALObjectPtr Fweibull(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
@@ -143,7 +136,6 @@ ALObjectPtr Fweibull(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return make_real(distr(detail::rand_eng));
 }
 
-
 ALObjectPtr Fgeometric(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);
@@ -154,7 +146,6 @@ ALObjectPtr Fgeometric(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
 
     return make_real(distr(detail::rand_eng));
 }
-
 
 ALObjectPtr Ffisher(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
@@ -169,7 +160,6 @@ ALObjectPtr Ffisher(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return make_real(distr(detail::rand_eng));
 }
 
-
 ALObjectPtr Fstudent(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<2>(obj);
@@ -181,7 +171,6 @@ ALObjectPtr Fstudent(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return make_real(distr(detail::rand_eng));
 }
 
-
 ALObjectPtr Fseed(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
@@ -191,28 +180,26 @@ ALObjectPtr Fseed(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return Qt;
 }
 
-
-ALObjectPtr Fseed_rand(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fseed_rand(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 {
     assert_size<0>(obj);
-    
-
+    std::seed_seq seed2{detail::rand_dev(), detail::rand_dev(), detail::rand_dev(), detail::rand_dev(), detail::rand_dev(), detail::rand_dev()}; 
+    detail::rand_eng = std::mt19937(seed2);
     return Qt;
 }
 
-ALObjectPtr Fcrand(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcrand(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 {
     assert_size<0>(obj);
-    
-
-    return Qt;
+    return make_int(std::rand());
 }
 
 ALObjectPtr Fcsrand(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
-    
-
+    auto a = eval->eval(obj->i(0));
+    assert_int(a);
+    std::srand(static_cast<unsigned int>(a->to_int()));
     return Qt;
 }
 
