@@ -31,6 +31,33 @@
 #define AL_EXTRA_MODPATHS "@IMPORT_PATHS@/"
 
 
+
+#ifdef DISABLE_CHECKS
+inline constexpr bool al_disable_checks = true;
+#else
+inline constexpr bool al_disable_checks = false;
+#endif
+
+#ifdef ENABLE_OBJECT_DOC
+inline constexpr bool al_doc = true;
+#else
+inline constexpr bool al_doc = false;
+#endif
+
+#ifdef ENABLE_LINE_TRACE
+inline constexpr bool al_line_trace = true;
+#else
+inline constexpr bool al_line_trace = false;
+#endif
+
+
+#ifdef ENABLE_STACK_TRACE
+inline constexpr bool al_stack_trace = true;
+#else
+inline constexpr bool al_stack_trace = false;
+#endif
+
+
 inline constexpr size_t MAX_EAVALUATION_DEPTH = 256;
 inline constexpr size_t MAX_FUNCTION_CALL_DEPTH = 128;
 

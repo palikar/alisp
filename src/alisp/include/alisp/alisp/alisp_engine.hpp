@@ -46,12 +46,8 @@
 
 namespace alisp
 {
-
-namespace detail
-{
 inline constexpr auto prelude_directory = AL_PRELUDE_DIR;
 
-}
 
 enum class EngineSettings
 {
@@ -151,10 +147,10 @@ class LanguageEngine
         AL_DEBUG("Loading init scripts"s);
         namespace fs = std::filesystem;
 
-        if (fs::is_directory(detail::prelude_directory))
+        if (fs::is_directory(prelude_directory))
         {
             AL_DEBUG("Loading directory: "s += detail::prelude_directory);
-            for (auto &al_file : fs::directory_iterator(detail::prelude_directory))
+            for (auto &al_file : fs::directory_iterator(prelude_directory))
             {
                 AL_DEBUG("Loading file: "s += al_file.path().string());
                 eval_file(al_file, false);

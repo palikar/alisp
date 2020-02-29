@@ -16,6 +16,7 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "alisp/alisp/alisp_module_helpers.hpp"
+#include "alisp/config.hpp"
 
 
 namespace alisp
@@ -52,6 +53,13 @@ as well as how the intrpterter was compiled.)");
 
     module_defvar(plat_ptr, "debug-build", debug_build ? Qt : Qnil);
     module_defvar(plat_ptr, "build-info", make_string(get_build_info()));
+
+
+    module_defvar(plat_ptr, "disabled-checks", al_disable_checks ? Qt : Qnil);
+    module_defvar(plat_ptr, "enabled-documentation", al_doc ? Qt : Qnil);
+    module_defvar(plat_ptr, "enabled-line-trace", al_line_trace ? Qt : Qnil);
+    module_defvar(plat_ptr, "enabled-stack-trace", al_stack_trace ? Qt : Qnil);
+    
 
     return Mplatform;
 }
