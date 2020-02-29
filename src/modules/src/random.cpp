@@ -216,22 +216,25 @@ ALISP_EXPORT alisp::env::ModulePtr init_random(alisp::env::Environment *, alisp:
 
     alisp::module_doc(rand_ptr, R"()");
 
-    // alisp::module_defvar(rand_ptr, "seed", rand::json_signal);
-    // alisp::module_defvar(rand_ptr, "seed-rand", rand::json_signal);
-    
-    // alisp::module_defvar(rand_ptr, "rand-int", rand::json_signal);
-    // alisp::module_defvar(rand_ptr, "choice", rand::json_signal);
-    // alisp::module_defvar(rand_ptr, "sample", rand::json_signal);
+    alisp::module_defun(rand_ptr, "seed", &al_random::Fseed);
+    alisp::module_defun(rand_ptr, "seed-rand", &al_random::Fseed_rand);
 
-    // alisp::module_defvar(rand_ptr, "random", rand::json_signal);
+    alisp::module_defun(rand_ptr, "crand", &al_random::Fcrand);
+    alisp::module_defun(rand_ptr, "scrand", &al_random::Fcsrand);
     
-    // alisp::module_defvar(rand_ptr, "uniform", rand::json_signal);
-    // alisp::module_defvar(rand_ptr, "betavariate", rand::json_signal);
-    // alisp::module_defvar(rand_ptr, "expovariate", rand::json_signal);
-    // alisp::module_defvar(rand_ptr, "gammavariate", rand::json_signal);
-    // alisp::module_defvar(rand_ptr, "gauss", rand::json_signal);
-    // alisp::module_defvar(rand_ptr, "lognormvariate", rand::json_signal);
-    // alisp::module_defvar(rand_ptr, "weibullvariate", rand::json_signal);
+    alisp::module_defun(rand_ptr, "rand-int", &al_random::Frand_int);
+    alisp::module_defun(rand_ptr, "choice", &al_random::Fchoice);
+    alisp::module_defun(rand_ptr, "sample", &al_random::Fsample);
+    
+    alisp::module_defun(rand_ptr, "uniform", &al_random::Funiform);
+    alisp::module_defun(rand_ptr, "expovariate", &al_random::Fexponential);
+    alisp::module_defun(rand_ptr, "gammavariate", &al_random::Fgamma);
+    alisp::module_defun(rand_ptr, "gauss", &al_random::Fgauss);
+    alisp::module_defun(rand_ptr, "lognormvariate", &al_random::Flognorm);
+    alisp::module_defun(rand_ptr, "weibullvariate", &al_random::Fweibull);
+    alisp::module_defun(rand_ptr, "student-t", &al_random::Fstudent);
+    alisp::module_defun(rand_ptr, "fisher-f", &al_random::Ffisher);
+    alisp::module_defun(rand_ptr, "geometric", &al_random::Fgeometric);
 
 
     return Mrandom;
