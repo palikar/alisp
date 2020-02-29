@@ -117,6 +117,13 @@ if (${FORCE_COLORED_OUTPUT})
         target_compile_options (project_options INTERFACE -fdiagnostics-color=always)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         target_compile_options (project_options INTERFACE -fcolor-diagnostics)
+
+        if(LIBCPP)
+            # target_compile_options(project_options INTERFACE -stdlib=libc++)
+        else()
+            target_link_libraries(project_options INTERFACE stdc++fs)
+        endif()
+        
     endif ()
 endif ()
 

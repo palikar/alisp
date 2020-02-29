@@ -13,12 +13,12 @@
   (print "without stack tracing support, "))
 
 (if enabled-documentation
-    (print "documentation was not included in build and")
-  (print "documentation was included in build and "))
+    (print "documentation was included in build and ")
+  (print "documentation was not included in build and "))
 
 (if enabled-line-trace
-    (print "line tracing for list objects is enabled.")
-  (print "line tracing for list objects is enabled."))
+    (print "line tracing for list objects is enabled. ")
+  (print "line tracing for list objects is disbled. "))
 
 (if disabled-checks
     (print "No run time checks are preformed while evaluating forms. ")

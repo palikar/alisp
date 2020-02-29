@@ -35,6 +35,7 @@ std::vector<std::string> glob(const std::string &pattern)
 {
     using namespace std;
 
+    
     // glob struct resides on the stack
     glob_t glob_result;
     memset(&glob_result, 0, sizeof(glob_result));
