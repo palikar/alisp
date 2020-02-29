@@ -90,8 +90,9 @@ ALObjectPtr Fpbyte(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
     auto ob = evl->eval(obj->i(0));
+    AL_CHECK(assert_int(ob));
     if (!pint(ob)) { return Qnil; }
-    const auto val = obj->to_int();
+    const auto val = ob->to_int();
     return !(0 <= val and val <= 255) ?  Qt : Qnil;
 }
 

@@ -2,7 +2,16 @@
 #include <unordered_map>
 #include <utility>
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
+
 #include "tinyxml2.h"
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #include "alisp/config.hpp"
 #include "alisp/alisp/alisp_module_helpers.hpp"
@@ -10,7 +19,7 @@
 #include "alisp/utility/files.hpp"
 #include "alisp/utility/string_utils.hpp"
 
-
+// -Wsign-conversion
 namespace xml
 {
 using namespace tinyxml2;

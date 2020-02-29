@@ -1,11 +1,20 @@
 (import 'random :all)
 
+(csrand 123)
 (assert (pint (crand)))
 (assert (pint (crand)))
+
+(csrand)
+(assert (pint (crand)))
+(assert (pint (crand)))
+
+(seed 123)
 
 (assert (pint (rand-int 0 10)))
 (assert (pstring (choice '("a" "b" "c" "d" "f" "g"))))
 (assert (plist (sample '("a" "b" "c" "d" "f" "g") 10)))
+
+(seed-rand)
 
 (assert (preal (uniform 20.0 30.0)))
 (assert (preal (expovariate 20.0)))

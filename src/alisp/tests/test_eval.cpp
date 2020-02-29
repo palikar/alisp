@@ -693,35 +693,51 @@ TEST_CASE("Evaluator Test [predicates]", "[eval]")
         auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
         CHECK(is_truthy(res));
     }
+
     SECTION("psym")
     {
         std::string input{ "(psym 'sym)" };
         auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
         CHECK(is_truthy(res));
     }
+
     SECTION("plist")
     {
         std::string input{ "(plist '(1 2 3 4))" };
         auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
         CHECK(is_truthy(res));
     }
+
     SECTION("pint")
     {
         std::string input{ "(pint 2)" };
         auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
         CHECK(is_truthy(res));
     }
+
     SECTION("preal")
     {
         std::string input{ "(preal 2.3)" };
         auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
         CHECK(is_truthy(res));
     }
+
     SECTION("pstring")
     {
         std::string input{ "(pstring \"string\")" };
         auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
         CHECK(is_truthy(res));
+    }
+
+    SECTION("pbyte")
+    {
+        std::string input{ "(pbyte 123)" };
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+        CHECK(is_truthy(res));
+
+        input =  "(pbyte 1232)" ;
+        res = eval.eval(pars.parse(input, "__TEST__")[0]);
+        CHECK(is_falsy(res));
     }
 
     std::cout.clear();
