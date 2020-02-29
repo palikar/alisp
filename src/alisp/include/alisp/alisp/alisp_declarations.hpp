@@ -37,7 +37,7 @@ namespace alisp
 DEFVAR(Qt, Vt, "t", make_object(Qt, "Used to represent truthy value."));
 DEFVAR(Qnil, Vnil, "nil", make_object(Qnil, "Used to represent falsey value."));
 
-DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--", make_object("", AL_EXTRA_MODPATHS));
+DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--", make_object(AL_EXTRA_MODPATHS, AL_EXTRA_MODPATHS));
 DEFVAR(Qcurrent_module, Vcurrent_module, "--module--", make_string(""));
 DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--", make_list());
 DEFVAR(Qlicense, Vlicense, "--al-license--", make_string(AL_LICENSE));
@@ -375,7 +375,18 @@ Example:
 (assert t)
 (assert nil)
 ```
+)");
 
+DEFUN(assert_not, "assert-not", R"((assert-not FORM)
+
+Assert that the value of `FORM` is *falsey*. If not, an assert signal
+is emitted.
+
+Example:
+```elisp
+(assert nil)
+(assert t)
+```
 )");
 
 DEFUN(eq, "eq", R"((equal FORM1 FORM2)

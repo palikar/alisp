@@ -158,6 +158,7 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
 
             if (fs::equivalent(eval_file, eval->get_current_file())) { continue; }
 
+            // std::cout << eval_file << "\n";
             if (hash::hash(std::string_view(postfix)) == hash::hash(".so"))
             {
                 env->load_module(eval, eval_file.string(), module_name);
@@ -597,6 +598,21 @@ ALObjectPtr Fassert(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     }
     return Qt;
 }
+
+
+ALObjectPtr Fassert_not(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+{
+    AL_CHECK(assert_size<1>(obj));
+    auto val = evl->eval(obj->i(0));
+
+    if (is_truthy(val))
+    {
+        throw signal_exception(env::intern("assert"),
+                               make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
+    }
+    return Qt;
+}
+
 
 ALObjectPtr Feq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
