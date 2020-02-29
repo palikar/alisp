@@ -1,4 +1,4 @@
-/*   Alisp - the alisp interpreted language
+ /*   Alisp - the alisp interpreted language
      Copyright (C) 2020 Stanislav Arnaudov
 
  This program is free software; you can redistribute it and/or modify
@@ -96,15 +96,15 @@ int main(int argc, char *argv[])
       opts.debug_logging << clipp::option("-DL", "--debug-logging") % "Enable lots of debuggin output.",
 #endif
 
-      clipp::repeatable(clipp::option("-I") & clipp::word("include", opts.includes)) % "Extra include directories for module imports.",
+      clipp::repeatable(clipp::option("-I") & clipp::value("include", opts.includes)) % "Extra include directories for module imports.",
 
-      clipp::repeatable(clipp::option("-W") & clipp::word("warnings", opts.warnings)) % "Warning types that should be enabled.",
+      clipp::repeatable(clipp::option("-W") & clipp::value("warning", opts.warnings)) % "Warning types that should be enabled.",
 
       (clipp::option("-e", "--eval") & opts.eval << clipp::value("expr")) % "Input string to evaluate",
 
-      opts.input << clipp::opt_value("file") % "Input file" & !(opts.args << clipp::opt_values("args")) % "Arguments for the script being ran."
-
-    );
+      opts.input << clipp::opt_value("file") % "Input file" & (opts.args << clipp::opt_values("args")) % "Arguments for the script being ran."
+      
+        );
 
 
     auto fmt = clipp::doc_formatting{}
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
 
     if (res.any_bad_repeat() or res.any_blocked() or res.any_conflict())
     {
-        std::cout << "Usage:\n" << clipp::usage_lines(cli, "progname", fmt) << "\n";
+        std::cout << "Usage:\n" << clipp::usage_lines(cli, "alisp", fmt) << "\n";
         return 1;
     }
 
@@ -169,6 +169,13 @@ int main(int argc, char *argv[])
     // for (auto& it : opts.args) {
     //     std::cout << "arg: "  << it << "\n";
     // }
+    // for (auto& it : opts.includes) {
+    //     std::cout << "Include: "  << it << "\n";
+    // }
+    // for (auto& it : opts.warnings) {
+    //     std::cout << "Warning: "  << it << "\n";
+    // }
+
 
     std::vector<alisp::EngineSettings> settings;
 
@@ -185,7 +192,7 @@ int main(int argc, char *argv[])
     sigfillset(&sa.sa_mask);
     sigaction(SIGINT, &sa, NULL);
 
-
+    
     if (!opts.input.empty())
     {
         auto file_path = std::filesystem::path{ opts.input };
