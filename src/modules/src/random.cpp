@@ -46,7 +46,7 @@ ALObjectPtr Fchoice(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fsample(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    assert_size<2>(obj);
     auto a = eval->eval(obj->i(0));
     assert_list(a);
     auto k = eval->eval(obj->i(1));
@@ -75,7 +75,7 @@ ALObjectPtr Funiform(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fexponential(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<2>(obj);
+    assert_size<1>(obj);
     auto a = eval->eval(obj->i(0));
     assert_number(a);
 
@@ -138,7 +138,7 @@ ALObjectPtr Fweibull(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fgeometric(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<2>(obj);
+    assert_size<1>(obj);
     auto a = eval->eval(obj->i(0));
     assert_number(a);
     
@@ -162,7 +162,7 @@ ALObjectPtr Ffisher(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fstudent(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<2>(obj);
+    assert_size<1>(obj);
     auto a = eval->eval(obj->i(0));
     assert_number(a);
 
@@ -196,7 +196,12 @@ ALObjectPtr Fcrand(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 
 ALObjectPtr Fcsrand(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    assert_max_size<1>(obj);
+    if (std::size(*obj) == 0){
+        std::srand(static_cast<unsigned int>(std::time(NULL)));
+        return Qt;
+    }
+    
     auto a = eval->eval(obj->i(0));
     assert_int(a);
     std::srand(static_cast<unsigned int>(a->to_int()));
@@ -212,15 +217,14 @@ ALISP_EXPORT alisp::env::ModulePtr init_random(alisp::env::Environment *, alisp:
     auto Mrandom = alisp::module_init("random");
     auto rand_ptr = Mrandom.get();
 
-    // alisp::module_defun(xml_ptr, "xml-parse", &Fparse_xml);
-
+    
     alisp::module_doc(rand_ptr, R"()");
 
     alisp::module_defun(rand_ptr, "seed", &al_random::Fseed);
     alisp::module_defun(rand_ptr, "seed-rand", &al_random::Fseed_rand);
 
     alisp::module_defun(rand_ptr, "crand", &al_random::Fcrand);
-    alisp::module_defun(rand_ptr, "scrand", &al_random::Fcsrand);
+    alisp::module_defun(rand_ptr, "csrand", &al_random::Fcsrand);
     
     alisp::module_defun(rand_ptr, "rand-int", &al_random::Frand_int);
     alisp::module_defun(rand_ptr, "choice", &al_random::Fchoice);

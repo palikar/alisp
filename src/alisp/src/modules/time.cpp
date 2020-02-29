@@ -275,8 +275,8 @@ and dates.)");
     module_defconst(time_ptr, "system-clock", make_int(details::SYSTEM_CLOCK));
     module_defconst(time_ptr, "steady-clock", make_int(details::STEADY_CLOCK));
     module_defconst(time_ptr, "high-res-clock", make_int(details::HIGH_RES_CLOCK));
-
-    module_defconst(time_ptr, "high-res-clock", make_int(details::clocks_per_sec));
+    
+    module_defconst(time_ptr, "clocks-pre-second", make_int(details::clocks_per_sec));
 
     module_defun(time_ptr, "t-time", &details::Ftime);
     module_defun(time_ptr, "t-ctime", &details::Fctime);
