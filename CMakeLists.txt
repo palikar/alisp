@@ -439,7 +439,7 @@ if(ENABLE_TESTING)
         message(STATUS "Adding script test ${filename}")
 
         add_test(NAME script-test.${filename}
-            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp -I ${CMAKE_CURRENT_SOURCE_DIR}/src/alisp/data/libs/  ${CMAKE_CURRENT_SOURCE_DIR}/tests/${filename} > /dev/null
+            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp -I "${CMAKE_CURRENT_SOURCE_DIR}/src/alisp/data/libs/" -I "${CMAKE_CURRENT_BINARY_DIR}/lib/"  ${CMAKE_CURRENT_SOURCE_DIR}/tests/${filename}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     endforeach()
     
