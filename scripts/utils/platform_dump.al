@@ -8,5 +8,9 @@
 
 (print ", the maximum call depth is set to " max-evaluation-depth " while the maximum evalution depth is " max-evaluation-depth ".\n")
 
+(println "\nBuild info:\n" build-info)
 
-(println "\n\nThe Alisp interpreter is free and open source software distributed under the " --al-license-- " license.")
+(println "\nThe Alisp interpreter is free and open source software distributed under the " --al-license-- " license.")
+
+(println "\nCredits:")
+(dumpcredits)

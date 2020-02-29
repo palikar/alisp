@@ -112,6 +112,10 @@ target_link_libraries(alisp_language
     )
 
 
+if(NOT BUILD_SHARED_LIBS)
+    set_property(TARGET alisp_language PROPERTY POSITION_INDEPENDENT_CODE ON)
+endif()
+
 if(NOT DISABLE_DEFAULT_MODULES)
 
     add_module(alisp_fileio src/modules/fileio.cpp)
