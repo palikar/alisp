@@ -292,6 +292,7 @@ class Environment
             {
                 if (!std::empty(m_stack_trace)) { m_stack_trace.pop_back(); }
             }
+            m_unwind_defers = 0;
         }
 
         if (!std::empty(m_stack_trace))
@@ -333,8 +334,6 @@ struct CallTracer
         if (m_catch_depth == 0) { m_env.trace_unwind(); }
         else
         {
-            std::cout << "defering"
-                      << "\n";
             m_env.defer_unwind();
         }
     }
@@ -342,7 +341,6 @@ struct CallTracer
     void line(ALObject::int_type t_line) { m_line = static_cast<size_t>(t_line); }
 
     void catch_depth(size_t t_catch_depth) { m_catch_depth = t_catch_depth; }
-
 
     void function_name(std::string t_func, bool t_is_prime = false)
     {
