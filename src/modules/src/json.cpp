@@ -26,7 +26,8 @@ namespace detail
 {
 
 template<typename T>
-[[nodiscard]] constexpr auto parse_num(const std::string_view t_str) noexcept -> typename std::enable_if<std::is_integral<T>::value, T>::type
+[[nodiscard]] constexpr auto parse_num(const std::string_view t_str) noexcept ->
+  typename std::enable_if<std::is_integral<T>::value, T>::type
 {
     T t = 0;
     for (const auto c : t_str)
@@ -38,7 +39,9 @@ template<typename T>
     return t;
 }
 
-template<typename T>[[nodiscard]] auto parse_num(const std::string_view t_str) -> typename std::enable_if<!std::is_integral<T>::value, T>::type
+template<typename T>
+[[nodiscard]] auto parse_num(const std::string_view t_str) ->
+  typename std::enable_if<!std::is_integral<T>::value, T>::type
 {
     T t = 0;
     T base{};
@@ -149,7 +152,10 @@ struct JSONParser
 
             consume_ws(str, offset);
             if (str.at(offset) != ':')
-            { signal(json::json_signal, std::string("JSON ERROR: Object: Expected colon, found '") + str.at(offset) + "'\n"); }
+            {
+                signal(json::json_signal,
+                       std::string("JSON ERROR: Object: Expected colon, found '") + str.at(offset) + "'\n");
+            }
             consume_ws(str, ++offset);
             alisp::ALObjectPtr Value = parse_next(str, offset);
 
@@ -171,7 +177,8 @@ struct JSONParser
             }
             else
             {
-                signal(json::json_signal, std::string("JSON ERROR: Object: Expected comma, found '") + str.at(offset) + "'\n");
+                signal(json::json_signal,
+                       std::string("JSON ERROR: Object: Expected comma, found '") + str.at(offset) + "'\n");
             }
         }
 
@@ -214,7 +221,8 @@ struct JSONParser
             }
             else
             {
-                signal(json::json_signal, std::string("JSON ERROR: Array: Expected ',' or ']', found '") + str.at(offset) + "'\n");
+                signal(json::json_signal,
+                       std::string("JSON ERROR: Array: Expected ',' or ']', found '") + str.at(offset) + "'\n");
             }
         }
 
@@ -232,30 +240,33 @@ struct JSONParser
             {
                 switch (str.at(++offset))
                 {
-                  case '\"': val += '\"'; break;
-                  case '\\': val += '\\'; break;
-                  case '/': val += '/'; break;
-                  case 'b': val += '\b'; break;
-                  case 'f': val += '\f'; break;
-                  case 'n': val += '\n'; break;
-                  case 'r': val += '\r'; break;
-                  case 't': val += '\t'; break;
-                  case 'u':
-                  {
-                      val += "\\u";
-                      for (size_t i = 1; i <= 4; ++i)
-                      {
-                          c = str.at(offset + i);
-                          if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) { val += c; }
-                          else
-                          {
-                              signal(json::json_signal, std::string("JSON ERROR: String: Expected hex character in unicode escape, found '") + c + "'");
-                          }
-                      }
-                      offset += 4;
-                  }
-                  break;
-                  default: val += '\\'; break;
+                case '\"': val += '\"'; break;
+                case '\\': val += '\\'; break;
+                case '/': val += '/'; break;
+                case 'b': val += '\b'; break;
+                case 'f': val += '\f'; break;
+                case 'n': val += '\n'; break;
+                case 'r': val += '\r'; break;
+                case 't': val += '\t'; break;
+                case 'u':
+                {
+                    val += "\\u";
+                    for (size_t i = 1; i <= 4; ++i)
+                    {
+                        c = str.at(offset + i);
+                        if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) { val += c; }
+                        else
+                        {
+                            signal(json::json_signal,
+                                   std::string("JSON ERROR: String: Expected hex "
+                                               "character in unicode escape, found '")
+                                     + c + "'");
+                        }
+                    }
+                    offset += 4;
+                }
+                break;
+                default: val += '\\'; break;
                 }
             }
             else
@@ -315,7 +326,10 @@ struct JSONParser
                 if (c >= '0' && c <= '9') { exp_str += c; }
                 else if (!isspace(c) && c != ',' && c != ']' && c != '}')
                 {
-                    signal(json::json_signal, std::string("JSON ERROR: Number: Expected a number for exponent, found '") + c + "'");
+                    signal(json::json_signal,
+                           std::string("JSON ERROR: Number: Expected a number "
+                                       "for exponent, found '")
+                             + c + "'");
                 }
                 else
                 {
@@ -334,7 +348,10 @@ struct JSONParser
         else
         {
             if (!exp_str.empty())
-            { return make_real((isNegative ? -1 : 1) * static_cast<double>(detail::parse_num<std::int64_t>(val)) * std::pow(10, exp)); }
+            {
+                return make_real((isNegative ? -1 : 1) * static_cast<double>(detail::parse_num<std::int64_t>(val))
+                                 * std::pow(10, exp));
+            }
             else
             {
                 return make_int((isNegative ? -1 : 1) * detail::parse_num<std::int64_t>(val));
@@ -356,7 +373,8 @@ struct JSONParser
         }
         else
         {
-            signal(json::json_signal, std::string("JSON ERROR: Bool: Expected 'true' or 'false', found '") + str.substr(offset, 5) + "'");
+            signal(json::json_signal,
+                   std::string("JSON ERROR: Bool: Expected 'true' or 'false', found '") + str.substr(offset, 5) + "'");
             return nullptr;
         }
     }
@@ -364,7 +382,10 @@ struct JSONParser
     static ALObjectPtr parse_null(const std::string &str, size_t &offset)
     {
         if (str.substr(offset, 4) != "null")
-        { signal(json::json_signal, std::string("JSON ERROR: Null: Expected 'null', found '") + str.substr(offset, 4) + "'"); }
+        {
+            signal(json::json_signal,
+                   std::string("JSON ERROR: Null: Expected 'null', found '") + str.substr(offset, 4) + "'");
+        }
         offset += 4;
         return Qnil;
     }
@@ -376,14 +397,14 @@ struct JSONParser
         value = str.at(offset);
         switch (value)
         {
-          case '[': return parse_array(str, offset);
-          case '{': return parse_object(str, offset);
-          case '\"': return parse_string(str, offset);
-          case 't':
-          case 'f': return parse_bool(str, offset);
-          case 'n': return parse_null(str, offset);
-          default:
-              if ((value <= '9' && value >= '0') || value == '-') { return parse_number(str, offset); }
+        case '[': return parse_array(str, offset);
+        case '{': return parse_object(str, offset);
+        case '\"': return parse_string(str, offset);
+        case 't':
+        case 'f': return parse_bool(str, offset);
+        case 'n': return parse_null(str, offset);
+        default:
+            if ((value <= '9' && value >= '0') || value == '-') { return parse_number(str, offset); }
         }
         signal(json::json_signal, std::string("JSON ERROR: Parse: Unexpected starting character '") + value + "'");
         return nullptr;
@@ -518,7 +539,8 @@ ALISP_EXPORT alisp::env::ModulePtr init_json(alisp::env::Environment *, alisp::e
     auto Mjson    = alisp::module_init("json");
     auto json_ptr = Mjson.get();
 
-    alisp::module_doc(json_ptr,
+    alisp::module_doc(
+      json_ptr,
       R"(The `json` module can be used to parse and handle json-formated text. It can transoform JSON to an equvalent representation through s-expressions.
 
 The s-exp representation that this module uses for an dict-like strucure is (plist)[https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node108.html]. A dictonary with keys and values can be viewed as a list of values like `(:key-1 "value-1" :key-2 "value-2")`. For example, this json snippet:

@@ -44,7 +44,8 @@ void Evaluator::end_evaluation()
     --m_eval_depth;
 }
 
-Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser) : env(env_), m_eval_depth(0), m_parser(t_parser), m_status_flags(0)
+Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser)
+  : env(env_), m_eval_depth(0), m_catching_depth(0), m_parser(t_parser), m_status_flags(0)
 {
 }
 
@@ -58,8 +59,10 @@ void Evaluator::put_argument(ALObjectPtr param, ALObjectPtr arg)
 template<bool evaluation> void Evaluator::handle_argument_bindings(ALObjectPtr params, ALObjectPtr args)
 {
 
-    AL_CHECK(if (params->length() == 0 && args->length() != 0) { throw argument_error("Argument\'s lengths do not match."); });
-    AL_CHECK(if (args->length() != 0 && params->length() == 0) { throw argument_error("Argument\'s lengths do not match."); });
+    AL_CHECK(
+      if (params->length() == 0 && args->length() != 0) { throw argument_error("Argument\'s lengths do not match."); });
+    AL_CHECK(
+      if (args->length() != 0 && params->length() == 0) { throw argument_error("Argument\'s lengths do not match."); });
     AL_CHECK(if (args->length() == 0 && params->length() == 0) { return; });
 
 
@@ -108,7 +111,9 @@ template<bool evaluation> void Evaluator::handle_argument_bindings(ALObjectPtr p
             }
             else if (!opt)
             {
-                throw argument_error("The function requires more arguments than the provided ones.");
+                throw argument_error(
+                  "The function requires more arguments than the provided "
+                  "ones.");
             }
             else
             {
@@ -165,11 +170,14 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
         if (obj->prop_exists("--line--")) { tracer.line(obj->get_prop("--line--")->to_int()); }
 
-        if (func->prop_exists("--name--")) { tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag()); }
+        if (func->prop_exists("--name--"))
+        { tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag()); }
         else
         {
             tracer.function_name("anonymous", false);
         }
+
+        tracer.catch_depth(m_catching_depth);
 
 #endif
         AL_DEBUG("Calling funcion: "s += dump(obj->i(0)));
@@ -224,7 +232,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
         catch (...)
         {
 #ifdef ENABLE_STACK_TRACE
-            tracer.dump();
+            if (m_catching_depth == 0) { tracer.dump(); }
 #endif
             throw;
         }
@@ -368,6 +376,16 @@ detail::EvalDepthTrack::~EvalDepthTrack()
 {
     m_eval.end_evaluation();
     if (m_eval.evaluation_depth() == 0) { m_eval.reset_evaluation_flag(); }
+}
+
+detail::CatchTrack::CatchTrack(Evaluator &t_eval) : m_eval(t_eval)
+{
+    ++t_eval.m_catching_depth;
+}
+
+detail::CatchTrack::~CatchTrack()
+{
+    --m_eval.m_catching_depth;
 }
 
 }  // namespace eval

@@ -17,7 +17,7 @@ static std::random_device rand_dev;
 static std::mt19937 rand_eng(rand_dev());
 
 
-}
+}  // namespace detail
 
 ALObjectPtr Frand_int(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
@@ -27,8 +27,7 @@ ALObjectPtr Frand_int(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
     auto b = eval->eval(obj->i(1));
     assert_int(b);
 
-    std::uniform_int_distribution<> distr(static_cast<int>(a->to_int()),
-                                          static_cast<int>(b->to_int()) + 1);
+    std::uniform_int_distribution<> distr(static_cast<int>(a->to_int()), static_cast<int>(b->to_int()) + 1);
 
     return make_int(distr(detail::rand_eng));
 }
@@ -38,9 +37,9 @@ ALObjectPtr Fchoice(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     assert_size<1>(obj);
     auto a = eval->eval(obj->i(0));
     assert_list(a);
-    
+
     std::uniform_int_distribution<> distr(0, static_cast<int>(a->size()) - 1);
-    
+
     return a->children()[static_cast<size_t>(distr(detail::rand_eng))];
 }
 
@@ -53,9 +52,8 @@ ALObjectPtr Fsample(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     assert_int(k);
     std::uniform_int_distribution<> distr(0, static_cast<int>(a->size()) - 1);
     ALObject::list_type lis;
-    for (int i = 0; i < k->to_int(); ++i) {
-        lis.push_back(a->children()[static_cast<size_t>(distr(detail::rand_eng))]);
-    }
+    for (int i = 0; i < k->to_int(); ++i)
+    { lis.push_back(a->children()[static_cast<size_t>(distr(detail::rand_eng))]); }
 
     return make_list(lis);
 }
@@ -141,7 +139,7 @@ ALObjectPtr Fgeometric(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
     assert_size<1>(obj);
     auto a = eval->eval(obj->i(0));
     assert_number(a);
-    
+
     std::geometric_distribution<> distr(a->to_real());
 
     return make_real(distr(detail::rand_eng));
@@ -183,7 +181,8 @@ ALObjectPtr Fseed(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 ALObjectPtr Fseed_rand(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 {
     assert_size<0>(obj);
-    std::seed_seq seed2{detail::rand_dev(), detail::rand_dev(), detail::rand_dev(), detail::rand_dev(), detail::rand_dev(), detail::rand_dev()}; 
+    std::seed_seq seed2{ detail::rand_dev(), detail::rand_dev(), detail::rand_dev(),
+                         detail::rand_dev(), detail::rand_dev(), detail::rand_dev() };
     detail::rand_eng = std::mt19937(seed2);
     return Qt;
 }
@@ -197,11 +196,12 @@ ALObjectPtr Fcrand(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 ALObjectPtr Fcsrand(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_max_size<1>(obj);
-    if (std::size(*obj) == 0){
+    if (std::size(*obj) == 0)
+    {
         std::srand(static_cast<unsigned int>(std::time(NULL)));
         return Qt;
     }
-    
+
     auto a = eval->eval(obj->i(0));
     assert_int(a);
     std::srand(static_cast<unsigned int>(a->to_int()));
@@ -209,15 +209,15 @@ ALObjectPtr Fcsrand(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 }
 
 
-}
+}  // namespace al_random
 
 
 ALISP_EXPORT alisp::env::ModulePtr init_random(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
-    auto Mrandom = alisp::module_init("random");
+    auto Mrandom  = alisp::module_init("random");
     auto rand_ptr = Mrandom.get();
 
-    
+
     alisp::module_doc(rand_ptr, R"()");
 
     alisp::module_defun(rand_ptr, "seed", &al_random::Fseed);
@@ -225,11 +225,11 @@ ALISP_EXPORT alisp::env::ModulePtr init_random(alisp::env::Environment *, alisp:
 
     alisp::module_defun(rand_ptr, "crand", &al_random::Fcrand);
     alisp::module_defun(rand_ptr, "csrand", &al_random::Fcsrand);
-    
+
     alisp::module_defun(rand_ptr, "rand-int", &al_random::Frand_int);
     alisp::module_defun(rand_ptr, "choice", &al_random::Fchoice);
     alisp::module_defun(rand_ptr, "sample", &al_random::Fsample);
-    
+
     alisp::module_defun(rand_ptr, "uniform", &al_random::Funiform);
     alisp::module_defun(rand_ptr, "expovariate", &al_random::Fexponential);
     alisp::module_defun(rand_ptr, "gammavariate", &al_random::Fgamma);

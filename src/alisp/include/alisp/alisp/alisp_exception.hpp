@@ -77,13 +77,14 @@ struct al_exception : public std::runtime_error
 struct signal_exception : public al_exception
 {
 
-    signal_exception(ALObjectPtr sym, ALObjectPtr list) : al_exception(format(sym, list), SignalTag::USER), m_sym(sym), m_list(list)
+    signal_exception(ALObjectPtr sym, ALObjectPtr list)
+      : al_exception(format(sym, list), SignalTag::USER), m_sym(sym), m_list(list)
     {
 
         m_signal_name = m_sym->to_string();
     }
 
-  
+
     ALObjectPtr m_sym;
     ALObjectPtr m_list;
 
@@ -120,12 +121,13 @@ struct parse_exception : public al_exception
 
         auto lines = utility::split(t_input, '\n');
 
-        auto start_index = static_cast<int>(t_where.line) - LINE_CONTEXT < 0 ? 0 : static_cast<int>(t_where.line) - LINE_CONTEXT;
-        auto end_index   = (static_cast<int>(t_where.line) + LINE_CONTEXT) > static_cast<int>(std::size(lines))
+        auto start_index =
+          static_cast<int>(t_where.line) - LINE_CONTEXT < 0 ? 0 : static_cast<int>(t_where.line) - LINE_CONTEXT;
+        auto end_index = (static_cast<int>(t_where.line) + LINE_CONTEXT) > static_cast<int>(std::size(lines))
                            ? static_cast<int>(std::size(lines))
                            : static_cast<int>(std::size(lines)) + LINE_CONTEXT;
 
-        
+
         for (auto i = static_cast<size_t>(start_index); i < static_cast<size_t>(end_index); ++i)
         {
             if (end_index > 10 && i < 10) { ss << " "; }
@@ -140,7 +142,10 @@ struct parse_exception : public al_exception
 struct environment_error : public al_exception
 {
   public:
-    environment_error(const std::string &t_why) : al_exception(t_why, SignalTag::ENV) { m_signal_name = "environment-signal"; }
+    environment_error(const std::string &t_why) : al_exception(t_why, SignalTag::ENV)
+    {
+        m_signal_name = "environment-signal";
+    }
 };
 
 struct eval_error : public al_exception
@@ -152,7 +157,8 @@ struct eval_error : public al_exception
 struct argument_error : public al_exception
 {
   public:
-    argument_error(const std::string &t_why, ALObjectPtr t_obj = nullptr) : al_exception(format(t_why, t_obj), SignalTag::INVALID_ARGUMENTS)
+    argument_error(const std::string &t_why, ALObjectPtr t_obj = nullptr)
+      : al_exception(format(t_why, t_obj), SignalTag::INVALID_ARGUMENTS)
     {
         m_signal_name = "eval-signal";
     }
@@ -219,7 +225,8 @@ struct illegal_name_error : public al_exception
 {
 
   public:
-    illegal_name_error(const std::string &t_name, const std::string &t_why) : al_exception(format(t_why, t_name), SignalTag::ILLEGAL_NAME)
+    illegal_name_error(const std::string &t_name, const std::string &t_why)
+      : al_exception(format(t_why, t_name), SignalTag::ILLEGAL_NAME)
     {
         m_signal_name = "illegal-name-signal";
     }
@@ -237,7 +244,10 @@ struct interrupt_error : public al_exception
 {
 
   public:
-    interrupt_error() : al_exception("KeyboardInterrupt", SignalTag::ILLEGAL_NAME) { m_signal_name = "interrupt-signal"; }
+    interrupt_error() : al_exception("KeyboardInterrupt", SignalTag::ILLEGAL_NAME)
+    {
+        m_signal_name = "interrupt-signal";
+    }
 };
 
 
@@ -297,31 +307,36 @@ template<bool should_exit = false> void handle_errors_lippincott()
     }
     catch (parse_exception &p_exc)
     {
-        std::cout << rang::fg::red << "Unhandeled parser signal: <" << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name() << ">\n"
+        std::cout << rang::fg::red << "Unhandeled parser signal: <" << signal_tag_to_string(p_exc.tag()) << ", "
+                  << p_exc.name() << ">\n"
                   << rang::fg::reset;
         std::cout << '\t' << p_exc.what() << "\n";
     }
     catch (environment_error &p_exc)
     {
-        std::cout << rang::fg::red << "Unhandeled environment signal:<" << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name() << ">\n"
+        std::cout << rang::fg::red << "Unhandeled environment signal:<" << signal_tag_to_string(p_exc.tag()) << ", "
+                  << p_exc.name() << ">\n"
                   << rang::fg::reset;
         std::cout << '\t' << p_exc.what() << "\n";
     }
     catch (eval_error &p_exc)
     {
-        std::cout << rang::fg::red << "Unhandeled evaluation signal:<" << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name() << ">\n"
+        std::cout << rang::fg::red << "Unhandeled evaluation signal:<" << signal_tag_to_string(p_exc.tag()) << ", "
+                  << p_exc.name() << ">\n"
                   << rang::fg::reset;
         std::cout << '\t' << p_exc.what() << "\n";
     }
     catch (signal_exception &p_exc)
     {
-        std::cout << rang::fg::red << "Unhandeled user signal:<" << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name() << ">\n"
+        std::cout << rang::fg::red << "Unhandeled user signal:<" << signal_tag_to_string(p_exc.tag()) << ", "
+                  << p_exc.name() << ">\n"
                   << rang::fg::reset;
         std::cout << '\t' << p_exc.what() << "\n";
     }
     catch (argument_error &p_exc)
     {
-        std::cout << rang::fg::red << "Invalid Arguments error:<" << signal_tag_to_string(p_exc.tag()) << ", " << p_exc.name() << ">\n"
+        std::cout << rang::fg::red << "Invalid Arguments error:<" << signal_tag_to_string(p_exc.tag()) << ", "
+                  << p_exc.name() << ">\n"
                   << rang::fg::reset;
         std::cout << '\t' << p_exc.what() << "\n";
     }
@@ -337,7 +352,10 @@ template<bool should_exit = false> void handle_errors_lippincott()
     }
     catch (alobject_error &p_exc)
     {
-        std::cout << rang::fg::red << "ALObject exception. This is not normal. Report bug or something.\n" << rang::fg::reset;
+        std::cout << rang::fg::red
+                  << "ALObject exception. This is not normal. Report bug or "
+                     "something.\n"
+                  << rang::fg::reset;
         std::cout << '\t' << p_exc.what() << "\n";
     }
     catch (interrupt_error &p_exc)

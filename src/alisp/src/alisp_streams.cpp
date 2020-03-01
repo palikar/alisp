@@ -65,7 +65,7 @@ streams::ALStream *StreamsHelper::get_stream(ALObjectPtr t_stream)
 ALObjectPtr StreamsHelper::create_string_stream(ALObjectPtr t_string)
 {
     streams::StringStream *new_stream = new streams::StringStream(t_string->to_string());
-    auto new_id                       = al::streams_registry.put_resource(dynamic_cast<streams::ALStream *>(new_stream))->id;
+    auto new_id = al::streams_registry.put_resource(dynamic_cast<streams::ALStream *>(new_stream))->id;
     AL_DEBUG("New string stream: "s += std::to_string(new_id));
     return resource_to_object(new_id);
 }
@@ -73,7 +73,7 @@ ALObjectPtr StreamsHelper::create_string_stream(ALObjectPtr t_string)
 ALObjectPtr StreamsHelper::create_file_stream(ALObjectPtr t_file)
 {
     streams::FileStream *new_stream = new streams::FileStream(FileHelpers::get_file(t_file).m_file);
-    auto new_id                     = al::streams_registry.put_resource(dynamic_cast<streams::ALStream *>(new_stream))->id;
+    auto new_id = al::streams_registry.put_resource(dynamic_cast<streams::ALStream *>(new_stream))->id;
     AL_DEBUG("New file stream: "s += std::to_string(new_id));
     return resource_to_object(new_id);
 }

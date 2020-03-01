@@ -79,7 +79,10 @@ class LanguageEngine
 
     const std::string m_home_directory;
 
-    bool check(EngineSettings t_setting) { return std::find(std::begin(m_settings), std::end(m_settings), t_setting) != std::end(m_settings); }
+    bool check(EngineSettings t_setting)
+    {
+        return std::find(std::begin(m_settings), std::end(m_settings), t_setting) != std::end(m_settings);
+    }
 
     void do_eval(std::string &t_input, const std::string &t_file, bool t_print_res = false)
     {
@@ -196,7 +199,8 @@ class LanguageEngine
         if (insert_mod_path)
         {
 
-            if (t_path.has_parent_path()) { Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path()))); }
+            if (t_path.has_parent_path())
+            { Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path()))); }
             else
             {
                 AL_DEBUG("Adding path to the modpaths: "s += fs::absolute(fs::current_path()).string());

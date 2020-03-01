@@ -26,8 +26,8 @@ namespace alisp
 
 
 // extern ALObjectPtr  MemoryHelpers::allocate_buffer(size_t t_size);
-// extern memory::MemoryBuffer & MemoryHelpers::get_buffer(ALObjectPtr t_buffer);
-// extern void  MemoryHelpers::release_buffer(ALObjectPtr t_buffer);
+// extern memory::MemoryBuffer & MemoryHelpers::get_buffer(ALObjectPtr
+// t_buffer); extern void  MemoryHelpers::release_buffer(ALObjectPtr t_buffer);
 
 namespace detail
 {
@@ -141,7 +141,8 @@ ALObjectPtr Fget_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
 
     ALObject::list_type bytes;
     auto &buf = MemoryHelpers::get_buffer(mem);
-    for (size_t i = 0; i < buf.m_size; ++i) { bytes.push_back(make_int(static_cast<ALObject::int_type>(*(buf.m_ptr + i)))); }
+    for (size_t i = 0; i < buf.m_size; ++i)
+    { bytes.push_back(make_int(static_cast<ALObject::int_type>(*(buf.m_ptr + i)))); }
 
     return make_object(bytes);
 }
@@ -174,7 +175,8 @@ env::ModulePtr init_memory(env::Environment *, eval::Evaluator *)
     auto Mmemory = module_init("memory");
     auto mem_ptr = Mmemory.get();
 
-    module_doc(mem_ptr, R"(The `memory` modules provides utilities for working with raw memory
+    module_doc(mem_ptr,
+               R"(The `memory` modules provides utilities for working with raw memory
 buffers. Memory buffers are just places in memory that are filled with bytes.)");
 
     module_defun(mem_ptr, "buffer-allocate", &detail::Fallocate_buffer);

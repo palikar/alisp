@@ -1,19 +1,19 @@
- /*   Alisp - the alisp interpreted language
-     Copyright (C) 2020 Stanislav Arnaudov
+/*   Alisp - the alisp interpreted language
+    Copyright (C) 2020 Stanislav Arnaudov
 
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any prior version.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any prior version.
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License along
- with this program; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include <iostream>
 #include <string>
@@ -85,7 +85,8 @@ int main(int argc, char *argv[])
 
     auto cli = (
 
-      opts.version << clipp::option("-v", "--version") % "Show the version and build information of the current executable.",
+      opts.version << clipp::option("-v", "--version")
+                        % "Show the version and build information of the current executable.",
       opts.show_help << clipp::option("-h", "--help") % "Print help information.",
       opts.interactive << clipp::option("-i", "--interactive") % "Start interactive mode after file evaluation.",
       opts.parse_debug << clipp::option("-d", "--parse-debug") % "Debug output from the parser.",
@@ -96,40 +97,46 @@ int main(int argc, char *argv[])
       opts.debug_logging << clipp::option("-DL", "--debug-logging") % "Enable lots of debuggin output.",
 #endif
 
-      clipp::repeatable(clipp::option("-I") & clipp::value("include", opts.includes)) % "Extra include directories for module imports.",
+      clipp::repeatable(clipp::option("-I") & clipp::value("include", opts.includes))
+        % "Extra include directories for module imports.",
 
-      clipp::repeatable(clipp::option("-W") & clipp::value("warning", opts.warnings)) % "Warning types that should be enabled.",
+      clipp::repeatable(clipp::option("-W") & clipp::value("warning", opts.warnings))
+        % "Warning types that should be enabled.",
 
       (clipp::option("-e", "--eval") & opts.eval << clipp::value("expr")) % "Input string to evaluate",
 
-      opts.input << clipp::opt_value("file") % "Input file" & (opts.args << clipp::opt_values("args")) % "Arguments for the script being ran."
-      
-        );
+      opts.input << clipp::opt_value("file") % "Input file"
+        & (opts.args << clipp::opt_values("args")) % "Arguments for the script being ran."
+
+    );
 
 
     auto fmt = clipp::doc_formatting{}
-                 .first_column(8)                                    // left border column for text body
-                 .doc_column(20)                                     // column where parameter docstring starts
-                 .last_column(80)                                    // right border column for text body
-                 .indent_size(2)                                     // indent of documentation lines for children of a documented group
-                 .line_spacing(0)                                    // number of empty lines after single documentation lines
-                 .paragraph_spacing(1)                               // number of empty lines before and after paragraphs
-                 .flag_separator(", ")                               // between flags of the same parameter
-                 .param_separator(" ")                               // between parameters
-                 .group_separator(" ")                               // between groups (in usage)
-                 .alternative_param_separator("|")                   // between alternative flags
-                 .alternative_group_separator(" | ")                 // between alternative groups
-                 .surround_group("(", ")")                           // surround groups with these
-                 .surround_alternatives("(", ")")                    // surround group of alternatives with these
-                 .surround_alternative_flags("", "")                 // surround alternative flags with these
-                 .surround_joinable("(", ")")                        // surround group of joinable flags with these
-                 .surround_optional("[", "]")                        // surround optional parameters with these
-                 .surround_repeat("", "...")                         // surround repeatable parameters with these
-                 .empty_label("")                                    // used if parameter has no flags and no label
-                 .max_flags_per_param_in_usage(1)                    // max. # of flags per parameter in usage
-                 .max_flags_per_param_in_doc(32)                     // max. # of flags per parameter in detailed documentation
-                 .split_alternatives(true)                           // split usage into several lines for large alternatives
-                 .alternatives_min_split_size(3)                     // min. # of parameters for separate usage line
+                 .first_column(8)                     // left border column for text body
+                 .doc_column(20)                      // column where parameter docstring starts
+                 .last_column(80)                     // right border column for text body
+                 .indent_size(2)                      // indent of documentation lines for children of a
+                                                      // documented group
+                 .line_spacing(0)                     // number of empty lines after single documentation lines
+                 .paragraph_spacing(1)                // number of empty lines before and after paragraphs
+                 .flag_separator(", ")                // between flags of the same parameter
+                 .param_separator(" ")                // between parameters
+                 .group_separator(" ")                // between groups (in usage)
+                 .alternative_param_separator("|")    // between alternative flags
+                 .alternative_group_separator(" | ")  // between alternative groups
+                 .surround_group("(", ")")            // surround groups with these
+                 .surround_alternatives("(", ")")     // surround group of alternatives with these
+                 .surround_alternative_flags("", "")  // surround alternative flags with these
+                 .surround_joinable("(",
+                                    ")")       // surround group of joinable flags with these
+                 .surround_optional("[", "]")  // surround optional parameters with these
+                 .surround_repeat("",
+                                  "...")           // surround repeatable parameters with these
+                 .empty_label("")                  // used if parameter has no flags and no label
+                 .max_flags_per_param_in_usage(1)  // max. # of flags per parameter in usage
+                 .max_flags_per_param_in_doc(32)   // max. # of flags per parameter in detailed documentation
+                 .split_alternatives(true)         // split usage into several lines for large alternatives
+                 .alternatives_min_split_size(3)   // min. # of parameters for separate usage line
                  .merge_alternative_flags_with_common_prefix(false)  //-ab(cdxy|xy) instead of -abcdxy|-abxy
                  .ignore_newline_chars(false);
 
@@ -183,7 +190,9 @@ int main(int argc, char *argv[])
     if (opts.parse_debug) settings.push_back(alisp::EngineSettings::PARSER_DEBUG);
     if (opts.quick) settings.push_back(alisp::EngineSettings::QUICK_INIT);
 
-    alisp::LanguageEngine alisp_engine{ settings, std::move(opts.args), std::move(opts.includes), std::move(opts.warnings) };
+    alisp::LanguageEngine alisp_engine{
+        settings, std::move(opts.args), std::move(opts.includes), std::move(opts.warnings)
+    };
     g_alisp_engine = &alisp_engine;
 
     struct sigaction sa;
@@ -192,7 +201,7 @@ int main(int argc, char *argv[])
     sigfillset(&sa.sa_mask);
     sigaction(SIGINT, &sa, NULL);
 
-    
+
     if (!opts.input.empty())
     {
         auto file_path = std::filesystem::path{ opts.input };

@@ -61,11 +61,13 @@ void ErrorMessanger::lexer_error(size_t char_num, size_t line_num, const std::st
     // {
     //     error_msg += absl::Substitute(" in file $0", this->current_file);
     // }
-    // error_msg += absl::Substitute(" on line $0 char $1\n=======> $2\n", char_num, line_num, msg);
+    // error_msg += absl::Substitute(" on line $0 char $1\n=======> $2\n",
+    // char_num, line_num, msg);
 
 
-    // const size_t start_line = line_num < LINES_CONTEXT ? 0 : line_num - LINES_CONTEXT;
-    // const size_t end_line = (start_line + 2*LINES_CONTEXT) >= this->lines.size() ?
+    // const size_t start_line = line_num < LINES_CONTEXT ? 0 : line_num -
+    // LINES_CONTEXT; const size_t end_line = (start_line + 2*LINES_CONTEXT) >=
+    // this->lines.size() ?
     //     (this->lines.size() - 1) : (start_line + 2*LINES_CONTEXT);
 
     // std::cout << error_msg;
@@ -74,7 +76,8 @@ void ErrorMessanger::lexer_error(size_t char_num, size_t line_num, const std::st
     // {
     //     if (i == line_num)
     //     {
-    //         std::cout << '>' << rang::fg::magenta << this->lines[i] << rang::fg::reset << '\n';
+    //         std::cout << '>' << rang::fg::magenta << this->lines[i] <<
+    //         rang::fg::reset << '\n';
     //     }
     //     else
     //     {

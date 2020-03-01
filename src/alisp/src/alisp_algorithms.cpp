@@ -61,7 +61,9 @@ ALObjectPtr Fsort(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     AL_CHECK(assert_numbers(list));
 
-    std::sort(std::begin(*list), std::end(*list), [&](auto &obj_1, auto &obj_2) { return obj_1->to_real() < obj_2->to_real(); });
+    std::sort(std::begin(*list), std::end(*list), [&](auto &obj_1, auto &obj_2) {
+        return obj_1->to_real() < obj_2->to_real();
+    });
 
     return list;
 }

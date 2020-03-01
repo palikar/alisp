@@ -48,7 +48,8 @@ template<LogCategory t_category> struct StdLog
 
     void log(LogEntry t_entry)
     {
-        std::cout << '[' << t_entry.file_name << ':' << t_entry.function_name << ':' << t_entry.line_number << "] " << t_entry.message << "\n";
+        std::cout << '[' << t_entry.file_name << ':' << t_entry.function_name << ':' << t_entry.line_number << "] "
+                  << t_entry.message << "\n";
     }
 };
 
@@ -65,7 +66,8 @@ template<LogCategory t_category> struct ErrLog
 
     void log(LogEntry t_entry)
     {
-        std::cerr << '[' << t_entry.file_name << ':' << t_entry.function_name << ':' << t_entry.line_number << "] " << t_entry.message << "\n";
+        std::cerr << '[' << t_entry.file_name << ':' << t_entry.function_name << ':' << t_entry.line_number << "] "
+                  << t_entry.message << "\n";
     }
 };
 
@@ -78,7 +80,8 @@ template<typename... Logs> class LogKeeper : Logs...
   public:
     LogKeeper(bool t_debug = false, bool t_standard = true) : m_debug(t_debug), m_standard(t_standard) {}
 
-    template<typename MSG> void create_entry(MSG msg, const char *file, const char *function, int line_number, LogCategory category)
+    template<typename MSG>
+    void create_entry(MSG msg, const char *file, const char *function, int line_number, LogCategory category)
     {
         const char *last_slash = strrchr(file, '/');
         last_slash             = last_slash ? last_slash + 1 : file;
@@ -103,13 +106,17 @@ template<typename... Logs> class LogKeeper : Logs...
 
 
 #ifdef DEUBG_LOGGING
-using standard_logger = LogKeeper<StdLog<LogCategory::DEBUG>, StdLog<LogCategory::INFO>, StdLog<LogCategory::WARNING>, ErrLog<LogCategory::ERROR>>;
+using standard_logger = LogKeeper<StdLog<LogCategory::DEBUG>,
+                                  StdLog<LogCategory::INFO>,
+                                  StdLog<LogCategory::WARNING>,
+                                  ErrLog<LogCategory::ERROR>>;
 inline standard_logger LOGGER;
 
-#define AL_LOG(MSG, TAG)                                                                                                  \
-    do                                                                                                                    \
-    {                                                                                                                     \
-        ::alisp::logging::LOGGER.create_entry(MSG, __FILE__, __FUNCTION__, __LINE__, ::alisp::logging::LogCategory::TAG); \
+#define AL_LOG(MSG, TAG)                                                              \
+    do                                                                                \
+    {                                                                                 \
+        ::alisp::logging::LOGGER.create_entry(                                        \
+          MSG, __FILE__, __FUNCTION__, __LINE__, ::alisp::logging::LogCategory::TAG); \
     } while (false)
 #else
 

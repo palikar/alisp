@@ -49,7 +49,8 @@ TEST_CASE("Reading Files Test [simple]", "[files]")
     std::cout.setstate(std::ios_base::failbit);
 
 
-    auto input = R"((defvar file-1  (file-open ")"s += std::string(TEXT_FILE) += R"(" :in) )
+    auto input = R"((defvar file-1  (file-open ")"s += std::string(TEXT_FILE) +=
+      R"(" :in) )
 (assert (string-equals "line 1" (file-read-line file-1)))
 (assert (string-equals "line 2" (file-read-line file-1)))
 (assert (string-equals "line 3" (file-read-line file-1)))
@@ -78,7 +79,8 @@ TEST_CASE("Writing Files Test [simple]", "[files]")
 
     CHECK(engine.eval_statement(input, true).first);
 
-    input = R"((defvar file-in  (file-open ")"s += std::string(OUTPUT_FILE) += R"(" :in) )
+    input = R"((defvar file-in  (file-open ")"s += std::string(OUTPUT_FILE) +=
+      R"(" :in) )
 (assert (string-equals "line 1" (file-read-line file-in)))
 (assert (string-equals "line 2" (file-read-line file-in)))
 (assert (string-equals "line 3" (file-read-line file-in)))
@@ -86,7 +88,8 @@ TEST_CASE("Writing Files Test [simple]", "[files]")
 )"s;
 
 
-    input = R"((defvar file-in  (file-open ")"s += std::string(OUTPUT_FILE) += R"(" :in) )
+    input = R"((defvar file-in  (file-open ")"s += std::string(OUTPUT_FILE) +=
+      R"(" :in) )
 (while (file-has-more file-in)
 (println (file-read-line file-in)))
 (file-close file-in)

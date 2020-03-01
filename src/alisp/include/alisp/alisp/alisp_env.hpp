@@ -108,7 +108,10 @@ class Module
 
     const std::string &name() { return m_name; }
 
-    void add_module(ModulePtr t_module, const std::string t_alias) { m_modules.insert({ std::move(t_alias), t_module }); }
+    void add_module(ModulePtr t_module, const std::string t_alias)
+    {
+        m_modules.insert({ std::move(t_alias), t_module });
+    }
 
     detail::CellStack::Scope &get_root() { return m_root_scope; }
 
@@ -158,11 +161,14 @@ class Environment
 
 #ifdef ENABLE_STACK_TRACE
     std::vector<std::tuple<std::string, bool>> m_stack_trace;  // name, is_prime
+    size_t m_unwind_defers{ 0 };
 #endif
 
   public:
     Environment()
-      : m_modules{ { "--main--", std::make_shared<Module>("--main--") } }, m_active_module({ *m_modules.at("--main--").get() }), m_call_depth(0)
+      : m_modules{ { "--main--", std::make_shared<Module>("--main--") } }
+      , m_active_module({ *m_modules.at("--main--").get() })
+      , m_call_depth(0)
     {
     }
 
@@ -272,10 +278,22 @@ class Environment
 
 #ifdef ENABLE_STACK_TRACE
 
-    void trace_call(std::string t_trace, bool is_prime = false) { m_stack_trace.push_back({ std::move(t_trace), is_prime }); }
+    void trace_call(std::string t_trace, bool is_prime = false)
+    {
+        m_stack_trace.push_back({ std::move(t_trace), is_prime });
+    }
 
     void trace_unwind()
     {
+        if (m_unwind_defers > 0)
+        {
+
+            for (size_t i = 0; i < m_unwind_defers; ++i)
+            {
+                if (!std::empty(m_stack_trace)) { m_stack_trace.pop_back(); }
+            }
+        }
+
         if (!std::empty(m_stack_trace))
         {
             m_stack_trace.pop_back();
@@ -284,6 +302,8 @@ class Environment
 
         warn::warn_env("Unwinding an empty stack.");
     }
+
+    void defer_unwind() { ++m_unwind_defers; }
 
     auto get_stack_trace() -> auto & { return m_stack_trace; }
 
@@ -301,15 +321,28 @@ struct CallTracer
   private:
     std::string m_function;
     std::string m_args;
-    bool m_is_prime = false;
-    size_t m_line   = 0;
+    bool m_is_prime      = false;
+    size_t m_line        = 0;
+    size_t m_catch_depth = 0;
 
   public:
     explicit CallTracer(Environment &t_env) : m_env(t_env) {}
 
-    ~CallTracer() { m_env.trace_unwind(); }
+    ~CallTracer()
+    {
+        if (m_catch_depth == 0) { m_env.trace_unwind(); }
+        else
+        {
+            std::cout << "defering"
+                      << "\n";
+            m_env.defer_unwind();
+        }
+    }
 
     void line(ALObject::int_type t_line) { m_line = static_cast<size_t>(t_line); }
+
+    void catch_depth(size_t t_catch_depth) { m_catch_depth = t_catch_depth; }
+
 
     void function_name(std::string t_func, bool t_is_prime = false)
     {

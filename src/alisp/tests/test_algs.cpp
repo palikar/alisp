@@ -49,7 +49,10 @@ TEST_CASE("Algorithms Test [zip]", "[alg]")
 
     std::cout.setstate(std::ios_base::failbit);
 
-    std::string input{ "(all (lambda (x) (assert (and (< 0 (nth x 0)) (> 0 (nth x 1)))) ) (zip '(1 2 3 4) '(-1 -2 -3 -4)) )" };
+    std::string input{
+        "(all (lambda (x) (assert (and (< 0 (nth x 0)) (> 0 (nth x 1)))) ) "
+        "(zip '(1 2 3 4) '(-1 -2 -3 -4)) )"
+    };
     CHECK(engine.eval_statement(input).first);
 
     std::cout.clear();
@@ -63,7 +66,10 @@ TEST_CASE("Algorithms Test [filter]", "[alg]")
 
     std::cout.setstate(std::ios_base::failbit);
 
-    std::string input{ "(all (lambda (x) (assert (< 0 x) )) (filter (lambda (x)  (< 0 x)) '(-1 2 -3 4 -5 10)))" };
+    std::string input{
+        "(all (lambda (x) (assert (< 0 x) )) (filter (lambda (x)  (< 0 x)) "
+        "'(-1 2 -3 4 -5 10)))"
+    };
     CHECK(engine.eval_statement(input).first);
 
     std::cout.clear();

@@ -84,12 +84,14 @@ struct ALObjectHelper
         return init_ptr(new ALObject(static_cast<ALObject::real_type>(a)));
     }
 
-    template<typename T> static auto get(T a) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr>
+    template<typename T>
+    static auto get(T a) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr>
     {
         return init_ptr(new ALObject(std::string(a)));
     }
 
-    template<typename T> static auto get(T a, bool) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr>
+    template<typename T>
+    static auto get(T a, bool) -> typename std::enable_if_t<std::is_constructible_v<std::string, T>, ALObjectPtr>
     {
         return init_ptr(new ALObject(std::string(a), true));
     }

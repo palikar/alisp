@@ -121,7 +121,15 @@ ALObjectPtr Fgmtime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
     AL_CHECK(assert_int(time));
     std::time_t time_t(time->to_int());
     auto res = std::gmtime(&time_t);
-    return make_object(res->tm_sec, res->tm_min, res->tm_hour, res->tm_mday, res->tm_mon, res->tm_year, res->tm_wday, res->tm_yday, res->tm_isdst);
+    return make_object(res->tm_sec,
+                       res->tm_min,
+                       res->tm_hour,
+                       res->tm_mday,
+                       res->tm_mon,
+                       res->tm_year,
+                       res->tm_wday,
+                       res->tm_yday,
+                       res->tm_isdst);
 }
 
 ALObjectPtr Flocaltime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -132,7 +140,15 @@ ALObjectPtr Flocaltime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     AL_CHECK(assert_int(time));
     std::time_t time_t(time->to_int());
     auto res = std::localtime(&time_t);
-    return make_object(res->tm_sec, res->tm_min, res->tm_hour, res->tm_mday, res->tm_mon, res->tm_year, res->tm_wday, res->tm_yday, res->tm_isdst);
+    return make_object(res->tm_sec,
+                       res->tm_min,
+                       res->tm_hour,
+                       res->tm_mday,
+                       res->tm_mon,
+                       res->tm_year,
+                       res->tm_wday,
+                       res->tm_yday,
+                       res->tm_isdst);
 }
 
 ALObjectPtr Fmktime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -269,13 +285,14 @@ env::ModulePtr init_time(env::Environment *, eval::Evaluator *)
     auto Mtime    = module_init("time");
     auto time_ptr = Mtime.get();
 
-    module_doc(time_ptr, R"(The `time` module provides utility functions for working with time
+    module_doc(time_ptr,
+               R"(The `time` module provides utility functions for working with time
 and dates.)");
 
     module_defconst(time_ptr, "system-clock", make_int(details::SYSTEM_CLOCK));
     module_defconst(time_ptr, "steady-clock", make_int(details::STEADY_CLOCK));
     module_defconst(time_ptr, "high-res-clock", make_int(details::HIGH_RES_CLOCK));
-    
+
     module_defconst(time_ptr, "clocks-pre-second", make_int(details::clocks_per_sec));
 
     module_defun(time_ptr, "t-time", &details::Ftime);

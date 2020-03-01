@@ -32,8 +32,9 @@ template<class, class Enable = void> struct is_iterator : std::false_type
 template<typename T>
 struct is_iterator<
   T,
-  typename std::enable_if<std::is_base_of<std::input_iterator_tag, typename std::iterator_traits<T>::iterator_category>::value
-                          || std::is_same<std::output_iterator_tag, typename std::iterator_traits<T>::iterator_category>::value>::type>
+  typename std::enable_if<
+    std::is_base_of<std::input_iterator_tag, typename std::iterator_traits<T>::iterator_category>::value
+    || std::is_same<std::output_iterator_tag, typename std::iterator_traits<T>::iterator_category>::value>::type>
   : std::true_type
 {
 };
@@ -66,7 +67,10 @@ template<typename T> class vector_view
 
     explicit vector_view(std::vector<T> &t_vec) : m_first(std::begin(t_vec)), m_last(std::end(t_vec)) {}
 
-    vector_view(typename std::vector<T>::iterator t_begin, typename std::vector<T>::iterator t_end) : m_first(t_begin), m_last(t_end) {}
+    vector_view(typename std::vector<T>::iterator t_begin, typename std::vector<T>::iterator t_end)
+      : m_first(t_begin), m_last(t_end)
+    {
+    }
 
     reference operator[](size_t index) { return *std::next(m_first, static_cast<difference_type>(index)); }
 

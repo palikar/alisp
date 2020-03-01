@@ -34,7 +34,8 @@ env::ModulePtr init_platform(env::Environment *, eval::Evaluator *)
     auto Mplatform = module_init("platform");
     auto plat_ptr  = Mplatform.get();
 
-    module_doc(plat_ptr, R"(The `platform` module exposes infomration about the Alisp
+    module_doc(plat_ptr,
+               R"(The `platform` module exposes infomration about the Alisp
 interpreter, the underlying operating system and information about it
 as well as how the intrpterter was compiled.)");
 
@@ -59,7 +60,7 @@ as well as how the intrpterter was compiled.)");
     module_defvar(plat_ptr, "enabled-documentation", al_doc ? Qt : Qnil);
     module_defvar(plat_ptr, "enabled-line-trace", al_line_trace ? Qt : Qnil);
     module_defvar(plat_ptr, "enabled-stack-trace", al_stack_trace ? Qt : Qnil);
-    
+
 
     return Mplatform;
 }

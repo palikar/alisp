@@ -46,22 +46,33 @@ DEFVAR(Qload_signal, Vload_signal, "load-signal", make_symbol("load-signal"));
 DEFVAR(Qdefun_signal, Vdefun_signal, "defun-signal", make_symbol("defun-signal"));
 
 DEFSYM(Qoptional, "&optional", R"(Used in an argument list to signify that the next arguments are optional.)");
-DEFSYM(Qrest, "&rest", R"(Used in an argument list to signify that the next arguemnt should be
+DEFSYM(Qrest,
+       "&rest",
+       R"(Used in an argument list to signify that the next arguemnt should be
 bound to any left arguments by function call.)");
 DEFSYM(Qcomma, ",", R"(Used by the backquote syntax in order to evaluate and expression.)");
-DEFSYM(Qcomma_at, ",@", R"(Used by the backquote syntax in order to slice in a list inside of
+DEFSYM(Qcomma_at,
+       ",@",
+       R"(Used by the backquote syntax in order to slice in a list inside of
 another list.)");
 
 
-/*  _                                                ____                _                   _        */
-/* | |    __ _ _ __   __ _ _   _  __ _  __ _  ___   / ___|___  _ __  ___| |_ _ __ _   _  ___| |_ ___  */
-/* | |   / _` | '_ \ / _` | | | |/ _` |/ _` |/ _ \ | |   / _ \| '_ \/ __| __| '__| | | |/ __| __/ __| */
-/* | |__| (_| | | | | (_| | |_| | (_| | (_| |  __/ | |__| (_) | | | \__ \ |_| |  | |_| | (__| |_\__ \ */
-/* |_____\__,_|_| |_|\__, |\__,_|\__,_|\__, |\___|  \____\___/|_| |_|___/\__|_|   \__,_|\___|\__|___/ */
-/*                   |___/             |___/                                                          */
+/*  _                                                ____                _ _
+ */
+/* | |    __ _ _ __   __ _ _   _  __ _  __ _  ___   / ___|___  _ __  ___| |_ _
+ * __ _   _  ___| |_ ___  */
+/* | |   / _` | '_ \ / _` | | | |/ _` |/ _` |/ _ \ | |   / _ \| '_ \/ __| __|
+ * '__| | | |/ __| __/ __| */
+/* | |__| (_| | | | | (_| | |_| | (_| | (_| |  __/ | |__| (_) | | | \__ \ |_| |
+ * | |_| | (__| |_\__ \ */
+/* |_____\__,_|_| |_|\__, |\__,_|\__,_|\__, |\___|  \____\___/|_| |_|___/\__|_|
+ * \__,_|\___|\__|___/ */
+/*                   |___/             |___/ */
 
 
-DEFUN(import, "import", R"((import MODULE [:file file] [:all] [( [(SYM MAPPED)]... )])
+DEFUN(import,
+      "import",
+      R"((import MODULE [:file file] [:all] [( [(SYM MAPPED)]... )])
 
 Import the module MODULE. MODULE should be a symbol and the imported
 module should be in a file with the name of this symbol. The file
@@ -342,7 +353,9 @@ Example:
 )");
 
 
-DEFUN(condition_case, "condition-case", R"((condition-case SYMBOL BODY [[HANDLERS]...])
+DEFUN(condition_case,
+      "condition-case",
+      R"((condition-case SYMBOL BODY [[HANDLERS]...])
 )");
 
 DEFUN(return, "return", R"((return [FROM])
@@ -841,7 +854,6 @@ Return `t` if FORM is a string and `nil` otherwise.
 )");
 
 
-
 /*  _                _       */
 /* | |    ___   __ _(_) ___  */
 /* | |   / _ \ / _` | |/ __| */
@@ -1054,13 +1066,17 @@ DEFUN(string_find, "string-find", R"((string-find STRING SUBSTRING)
 Return the first index where `SUBSTRING` is contained in `STRINGE`.
 )");
 
-DEFUN(string_replace, "string-replace", R"((string-replace STRING SUBSTRING NEWSTRING)
+DEFUN(string_replace,
+      "string-replace",
+      R"((string-replace STRING SUBSTRING NEWSTRING)
 
 Replace one occurrence of `SUBSTRING` in STRING with `NEWSTRING`. The
 new string is returned.
 )");
 
-DEFUN(string_replaceall, "string-replaceall", R"((string-replaceall STRING SUBSTRING NEWSTRING)
+DEFUN(string_replaceall,
+      "string-replaceall",
+      R"((string-replaceall STRING SUBSTRING NEWSTRING)
 
 Replace all occurrences of `SUBSTRING` in STRING with `NEWSTRING`. The
 new string is returned.

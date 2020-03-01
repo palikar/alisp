@@ -41,7 +41,8 @@ Position::Position(const char *t_pos, const char *t_end) noexcept : line(1), col
 std::string_view Position::str(const Position &begin, const Position &end) noexcept
 {
 
-    if (begin.pos != nullptr && end.pos != nullptr) { return std::string_view(begin.pos, static_cast<size_t>(std::distance(begin.pos, end.pos))); }
+    if (begin.pos != nullptr && end.pos != nullptr)
+    { return std::string_view(begin.pos, static_cast<size_t>(std::distance(begin.pos, end.pos))); }
     else
     {
         return {};

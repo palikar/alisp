@@ -154,9 +154,13 @@ template<class Environment> class ALParser : public ParserBase
         *second_ptr      = true;
     }
 
-    constexpr bool char_in_alphabet(char c, detail::Alphabet a) const noexcept { return this->alphabet[a][static_cast<uint8_t>(c)]; }
+    constexpr bool char_in_alphabet(char c, detail::Alphabet a) const noexcept
+    {
+        return this->alphabet[a][static_cast<uint8_t>(c)];
+    }
 
-    constexpr static std::array<std::array<bool, detail::LENGTHOF_ALPHABET>, detail::ALPHABETS_NUM> build_alphabet() noexcept
+    constexpr static std::array<std::array<bool, detail::LENGTHOF_ALPHABET>, detail::ALPHABETS_NUM>
+      build_alphabet() noexcept
     {
         std::array<std::array<bool, detail::LENGTHOF_ALPHABET>, detail::ALPHABETS_NUM> alph{};
 
@@ -343,7 +347,10 @@ template<class Environment> class ALParser : public ParserBase
         }
 
 
-        number_type get_num() { return exp ? (base_sign * m_base) * std::pow(number_type(10), exp_sign * m_num) : base_sign * m_num; }
+        number_type get_num()
+        {
+            return exp ? (base_sign * m_base) * std::pow(number_type(10), exp_sign * m_num) : base_sign * m_num;
+        }
     };
 
     template<typename string_type> struct StringParser
@@ -395,7 +402,8 @@ template<class Environment> class ALParser : public ParserBase
 
             char buf[4];
             if (u_size != match_size) { throw std::runtime_error("Incomplete unicode escape sequence"); }
-            if (u_size == 4 && ch >= 0xD800 && ch <= 0xDFFF) { throw std::runtime_error("Invalid 16 bit universal character"); }
+            if (u_size == 4 && ch >= 0xD800 && ch <= 0xDFFF)
+            { throw std::runtime_error("Invalid 16 bit universal character"); }
 
 
             if (ch < 0x80) { m_str += static_cast<char>(ch); }
@@ -430,7 +438,8 @@ template<class Environment> class ALParser : public ParserBase
         bool parse(const char t_char)
         {
             const bool is_octal_char = t_char >= '0' && t_char <= '7';
-            const bool is_hex_char   = (t_char >= '0' && t_char <= '9') || (t_char >= 'a' && t_char <= 'f') || (t_char >= 'A' && t_char <= 'F');
+            const bool is_hex_char =
+              (t_char >= '0' && t_char <= '9') || (t_char >= 'a' && t_char <= 'f') || (t_char >= 'A' && t_char <= 'F');
 
             if (is_octal)
             {
@@ -545,7 +554,8 @@ template<class Environment> class ALParser : public ParserBase
     {
 
         while (this->position.has_more()
-               && (check_char(*cr_lf.c_str()) || check_char(*nl.c_str()) || char_in_alphabet(*position, detail::whitespace_alphabet)))
+               && (check_char(*cr_lf.c_str()) || check_char(*nl.c_str())
+                   || char_in_alphabet(*position, detail::whitespace_alphabet)))
         { ++position; }
     }
 
@@ -675,7 +685,8 @@ template<class Environment> class ALParser : public ParserBase
     {
         bool val  = false;
         auto temp = position;
-        while (position.has_more() && char_in_alphabet(*position, detail::id_alphabet) && !char_in_alphabet(*position, detail::whitespace_alphabet))
+        while (position.has_more() && char_in_alphabet(*position, detail::id_alphabet)
+               && !char_in_alphabet(*position, detail::whitespace_alphabet))
         {
             ++position;
             val = true;

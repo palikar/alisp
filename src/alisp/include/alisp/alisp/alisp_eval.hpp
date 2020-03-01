@@ -29,11 +29,19 @@ namespace alisp
 namespace eval
 {
 
+namespace detail
+{
+class EvalDepthTrack;
+class CatchTrack;
+
+}  // namespace detail
+
 class Evaluator
 {
   private:
     env::Environment &env;
     size_t m_eval_depth;
+    size_t m_catching_depth;
     parser::ParserBase *m_parser;
 
     int m_signal;
@@ -73,6 +81,9 @@ class Evaluator
 
     void set_current_file(std::string t_tile);
     const std::string &get_current_file();
+
+    friend detail::EvalDepthTrack;
+    friend detail::CatchTrack;
 };
 
 namespace detail
@@ -88,6 +99,18 @@ class EvalDepthTrack
     EvalDepthTrack &operator=(EvalDepthTrack &&) = default;
     EvalDepthTrack(const EvalDepthTrack &)       = delete;
     EvalDepthTrack &operator=(const EvalDepthTrack &) = delete;
+
+  private:
+    Evaluator &m_eval;
+};
+
+class CatchTrack
+{
+  public:
+    explicit CatchTrack(Evaluator &t_eval);
+    ~CatchTrack();
+
+    ALISP_RAII_OBJECT(CatchTrack);
 
   private:
     Evaluator &m_eval;

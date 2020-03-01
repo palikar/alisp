@@ -61,7 +61,11 @@ static ALObjectPtr handle_backquote_list(ALObjectPtr obj, eval::Evaluator *eval)
         if (el->i(0) == Qcomma_at)
         {
             auto new_list = eval->eval(el->i(1));
-            if (plist(new_list)) { new_elements.insert(new_elements.end(), std::begin(new_list->children()), std::end(new_list->children())); }
+            if (plist(new_list))
+            {
+                new_elements.insert(
+                  new_elements.end(), std::begin(new_list->children()), std::end(new_list->children()));
+            }
             else
             {
                 new_elements.push_back(new_list);
@@ -101,21 +105,19 @@ static bool check_arg_list(ALObjectPtr t_list)
 static ALObjectPtr catch_case_lippincott(ALObjectPtr t_obj, eval::Evaluator *eval)
 {
 
-#define HANDLE for (size_t i = 2; i < t_obj->size(); ++i) { \
-        auto handler = t_obj->i(i);                         \
-        auto sym = eval->eval(handler->i(0));               \
-        if (sym->to_string().compare(p_exc.name()) == 0) {  \
-            return eval_list(eval, handler, 1);             \
-        }                                                   \
-    }                                                       \
+#define HANDLE                                                                                   \
+    for (size_t i = 2; i < t_obj->size(); ++i)                                                   \
+    {                                                                                            \
+        auto handler = t_obj->i(i);                                                              \
+        auto sym     = eval->eval(handler->i(0));                                                \
+        if (sym->to_string().compare(p_exc.name()) == 0) { return eval_list(eval, handler, 1); } \
+    }                                                                                            \
     throw
 
     try
     {
         throw;
     }
-    catch (parse_exception &p_exc)
-    {}
     catch (environment_error &p_exc)
     {
         HANDLE;
@@ -649,8 +651,9 @@ ALObjectPtr Fassert(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
     if (is_falsy(val))
     {
-        throw signal_exception(env::intern("assert-signal"),
-                               make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
+        throw signal_exception(
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
     }
     return Qt;
 }
@@ -662,8 +665,9 @@ ALObjectPtr Fassert_not(ALObjectPtr obj, env::Environment *, eval::Evaluator *ev
 
     if (is_truthy(val))
     {
-        throw signal_exception(env::intern("assert"),
-                               make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
+        throw signal_exception(
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
     }
     return Qt;
 }
@@ -732,15 +736,20 @@ ALObjectPtr Fsym_list(ALObjectPtr obj, env::Environment *env, eval::Evaluator *e
     return make_list(syms);
 }
 
-ALObjectPtr Fcondition_case(ALObjectPtr obj, env::Environment*, eval::Evaluator *eval)
+ALObjectPtr Fcondition_case(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<2>(obj));
     AL_CHECK(assert_symbol(obj->i(0)));
 
-    try {
+
+    try
+    {
+        eval::detail::CatchTrack ct{ *eval };
         auto body = eval->eval(obj->i(1));
         return body;
-    } catch (...) {
+    }
+    catch (...)
+    {
         return detail::catch_case_lippincott(obj, eval);
     }
 

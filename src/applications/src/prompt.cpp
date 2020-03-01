@@ -51,7 +51,8 @@ char *completion_generator(const char *text, int state)
         std::string textstr{ text };
         for (const auto &word : get_completions(text))
         {
-            if (word.size() >= textstr.size() && word.compare(0, textstr.size(), textstr) == 0) { matches.push_back(word); }
+            if (word.size() >= textstr.size() && word.compare(0, textstr.size(), textstr) == 0)
+            { matches.push_back(word); }
         }
     }
 

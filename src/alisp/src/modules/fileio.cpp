@@ -35,7 +35,7 @@ std::vector<std::string> glob(const std::string &pattern)
 {
     using namespace std;
 
-    
+
     // glob struct resides on the stack
     glob_t glob_result;
     memset(&glob_result, 0, sizeof(glob_result));
@@ -122,7 +122,8 @@ ALObjectPtr Fentries(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
 
     ALObject::list_type entries;
 
-    for (auto &entr : fs::directory_iterator(path->to_string())) { entries.push_back(make_string(entr.path().string())); }
+    for (auto &entr : fs::directory_iterator(path->to_string()))
+    { entries.push_back(make_string(entr.path().string())); }
 
     return make_object(entries);
 }
@@ -867,7 +868,9 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
     auto Mfileio = module_init("fileio");
     auto fio_ptr = Mfileio.get();
 
-    module_doc(fio_ptr, R"(The `fileio` moudule provides utilities for working with file paths, files, directories and some basic IO functions.)");
+    module_doc(
+      fio_ptr,
+      R"(The `fileio` moudule provides utilities for working with file paths, files, directories and some basic IO functions.)");
 
     module_defvar(fio_ptr, "f-directory-separator", make_string(detail::separator));
 

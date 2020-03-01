@@ -60,8 +60,10 @@ std::string FileHelpers::temp_file_path(std::string t_prefix)
 {
     for (int count = 0; count < 1000; ++count)
     {
-        const auto p = std::filesystem::temp_directory_path()
-                       / fmt::format("{}-{}-{:04x}", t_prefix, std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()), count);
+        const auto p =
+          std::filesystem::temp_directory_path()
+          / fmt::format(
+            "{}-{}-{:04x}", t_prefix, std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()), count);
         if (!std::filesystem::exists(p)) { return p; }
     }
 

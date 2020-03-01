@@ -31,12 +31,17 @@ namespace alisp
 {
 
 
-/*  ____       _   _                    __  __       _       _     _              */
-/* |  _ \ __ _| |_| |_ ___ _ __ _ __   |  \/  | __ _| |_ ___| |__ (_)_ __   __ _  */
-/* | |_) / _` | __| __/ _ \ '__| '_ \  | |\/| |/ _` | __/ __| '_ \| | '_ \ / _` | */
-/* |  __/ (_| | |_| ||  __/ |  | | | | | |  | | (_| | || (__| | | | | | | | (_| | */
-/* |_|   \__,_|\__|\__\___|_|  |_| |_| |_|  |_|\__,_|\__\___|_| |_|_|_| |_|\__, | */
-/*                                                                         |___/  */
+/*  ____       _   _                    __  __       _       _     _ */
+/* |  _ \ __ _| |_| |_ ___ _ __ _ __   |  \/  | __ _| |_ ___| |__ (_)_ __   __ _
+ */
+/* | |_) / _` | __| __/ _ \ '__| '_ \  | |\/| |/ _` | __/ __| '_ \| | '_ \ / _`
+ * | */
+/* |  __/ (_| | |_| ||  __/ |  | | | | | |  | | (_| | || (__| | | | | | | | (_|
+ * | */
+/* |_|   \__,_|\__|\__\___|_|  |_| |_| |_|  |_|\__,_|\__\___|_| |_|_|_| |_|\__,
+ * | */
+/*                                                                         |___/
+ */
 
 namespace detail
 {
@@ -73,18 +78,21 @@ template<typename Check, typename Call> pattern_entry<Check, Call> operator>(mat
     return pattern_entry(t_match.m_fun, callable);
 }
 
-template<typename Callalble_In_1, typename Callalble_In_2> auto operator||(match<Callalble_In_1> t_match_lhs, match<Callalble_In_2> t_match_rhs)
+template<typename Callalble_In_1, typename Callalble_In_2>
+auto operator||(match<Callalble_In_1> t_match_lhs, match<Callalble_In_2> t_match_rhs)
 {
-    return detail::match(
-      [t_rhs = std::move(t_match_rhs), t_lhs = std::move(t_match_lhs)](ALObjectPtr obj) -> bool { return t_rhs.m_fun(obj) || t_lhs.m_fun(obj); });
+    return detail::match([t_rhs = std::move(t_match_rhs), t_lhs = std::move(t_match_lhs)](ALObjectPtr obj) -> bool {
+        return t_rhs.m_fun(obj) || t_lhs.m_fun(obj);
+    });
 }
 
 
 template<typename Callalble_In_1, typename Callalble_In_2>
 auto operator&&(detail::match<Callalble_In_1> t_match_lhs, detail::match<Callalble_In_2> t_match_rhs)
 {
-    return detail::match(
-      [t_rhs = std::move(t_match_rhs), t_lhs = std::move(t_match_lhs)](ALObjectPtr obj) -> bool { return t_rhs.m_fun(obj) && t_lhs.m_fun(obj); });
+    return detail::match([t_rhs = std::move(t_match_rhs), t_lhs = std::move(t_match_lhs)](ALObjectPtr obj) -> bool {
+        return t_rhs.m_fun(obj) && t_lhs.m_fun(obj);
+    });
 }
 
 template<typename Callalble_In_1> auto operator!(match<Callalble_In_1> t_match)
@@ -94,7 +102,8 @@ template<typename Callalble_In_1> auto operator!(match<Callalble_In_1> t_match)
 
 
 template<size_t N, class... Matches, class... Checks>
-auto visit_match_impl([[maybe_unused]] ALObjectPtr obj, [[maybe_unused]] std::tuple<pattern_entry<Checks, Matches>...> patterns)
+auto visit_match_impl([[maybe_unused]] ALObjectPtr obj,
+                      [[maybe_unused]] std::tuple<pattern_entry<Checks, Matches>...> patterns)
   -> std::common_type_t<std::invoke_result_t<Matches, ALObjectPtr>...>
 {
 
@@ -118,7 +127,8 @@ auto visit_match_impl([[maybe_unused]] ALObjectPtr obj, [[maybe_unused]] std::tu
     }
 }
 
-template<class... Matches, class... Checks> auto visit_match(ALObjectPtr obj, std::tuple<pattern_entry<Checks, Matches>...> patterns)
+template<class... Matches, class... Checks>
+auto visit_match(ALObjectPtr obj, std::tuple<pattern_entry<Checks, Matches>...> patterns)
 {
     return visit_match_impl<0>(obj, patterns);
 }
@@ -156,7 +166,8 @@ inline auto any_pattern()
     return detail::match([](ALObjectPtr) -> bool { return true; });
 }
 
-template<class... Matches, class... Checks> inline auto make_visit(ALObjectPtr obj, detail::pattern_entry<Matches, Checks>... entries)
+template<class... Matches, class... Checks>
+inline auto make_visit(ALObjectPtr obj, detail::pattern_entry<Matches, Checks>... entries)
 {
     return visit_match(obj, std::tuple(entries...));
 }

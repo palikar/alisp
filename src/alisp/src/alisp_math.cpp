@@ -43,12 +43,14 @@ ALObjectPtr Fmultiply(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
     if (are_objects_int(eval_obj))
     {
-        const ALObject::int_type product = reduce<false>(evl, eval_obj, MUL_OBJ_FUN, static_cast<ALObject::int_type>(1));
+        const ALObject::int_type product =
+          reduce<false>(evl, eval_obj, MUL_OBJ_FUN, static_cast<ALObject::int_type>(1));
         return make_int(product);
     }
     else if (are_objects_numbers(eval_obj))
     {
-        const ALObject::real_type product = reduce<false>(evl, eval_obj, MUL_OBJ_FUN_D, static_cast<ALObject::real_type>(1));
+        const ALObject::real_type product =
+          reduce<false>(evl, eval_obj, MUL_OBJ_FUN_D, static_cast<ALObject::real_type>(1));
         return make_double(product);
     }
     warn::warn_math("Multiplying non-numbers ");
@@ -68,7 +70,8 @@ ALObjectPtr Fplus(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     }
     else if (are_objects_numbers(eval_obj))
     {
-        const ALObject::real_type sum = reduce<false>(evl, eval_obj, ADD_OBJ_FUN_D, static_cast<ALObject::real_type>(0));
+        const ALObject::real_type sum =
+          reduce<false>(evl, eval_obj, ADD_OBJ_FUN_D, static_cast<ALObject::real_type>(0));
         return make_double(sum);
     }
 

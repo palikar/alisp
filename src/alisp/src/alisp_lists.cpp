@@ -63,8 +63,8 @@ ALObjectPtr Fmapcar(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     for (auto &el : list->children())
     {
-        // if (psym(el) or plist(el)) { eval->handle_lambda(fun_obj, make_list(quote(el))); }
-        // else
+        // if (psym(el) or plist(el)) { eval->handle_lambda(fun_obj,
+        // make_list(quote(el))); } else
         // {
         new_l.push_back(eval->handle_lambda(fun_obj, make_list(el)));
         // }
@@ -204,7 +204,8 @@ ALObjectPtr Fdelete(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     auto &children = list->children();
 
-    children.erase(std::remove_if(std::begin(children), std::end(children), [element](ALObjectPtr t_obj) { return equal(element, t_obj); }));
+    children.erase(std::remove_if(
+      std::begin(children), std::end(children), [element](ALObjectPtr t_obj) { return equal(element, t_obj); }));
 
     return list;
 }
@@ -220,8 +221,10 @@ ALObjectPtr Fremove(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     ALObject::list_type new_children;
     new_children.reserve(std::size(children));
 
-    std::copy_if(
-      std::begin(children), std::end(children), std::back_inserter(new_children), [element](ALObjectPtr t_obj) { return !equal(element, t_obj); });
+    std::copy_if(std::begin(children),
+                 std::end(children),
+                 std::back_inserter(new_children),
+                 [element](ALObjectPtr t_obj) { return !equal(element, t_obj); });
 
     return make_object(new_children);
 }
@@ -236,7 +239,8 @@ ALObjectPtr Fdelq(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     auto &children = list->children();
 
-    children.erase(std::remove_if(std::begin(children), std::end(children), [element](ALObjectPtr t_obj) { return eq(element, t_obj); }));
+    children.erase(std::remove_if(
+      std::begin(children), std::end(children), [element](ALObjectPtr t_obj) { return eq(element, t_obj); }));
 
     return list;
 }
@@ -252,8 +256,10 @@ ALObjectPtr Fremq(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     ALObject::list_type new_children;
     new_children.reserve(std::size(children));
 
-    std::copy_if(
-      std::begin(children), std::end(children), std::back_inserter(new_children), [element](ALObjectPtr t_obj) { return !eq(element, t_obj); });
+    std::copy_if(std::begin(children),
+                 std::end(children),
+                 std::back_inserter(new_children),
+                 [element](ALObjectPtr t_obj) { return !eq(element, t_obj); });
 
     return make_object(new_children);
 }

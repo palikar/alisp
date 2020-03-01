@@ -33,9 +33,11 @@ AlispDynModule::AlispDynModule(const std::string &t_module_name, const std::stri
   : m_dlmodule(t_filename), m_init_func(m_dlmodule, "init_" + t_module_name)
 {
 
-    if (!m_dlmodule.m_data) { alisp::signal(Vload_signal, "Could not load dynamic module: "s += t_module_name, dlerror()); }
+    if (!m_dlmodule.m_data)
+    { alisp::signal(Vload_signal, "Could not load dynamic module: "s += t_module_name, dlerror()); }
 
-    if (!m_init_func.m_symbol) { alisp::signal(Vload_signal, "Could not load init functions in dynamic module: "s += t_module_name, dlerror()); }
+    if (!m_init_func.m_symbol)
+    { alisp::signal(Vload_signal, "Could not load init functions in dynamic module: "s += t_module_name, dlerror()); }
 }
 
 std::shared_ptr<env::Module> AlispDynModule::init_dynmod(env::Environment *env, eval::Evaluator *eval)

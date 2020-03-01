@@ -37,7 +37,9 @@
 namespace alisp
 {
 
-inline auto splice(ALObjectPtr t_obj, std::vector<ALObject>::difference_type start_index, std::vector<ALObject>::difference_type end_index = -1)
+inline auto splice(ALObjectPtr t_obj,
+                   std::vector<ALObject>::difference_type start_index,
+                   std::vector<ALObject>::difference_type end_index = -1)
 {
 
     const auto size     = static_cast<std::vector<ALObject>::difference_type>(std::size(*t_obj));
@@ -52,7 +54,9 @@ inline auto splice(ALObjectPtr t_obj, std::vector<ALObject>::difference_type sta
     return make_object(new_child);
 }
 
-inline auto splice_temp(ALObjectPtr t_obj, std::vector<ALObject>::difference_type start_index, std::vector<ALObject>::difference_type end_index = -1)
+inline auto splice_temp(ALObjectPtr t_obj,
+                        std::vector<ALObject>::difference_type start_index,
+                        std::vector<ALObject>::difference_type end_index = -1)
 {
 
     const auto size     = static_cast<std::vector<ALObject>::difference_type>(std::size(*t_obj));
@@ -105,8 +109,8 @@ inline ALObjectPtr eval_list(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_o
 template<size_t N> inline ALObjectPtr eval_list_n(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_offset = 0)
 {
 
-    auto &objects              = *t_obj;
-    const auto hops            = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
+    auto &objects   = *t_obj;
+    const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
     constexpr auto return_hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(N);
 
     auto start_it  = std::next(std::begin(objects), hops);
@@ -142,7 +146,8 @@ inline ALObjectPtr eval_list_2(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t
     return eval_list_n<1>(evl, t_obj, t_offset);
 }
 
-template<bool eval, typename Callable> inline auto apply(eval::Evaluator *evl, ALObjectPtr t_obj, Callable t_fun, size_t t_offset = 0)
+template<bool eval, typename Callable>
+inline auto apply(eval::Evaluator *evl, ALObjectPtr t_obj, Callable t_fun, size_t t_offset = 0)
 {
 
     auto &objects   = *t_obj;
@@ -171,7 +176,11 @@ template<bool eval, typename Callable> inline auto apply(eval::Evaluator *evl, A
 }
 
 template<bool eval, typename Callable, typename StartType>
-inline StartType reduce([[maybe_unused]] eval::Evaluator *evl, ALObjectPtr t_obj, Callable &&t_fun, StartType t_start, size_t t_offset = 0)
+inline StartType reduce([[maybe_unused]] eval::Evaluator *evl,
+                        ALObjectPtr t_obj,
+                        Callable &&t_fun,
+                        StartType t_start,
+                        size_t t_offset = 0)
 {
     auto &objects   = *t_obj;
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
@@ -502,13 +511,17 @@ struct NameValidator
         }
     }
 
-    template<typename T> static bool valid_object_name(const T &t_name) noexcept { return utility::starts_with(t_name, "--"); }
+    template<typename T> static bool valid_object_name(const T &t_name) noexcept
+    {
+        return utility::starts_with(t_name, "--");
+    }
 
     template<typename T> static void validate_object_name(const T &t_name)
     {
         if (is_reserved_word(t_name)) { throw illegal_name_error(t_name, "This is a reserved keyword."); }
 
-        if (valid_object_name(t_name)) { throw illegal_name_error(t_name, "Symbol names should not start with \"--\""); }
+        if (valid_object_name(t_name))
+        { throw illegal_name_error(t_name, "Symbol names should not start with \"--\""); }
     }
 };
 

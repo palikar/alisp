@@ -77,7 +77,8 @@ template<typename T> static std::string to_proper_string(const T &t_str)
 
 template<typename T> struct DLSym
 {
-    DLSym(DLModule &t_mod, const std::string &t_symbol) : m_symbol(reinterpret_cast<T>(GetProcAddress(t_mod.m_data, t_symbol.c_str())))
+    DLSym(DLModule &t_mod, const std::string &t_symbol)
+      : m_symbol(reinterpret_cast<T>(GetProcAddress(t_mod.m_data, t_symbol.c_str())))
     {
         if (!m_symbol) {}
     }
@@ -121,7 +122,10 @@ struct DLModule
 
 template<typename T> struct DLSym
 {
-    DLSym(DLModule &t_mod, const std::string_view &t_symbol) : m_symbol(reinterpret_cast<T>(dlsym(t_mod.m_data, t_symbol.data()))) {}
+    DLSym(DLModule &t_mod, const std::string_view &t_symbol)
+      : m_symbol(reinterpret_cast<T>(dlsym(t_mod.m_data, t_symbol.data())))
+    {
+    }
 
     T m_symbol;
 };

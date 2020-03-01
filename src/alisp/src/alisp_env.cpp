@@ -66,7 +66,8 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
         if (scope.count(name))
         {
             auto &sym = scope.at(name);
-            AL_CHECK(if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); });
+            AL_CHECK(
+              if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); });
             sym = t_value;
             return;
         };
@@ -75,7 +76,8 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
     if (m_active_module.get().root_scope().count(name))
     {
         auto &sym = m_active_module.get().root_scope().at(name);
-        AL_CHECK(if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); });
+        AL_CHECK(
+          if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); });
         sym = t_value;
         return;
     };
@@ -194,8 +196,9 @@ bool Environment::load_builtin_module(const std::string &t_module_name, eval::Ev
 void Environment::load_module(eval::Evaluator *eval, const std::string t_file, const std::string t_name)
 {
     AL_DEBUG("Loading dyn modules: "s += t_name + " from " + t_file);
-    auto loaded_mod = m_loaded_modules.insert({ t_name, std::make_unique<dynmoduels::AlispDynModule>(t_name, t_file) }).first->second.get();
-    auto mod_ptr    = loaded_mod->init_dynmod(this, eval);
+    auto loaded_mod = m_loaded_modules.insert({ t_name, std::make_unique<dynmoduels::AlispDynModule>(t_name, t_file) })
+                        .first->second.get();
+    auto mod_ptr = loaded_mod->init_dynmod(this, eval);
     define_module(t_name, std::move(mod_ptr));
     alias_module(t_name, t_name);
 }

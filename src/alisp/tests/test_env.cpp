@@ -88,8 +88,9 @@ TEST_CASE("Environment Test [define_function, define_macro]", "[env]")
     SECTION("simple")
     {
 
-        env.define_function(
-          make_symbol("new-fun"), make_object(make_symbol("a"), make_symbol("b")), make_object(make_symbol("println"), make_symbol("a")));
+        env.define_function(make_symbol("new-fun"),
+                            make_object(make_symbol("a"), make_symbol("b")),
+                            make_object(make_symbol("println"), make_symbol("a")));
 
 
         CHECK(env.find(make_symbol("new-fun"))->check_function_flag());
@@ -102,8 +103,9 @@ TEST_CASE("Environment Test [define_function, define_macro]", "[env]")
     SECTION("macro")
     {
 
-        env.define_macro(
-          make_symbol("new-fun"), make_object(make_symbol("a"), make_symbol("b")), make_object(make_symbol("println"), make_symbol("a")));
+        env.define_macro(make_symbol("new-fun"),
+                         make_object(make_symbol("a"), make_symbol("b")),
+                         make_object(make_symbol("println"), make_symbol("a")));
 
 
         CHECK(env.find(make_symbol("new-fun"))->check_macro_flag());

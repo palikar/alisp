@@ -32,22 +32,26 @@ namespace alisp
 
 template<size_t N> inline void assert_min_size(ALObjectPtr obj)
 {
-    if (!min_list_elements(obj, N)) throw argument_error("Invalid argument. Must be list with at least " + std::to_string(N) + " elements", obj);
+    if (!min_list_elements(obj, N))
+        throw argument_error("Invalid argument. Must be list with at least " + std::to_string(N) + " elements", obj);
 }
 
 template<size_t N> inline void assert_max_size(ALObjectPtr obj)
 {
-    if (!max_list_elements(obj, N)) throw argument_error("Invalid argument. Must be list with maximum of " + std::to_string(N) + " elements", obj);
+    if (!max_list_elements(obj, N))
+        throw argument_error("Invalid argument. Must be list with maximum of " + std::to_string(N) + " elements", obj);
 }
 
 template<size_t N> inline void assert_size(ALObjectPtr obj)
 {
-    if (obj->length() != N) throw argument_error("Invalid argument. Must be list with  " + std::to_string(N) + " elements", obj);
+    if (obj->length() != N)
+        throw argument_error("Invalid argument. Must be list with  " + std::to_string(N) + " elements", obj);
 }
 
 inline void assert_numbers(ALObjectPtr obj)
 {
-    if (!are_objects_numbers(obj)) throw argument_error("Invalid argument. The list must contain only numbers (real of int)", obj);
+    if (!are_objects_numbers(obj))
+        throw argument_error("Invalid argument. The list must contain only numbers (real of int)", obj);
 }
 
 inline void assert_symbol(ALObjectPtr obj)
@@ -77,7 +81,8 @@ inline void assert_int(ALObjectPtr obj)
 
 inline void assert_char(ALObjectPtr obj)
 {
-    if (!obj->is_int() and !obj->check_char_flag()) throw argument_error("Invalid argument. Object must be a char", obj);
+    if (!obj->is_int() and !obj->check_char_flag())
+        throw argument_error("Invalid argument. Object must be a char", obj);
 }
 
 inline void assert_function(ALObjectPtr obj)
@@ -92,17 +97,20 @@ inline void assert_non_const(ALObjectPtr obj)
 
 inline void assert_file(ALObjectPtr obj)
 {
-    if (!files::files_registry.belong(object_to_resource(obj))) throw argument_error("The object does not point to a file", obj);
+    if (!files::files_registry.belong(object_to_resource(obj)))
+        throw argument_error("The object does not point to a file", obj);
 }
 
 inline void assert_stream(ALObjectPtr obj)
 {
-    if (!al::streams_registry.belong(object_to_resource(obj))) throw argument_error("The object does not point to a stream", obj);
+    if (!al::streams_registry.belong(object_to_resource(obj)))
+        throw argument_error("The object does not point to a stream", obj);
 }
 
 inline void assert_memory(ALObjectPtr obj)
 {
-    if (!memory::memory_registry.belong(object_to_resource(obj))) throw argument_error("The object does not point to a stream", obj);
+    if (!memory::memory_registry.belong(object_to_resource(obj)))
+        throw argument_error("The object does not point to a stream", obj);
 }
 
 inline void assert_byte(ALObjectPtr obj)

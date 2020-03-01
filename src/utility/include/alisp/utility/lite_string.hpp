@@ -57,7 +57,10 @@ struct LiteString
         return true;
     }
 
-    bool operator==(const std::string &t_str) const noexcept { return std::equal(begin(), end(), std::cbegin(t_str), std::cend(t_str)); }
+    bool operator==(const std::string &t_str) const noexcept
+    {
+        return std::equal(begin(), end(), std::cbegin(t_str), std::cend(t_str));
+    }
 
     const size_t m_size;
     const char *data = nullptr;

@@ -735,8 +735,8 @@ TEST_CASE("Evaluator Test [predicates]", "[eval]")
         auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
         CHECK(is_truthy(res));
 
-        input =  "(pbyte 1232)" ;
-        res = eval.eval(pars.parse(input, "__TEST__")[0]);
+        input = "(pbyte 1232)";
+        res   = eval.eval(pars.parse(input, "__TEST__")[0]);
         CHECK(is_falsy(res));
     }
 
@@ -1044,7 +1044,10 @@ TEST_CASE("Evaluator Test [exception]", "[eval]")
     {
         std::cout.setstate(std::ios_base::failbit);
 
-        std::string input{ "(defun fun (a &optional b) (signal 'siggy (\"this is sick\"))) (fun 42 42 42)" };
+        std::string input{
+            "(defun fun (a &optional b) (signal 'siggy (\"this is sick\"))) "
+            "(fun 42 42 42)"
+        };
         auto par_res = pars.parse(input, "__TEST__");
 
         eval.eval(par_res[0]);

@@ -134,12 +134,16 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     ALObject() : m_data(0.0), m_type(ALObjectType::REAL_VALUE) {}
     ALObject(real_type value) : m_data(value), m_type(ALObjectType::REAL_VALUE) {}
     ALObject(int_type value) : m_data(value), m_type(ALObjectType::INT_VALUE) {}
-    ALObject(string_type value, bool symbol = false) : m_data(value), m_type(symbol ? ALObjectType::SYMBOL : ALObjectType::STRING_VALUE) {}
+    ALObject(string_type value, bool symbol = false)
+      : m_data(value), m_type(symbol ? ALObjectType::SYMBOL : ALObjectType::STRING_VALUE)
+    {
+    }
 
     ALObject(list_type value) : m_data(std::move(value)), m_type(ALObjectType::LIST) {}
 
     ALObject(view_type value) : m_data(std::move(value)), m_type(ALObjectType::LIST) { set_temp_flag(); }
-    ALObject(list_type::iterator value_1, list_type::iterator value_2) : m_data(view_type(value_1, value_2)), m_type(ALObjectType::LIST)
+    ALObject(list_type::iterator value_1, list_type::iterator value_2)
+      : m_data(view_type(value_1, value_2)), m_type(ALObjectType::LIST)
     {
         set_temp_flag();
     }
@@ -162,7 +166,8 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     {
         if (check_temp_flag()) { return std::get<view_type>(m_data).size(); }
 
-        return visit_or<list_type>([](const auto &vec) { return std::size(vec); }, []() { return list_type::size_type(0); });
+        return visit_or<list_type>([](const auto &vec) { return std::size(vec); },
+                                   []() { return list_type::size_type(0); });
     }
     auto size() const { return length(); }
 
@@ -229,8 +234,8 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         set_function_flag();
         set_prime_flag();
         m_prime = func;
-        // auto fn = reinterpret_cast<ALObjectPtr*>(reinterpret_cast<void *&>(func));
-        // std::get<list_type>(m_data).push_back(*fn);
+        // auto fn = reinterpret_cast<ALObjectPtr*>(reinterpret_cast<void
+        // *&>(func)); std::get<list_type>(m_data).push_back(*fn);
 
         if constexpr (USING_SHARED) { return shared_from_this(); }
         else
