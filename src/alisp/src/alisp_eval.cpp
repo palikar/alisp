@@ -200,6 +200,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
                 STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
                 auto a = apply_function(func, eval_ptr);
                 AL_DEBUG("Macro expansion: "s += dump(a));
+                // std::cout << dump(a) << "\n";
                 return eval(a);
             }
             else

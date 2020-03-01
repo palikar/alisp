@@ -105,18 +105,19 @@ static bool check_arg_list(ALObjectPtr t_list)
 static ALObjectPtr catch_case_lippincott(ALObjectPtr t_obj, env::Environment *env, eval::Evaluator *eval)
 {
 
-#define HANDLE                                                                                                      \
-    for (size_t i = 2; i < t_obj->size(); ++i)                                                                      \
-    {                                                                                                               \
-        auto handler = t_obj->i(i);                                                                                 \
-        auto sym     = eval->eval(handler->i(0));                                                                   \
-        if (sym->to_string().compare(p_exc.name()) == 0)                                                            \
-        {                                                                                                           \
-            env::detail::ScopePushPop cpp{ *env };                                                                  \
-            env->put(t_obj->i(0), make_object(make_int(static_cast<int>(p_exc.tag())), make_string(p_exc.what()))); \
-            return eval_list(eval, handler, 1);                                                                     \
-        }                                                                                                           \
-    }                                                                                                               \
+#define HANDLE                                                          \
+    for (size_t i = 2; i < t_obj->size(); ++i)                          \
+    {                                                                   \
+        auto handler = t_obj->i(i);                                     \
+        auto sym     = eval->eval(handler->i(0));                       \
+        if (sym->to_string().compare(p_exc.name()) == 0) {              \
+            if (t_obj->i(0) != Qnil) {                                  \
+                env::detail::ScopePushPop cpp{ *env };                  \
+                env->put(t_obj->i(0), make_object(make_int(static_cast<int>(p_exc.tag())), make_string(p_exc.what()))); \
+            }                                                           \
+            return eval_list(eval, handler, 1);                         \
+        }                                                               \
+    }                                                                   \
     throw
 
     try
@@ -139,8 +140,10 @@ static ALObjectPtr catch_case_lippincott(ALObjectPtr t_obj, env::Environment *en
             auto sym     = eval->eval(handler->i(0));
             if (sym->to_string().compare(p_exc.name()) == 0)
             {
-                env::detail::ScopePushPop cpp{ *env };
-                env->put(t_obj->i(0), p_exc.m_list);
+                if (t_obj->i(0) != Qnil) {
+                    env::detail::ScopePushPop cpp{ *env };
+                    env->put(t_obj->i(0), p_exc.m_list);
+                }
                 return eval_list(eval, handler, 1);
             }
         }

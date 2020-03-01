@@ -50,7 +50,7 @@ enum class SignalTag
 constexpr const char *signal_tag_to_string(SignalTag type)
 {
     constexpr const char *const names[] = { "unknown",       "parser",           "eval", "invalid_arguments", "env",
-                                            "module_import", "module_reference", "user", "illegal_name" };
+                                            "user", "module_import", "module_reference", "illegal_name" };
     return names[static_cast<int>(type)];
 }
 
