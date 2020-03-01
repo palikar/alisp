@@ -102,16 +102,22 @@ static bool check_arg_list(ALObjectPtr t_list)
     return true;
 }
 
-static ALObjectPtr catch_case_lippincott(ALObjectPtr t_obj, eval::Evaluator *eval)
+static ALObjectPtr catch_case_lippincott(ALObjectPtr t_obj, env::Environment *env, eval::Evaluator *eval)
 {
 
-#define HANDLE                                                                                   \
-    for (size_t i = 2; i < t_obj->size(); ++i)                                                   \
-    {                                                                                            \
-        auto handler = t_obj->i(i);                                                              \
-        auto sym     = eval->eval(handler->i(0));                                                \
-        if (sym->to_string().compare(p_exc.name()) == 0) { return eval_list(eval, handler, 1); } \
-    }                                                                                            \
+#define HANDLE                                                          \
+    for (size_t i = 2; i < t_obj->size(); ++i)                          \
+    {                                                                   \
+    auto handler = t_obj->i(i);                                         \
+    auto sym     = eval->eval(handler->i(0));                           \
+    if (sym->to_string().compare(p_exc.name()) == 0) {                  \
+        env::detail::ScopePushPop cpp{*env};                            \
+        env->put(t_obj->i(0),                                           \
+                 make_object(make_int(static_cast<int>(p_exc.tag())),   \
+                             make_string(p_exc.what())));               \
+        return eval_list(eval, handler, 1);                             \
+    }                                                                   \
+    }                                                                   \
     throw
 
     try
@@ -128,7 +134,17 @@ static ALObjectPtr catch_case_lippincott(ALObjectPtr t_obj, eval::Evaluator *eva
     }
     catch (signal_exception &p_exc)
     {
-        HANDLE;
+        for (size_t i = 2; i < t_obj->size(); ++i)
+        {
+            auto handler = t_obj->i(i);
+            auto sym     = eval->eval(handler->i(0));
+            if (sym->to_string().compare(p_exc.name()) == 0) {
+                env::detail::ScopePushPop cpp{*env};
+                env->put(t_obj->i(0), p_exc.m_list);
+                return eval_list(eval, handler, 1);
+            }
+        }
+        throw;
     }
     catch (argument_error &p_exc)
     {
@@ -736,7 +752,7 @@ ALObjectPtr Fsym_list(ALObjectPtr obj, env::Environment *env, eval::Evaluator *e
     return make_list(syms);
 }
 
-ALObjectPtr Fcondition_case(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcondition_case(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<2>(obj));
     AL_CHECK(assert_symbol(obj->i(0)));
@@ -750,7 +766,7 @@ ALObjectPtr Fcondition_case(ALObjectPtr obj, env::Environment *, eval::Evaluator
     }
     catch (...)
     {
-        return detail::catch_case_lippincott(obj, eval);
+        return detail::catch_case_lippincott(obj, env, eval);
     }
 
 
