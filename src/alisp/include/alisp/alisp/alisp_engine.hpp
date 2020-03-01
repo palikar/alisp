@@ -149,7 +149,7 @@ class LanguageEngine
 
         if (fs::is_directory(prelude_directory))
         {
-            AL_DEBUG("Loading directory: "s += detail::prelude_directory);
+            AL_DEBUG("Loading directory: "s += prelude_directory);
             for (auto &al_file : fs::directory_iterator(prelude_directory))
             {
                 AL_DEBUG("Loading file: "s += al_file.path().string());

@@ -341,6 +341,10 @@ Example:
 ```
 )");
 
+
+DEFUN(condition_case, "condition-case", R"((condition-case SYMBOL BODY [[HANDLERS]...])
+)");
+
 DEFUN(return, "return", R"((return [FROM])
 
 Return an optional value from a function. If `FROM` is given, it will

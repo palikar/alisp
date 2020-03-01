@@ -298,7 +298,7 @@ void Evaluator::eval_file(const std::string &t_file)
 
 void Evaluator::eval_string(std::string &t_eval)
 {
-    AL_DEBUG("Evaluating string: "s += t_file);
+    AL_DEBUG("Evaluating string: "s += t_eval);
 
     if (t_eval.empty())
     {

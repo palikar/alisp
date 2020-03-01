@@ -98,6 +98,62 @@ static bool check_arg_list(ALObjectPtr t_list)
     return true;
 }
 
+static ALObjectPtr catch_case_lippincott(ALObjectPtr t_obj, eval::Evaluator *eval)
+{
+
+#define HANDLE for (size_t i = 2; i < t_obj->size(); ++i) { \
+        auto handler = t_obj->i(i);                         \
+        auto sym = eval->eval(handler->i(0));               \
+        if (sym->to_string().compare(p_exc.name()) == 0) {  \
+            return eval_list(eval, handler, 1);             \
+        }                                                   \
+    }                                                       \
+    throw
+
+    try
+    {
+        throw;
+    }
+    catch (parse_exception &p_exc)
+    {}
+    catch (environment_error &p_exc)
+    {
+        HANDLE;
+    }
+    catch (eval_error &p_exc)
+    {
+        HANDLE;
+    }
+    catch (signal_exception &p_exc)
+    {
+        HANDLE;
+    }
+    catch (argument_error &p_exc)
+    {
+        HANDLE;
+    }
+    catch (module_error &p_exc)
+    {
+        HANDLE;
+    }
+    catch (module_refence_error &p_exc)
+    {
+        HANDLE;
+    }
+    catch (interrupt_error &p_exc)
+    {
+        HANDLE;
+    }
+    catch (...)
+    {
+        throw;
+    }
+
+#undef HANDLE
+
+    return Qt;
+}
+
 }  // namespace detail
 
 ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
@@ -486,7 +542,7 @@ ALObjectPtr Fsignal(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     auto data = evl->eval(obj->i(1));
 
     AL_CHECK(assert_symbol(sym));
-    AL_CHECK(assert_list(sym));
+    AL_CHECK(assert_list(data));
 
     throw signal_exception(sym, data);
 
@@ -599,7 +655,6 @@ ALObjectPtr Fassert(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     return Qt;
 }
 
-
 ALObjectPtr Fassert_not(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
@@ -612,7 +667,6 @@ ALObjectPtr Fassert_not(ALObjectPtr obj, env::Environment *, eval::Evaluator *ev
     }
     return Qt;
 }
-
 
 ALObjectPtr Feq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
@@ -676,6 +730,22 @@ ALObjectPtr Fsym_list(ALObjectPtr obj, env::Environment *env, eval::Evaluator *e
     for (auto &[sym, _] : env::Environment::g_global_symbol_table) { syms.push_back(env::intern(sym)); }
 
     return make_list(syms);
+}
+
+ALObjectPtr Fcondition_case(ALObjectPtr obj, env::Environment*, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_min_size<2>(obj));
+    AL_CHECK(assert_symbol(obj->i(0)));
+
+    try {
+        auto body = eval->eval(obj->i(1));
+        return body;
+    } catch (...) {
+        return detail::catch_case_lippincott(obj, eval);
+    }
+
+
+    return Qnil;
 }
 
 

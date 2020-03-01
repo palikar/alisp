@@ -51,7 +51,7 @@ ALObjectPtr FileHelpers::put_file(std::string t_path, std::fstream &&t_stream, b
     new_obj->set_prop("file-output", t_output ? Qt : Qnil);
     new_obj->set_prop("file-input", t_input ? Qt : Qnil);
 
-    AL_DEBUG("Putting a new file: "s += t_path.string());
+    AL_DEBUG("Putting a new file: "s += t_path);
 
     return new_obj;
 }

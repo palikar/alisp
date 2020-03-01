@@ -22,6 +22,7 @@
 #include <rang.hpp>
 
 #include "alisp/alisp/alisp_common.hpp"
+#include "alisp/alisp/alisp_factory.hpp"
 
 #include "alisp/utility.hpp"
 
@@ -65,7 +66,6 @@ struct al_exception : public std::runtime_error
 {
     al_exception(std::string what, SignalTag tag) : runtime_error(what), m_tag(tag) {}
 
-
     SignalTag tag() const { return m_tag; }
     const std::string &name() const { return m_signal_name; }
 
@@ -83,10 +83,11 @@ struct signal_exception : public al_exception
         m_signal_name = m_sym->to_string();
     }
 
-  private:
+  
     ALObjectPtr m_sym;
     ALObjectPtr m_list;
 
+  private:
     static std::string format(ALObjectPtr sym, ALObjectPtr list)
     {
         std::ostringstream ss;
@@ -113,8 +114,7 @@ struct parse_exception : public al_exception
         const static int LINE_CONTEXT = 1;
         std::ostringstream ss;
 
-        ss << "\t"
-           << "In file \'" << t_where.file << '\'' << ": "
+        ss << "In file \'" << t_where.file << '\'' << ": "
            << "line: " << t_where.line << ", col: " << t_where.col << '\n';
         ss << "\t" << t_why << "\n";
 
@@ -125,8 +125,10 @@ struct parse_exception : public al_exception
                            ? static_cast<int>(std::size(lines))
                            : static_cast<int>(std::size(lines)) + LINE_CONTEXT;
 
+        
         for (auto i = static_cast<size_t>(start_index); i < static_cast<size_t>(end_index); ++i)
         {
+            if (end_index > 10 && i < 10) { ss << " "; }
             ss << "\t" << i << " |"
                << "\t" << lines[i] << "\n";
         }
@@ -345,5 +347,11 @@ template<bool should_exit = false> void handle_errors_lippincott()
 
     if constexpr (should_exit) { exit(1); }
 }
+
+template<typename... T> void signal(ALObjectPtr t_sym, T... t_data)
+{
+    throw signal_exception(t_sym, make_object(t_data...));
+}
+
 
 }  // namespace alisp
