@@ -649,7 +649,7 @@ ALObjectPtr Fassert(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
     if (is_falsy(val))
     {
-        throw signal_exception(env::intern("assert"),
+        throw signal_exception(env::intern("assert-signal"),
                                make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
     }
     return Qt;
