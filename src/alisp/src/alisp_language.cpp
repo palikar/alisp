@@ -48,7 +48,6 @@ static ALObjectPtr handle_backquote_list(ALObjectPtr obj, eval::Evaluator *eval)
 
     ALObject::list_type new_elements;
 
-
     for (auto el : *obj)
     {
 
@@ -102,23 +101,32 @@ static bool check_arg_list(ALObjectPtr t_list)
     return true;
 }
 
-static ALObjectPtr catch_case_lippincott(ALObjectPtr t_obj, env::Environment *env, eval::Evaluator *eval)
+template<typename EXC>
+static ALObjectPtr handle_exception(EXC p_exc, ALObjectPtr t_obj, env::Environment *env, eval::Evaluator *eval)
 {
 
-#define HANDLE                                                          \
-    for (size_t i = 2; i < t_obj->size(); ++i)                          \
-    {                                                                   \
-        auto handler = t_obj->i(i);                                     \
-        auto sym     = eval->eval(handler->i(0));                       \
-        if (sym->to_string().compare(p_exc.name()) == 0) {              \
-            if (t_obj->i(0) != Qnil) {                                  \
-                env::detail::ScopePushPop cpp{ *env };                  \
-                env->put(t_obj->i(0), make_object(make_int(static_cast<int>(p_exc.tag())), make_string(p_exc.what()))); \
-            }                                                           \
-            return eval_list(eval, handler, 1);                         \
-        }                                                               \
-    }                                                                   \
-    throw
+    for (size_t i = 2; i < t_obj->size(); ++i)
+    {
+        auto handler = t_obj->i(i);
+        auto sym     = eval->eval(handler->i(0));
+        AL_CHECK(assert_symbol(sym));
+        AL_CHECK(assert_min_size<1>(handler));
+        if (sym->to_string().compare(p_exc.name()) == 0)
+        {
+            if (t_obj->i(0) != Qnil)
+            {
+                env::detail::ScopePushPop cpp{ *env };
+                env->put(t_obj->i(0), make_object(make_int(static_cast<int>(p_exc.tag())), make_string(p_exc.what())));
+            }
+            return eval_list(eval, handler, 1);
+        }
+    }
+    throw;
+    return nullptr;
+}
+
+static ALObjectPtr catch_case_lippincott(ALObjectPtr t_obj, env::Environment *env, eval::Evaluator *eval)
+{
 
     try
     {
@@ -126,11 +134,11 @@ static ALObjectPtr catch_case_lippincott(ALObjectPtr t_obj, env::Environment *en
     }
     catch (environment_error &p_exc)
     {
-        HANDLE;
+        return handle_exception(p_exc, t_obj, env, eval);
     }
     catch (eval_error &p_exc)
     {
-        HANDLE;
+        return handle_exception(p_exc, t_obj, env, eval);
     }
     catch (signal_exception &p_exc)
     {
@@ -138,9 +146,12 @@ static ALObjectPtr catch_case_lippincott(ALObjectPtr t_obj, env::Environment *en
         {
             auto handler = t_obj->i(i);
             auto sym     = eval->eval(handler->i(0));
+            AL_CHECK(assert_symbol(sym));
+            AL_CHECK(assert_min_size<1>(handler));
             if (sym->to_string().compare(p_exc.name()) == 0)
             {
-                if (t_obj->i(0) != Qnil) {
+                if (t_obj->i(0) != Qnil)
+                {
                     env::detail::ScopePushPop cpp{ *env };
                     env->put(t_obj->i(0), p_exc.m_list);
                 }
@@ -151,26 +162,24 @@ static ALObjectPtr catch_case_lippincott(ALObjectPtr t_obj, env::Environment *en
     }
     catch (argument_error &p_exc)
     {
-        HANDLE;
+        return handle_exception(p_exc, t_obj, env, eval);
     }
     catch (module_error &p_exc)
     {
-        HANDLE;
+        return handle_exception(p_exc, t_obj, env, eval);
     }
     catch (module_refence_error &p_exc)
     {
-        HANDLE;
+        return handle_exception(p_exc, t_obj, env, eval);
     }
     catch (interrupt_error &p_exc)
     {
-        HANDLE;
+        return handle_exception(p_exc, t_obj, env, eval);
     }
     catch (...)
     {
         throw;
     }
-
-#undef HANDLE
 
     return Qt;
 }
