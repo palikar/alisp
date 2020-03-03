@@ -522,11 +522,12 @@ ALObjectPtr Fdump_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
 
     assert_string(file);
 
-    if (!fs::exists(file->to_string())) { return Qnil; }
-    if (!fs::is_regular_file(file->to_string())) { return Qnil; }
+    // if (!fs::exists(file->to_string())) { return Qnil; }
+    // if (!fs::is_regular_file(file->to_string())) { return Qnil; }
 
     std::ofstream outfile;
     outfile.open(file->to_string(), std::ios_base::out);
+    if (outfile.is_open()) { return Qnil; }
     outfile << detail::dump(js);
 
     return Qt;
