@@ -163,6 +163,13 @@ DEFUN(eval, "eval", R"((eval FORM)
 Evaluate the form `FORM`. The usual form for evaluation apply.
 )");
 
+
+DEFUN(eval_file, "eval-file", R"((eval-file STRING)
+)");
+
+DEFUN(eval_string, "eval-string", R"((eval-string STRING)
+)");
+
 DEFUN(setq, "setq", R"((setq SYMBOL VALUE [[SYMBOL VALUE] ... ])
 
 Set the value of the variable pointed by `SYMBOL` to

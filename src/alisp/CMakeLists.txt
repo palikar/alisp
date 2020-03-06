@@ -66,6 +66,7 @@ endif(DISABLE_RUN_TIME_CHECKS)
 
 
 add_library(alisp_language
+    
     src/alisp_parser.cpp
     src/alisp_env.cpp
     src/alisp_eval.cpp
@@ -78,6 +79,7 @@ add_library(alisp_language
     src/alisp_warnings.cpp
     src/alisp_loadable_modules.cpp
 
+    src/alisp_eval_functions.cpp
     src/alisp_stream_functions.cpp
     src/alisp_file_functions.cpp
     src/alisp_language.cpp

@@ -32,6 +32,7 @@
 namespace alisp
 {
 
+
 ALObjectPtr Fprint(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(t_obj));
