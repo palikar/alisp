@@ -160,6 +160,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         if (check_temp_flag()) { return std::get<view_type>(m_data)[index]; }
         return children()[index];
     }
+    
     ALObjectPtr operator[](const size_t index) { return i(index); }
 
     auto length() const noexcept
@@ -169,6 +170,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         return visit_or<list_type>([](const auto &vec) { return std::size(vec); },
                                    []() { return list_type::size_type(0); });
     }
+    
     auto size() const { return length(); }
 
     list_type &children()
@@ -177,6 +179,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         if (check_temp_flag()) throw alobject_error("Accesing the children elements of a temporary object.");
         return std::get<list_type>(m_data);
     }
+    
     const list_type &children() const
     {
         check<list_type>();
@@ -189,6 +192,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         check<string_type>();
         return std::get<std::string>(m_data);
     }
+    
     const string_type &to_string() const
     {
         check<string_type>();
@@ -202,6 +206,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         throw alobject_error("Not a number object.");
         return 0.0;
     }
+    
     int_type to_int() const
     {
         check<int_type>();
@@ -213,35 +218,30 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         check<int_type>();
         m_data = val;
     }
+    
     void set(real_type val)
     {
         check<real_type>();
         m_data = val;
     }
+    
     void set(string_type val)
     {
         check<string_type>();
         m_data = std::move(val);
     }
+    
     void add(ALObjectPtr new_child) { children().push_back(new_child); }
 
     data_type &data() { return m_data; }
 
     auto get_prime() { return m_prime; }
 
-    auto make_prime(Prim::func_type func)
+    void make_prime(Prim::func_type func)
     {
         set_function_flag();
         set_prime_flag();
         m_prime = func;
-        // auto fn = reinterpret_cast<ALObjectPtr*>(reinterpret_cast<void
-        // *&>(func)); std::get<list_type>(m_data).push_back(*fn);
-
-        if constexpr (USING_SHARED) { return shared_from_this(); }
-        else
-        {
-            return this;
-        }
     }
 
     auto get_function() { return std::pair(i(0), i(1)); }
@@ -374,12 +374,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     std::uint_fast32_t m_flags = 0;
     std::unordered_map<std::string, ALObjectPtr> m_props;
 
-
-#ifdef USE_MANUAL_MEMORY
-    ALObjectPtr shared_from_this() { return this; }
-#endif
 };
-
 
 inline std::ostream &operator<<(std::ostream &os, const ALObject &t_obj)
 {
