@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
         std::cout << alisp::get_build_info();
         return 0;
     }
-
+    
     alisp::logging::init_logging(opts.debug_logging);
 
     // std::cout << "File:" << opts.input << "\n";
@@ -225,7 +225,6 @@ int main(int argc, char *argv[])
 
         return 0;
     }
-
 
     if (!opts.eval.empty())
     {

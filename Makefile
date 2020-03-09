@@ -1,14 +1,11 @@
 BUILD_DEBUG_DIR?=build
 
-
 generate_builds:
 	bash generate_builds.sh ./configs_builds.txt
 
 performance_builds:
 	bash generate_builds.sh ./timing_builds.txt
 	python ./plot_performance.py ./
-
-
 
 plain_build:
 	mkdir -p $(BUILD_DEBUG_DIR)
@@ -19,7 +16,6 @@ plain_build:
 build:
 	@make -j8 -C $(BUILD_DEBUG_DIR)
 
-
 count_line:
 	@cloc CMakeLists.txt ./src ./scripts/ --force-lang=lisp,al | sed -e 's/Lisp /ALisp/'
 
@@ -27,6 +23,8 @@ format_project:
 	@echo "Fromating the source directory..."
 	@find ./src/ -iname *.hpp -o -iname *.cpp | xargs clang-format -i -style=file
 
+repo_stats:
+	@gitstats ./ ./stats
 
 doc_debug:
 	@mkdocs serve
@@ -35,6 +33,7 @@ doc_gen:
 	@mkdocs build
 
 clean:
-	rm -rf build_*	
+	@rm -rf build_*	
 	@rm -rf site
+	@rm -ff stats
 
