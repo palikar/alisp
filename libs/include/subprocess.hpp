@@ -536,8 +536,9 @@ namespace util
  * Default value is 0.
  */
 struct bufsize {
-  bufsize(int siz): bufsiz(siz) {}
-  int  bufsiz = 0;
+    bufsize() {}
+    bufsize(int siz): bufsiz(siz) {}
+    int  bufsiz = 0;
 };
 
 /*!
@@ -546,8 +547,9 @@ struct bufsize {
  * Default value is false.
  */
 struct defer_spawn {
-  defer_spawn(bool d): defer(d) {}
-  bool defer  = false;
+    defer_spawn() {};
+    defer_spawn(bool d): defer(d) {}
+    bool defer  = false;
 };
 
 /*!
@@ -560,8 +562,9 @@ struct defer_spawn {
  * Default value is false.
  */
 struct close_fds {
-  close_fds(bool c): close_all(c) {}
-  bool close_all = false;
+    close_fds() {}
+    close_fds(bool c): close_all(c) {}
+    bool close_all = false;
 };
 
 /*!
@@ -571,13 +574,15 @@ struct close_fds {
  * Default value is false.
  */
 struct session_leader {
-  session_leader(bool sl): leader_(sl) {}
-  bool leader_ = false;
+    session_leader() {}
+    session_leader(bool sl): leader_(sl) {}
+    bool leader_ = false;
 };
 
 struct shell {
-  shell(bool s): shell_(s) {}
-  bool shell_ = false;
+    shell() {}
+    shell(bool s): shell_(s) {}
+    bool shell_ = false;
 };
 
 /*!
@@ -585,10 +590,11 @@ struct shell {
  */
 struct string_arg
 {
-  string_arg(const char* arg): arg_value(arg) {}
-  string_arg(std::string&& arg): arg_value(std::move(arg)) {}
-  string_arg(std::string arg): arg_value(std::move(arg)) {}
-  std::string arg_value;
+    string_arg(){}
+    string_arg(const char* arg): arg_value(arg) {}
+    string_arg(std::string&& arg): arg_value(std::move(arg)) {}
+    string_arg(std::string arg): arg_value(std::move(arg)) {}
+    std::string arg_value;
 };
 
 /*!
@@ -601,8 +607,9 @@ struct string_arg
  */
 struct executable: string_arg
 {
-  template <typename T>
-  executable(T&& arg): string_arg(std::forward<T>(arg)) {}
+    executable(){}
+    template <typename T>
+    executable(T&& arg): string_arg(std::forward<T>(arg)) {}
 };
 
 /*!
@@ -613,8 +620,9 @@ struct executable: string_arg
  */
 struct cwd: string_arg
 {
-  template <typename T>
-  cwd(T&& arg): string_arg(std::forward<T>(arg)) {}
+    cwd(){}
+    template <typename T>
+    cwd(T&& arg): string_arg(std::forward<T>(arg)) {}
 };
 
 /*!
@@ -625,11 +633,12 @@ struct cwd: string_arg
  */
 struct environment
 {
-  environment(std::map<std::string, std::string>&& env):
-    env_(std::move(env)) {}
-  environment(const std::map<std::string, std::string>& env):
-    env_(env) {}
-  std::map<std::string, std::string> env_;
+    environment(){}
+    environment(std::map<std::string, std::string>&& env):
+        env_(std::move(env)) {}
+    environment(const std::map<std::string, std::string>& env):
+        env_(env) {}
+    std::map<std::string, std::string> env_;
 };
 
 
@@ -657,19 +666,20 @@ enum IOTYPE {
  */
 struct input
 {
-  // For an already existing file descriptor.
-  input(int fd): rd_ch_(fd) {}
+    input(){}
+    // For an already existing file descriptor.
+    input(int fd): rd_ch_(fd) {}
 
-  // FILE pointer.
-  input (FILE* fp):input(fileno(fp)) { assert(fp); }
+    // FILE pointer.
+    input (FILE* fp):input(fileno(fp)) { assert(fp); }
 
-  input(const char* filename) {
-    int fd = open(filename, O_RDONLY);
-    if (fd == -1) throw OSError("File not found: ", errno);
-    rd_ch_ = fd;
-  }
-  input(IOTYPE typ) {
-    assert (typ == PIPE && "STDOUT/STDERR not allowed");
+    input(const char* filename) {
+        int fd = open(filename, O_RDONLY);
+        if (fd == -1) throw OSError("File not found: ", errno);
+        rd_ch_ = fd;
+    }
+    input(IOTYPE typ) {
+        assert (typ == PIPE && "STDOUT/STDERR not allowed");
 #ifndef _MSC_VER    
     std::tie(rd_ch_, wr_ch_) = util::pipe_cloexec();
 #endif
@@ -692,23 +702,24 @@ struct input
  */
 struct output
 {
-  output(int fd): wr_ch_(fd) {}
+    output(){}
+    output(int fd): wr_ch_(fd) {}
 
-  output (FILE* fp):output(fileno(fp)) { assert(fp); }
+    output (FILE* fp):output(fileno(fp)) { assert(fp); }
 
-  output(const char* filename) {
-    int fd = open(filename, O_APPEND | O_CREAT | O_RDWR, 0640);
-    if (fd == -1) throw OSError("File not found: ", errno);
-    wr_ch_ = fd;
-  }
-  output(IOTYPE typ) {
-    assert (typ == PIPE && "STDOUT/STDERR not allowed");
+    output(const char* filename) {
+        int fd = open(filename, O_APPEND | O_CREAT | O_RDWR, 0640);
+        if (fd == -1) throw OSError("File not found: ", errno);
+        wr_ch_ = fd;
+    }
+    output(IOTYPE typ) {
+        assert (typ == PIPE && "STDOUT/STDERR not allowed");
 #ifndef _MSC_VER
-    std::tie(rd_ch_, wr_ch_) = util::pipe_cloexec();
+        std::tie(rd_ch_, wr_ch_) = util::pipe_cloexec();
 #endif
-  }
+    }
 
-  int rd_ch_ = -1;
+    int rd_ch_ = -1;
   int wr_ch_ = -1;
 };
 
@@ -723,28 +734,30 @@ struct output
  */
 struct error
 {
-  error(int fd): wr_ch_(fd) {}
+    error(){}
+    
+    error(int fd): wr_ch_(fd) {}
 
-  error(FILE* fp):error(fileno(fp)) { assert(fp); }
+    error(FILE* fp):error(fileno(fp)) { assert(fp); }
 
-  error(const char* filename) {
-    int fd = open(filename, O_APPEND | O_CREAT | O_RDWR, 0640);
-    if (fd == -1) throw OSError("File not found: ", errno);
-    wr_ch_ = fd;
-  }
-  error(IOTYPE typ) {
-    assert ((typ == PIPE || typ == STDOUT) && "STDERR not aloowed");
-    if (typ == PIPE) {
-#ifndef _MSC_VER
-      std::tie(rd_ch_, wr_ch_) = util::pipe_cloexec();
-#endif
-    } else {
-      // Need to defer it till we have checked all arguments
-      deferred_ = true;
+    error(const char* filename) {
+        int fd = open(filename, O_APPEND | O_CREAT | O_RDWR, 0640);
+        if (fd == -1) throw OSError("File not found: ", errno);
+        wr_ch_ = fd;
     }
-  }
+    error(IOTYPE typ) {
+        assert ((typ == PIPE || typ == STDOUT) && "STDERR not aloowed");
+        if (typ == PIPE) {
+#ifndef _MSC_VER
+            std::tie(rd_ch_, wr_ch_) = util::pipe_cloexec();
+#endif
+        } else {
+            // Need to defer it till we have checked all arguments
+            deferred_ = true;
+        }
+    }
 
-  bool deferred_ = false;
+    bool deferred_ = false;
   int rd_ch_ = -1;
   int wr_ch_ = -1;
 };
@@ -761,23 +774,23 @@ struct error
 class preexec_func
 {
 public:
-  preexec_func() {}
+    preexec_func() {}
+    
+    template <typename Func>
+    preexec_func(Func f): holder_(new FuncHolder<Func>(std::move(f)))
+    {}
 
-  template <typename Func>
-  preexec_func(Func f): holder_(new FuncHolder<Func>(std::move(f)))
-  {}
-
-  void operator()() {
-    (*holder_)();
-  }
+    void operator()() {
+        (*holder_)();
+    }
 
 private:
-  struct HolderBase {
-    virtual void operator()() const = 0;
-    virtual ~HolderBase(){};
-  };
-  template <typename T>
-  struct FuncHolder: HolderBase {
+    struct HolderBase {
+        virtual void operator()() const = 0;
+        virtual ~HolderBase(){};
+    };
+    template <typename T>
+    struct FuncHolder: HolderBase {
     FuncHolder(T func): func_(std::move(func)) {}
     void operator()() const override { func_(); }
     // The function pointer/reference
@@ -895,8 +908,8 @@ struct ArgumentDeducer
   void set_option(output&& out);
   void set_option(error&& err);
   void set_option(close_fds&& cfds);
-  void set_option(preexec_func&& prefunc);
-  void set_option(session_leader&& sleader);
+  
+    void set_option(session_leader&& sleader);
 
 private:
   Popen* popen_ = nullptr;
@@ -936,19 +949,19 @@ class Streams;
 class Communication
 {
 public:
-  Communication(Streams* stream): stream_(stream)
-  {}
-  void operator=(const Communication&) = delete;
-public:
-  int send(const char* msg, size_t length);
-  int send(const std::vector<char>& msg);
+    explicit Communication(Streams* stream): stream_(stream)
+    {}
+    Communication& operator=(const Communication&) = default;
+  public:
+    int send(const char* msg, size_t length);
+    int send(const std::vector<char>& msg);
 
-  std::pair<OutBuffer, ErrBuffer> communicate(const char* msg, size_t length);
-  std::pair<OutBuffer, ErrBuffer> communicate(const std::vector<char>& msg)
-  { return communicate(msg.data(), msg.size()); }
+    std::pair<OutBuffer, ErrBuffer> communicate(const char* msg, size_t length);
+    std::pair<OutBuffer, ErrBuffer> communicate(const std::vector<char>& msg)
+    { return communicate(msg.data(), msg.size()); }
 
-  void set_out_buf_cap(size_t cap) { out_buf_cap_ = cap; }
-  void set_err_buf_cap(size_t cap) { err_buf_cap_ = cap; }
+    void set_out_buf_cap(size_t cap) { out_buf_cap_ = cap; }
+    void set_err_buf_cap(size_t cap) { err_buf_cap_ = cap; }
 
 private:
   std::pair<OutBuffer, ErrBuffer> communicate_threaded(
@@ -975,12 +988,12 @@ class Streams
 {
 public:
   Streams():comm_(this) {}
-  void operator=(const Streams&) = delete;
+  Streams& operator=(const Streams&) = default;
 
-public:
-  void setup_comm_channels();
+  public:
+    void setup_comm_channels();
 
-  void cleanup_fds()
+    void cleanup_fds()
   {
     if (write_to_child_ != -1 && read_from_parent_ != -1) {
       close(write_to_child_);
@@ -1141,67 +1154,74 @@ public:
 
     if (!defer_process_start_) execute_process();
   }
+    Popen()
+    {}
+
+    Popen(const Popen&) = default;
+    Popen& operator=(const Popen&) = default;
+    Popen& operator=(Popen&&) = default;
+    
 
 /*
   ~Popen()
   {
-#ifdef _MSC_VER
-    CloseHandle(this->process_handle_);
-#endif
+  #ifdef _MSC_VER
+  CloseHandle(this->process_handle_);
+  #endif
   }
 */
 
-  void start_process() noexcept(false);
+    void start_process() noexcept(false);
 
-  int pid() const noexcept { return child_pid_; }
+    int pid() const noexcept { return child_pid_; }
 
-  int retcode() const noexcept { return retcode_; }
+    int retcode() const noexcept { return retcode_; }
 
-  int wait() noexcept(false);
+    int wait() noexcept(false);
 
-  int poll() noexcept(false);
+    int poll() noexcept(false);
 
-  // Does not fail, Caller is expected to recheck the
-  // status with a call to poll()
-  void kill(int sig_num = 9);
+    // Does not fail, Caller is expected to recheck the
+    // status with a call to poll()
+    void kill(int sig_num = 9);
 
-  void set_out_buf_cap(size_t cap) { stream_.set_out_buf_cap(cap); }
+    void set_out_buf_cap(size_t cap) { stream_.set_out_buf_cap(cap); }
 
-  void set_err_buf_cap(size_t cap) { stream_.set_err_buf_cap(cap); }
+    void set_err_buf_cap(size_t cap) { stream_.set_err_buf_cap(cap); }
 
-  int send(const char* msg, size_t length)
-  { return stream_.send(msg, length); }
+    int send(const char* msg, size_t length)
+    { return stream_.send(msg, length); }
 
-  int send(const std::vector<char>& msg)
-  { return stream_.send(msg); }
+    int send(const std::vector<char>& msg)
+    { return stream_.send(msg); }
 
-  std::pair<OutBuffer, ErrBuffer> communicate(const char* msg, size_t length)
-  {
-    auto res = stream_.communicate(msg, length);
-    retcode_ = wait();
-    return res;
-  }
+    std::pair<OutBuffer, ErrBuffer> communicate(const char* msg, size_t length)
+    {
+        auto res = stream_.communicate(msg, length);
+        retcode_ = wait();
+        return res;
+    }
 
-  std::pair<OutBuffer, ErrBuffer> communicate(const std::vector<char>& msg)
-  {
-    auto res = stream_.communicate(msg);
-    retcode_ = wait();
-    return res;
-  }
+    std::pair<OutBuffer, ErrBuffer> communicate(const std::vector<char>& msg)
+    {
+        auto res = stream_.communicate(msg);
+        retcode_ = wait();
+        return res;
+    }
 
-  std::pair<OutBuffer, ErrBuffer> communicate()
-  {
-    return communicate(nullptr, 0);
-  }
+    std::pair<OutBuffer, ErrBuffer> communicate()
+    {
+        return communicate(nullptr, 0);
+    }
 
-  FILE* input()  { return stream_.input(); }
-  FILE* output() { return stream_.output();}
-  FILE* error()  { return stream_.error(); }
+    FILE* input()  { return stream_.input(); }
+    FILE* output() { return stream_.output();}
+    FILE* error()  { return stream_.error(); }
 
-  /// Stream close APIs
-  void close_input()  { stream_.input_.reset();  }
-  void close_output() { stream_.output_.reset(); }
-  void close_error()  { stream_.error_.reset();  }
+    /// Stream close APIs
+    void close_input()  { stream_.input_.reset();  }
+    void close_output() { stream_.output_.reset(); }
+    void close_error()  { stream_.error_.reset();  }
 
 private:
   template <typename F, typename... Args>
@@ -1219,18 +1239,15 @@ private:
 
   bool defer_process_start_ = false;
   bool close_fds_ = false;
-  bool has_preexec_fn_ = false;
   bool shell_ = false;
   bool session_leader_ = false;
 
   std::string exe_name_;
   std::string cwd_;
   std::map<std::string, std::string> env_;
-  preexec_func preexec_fn_;
-
-  // Command in string format
+    // Command in string format
   std::string args_;
-  // Comamnd provided as sequence
+    // Comamnd provided as sequence
   std::vector<std::string> vargs_;
   std::vector<char*> cargv_;
 
@@ -1573,10 +1590,7 @@ namespace detail {
     popen_->close_fds_ = cfds.close_all;
   }
 
-  inline void ArgumentDeducer::set_option(preexec_func&& prefunc) {
-    popen_->preexec_fn_ = std::move(prefunc);
-    popen_->has_preexec_fn_ = true;
-  }
+  
 
 
   inline void Child::execute_child() {
@@ -1641,12 +1655,8 @@ namespace detail {
         if (sys_ret == -1) throw OSError("chdir failed", errno);
       }
 
-      if (parent_->has_preexec_fn_) {
-        parent_->preexec_fn_();
-      }
-
       if (parent_->session_leader_) {
-        sys_ret = setsid();
+          sys_ret = setsid();
         if (sys_ret == -1) throw OSError("setsid failed", errno);
       }
 
