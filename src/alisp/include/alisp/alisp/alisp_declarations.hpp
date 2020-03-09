@@ -990,6 +990,11 @@ Example:
 ```
 )");
 
+DEFUN(bit_or, "or*", R"()");
+DEFUN(bit_and, "and*", R"()");
+DEFUN(bit_xor, "xor*", R"()");
+DEFUN(bit_inv, "inv*", R"()");
+
 DEFUN(leftshift, "<<", R"((<< VALUE1 VALUE2)
 
 Shift the bits of `VALUE` to the left `VALUE2` times.
