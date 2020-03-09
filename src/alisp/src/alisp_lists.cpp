@@ -284,6 +284,8 @@ ALObjectPtr Frange(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
         return static_cast<ALObject::int_type>(1);
     }();
 
+    if (step == 0) { return Qnil; }
+
     ALObject::list_type nums;
     for (auto i = start->to_int(); i < end->to_int(); i += step) { nums.push_back(make_int(i)); }
 
