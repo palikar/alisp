@@ -86,6 +86,7 @@ add_library(alisp_language
     src/alisp_lists.cpp
     src/alisp_logic.cpp
     src/alisp_math.cpp
+    src/alisp_bits.cpp
     src/alisp_predicates.cpp
     src/alisp_printing.cpp
     src/alisp_algorithms.cpp

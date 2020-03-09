@@ -187,7 +187,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
             if (func->check_prime_flag())
             {
-
+                
                 STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
 
                 return func->get_prime()(eval_ptr, &env, this);

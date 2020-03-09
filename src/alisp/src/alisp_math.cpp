@@ -120,26 +120,6 @@ ALObjectPtr Fdev(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     return Qnil;
 }
 
-ALObjectPtr Fleftshift(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
-{
-    AL_CHECK(assert_size<2>(obj));
-    auto lhs = evl->eval(obj->i(0));
-    auto rhs = evl->eval(obj->i(1));
-    AL_CHECK(assert_int(rhs));
-    AL_CHECK(assert_int(lhs));
-    return make_int(SHIFT_LEFT(lhs, rhs));
-}
-
-ALObjectPtr Frightshift(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
-{
-    AL_CHECK(assert_size<2>(obj));
-    auto lhs = evl->eval(obj->i(0));
-    auto rhs = evl->eval(obj->i(1));
-    AL_CHECK(assert_int(rhs));
-    AL_CHECK(assert_int(lhs));
-    return make_int(SHIFT_RIGHT(lhs, rhs));
-}
-
 ALObjectPtr Flt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<2>(obj));
