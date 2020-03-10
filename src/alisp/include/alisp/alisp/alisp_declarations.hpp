@@ -1043,6 +1043,9 @@ Example:
 /* |____/ \__|_|  |_|_| |_|\__, |___/ */
 /*                         |___/      */
 
+DEFUN(string_append, "string-append", R"((string-append STRING1 STRING2))");
+DEFUN(string_prepend, "string-prepend", R"((string-prepend STRING1 STRING2))");
+
 DEFUN(string_equals, "string-equals", R"((string-equals STRING1 STRING2)
 
 Return `t` if the proviced strings equal lexicographically. Return `nil` otherwise.
