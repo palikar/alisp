@@ -501,7 +501,6 @@ template<class Environment> class ALParser : public ParserBase
             {
 
                 is_escaped = false;
-
                 if (is_octal_char)
                 {
                     is_octal = true;

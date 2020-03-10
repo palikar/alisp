@@ -40,17 +40,30 @@ ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     auto fun_obj = eval->eval(obj->i(0));
     auto list    = eval->eval(obj->i(1));
 
+    AL_CHECK(assert_function(fun_obj));
 
-    for (auto &el : list->children())
-    {
-        if (psym(el) or plist(el)) { eval->handle_lambda(fun_obj, make_list(quote(el))); }
-        else
+    if (plist(list)) {
+        for (auto &el : list->children())
         {
-            eval->handle_lambda(fun_obj, make_list(el));
+            if (psym(el) or plist(el)) { eval->handle_lambda(fun_obj, make_list(quote(el))); }
+            else
+            {
+                eval->handle_lambda(fun_obj, make_list(el));
+            }
         }
-    }
+        return Qt;
 
-    return Qt;
+    } else if (pstring(list)){
+
+        for (auto &el : list->to_string())
+        {
+            eval->handle_lambda(fun_obj, make_list(make_char(el)));
+        }
+        return Qt;
+    }
+    
+    
+    return Qnil;
 }
 
 ALObjectPtr Fmapcar(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
@@ -151,9 +164,14 @@ ALObjectPtr Fnth(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
-    AL_CHECK(assert_list(list));
     auto index = eval->eval(obj->i(1));
     AL_CHECK(assert_int(index));
+
+    if (pstring(list)) {
+        return make_char(list->to_string()[static_cast<size_t>(index->to_int())]);
+    }
+
+    AL_CHECK(assert_list(list));
 
     if (static_cast<ALObject::list_type::size_type>(index->to_int()) >= std::size(list->children()))
     { throw std::runtime_error("Index out of bound!"); }
