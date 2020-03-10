@@ -474,40 +474,40 @@ struct NameValidator
     {
         switch (hash::hash(t_s))
         {
-        case hash::hash("print"):
-        case hash::hash("println"):
+            case hash::hash("print"):
+            case hash::hash("println"):
 
-        case hash::hash("import"):
-        case hash::hash("modref"):
-        case hash::hash("defun"):
-        case hash::hash("defvar"):
-        case hash::hash("defconst"):
-        case hash::hash("defmacro"):
-        case hash::hash("set"):
-        case hash::hash("setq"):
-        case hash::hash("lambda"):
-        case hash::hash("function"):
-        case hash::hash("funcall"):
+            case hash::hash("import"):
+            case hash::hash("modref"):
+            case hash::hash("defun"):
+            case hash::hash("defvar"):
+            case hash::hash("defconst"):
+            case hash::hash("defmacro"):
+            case hash::hash("set"):
+            case hash::hash("setq"):
+            case hash::hash("lambda"):
+            case hash::hash("function"):
+            case hash::hash("funcall"):
 
-        case hash::hash("quote"):
-        case hash::hash("if"):
-        case hash::hash("while"):
-        case hash::hash("dolist"):
-        case hash::hash("cond"):
-        case hash::hash("unless"):
-        case hash::hash("when"):
-        case hash::hash("progn"):
-        case hash::hash("let*"):
-        case hash::hash("let"):
-        case hash::hash("backqoute"):
+            case hash::hash("quote"):
+            case hash::hash("if"):
+            case hash::hash("while"):
+            case hash::hash("dolist"):
+            case hash::hash("cond"):
+            case hash::hash("unless"):
+            case hash::hash("when"):
+            case hash::hash("progn"):
+            case hash::hash("let*"):
+            case hash::hash("let"):
+            case hash::hash("backqoute"):
 
-        case hash::hash("signal"):
-        case hash::hash("return"):
+            case hash::hash("signal"):
+            case hash::hash("return"):
 
-        case hash::hash("and"):
-        case hash::hash("or"):
-        case hash::hash("not"): return true;
-        default: return false;
+            case hash::hash("and"):
+            case hash::hash("or"):
+            case hash::hash("not"): return true;
+            default: return false;
         }
     }
 

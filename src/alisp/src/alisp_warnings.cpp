@@ -31,21 +31,21 @@ void init_warning(std::vector<std::string> t_enabled_warning)
     {
         switch (hash::hash(warn))
         {
-        case hash::hash("all"): WarningsHelper::g_warning_bits |= WarningsHelper::ALL_BIT; break;
+            case hash::hash("all"): WarningsHelper::g_warning_bits |= WarningsHelper::ALL_BIT; break;
 
-        case hash::hash("import"): WarningsHelper::g_warning_bits |= WarningsHelper::IMPORT_BIT; break;
+            case hash::hash("import"): WarningsHelper::g_warning_bits |= WarningsHelper::IMPORT_BIT; break;
 
-        case hash::hash("deprecated"): WarningsHelper::g_warning_bits |= WarningsHelper::DEPRECATED_BIT; break;
+            case hash::hash("deprecated"): WarningsHelper::g_warning_bits |= WarningsHelper::DEPRECATED_BIT; break;
 
-        case hash::hash("user"): WarningsHelper::g_warning_bits |= WarningsHelper::USER_BIT; break;
+            case hash::hash("user"): WarningsHelper::g_warning_bits |= WarningsHelper::USER_BIT; break;
 
-        case hash::hash("math"): WarningsHelper::g_warning_bits |= WarningsHelper::MATH_BIT; break;
+            case hash::hash("math"): WarningsHelper::g_warning_bits |= WarningsHelper::MATH_BIT; break;
 
-        case hash::hash("eval"): WarningsHelper::g_warning_bits |= WarningsHelper::EVAL_BIT; break;
+            case hash::hash("eval"): WarningsHelper::g_warning_bits |= WarningsHelper::EVAL_BIT; break;
 
-        case hash::hash("env"): WarningsHelper::g_warning_bits |= WarningsHelper::ENV_BIT; break;
+            case hash::hash("env"): WarningsHelper::g_warning_bits |= WarningsHelper::ENV_BIT; break;
 
-        default: std::cerr << "Unknown warning type: " << warn << "\n";
+            default: std::cerr << "Unknown warning type: " << warn << "\n";
         }
     }
 }
@@ -66,35 +66,35 @@ void warning_internal(WarnTypes t_type, std::string_view t_msg)
     switch (t_type)
     {
 
-    case WarnTypes::IMPORT:
-        if ((WarningsHelper::g_warning_bits & ~WarningsHelper::IMPORT_BIT) > 0
-            or (WarningsHelper::g_warning_bits & ~WarningsHelper::ALL_BIT) > 0)
-        { std::cerr << "Warning[IMPORT]: " << t_msg << "\n"; }
-        return;
+        case WarnTypes::IMPORT:
+            if ((WarningsHelper::g_warning_bits & ~WarningsHelper::IMPORT_BIT) > 0
+                or (WarningsHelper::g_warning_bits & ~WarningsHelper::ALL_BIT) > 0)
+            { std::cerr << "Warning[IMPORT]: " << t_msg << "\n"; }
+            return;
 
-    case WarnTypes::DEPRECATED:
-        if ((WarningsHelper::g_warning_bits & ~WarningsHelper::DEPRECATED_BIT) > 0
-            or (WarningsHelper::g_warning_bits & ~WarningsHelper::ALL_BIT) > 0)
-        { std::cerr << "Warning[DEPRECATED]: " << t_msg << "\n"; }
-        return;
+        case WarnTypes::DEPRECATED:
+            if ((WarningsHelper::g_warning_bits & ~WarningsHelper::DEPRECATED_BIT) > 0
+                or (WarningsHelper::g_warning_bits & ~WarningsHelper::ALL_BIT) > 0)
+            { std::cerr << "Warning[DEPRECATED]: " << t_msg << "\n"; }
+            return;
 
-    case WarnTypes::MATH:
-        if ((WarningsHelper::g_warning_bits & ~WarningsHelper::MATH_BIT) > 0
-            or (WarningsHelper::g_warning_bits & ~WarningsHelper::ALL_BIT) > 0)
-        { std::cerr << "Warning[MATH]: " << t_msg << "\n"; }
-        return;
+        case WarnTypes::MATH:
+            if ((WarningsHelper::g_warning_bits & ~WarningsHelper::MATH_BIT) > 0
+                or (WarningsHelper::g_warning_bits & ~WarningsHelper::ALL_BIT) > 0)
+            { std::cerr << "Warning[MATH]: " << t_msg << "\n"; }
+            return;
 
-    case WarnTypes::ENV:
-        if ((WarningsHelper::g_warning_bits & ~WarningsHelper::ENV_BIT) > 0
-            or (WarningsHelper::g_warning_bits & ~WarningsHelper::ALL_BIT) > 0)
-        { std::cerr << "Warning[ENV]: " << t_msg << "\n"; }
-        return;
+        case WarnTypes::ENV:
+            if ((WarningsHelper::g_warning_bits & ~WarningsHelper::ENV_BIT) > 0
+                or (WarningsHelper::g_warning_bits & ~WarningsHelper::ALL_BIT) > 0)
+            { std::cerr << "Warning[ENV]: " << t_msg << "\n"; }
+            return;
 
-    case WarnTypes::EVAL:
-        if ((WarningsHelper::g_warning_bits & ~WarningsHelper::EVAL_BIT) > 0
-            or (WarningsHelper::g_warning_bits & ~WarningsHelper::ALL_BIT) > 0)
-        { std::cerr << "Warning[EVAL]: " << t_msg << "\n"; }
-        return;
+        case WarnTypes::EVAL:
+            if ((WarningsHelper::g_warning_bits & ~WarningsHelper::EVAL_BIT) > 0
+                or (WarningsHelper::g_warning_bits & ~WarningsHelper::ALL_BIT) > 0)
+            { std::cerr << "Warning[EVAL]: " << t_msg << "\n"; }
+            return;
     }
 }
 

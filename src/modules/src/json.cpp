@@ -52,38 +52,38 @@ template<typename T>
     {
         switch (c)
         {
-        case '.': decimal_place = 10; break;
-        case 'e':
-        case 'E':
-            exponent      = 1;
-            decimal_place = 0;
-            base          = t;
-            t             = 0;
-            break;
-        case '-': exponent = -1; break;
-        case '+': break;
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            if (decimal_place < 10)
-            {
-                t *= 10;
-                t += static_cast<T>(c - '0');
-            }
-            else
-            {
-                t += static_cast<T>(c - '0') / decimal_place;
-                decimal_place *= 10;
-            }
-            break;
-        default: break;
+            case '.': decimal_place = 10; break;
+            case 'e':
+            case 'E':
+                exponent      = 1;
+                decimal_place = 0;
+                base          = t;
+                t             = 0;
+                break;
+            case '-': exponent = -1; break;
+            case '+': break;
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                if (decimal_place < 10)
+                {
+                    t *= 10;
+                    t += static_cast<T>(c - '0');
+                }
+                else
+                {
+                    t += static_cast<T>(c - '0') / decimal_place;
+                    decimal_place *= 10;
+                }
+                break;
+            default: break;
         }
     }
     return exponent ? base * std::pow(T(10), t * static_cast<T>(exponent)) : t;
@@ -96,14 +96,14 @@ static std::string json_escape(const std::string &str)
     {
         switch (i)
         {
-        case '\"': output += "\\\""; break;
-        case '\\': output += "\\\\"; break;
-        case '\b': output += "\\b"; break;
-        case '\f': output += "\\f"; break;
-        case '\n': output += "\\n"; break;
-        case '\r': output += "\\r"; break;
-        case '\t': output += "\\t"; break;
-        default: output += i; break;
+            case '\"': output += "\\\""; break;
+            case '\\': output += "\\\\"; break;
+            case '\b': output += "\\b"; break;
+            case '\f': output += "\\f"; break;
+            case '\n': output += "\\n"; break;
+            case '\r': output += "\\r"; break;
+            case '\t': output += "\\t"; break;
+            default: output += i; break;
         }
     }
     return output;
@@ -240,33 +240,34 @@ struct JSONParser
             {
                 switch (str.at(++offset))
                 {
-                case '\"': val += '\"'; break;
-                case '\\': val += '\\'; break;
-                case '/': val += '/'; break;
-                case 'b': val += '\b'; break;
-                case 'f': val += '\f'; break;
-                case 'n': val += '\n'; break;
-                case 'r': val += '\r'; break;
-                case 't': val += '\t'; break;
-                case 'u':
-                {
-                    val += "\\u";
-                    for (size_t i = 1; i <= 4; ++i)
+                    case '\"': val += '\"'; break;
+                    case '\\': val += '\\'; break;
+                    case '/': val += '/'; break;
+                    case 'b': val += '\b'; break;
+                    case 'f': val += '\f'; break;
+                    case 'n': val += '\n'; break;
+                    case 'r': val += '\r'; break;
+                    case 't': val += '\t'; break;
+                    case 'u':
                     {
-                        c = str.at(offset + i);
-                        if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) { val += c; }
-                        else
+                        val += "\\u";
+                        for (size_t i = 1; i <= 4; ++i)
                         {
-                            signal(json::json_signal,
-                                   std::string("JSON ERROR: String: Expected hex "
-                                               "character in unicode escape, found '")
-                                     + c + "'");
+                            c = str.at(offset + i);
+                            if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))
+                            { val += c; }
+                            else
+                            {
+                                signal(json::json_signal,
+                                       std::string("JSON ERROR: String: Expected hex "
+                                                   "character in unicode escape, found '")
+                                         + c + "'");
+                            }
                         }
+                        offset += 4;
                     }
-                    offset += 4;
-                }
-                break;
-                default: val += '\\'; break;
+                    break;
+                    default: val += '\\'; break;
                 }
             }
             else
@@ -397,14 +398,14 @@ struct JSONParser
         value = str.at(offset);
         switch (value)
         {
-        case '[': return parse_array(str, offset);
-        case '{': return parse_object(str, offset);
-        case '\"': return parse_string(str, offset);
-        case 't':
-        case 'f': return parse_bool(str, offset);
-        case 'n': return parse_null(str, offset);
-        default:
-            if ((value <= '9' && value >= '0') || value == '-') { return parse_number(str, offset); }
+            case '[': return parse_array(str, offset);
+            case '{': return parse_object(str, offset);
+            case '\"': return parse_string(str, offset);
+            case 't':
+            case 'f': return parse_bool(str, offset);
+            case 'n': return parse_null(str, offset);
+            default:
+                if ((value <= '9' && value >= '0') || value == '-') { return parse_number(str, offset); }
         }
         signal(json::json_signal, std::string("JSON ERROR: Parse: Unexpected starting character '") + value + "'");
         return nullptr;

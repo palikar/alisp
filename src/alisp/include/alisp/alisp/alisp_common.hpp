@@ -160,7 +160,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         if (check_temp_flag()) { return std::get<view_type>(m_data)[index]; }
         return children()[index];
     }
-    
+
     ALObjectPtr operator[](const size_t index) { return i(index); }
 
     auto length() const noexcept
@@ -170,7 +170,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         return visit_or<list_type>([](const auto &vec) { return std::size(vec); },
                                    []() { return list_type::size_type(0); });
     }
-    
+
     auto size() const { return length(); }
 
     list_type &children()
@@ -179,7 +179,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         if (check_temp_flag()) throw alobject_error("Accesing the children elements of a temporary object.");
         return std::get<list_type>(m_data);
     }
-    
+
     const list_type &children() const
     {
         check<list_type>();
@@ -192,7 +192,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         check<string_type>();
         return std::get<std::string>(m_data);
     }
-    
+
     const string_type &to_string() const
     {
         check<string_type>();
@@ -206,7 +206,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         throw alobject_error("Not a number object.");
         return 0.0;
     }
-    
+
     int_type to_int() const
     {
         check<int_type>();
@@ -218,19 +218,19 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         check<int_type>();
         m_data = val;
     }
-    
+
     void set(real_type val)
     {
         check<real_type>();
         m_data = val;
     }
-    
+
     void set(string_type val)
     {
         check<string_type>();
         m_data = std::move(val);
     }
-    
+
     void add(ALObjectPtr new_child) { children().push_back(new_child); }
 
     data_type &data() { return m_data; }
@@ -342,23 +342,23 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         oss << "(ALObject<" << alobject_type_to_string(type()) << "> ";
         switch (type())
         {
-        case ALObjectType::INT_VALUE:
-            oss << to_int() << " <#o" << std::oct << to_int() << " "
-                << "#x" << std::hex << to_int() << std::dec;
-            if (check_char_flag()) { oss << " ?" << char(to_int()); }
-            oss << ">";
-            break;
-        case ALObjectType::REAL_VALUE: oss << to_real(); break;
-        case ALObjectType::SYMBOL: oss << to_string(); break;
-        case ALObjectType::STRING_VALUE: oss << '\"' << to_string() << '\"'; break;
-        case ALObjectType::LIST:
-            if (check_prime_flag())
-                oss << "*prime*";
-            else if (check_macro_flag())
-                oss << "*macro*";
-            else if (check_function_flag())
-                oss << "*func*";
-            break;
+            case ALObjectType::INT_VALUE:
+                oss << to_int() << " <#o" << std::oct << to_int() << " "
+                    << "#x" << std::hex << to_int() << std::dec;
+                if (check_char_flag()) { oss << " ?" << char(to_int()); }
+                oss << ">";
+                break;
+            case ALObjectType::REAL_VALUE: oss << to_real(); break;
+            case ALObjectType::SYMBOL: oss << to_string(); break;
+            case ALObjectType::STRING_VALUE: oss << '\"' << to_string() << '\"'; break;
+            case ALObjectType::LIST:
+                if (check_prime_flag())
+                    oss << "*prime*";
+                else if (check_macro_flag())
+                    oss << "*macro*";
+                else if (check_function_flag())
+                    oss << "*func*";
+                break;
         }
 
         if (check_const_flag()) { oss << "<c>"; }
@@ -373,7 +373,6 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     const ALObjectType m_type;
     std::uint_fast32_t m_flags = 0;
     std::unordered_map<std::string, ALObjectPtr> m_props;
-
 };
 
 inline std::ostream &operator<<(std::ostream &os, const ALObject &t_obj)
@@ -394,26 +393,26 @@ inline std::string dump(ALObjectPtr obj)
 
     switch (obj->type())
     {
-    case ALObjectType::INT_VALUE: str << obj->to_int(); break;
+        case ALObjectType::INT_VALUE: str << obj->to_int(); break;
 
-    case ALObjectType::REAL_VALUE: str << obj->to_real(); break;
+        case ALObjectType::REAL_VALUE: str << obj->to_real(); break;
 
-    case ALObjectType::STRING_VALUE: str << "\"" << obj->to_string() << "\""; break;
+        case ALObjectType::STRING_VALUE: str << "\"" << obj->to_string() << "\""; break;
 
-    case ALObjectType::SYMBOL: str << obj->to_string() << " "; break;
+        case ALObjectType::SYMBOL: str << obj->to_string() << " "; break;
 
-    case ALObjectType::LIST:
-        if (obj->length() == 0)
-        {
-            str << "() ";
+        case ALObjectType::LIST:
+            if (obj->length() == 0)
+            {
+                str << "() ";
+                break;
+            }
+
+            str << "(";
+            for (auto ob : *obj) { str << dump(ob) << " "; }
+            str.seekp(-1, std::ios_base::end);
+            str << ")";
             break;
-        }
-
-        str << "(";
-        for (auto ob : *obj) { str << dump(ob) << " "; }
-        str.seekp(-1, std::ios_base::end);
-        str << ")";
-        break;
     }
 
     return str.str();

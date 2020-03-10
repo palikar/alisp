@@ -93,5 +93,4 @@ ALObjectPtr Fbit_inv(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 }
 
 
-
-}
+}  // namespace alisp

@@ -292,56 +292,56 @@ template<class Environment> class ALParser : public ParserBase
         {
             switch (t_char)
             {
-            case '.':
-                if (m_decimal_place > 0) return false;
-                m_decimal_place = 10;
-                break;
-            case '-':
-            case '+':
-                if (exp != 1 and base_signed) return false;
-                if (exp == 1 and exp_signed) return false;
-                if (exp == 1)
-                {
-                    exp_signed = true;
-                    exp_sign   = t_char == '-' ? -1 : 1;
-                }
-                else
-                {
-                    base_signed = true;
-                    base_sign   = t_char == '-' ? -1 : 1;
-                }
-                break;
-            case 'e':
-            case 'E':
-                exp             = 1;
-                m_decimal_place = 0;
-                m_base          = m_num;
-                m_num           = 0;
-                break;
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
+                case '.':
+                    if (m_decimal_place > 0) return false;
+                    m_decimal_place = 10;
+                    break;
+                case '-':
+                case '+':
+                    if (exp != 1 and base_signed) return false;
+                    if (exp == 1 and exp_signed) return false;
+                    if (exp == 1)
+                    {
+                        exp_signed = true;
+                        exp_sign   = t_char == '-' ? -1 : 1;
+                    }
+                    else
+                    {
+                        base_signed = true;
+                        base_sign   = t_char == '-' ? -1 : 1;
+                    }
+                    break;
+                case 'e':
+                case 'E':
+                    exp             = 1;
+                    m_decimal_place = 0;
+                    m_base          = m_num;
+                    m_num           = 0;
+                    break;
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
 
-                if (m_decimal_place < 10)
-                {
-                    m_num *= 10;
-                    m_num += static_cast<number_type>(t_char - '0');
-                }
-                else
-                {
-                    m_num += static_cast<number_type>(t_char - '0') / m_decimal_place;
-                    m_decimal_place *= 10;
-                }
+                    if (m_decimal_place < 10)
+                    {
+                        m_num *= 10;
+                        m_num += static_cast<number_type>(t_char - '0');
+                    }
+                    else
+                    {
+                        m_num += static_cast<number_type>(t_char - '0') / m_decimal_place;
+                        m_decimal_place *= 10;
+                    }
 
-                break;
-            default: return false;
+                    break;
+                default: return false;
             }
             return true;
         }
@@ -529,16 +529,16 @@ template<class Environment> class ALParser : public ParserBase
 
                 switch (t_char)
                 {
-                case '\'': m_str.push_back('\''); return true;
-                case '\"': m_str.push_back('\"'); return true;
-                case 'a': m_str.push_back('\a'); return true;
-                case 'b': m_str.push_back('\b'); return true;
-                case 'f': m_str.push_back('\f'); return true;
-                case 'n': m_str.push_back('\n'); return true;
-                case 'r': m_str.push_back('\r'); return true;
-                case 't': m_str.push_back('\t'); return true;
-                case 'v': m_str.push_back('\v'); return true;
-                default: return false;
+                    case '\'': m_str.push_back('\''); return true;
+                    case '\"': m_str.push_back('\"'); return true;
+                    case 'a': m_str.push_back('\a'); return true;
+                    case 'b': m_str.push_back('\b'); return true;
+                    case 'f': m_str.push_back('\f'); return true;
+                    case 'n': m_str.push_back('\n'); return true;
+                    case 'r': m_str.push_back('\r'); return true;
+                    case 't': m_str.push_back('\t'); return true;
+                    case 'v': m_str.push_back('\v'); return true;
+                    default: return false;
                 }
 
                 return true;
@@ -753,8 +753,8 @@ template<class Environment> class ALParser : public ParserBase
 
         switch (word_hash)
         {
-        case hash::hash("--FILE--"): return make_string(m_file);
-        case hash::hash("--LINE--"): return make_int(position.line);
+            case hash::hash("--FILE--"): return make_string(m_file);
+            case hash::hash("--LINE--"): return make_int(position.line);
         }
 
         return env::intern(std::string(word));
@@ -827,20 +827,20 @@ template<class Environment> class ALParser : public ParserBase
             ++position;
             switch (*position)
             {
-            case '\'': ++position; return make_char(static_cast<ALObject::int_type>('\''));
-            case '\"': ++position; return make_char(static_cast<ALObject::int_type>('\"'));
-            case 'a': ++position; return make_char(static_cast<ALObject::int_type>('\a'));
-            case 'b': ++position; return make_char(static_cast<ALObject::int_type>('\b'));
-            case 't': ++position; return make_char(static_cast<ALObject::int_type>('\t'));
-            case 'n': ++position; return make_char(static_cast<ALObject::int_type>('\n'));
-            case 'v': ++position; return make_char(static_cast<ALObject::int_type>('\v'));
-            case 'f': ++position; return make_char(static_cast<ALObject::int_type>('\f'));
-            case 'r': ++position; return make_char(static_cast<ALObject::int_type>('\r'));
-            case 'e': ++position; return make_char(static_cast<ALObject::int_type>(27));
-            case 'd': ++position; return make_char(static_cast<ALObject::int_type>(127));
-            case 's': ++position; return make_char(static_cast<ALObject::int_type>(' '));
-            case '\\': ++position; return make_char(static_cast<ALObject::int_type>('\\'));
-            default: PARSE_ERROR("Unknown escape sequence \'?\'");
+                case '\'': ++position; return make_char(static_cast<ALObject::int_type>('\''));
+                case '\"': ++position; return make_char(static_cast<ALObject::int_type>('\"'));
+                case 'a': ++position; return make_char(static_cast<ALObject::int_type>('\a'));
+                case 'b': ++position; return make_char(static_cast<ALObject::int_type>('\b'));
+                case 't': ++position; return make_char(static_cast<ALObject::int_type>('\t'));
+                case 'n': ++position; return make_char(static_cast<ALObject::int_type>('\n'));
+                case 'v': ++position; return make_char(static_cast<ALObject::int_type>('\v'));
+                case 'f': ++position; return make_char(static_cast<ALObject::int_type>('\f'));
+                case 'r': ++position; return make_char(static_cast<ALObject::int_type>('\r'));
+                case 'e': ++position; return make_char(static_cast<ALObject::int_type>(27));
+                case 'd': ++position; return make_char(static_cast<ALObject::int_type>(127));
+                case 's': ++position; return make_char(static_cast<ALObject::int_type>(' '));
+                case '\\': ++position; return make_char(static_cast<ALObject::int_type>('\\'));
+                default: PARSE_ERROR("Unknown escape sequence \'?\'");
             }
         }
         else
@@ -859,13 +859,13 @@ template<class Environment> class ALParser : public ParserBase
 
         switch (*position)
         {
-        case '\'': ++position; return parse_function_quote();
-        case 'b':
-        case 'B': ++position; return parse_integer<2>();
-        case 'o':
-        case 'O': ++position; return parse_integer<8>();
-        case 'x':
-        case 'X': ++position; return parse_integer<16>();
+            case '\'': ++position; return parse_function_quote();
+            case 'b':
+            case 'B': ++position; return parse_integer<2>();
+            case 'o':
+            case 'O': ++position; return parse_integer<8>();
+            case 'x':
+            case 'X': ++position; return parse_integer<16>();
         }
 
         PARSE_ERROR("Unknown syntax after #.");

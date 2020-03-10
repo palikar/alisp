@@ -140,112 +140,113 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
     switch (obj->type())
     {
-    case ALObjectType::STRING_VALUE:
+        case ALObjectType::STRING_VALUE:
 
-    case ALObjectType::REAL_VALUE:
+        case ALObjectType::REAL_VALUE:
 
-    case ALObjectType::INT_VALUE:
-    {
-        return obj;
-    }
+        case ALObjectType::INT_VALUE:
+        {
+            return obj;
+        }
 
-    case ALObjectType::SYMBOL:
-    {
-        AL_DEBUG("Evaluating symbol: "s += dump(obj));
-        return env.find(obj);
-    }
+        case ALObjectType::SYMBOL:
+        {
+            AL_DEBUG("Evaluating symbol: "s += dump(obj));
+            return env.find(obj);
+        }
 
-    case ALObjectType::LIST:
-    {
+        case ALObjectType::LIST:
+        {
 
-        auto func = eval(obj->i(0));
+            auto func = eval(obj->i(0));
 
-        if (psym(func)) { func = env.find(func); }
+            if (psym(func)) { func = env.find(func); }
 
-        AL_CHECK(if (!func->check_function_flag()) { throw eval_error("Head of a list must be bound to function"); });
+            AL_CHECK(
+              if (!func->check_function_flag()) { throw eval_error("Head of a list must be bound to function"); });
 
 #ifdef ENABLE_STACK_TRACE
 
-        env::detail::CallTracer tracer{ env };
+            env::detail::CallTracer tracer{ env };
 
-        if (obj->prop_exists("--line--")) { tracer.line(obj->get_prop("--line--")->to_int()); }
+            if (obj->prop_exists("--line--")) { tracer.line(obj->get_prop("--line--")->to_int()); }
 
-        if (func->prop_exists("--name--"))
-        { tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag()); }
-        else
-        {
-            tracer.function_name("anonymous", false);
-        }
-
-        tracer.catch_depth(m_catching_depth);
-
-#endif
-        AL_DEBUG("Calling funcion: "s += dump(obj->i(0)));
-
-        try
-        {
-
-            if (func->check_prime_flag())
-            {
-                
-                STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
-
-                return func->get_prime()(eval_ptr, &env, this);
-            }
-            else if (func->check_macro_flag())
-            {
-
-                env::detail::MacroCall fc{ env };
-
-                STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
-                auto a = apply_function(func, eval_ptr);
-                AL_DEBUG("Macro expansion: "s += dump(a));
-                // std::cout << dump(a) << "\n";
-                return eval(a);
-            }
+            if (func->prop_exists("--name--"))
+            { tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag()); }
             else
             {
-                STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
-
-                return eval_function(func, eval_ptr);
+                tracer.function_name("anonymous", false);
             }
-        }
-        catch (al_continue &)
-        {
-            throw;
-        }
-        catch (al_break &)
-        {
-            throw;
-        }
-        catch (al_exit &)
-        {
-            throw;
-        }
-        catch (al_return &)
-        {
-            throw;
-        }
-        catch (interrupt_error &)
-        {
-            throw;
-        }
-        catch (...)
-        {
-#ifdef ENABLE_STACK_TRACE
-            if (m_catching_depth == 0) { tracer.dump(); }
+
+            tracer.catch_depth(m_catching_depth);
+
 #endif
-            throw;
+            AL_DEBUG("Calling funcion: "s += dump(obj->i(0)));
+
+            try
+            {
+
+                if (func->check_prime_flag())
+                {
+
+                    STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
+
+                    return func->get_prime()(eval_ptr, &env, this);
+                }
+                else if (func->check_macro_flag())
+                {
+
+                    env::detail::MacroCall fc{ env };
+
+                    STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
+                    auto a = apply_function(func, eval_ptr);
+                    AL_DEBUG("Macro expansion: "s += dump(a));
+                    // std::cout << dump(a) << "\n";
+                    return eval(a);
+                }
+                else
+                {
+                    STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
+
+                    return eval_function(func, eval_ptr);
+                }
+            }
+            catch (al_continue &)
+            {
+                throw;
+            }
+            catch (al_break &)
+            {
+                throw;
+            }
+            catch (al_exit &)
+            {
+                throw;
+            }
+            catch (al_return &)
+            {
+                throw;
+            }
+            catch (interrupt_error &)
+            {
+                throw;
+            }
+            catch (...)
+            {
+#ifdef ENABLE_STACK_TRACE
+                if (m_catching_depth == 0) { tracer.dump(); }
+#endif
+                throw;
+            }
+
+
+            break;
         }
 
-
-        break;
-    }
-
-    default:
-    {
-        eval_error("Unknown object typee");
-    }
+        default:
+        {
+            eval_error("Unknown object typee");
+        }
     }
 
     return nullptr;
