@@ -275,6 +275,10 @@ ALISP_EXPORT alisp::env::ModulePtr init_process(alisp::env::Environment *, alisp
     auto Mprocess = alisp::module_init("process");
     auto prop_ptr = Mprocess.get();
 
+    alisp::module_doc(
+      prop_ptr,
+      R"(The `process` module enables the starting and communicating with external processes. It is similar to the `subprocess` module of pyhton.  )");
+
     alisp::module_defconst(prop_ptr, "stdout", process::process_stdout);
     alisp::module_defconst(prop_ptr, "stderr", process::process_stderr);
     alisp::module_defconst(prop_ptr, "pipe", process::process_pipe);
