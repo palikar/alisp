@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <iomanip>
 #include <bitset>
+#include <algorithm>
 
 #include "alisp/config.hpp"
 #include "alisp/alisp/alisp_module_helpers.hpp"
@@ -15,6 +16,44 @@ using namespace alisp;
 
 namespace detail
 {
+
+template<typename T> auto int_to_bin(T num)
+{
+    std::string str{ "" };
+    while (num > 0)
+    {
+        str += num % 2 == 1 ? "1" : "0";
+        num /= 2;
+    }
+    std::reverse(str.begin(), str.end());
+    return str;
+}
+
+template<typename T> auto int_to_hex(T num)
+{
+    constexpr static char digits[] = "0123456789ABCDEF";
+    std::string str{ "" };
+    while (num > 0)
+    {
+        str += digits[num % 16];
+        num /= 16;
+    }
+    std::reverse(str.begin(), str.end());
+    return str;
+}
+
+template<typename T> auto int_to_oct(T num)
+{
+    constexpr static char digits[] = "01234567";
+    std::string str{ "" };
+    while (num > 0)
+    {
+        str += digits[num % 8];
+        num /= 8;
+    }
+    std::reverse(str.begin(), str.end());
+    return str;
+}
 
 enum class BlockType
 {
@@ -264,93 +303,101 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
         // error
     }
 
-    auto obj = t_args->i(static_cast<size_t>(index + 1));
+    auto obj = t_args->i(index + 1);
+
+    auto sign = [&](auto t_obj) {
+        if (t_block.sign == '+') { return t_obj->to_real() > 0 ? '+' : '-'; }
+        else if (t_block.sign == '-')
+        {
+            return t_obj->to_real() < 0 ? '-' : '\0';
+        }
+        else if (t_block.sign == ' ')
+        {
+            return t_obj->to_real() < 0 ? '-' : ' ';
+        }
+        else
+        {
+            return '\0';
+        }
+    };
 
     auto base_str = [&]() {
         switch (t_block.type)
         {
 
-          case 's':
-          {
-              if (!pstring(obj)) {}
-              return obj->to_string();
-          }
-              
-          case 'c':
-          {
-              if (!obj->check_char_flag() and !obj->is_int()) {}
-              return std::string(1, char(obj->to_int()));
-          }
-              
-          case 'b':
-          case 'B':
-          {
-              if (!pint(obj)) {}
-              std::cout << std::bitset<64>(obj->to_int()).to_string() << "\n";
-              return std::bitset<64>(obj->to_int()).to_string();
-          }
+            case 's':
+            {
+                if (!pstring(obj)) {}
+                return obj->to_string();
+            }
 
-          case 'x':
-          case 'X':
-          {
-              if (!pint(obj)) {}
-              std::stringstream ss_x;
-              ss_x << std::isupper(t_block.type) ? "0X" : "0x";
-              ss_x << std::hex;
-              ss_x << obj->to_int();
-              return ss_x.str();          
-          }
+            case 'c':
+            {
+                if (!obj->check_char_flag() and !obj->is_int()) {}
+                return std::string(1, char(obj->to_int()));
+            }
 
-          case 'd':
-          {
-              if (!pint(obj)) {}
-              return std::to_string(obj->to_int());
-          }
-              
-          case 'n':
-          {
-              if (!pint(obj)) {}
-              return std::to_string(obj->to_int());
-          }
-          
-          case 'o':
-          {
-              if (!pint(obj)) {}
-              std::stringstream ss_o;
-              ss_o << std::isupper(t_block.type) ? "0X" : "0x";
-              ss_o << std::oct;
-              ss_o << obj->to_int();
-              return ss_o.str();
-          }
+            case 'b':
+            case 'B':
+            {
+                if (!pint(obj)) {}
+                return std::string{ sign(obj) } += (std::isupper(t_block.type) ? "0B" : "0b"s) +=
+                       int_to_bin(obj->to_int());
+            }
 
-          case 'a':
-          case 'A':
-          {
-              if (!preal(obj)) {}
-              return std::string{ "" };
-          }
-              
-          case 'e':
-          case 'E':
-          {
-              if (!preal(obj)) {}
-              return std::string{ "" };
-          }
-          
-          case 'f':
-          case 'F':
-          {
-              if (!preal(obj)) {}
-              return std::string{ "" };
-          }
-          
-          case 'g':
-          case 'G':
-          {
-              if (!preal(obj)) {}
-              return std::string{ "" };
-          }
-          
+            case 'x':
+            case 'X':
+            {
+                if (!pint(obj)) {}
+                return std::string{ sign(obj) } += (std::isupper(t_block.type) ? "0X" : "0x"s) +=
+                       int_to_hex(obj->to_int());
+            }
+
+            case 'o':
+            {
+                if (!pint(obj)) {}
+                return (std::string{ sign(obj) } += "0") += int_to_bin(obj->to_int());
+            }
+
+            case 'd':
+            {
+                if (!pint(obj)) {}
+                return std::string{ sign(obj) } += std::to_string(obj->to_int());
+            }
+
+            case 'n':
+            {
+                if (!pint(obj)) {}
+                return std::string{ sign(obj) } += std::to_string(obj->to_int());
+            }
+
+            case 'a':
+            case 'A':
+            {
+                if (!preal(obj)) {}
+                return std::string{ sign(obj) } += std::to_string(obj->to_real());
+            }
+
+            case 'e':
+            case 'E':
+            {
+                if (!preal(obj)) {}
+                return std::string{ sign(obj) } += std::to_string(obj->to_real());
+            }
+
+            case 'f':
+            case 'F':
+            {
+                if (!preal(obj)) {}
+                return std::string{ sign(obj) } += std::to_string(obj->to_real());
+            }
+
+            case 'g':
+            case 'G':
+            {
+                if (!preal(obj)) {}
+                return std::string{ sign(obj) } += std::to_string(obj->to_real());
+            }
         }
 
         return to_string(obj);
@@ -362,27 +409,22 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
     {
         if (t_block.align == '<')
         {
-            auto s = std::string(t_block.width - base_str.size(), fill);
+            auto s = std::string(static_cast<size_t>(t_block.width) - base_str.size(), fill);
             return base_str += s;
         }
         else if (t_block.align == '>')
         {
-            auto s = std::string(t_block.width - base_str.size(), fill);
+            auto s = std::string(static_cast<size_t>(t_block.width) - base_str.size(), fill);
             return s += base_str;
         }
         else if (t_block.align == '^')
         {
-            auto s = std::string(t_block.width / 2 - base_str.size(), fill);
-            return (std::string(s) += base_str) += s;
+            auto s = std::string(static_cast<size_t>(t_block.width) / 2 - base_str.size(), fill);
+            return (s += base_str) += s;
         }
     }
-    else
-    {
-        return base_str;
-    }
 
-
-    return "";
+    return base_str;
 }
 
 static std::string expand_string(std::string t_str, std::vector<FmtBlock> &&t_blocks, ALObjectPtr t_args)
@@ -420,6 +462,8 @@ static auto format_string(const std::string &t_format, ALObjectPtr t_args)
 
 }  // namespace detail
 
+auto fmt_signal = alisp::make_symbol("fmt-signal");
+
 ALObjectPtr Ffmt(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
@@ -428,9 +472,35 @@ ALObjectPtr Ffmt(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     auto str = args->i(0);
     assert_string(str);
 
+    return make_string(detail::format_string(str->to_string(), args));
+}
+
+ALObjectPtr Fprintf(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_min_size<1>(obj);
+    auto args = eval_transform(eval, obj);
+
+    auto str = args->i(0);
+    assert_string(str);
+
     auto res = detail::format_string(str->to_string(), args);
+    al::cout << res;
     return make_string(res);
 }
+
+ALObjectPtr Fprintfln(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_min_size<1>(obj);
+    auto args = eval_transform(eval, obj);
+
+    auto str = args->i(0);
+    assert_string(str);
+
+    auto res = detail::format_string(str->to_string(), args);
+    al::cout << res << '\n';
+    return make_string(res);
+}
+
 
 }  // namespace fmt
 
@@ -439,8 +509,11 @@ ALISP_EXPORT alisp::env::ModulePtr init_fmt(alisp::env::Environment *, alisp::ev
     auto Mfmt    = alisp::module_init("fmt");
     auto fmt_ptr = Mfmt.get();
 
+    alisp::module_doc(fmt_ptr, R"(The `fmt` module helps you format strings.)");
 
     alisp::module_defun(fmt_ptr, "fmt", &fmt::Ffmt);
+    alisp::module_defun(fmt_ptr, "printf", &fmt::Fprintf);
+    alisp::module_defun(fmt_ptr, "printfln", &fmt::Fprintfln);
 
     return Mfmt;
 }
