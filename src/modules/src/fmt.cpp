@@ -14,6 +14,8 @@ namespace fmt
 {
 using namespace alisp;
 
+auto fmt_signal = alisp::make_symbol("fmt-signal");
+
 namespace detail
 {
 
@@ -223,7 +225,7 @@ struct FmtParser
 
         if (str.at(offset) != '}')
         {
-            // error
+            signal(fmt_signal, "FMT ERROR: Invalid syntax in format string"s, "Unexpected symbol:"s += str.at(offset));
         }
 
         return { start_offset, size + 2,  BlockType::FORMAT, index, fill,      align,
@@ -263,24 +265,15 @@ struct FmtParser
                 blocks.push_back(parse_block(str, offset, offset - 1));
                 if (str.at(offset) != '}')
                 {
-                    // error!
+                    signal(fmt_signal, "FMT ERROR: Invalid syntax in format string"s, "Missing closing bracket \'}\'"s);
                 }
                 ++offset;
                 continue;
             }
 
+
             ++offset;
         }
-
-        for (auto b : blocks)
-        {
-            std::cout << "at " << b.index << " for " << b.size;
-            std::cout << " of type " << static_cast<int>(b.t) << " with arg_index " << b.arg_index;
-            std::cout << " with align " << b.align << " with fill " << b.fill << " with sign " << b.sign
-                      << " with alternate  " << b.alternate << " with null " << b.null_form << " with width  "
-                      << b.width << " with precision " << b.precision << " of type " << b.type << "\n";
-        };
-
 
         return blocks;
     }
@@ -299,9 +292,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
     auto args_size   = std::size(*t_args);
 
     if (index + 1 >= args_size)
-    {
-        // error
-    }
+    { signal(fmt_signal, "FMT ERROR: Not enough arguments provided"s, index + 1, dump(t_args)); }
 
     auto obj = t_args->i(index + 1);
 
@@ -327,20 +318,21 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
 
             case 's':
             {
-                if (!pstring(obj)) {}
+                if (!pstring(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected string"s, dump(obj)); }
                 return obj->to_string();
             }
 
             case 'c':
             {
-                if (!obj->check_char_flag() and !obj->is_int()) {}
+                if (!obj->check_char_flag() and !obj->is_int())
+                { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected char"s, dump(obj)); }
                 return std::string(1, char(obj->to_int()));
             }
 
             case 'b':
             case 'B':
             {
-                if (!pint(obj)) {}
+                if (!pint(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj)); }
                 return std::string{ sign(obj) } += (std::isupper(t_block.type) ? "0B" : "0b"s) +=
                        int_to_bin(obj->to_int());
             }
@@ -348,54 +340,54 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             case 'x':
             case 'X':
             {
-                if (!pint(obj)) {}
+                if (!pint(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj)); }
                 return std::string{ sign(obj) } += (std::isupper(t_block.type) ? "0X" : "0x"s) +=
                        int_to_hex(obj->to_int());
             }
 
             case 'o':
             {
-                if (!pint(obj)) {}
+                if (!pint(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj)); }
                 return (std::string{ sign(obj) } += "0") += int_to_bin(obj->to_int());
             }
 
             case 'd':
             {
-                if (!pint(obj)) {}
+                if (!pint(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj)); }
                 return std::string{ sign(obj) } += std::to_string(obj->to_int());
             }
 
             case 'n':
             {
-                if (!pint(obj)) {}
+                if (!pint(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj)); }
                 return std::string{ sign(obj) } += std::to_string(obj->to_int());
             }
 
             case 'a':
             case 'A':
             {
-                if (!preal(obj)) {}
+                if (!preal(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj)); }
                 return std::string{ sign(obj) } += std::to_string(obj->to_real());
             }
 
             case 'e':
             case 'E':
             {
-                if (!preal(obj)) {}
+                if (!preal(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj)); }
                 return std::string{ sign(obj) } += std::to_string(obj->to_real());
             }
 
             case 'f':
             case 'F':
             {
-                if (!preal(obj)) {}
+                if (!preal(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj)); }
                 return std::string{ sign(obj) } += std::to_string(obj->to_real());
             }
 
             case 'g':
             case 'G':
             {
-                if (!preal(obj)) {}
+                if (!preal(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj)); }
                 return std::string{ sign(obj) } += std::to_string(obj->to_real());
             }
         }
@@ -462,8 +454,6 @@ static auto format_string(const std::string &t_format, ALObjectPtr t_args)
 
 }  // namespace detail
 
-auto fmt_signal = alisp::make_symbol("fmt-signal");
-
 ALObjectPtr Ffmt(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
@@ -500,7 +490,6 @@ ALObjectPtr Fprintfln(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
     al::cout << res << '\n';
     return make_string(res);
 }
-
 
 }  // namespace fmt
 
