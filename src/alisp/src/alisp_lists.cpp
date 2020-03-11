@@ -42,7 +42,8 @@ ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     AL_CHECK(assert_function(fun_obj));
 
-    if (plist(list)) {
+    if (plist(list))
+    {
         for (auto &el : list->children())
         {
             if (psym(el) or plist(el)) { eval->handle_lambda(fun_obj, make_list(quote(el))); }
@@ -52,17 +53,15 @@ ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
             }
         }
         return Qt;
+    }
+    else if (pstring(list))
+    {
 
-    } else if (pstring(list)){
-
-        for (auto &el : list->to_string())
-        {
-            eval->handle_lambda(fun_obj, make_list(make_char(el)));
-        }
+        for (auto &el : list->to_string()) { eval->handle_lambda(fun_obj, make_list(make_char(el))); }
         return Qt;
     }
-    
-    
+
+
     return Qnil;
 }
 
@@ -163,13 +162,11 @@ ALObjectPtr Flength(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 ALObjectPtr Fnth(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto list = eval->eval(obj->i(0));
+    auto list  = eval->eval(obj->i(0));
     auto index = eval->eval(obj->i(1));
     AL_CHECK(assert_int(index));
 
-    if (pstring(list)) {
-        return make_char(list->to_string()[static_cast<size_t>(index->to_int())]);
-    }
+    if (pstring(list)) { return make_char(list->to_string()[static_cast<size_t>(index->to_int())]); }
 
     AL_CHECK(assert_list(list));
 

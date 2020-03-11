@@ -525,4 +525,25 @@ struct NameValidator
     }
 };
 
+inline auto to_string(ALObjectPtr t_obj)
+{
+
+    return make_visit(
+      t_obj,
+      is_function() >>= [](ALObjectPtr obj) { return (obj->get_prop("--name--")->to_string()); },
+      is_char() >>= [](ALObjectPtr obj) { return (std::string(1, char(obj->to_int()))); },
+      type(ALObjectType::INT_VALUE) >>= [](ALObjectPtr obj) { return (std::to_string(obj->to_int())); },
+      type(ALObjectType::REAL_VALUE) >>=
+      [](ALObjectPtr obj) {
+          std::stringstream ss;
+          ss << obj->to_real();
+          return (ss.str());
+      },
+      type(ALObjectType::STRING_VALUE) >>= [](ALObjectPtr obj) { return (obj->to_string()); },
+      type(ALObjectType::SYMBOL) >>= [](ALObjectPtr obj) { return (obj->to_string()); },
+      any_pattern() >>= [](ALObjectPtr) { return ""; }
+
+    );
+}
+
 }  // namespace alisp
