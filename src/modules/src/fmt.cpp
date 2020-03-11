@@ -270,68 +270,87 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
         switch (t_block.type)
         {
 
-            case 's':
-                if (!pstring(obj)) {}
-                return obj->to_string();
+          case 's':
+          {
+              if (!pstring(obj)) {}
+              return obj->to_string();
+          }
+              
+          case 'c':
+          {
+              if (!obj->check_char_flag() and !obj->is_int()) {}
+              return std::string(1, char(obj->to_int()));
+          }
+              
+          case 'b':
+          case 'B':
+          {
+              if (!pint(obj)) {}
+              std::cout << std::bitset<64>(obj->to_int()).to_string() << "\n";
+              return std::bitset<64>(obj->to_int()).to_string();
+          }
 
-            case 'c':
-                if (!obj->check_char_flag()) {}
-                return std::string(1, char(obj->to_int()));
+          case 'x':
+          case 'X':
+          {
+              if (!pint(obj)) {}
+              std::stringstream ss_x;
+              ss_x << std::isupper(t_block.type) ? "0X" : "0x";
+              ss_x << std::hex;
+              ss_x << obj->to_int();
+              return ss_x.str();          
+          }
 
-            case 'b':
-            case 'B':
-            {
-                if (!pint(obj)) {}
-                std::cout << std::bitset<64>(obj->to_int()).to_string() << "\n";
-                return std::bitset<64>(obj->to_int()).to_string();
-            }
+          case 'd':
+          {
+              if (!pint(obj)) {}
+              return std::to_string(obj->to_int());
+          }
+              
+          case 'n':
+          {
+              if (!pint(obj)) {}
+              return std::to_string(obj->to_int());
+          }
+          
+          case 'o':
+          {
+              if (!pint(obj)) {}
+              std::stringstream ss_o;
+              ss_o << std::isupper(t_block.type) ? "0X" : "0x";
+              ss_o << std::oct;
+              ss_o << obj->to_int();
+              return ss_o.str();
+          }
 
-            case 'x':
-            case 'X':
-            {
-                if (!pint(obj)) {}
-                std::stringstream ss_x;
-                ss_x << std::hex;
-                ss_x << obj->to_int();
-                return ss_x.str();
-            }
-
-            case 'd':
-                if (!pint(obj)) {}
-                return std::string{ "" };
-
-            case 'n':
-                if (!pint(obj)) {}
-                return std::string{ "" };
-
-            case 'o':
-            {
-                if (!pint(obj)) {}
-                std::stringstream ss_o;
-                ss_o << std::oct;
-                ss_o << obj->to_int();
-                return ss_o.str();
-            }
-
-            case 'a':
-            case 'A':
-                if (!preal(obj)) {}
-                return std::string{ "" };
-
-            case 'e':
-            case 'E':
-                if (!preal(obj)) {}
-                return std::string{ "" };
-
-            case 'f':
-            case 'F':
-                if (!preal(obj)) {}
-                return std::string{ "" };
-
-            case 'g':
-            case 'G':
-                if (!preal(obj)) {}
-                return std::string{ "" };
+          case 'a':
+          case 'A':
+          {
+              if (!preal(obj)) {}
+              return std::string{ "" };
+          }
+              
+          case 'e':
+          case 'E':
+          {
+              if (!preal(obj)) {}
+              return std::string{ "" };
+          }
+          
+          case 'f':
+          case 'F':
+          {
+              if (!preal(obj)) {}
+              return std::string{ "" };
+          }
+          
+          case 'g':
+          case 'G':
+          {
+              if (!preal(obj)) {}
+              return std::string{ "" };
+          }
+          
         }
 
         return to_string(obj);
