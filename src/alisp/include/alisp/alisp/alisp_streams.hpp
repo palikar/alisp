@@ -18,6 +18,7 @@
 #pragma once
 
 #include <functional>
+#include <utility>
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/management/registry.hpp"
@@ -33,14 +34,16 @@ namespace alisp
 namespace al
 {
 
-inline management::Registry<streams::ALStream *, STREAM_REGISTRY_TAG> streams_registry;
+inline management::Registry<std::unique_ptr<streams::ALStream, std::function<void(streams::ALStream *)>>, STREAM_REGISTRY_TAG> streams_registry;
 
 
 inline std::reference_wrapper<streams::ALStream> cout = *streams::CoutStream::get_instance();
 inline std::reference_wrapper<streams::ALStream> cin  = *streams::CinStream::get_instance();
+inline std::reference_wrapper<streams::ALStream> cerr  = *streams::CoutStream::get_instance();
 
 inline uint32_t cout_id;
 inline uint32_t cin_id;
+inline uint32_t cerr_id;
 
 
 void init_streams();

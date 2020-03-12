@@ -31,8 +31,17 @@ namespace al
 void init_streams()
 {
     AL_DEBUG("Initing the streams. Binding cout and cin"s);
-    cout_id = streams_registry.put_resource(dynamic_cast<streams::ALStream *>(streams::CoutStream::get_instance()))->id;
-    cin_id  = streams_registry.put_resource(dynamic_cast<streams::ALStream *>(streams::CinStream::get_instance()))->id;
+
+    auto cout_stream = std::unique_ptr<streams::ALStream, std::function<void(streams::ALStream *)>>(
+        dynamic_cast<streams::ALStream *>(streams::CoutStream::get_instance()),
+        [](streams::ALStream*){});
+
+    auto cin_stream = std::unique_ptr<streams::ALStream, std::function<void(streams::ALStream *)>>(
+        dynamic_cast<streams::ALStream *>(streams::CinStream::get_instance()),
+        [](streams::ALStream*){});
+    
+    cout_id = streams_registry.emplace_resource(std::move(cout_stream))->id;
+    cin_id  = streams_registry.emplace_resource(std::move(cin_stream))->id;
 }
 
 void reset_system_streams()
@@ -59,13 +68,18 @@ void StreamsHelper::rebind_cin(ALObjectPtr t_stream)
 
 streams::ALStream *StreamsHelper::get_stream(ALObjectPtr t_stream)
 {
-    return al::streams_registry[object_to_resource(t_stream)];
+    return al::streams_registry[object_to_resource(t_stream)].get();
 }
 
 ALObjectPtr StreamsHelper::create_string_stream(ALObjectPtr t_string)
 {
     streams::StringStream *new_stream = new streams::StringStream(t_string->to_string());
-    auto new_id = al::streams_registry.put_resource(dynamic_cast<streams::ALStream *>(new_stream))->id;
+    
+    auto string_stream = std::unique_ptr<streams::ALStream, std::function<void(streams::ALStream *)>>(
+        dynamic_cast<streams::ALStream *>(new_stream),
+        [](streams::ALStream* ptr){ delete ptr;});
+    
+    auto new_id = al::streams_registry.emplace_resource(std::move(string_stream))->id;
     AL_DEBUG("New string stream: "s += std::to_string(new_id));
     return resource_to_object(new_id);
 }
@@ -73,7 +87,12 @@ ALObjectPtr StreamsHelper::create_string_stream(ALObjectPtr t_string)
 ALObjectPtr StreamsHelper::create_file_stream(ALObjectPtr t_file)
 {
     streams::FileStream *new_stream = new streams::FileStream(FileHelpers::get_file(t_file).m_file);
-    auto new_id = al::streams_registry.put_resource(dynamic_cast<streams::ALStream *>(new_stream))->id;
+
+    auto file_stream = std::unique_ptr<streams::ALStream, std::function<void(streams::ALStream *)>>(
+        dynamic_cast<streams::ALStream *>(new_stream),
+        [](streams::ALStream* ptr){ delete ptr;});
+    
+    auto new_id = al::streams_registry.emplace_resource(std::move(file_stream))->id;
     AL_DEBUG("New file stream: "s += std::to_string(new_id));
     return resource_to_object(new_id);
 }
@@ -82,7 +101,7 @@ void StreamsHelper::close_stream(ALObjectPtr t_stream)
 {
     const auto id = object_to_resource(t_stream);
     AL_DEBUG("Closing stream: "s += std::to_string(id));
-    streams::ALStream *old_stream = al::streams_registry[id];
+    streams::ALStream *old_stream = al::streams_registry[id].release();
     delete old_stream;
     al::streams_registry.destroy_resource(id);
 }
