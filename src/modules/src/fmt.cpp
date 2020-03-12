@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <bitset>
 #include <algorithm>
+#include <locale>
 
 #include "alisp/config.hpp"
 #include "alisp/alisp/alisp_module_helpers.hpp"
@@ -360,35 +361,66 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             case 'n':
             {
                 if (!pint(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj)); }
-                return std::string{ sign(obj) } += std::to_string(obj->to_int());
+                std::ostringstream ss_n;
+                ss_n.imbue(std::locale());
+                ss_n << std::string{ sign(obj) };
+                if (t_block.precision == -1) {
+                    ss_n << std::setprecision(t_block.precision);
+                }
+                ss_n << obj->to_real();
+                return ss_n.str();
             }
 
             case 'a':
             case 'A':
             {
                 if (!preal(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj)); }
-                return std::string{ sign(obj) } += std::to_string(obj->to_real());
+                std::ostringstream ss_a;
+                ss_a << std::string{ sign(obj) };
+                if (t_block.precision == -1) {
+                    ss_a << std::setprecision(t_block.precision);
+                }
+                ss_a << obj->to_real();
+                return ss_a.str();
             }
 
             case 'e':
             case 'E':
             {
                 if (!preal(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj)); }
-                return std::string{ sign(obj) } += std::to_string(obj->to_real());
+                std::ostringstream ss_e;
+                ss_e << std::string{ sign(obj) };
+                if (t_block.precision == -1) {
+                    ss_e << std::scientific;
+                }
+                ss_e << obj->to_real();
+                return ss_e.str();
             }
 
             case 'f':
             case 'F':
             {
                 if (!preal(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj)); }
-                return std::string{ sign(obj) } += std::to_string(obj->to_real());
+                std::ostringstream ss_f;
+                ss_f << std::string{ sign(obj) };
+                if (t_block.precision == -1) {
+                    ss_f << std::fixed << std::setprecision(t_block.precision);
+                }
+                ss_f << obj->to_real();
+                return ss_f.str();
             }
 
             case 'g':
             case 'G':
             {
                 if (!preal(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj)); }
-                return std::string{ sign(obj) } += std::to_string(obj->to_real());
+                std::ostringstream ss_g;
+                ss_g << std::string{ sign(obj) };
+                if (t_block.precision == -1) {
+                    ss_g << std::setprecision(t_block.precision);
+                }
+                ss_g << obj->to_real();
+                return ss_g.str();
             }
         }
 
@@ -491,6 +523,33 @@ ALObjectPtr Fprintfln(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
     return make_string(res);
 }
 
+
+ALObjectPtr Feprintf(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_min_size<1>(obj);
+    auto args = eval_transform(eval, obj);
+
+    auto str = args->i(0);
+    assert_string(str);
+
+    auto res = detail::format_string(str->to_string(), args);
+    al::cerr << res;
+    return make_string(res);
+}
+
+ALObjectPtr Feprintfln(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    assert_min_size<1>(obj);
+    auto args = eval_transform(eval, obj);
+
+    auto str = args->i(0);
+    assert_string(str);
+
+    auto res = detail::format_string(str->to_string(), args);
+    al::cerr << res << '\n';
+    return make_string(res);
+}
+
 }  // namespace fmt
 
 ALISP_EXPORT alisp::env::ModulePtr init_fmt(alisp::env::Environment *, alisp::eval::Evaluator *)
@@ -503,6 +562,8 @@ ALISP_EXPORT alisp::env::ModulePtr init_fmt(alisp::env::Environment *, alisp::ev
     alisp::module_defun(fmt_ptr, "fmt", &fmt::Ffmt);
     alisp::module_defun(fmt_ptr, "printf", &fmt::Fprintf);
     alisp::module_defun(fmt_ptr, "printfln", &fmt::Fprintfln);
+    alisp::module_defun(fmt_ptr, "eprintf", &fmt::Feprintf);
+    alisp::module_defun(fmt_ptr, "eprintfln", &fmt::Feprintfln);
 
     return Mfmt;
 }
