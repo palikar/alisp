@@ -21,6 +21,7 @@
 #include <string>
 #include <utility>
 #include <memory>
+#include <iostream>
 
 
 #ifdef ALISP_WIN

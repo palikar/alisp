@@ -91,6 +91,22 @@ template<typename T, size_t tag> class Registry
         for (size_t i = 0; i < INLINED; ++i) { inline_res[i].id = 0; }
     }
 
+    ~Registry()
+    {
+        std::cout << "asdsa"
+                  << "\n";
+        for (size_t i = 0; i < INLINED; ++i)
+        {
+            if (inline_res[i].id != 0) { inline_res[i].~Resource<T>(); }
+        }
+
+        for (size_t i = 0; i < dyn_res.size(); ++i)
+        {
+            if (dyn_res[i].id != 0) { dyn_res[i].~Resource<T>(); }
+        }
+        dyn_res.clear();
+    }
+
     Resource<T> *put_resource(T t_res)
     {
         auto id = next_id();
@@ -162,7 +178,6 @@ template<typename T, size_t tag> class Registry
 
         if (id_belongs(t_id))
         {
-
 
             if (std::find(std::begin(free_list), std::end(free_list), t_id) != std::end(free_list)) { return false; }
 

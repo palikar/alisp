@@ -47,7 +47,8 @@ struct FileObj
 };
 
 
-inline management::Registry<FileObj *, FILE_REGISTRY_TAG> files_registry;
+inline management::Registry<std::unique_ptr<FileObj, std::function<void(files::FileObj *)>>, FILE_REGISTRY_TAG>
+  files_registry;
 
 }  // namespace files
 

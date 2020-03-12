@@ -3,6 +3,8 @@
 #include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_object.hpp"
 
+#include <functional>
+
 namespace alisp
 {
 
@@ -25,9 +27,14 @@ ALObjectPtr FileHelpers::open_file(ALObjectPtr t_file, ALObjectPtr t_output, ALO
 
     std::fstream file_stream{ t_file->to_string(), mode };
 
-    auto file_ptr = new files::FileObj{ fs::path(t_file->to_string()), std::move(file_stream), output, input };
+    auto file_ptr = std::unique_ptr<files::FileObj, std::function<void(files::FileObj *)>>(
+      new files::FileObj{ fs::path(t_file->to_string()), std::move(file_stream), output, input },
+      [](files::FileObj *ptr) {
+          if (ptr->m_file.is_open()) { ptr->m_file.close(); }
+          delete ptr;
+      });
 
-    auto new_id  = files::files_registry.emplace_resource(file_ptr)->id;
+    auto new_id  = files::files_registry.emplace_resource(std::move(file_ptr))->id;
     auto new_obj = resource_to_object(new_id);
 
     new_obj->set_prop("file-path", t_file);
@@ -78,7 +85,7 @@ files::FileObj &FileHelpers::get_file(ALObjectPtr t_file)
 void FileHelpers::close_file(ALObjectPtr t_file)
 {
     const auto id = object_to_resource(t_file);
-    auto file     = files::files_registry[id];
+    auto file     = files::files_registry[id].release();
     AL_DEBUG("Closing file: "s += file->m_path);
     file->m_file.close();
     delete file;
