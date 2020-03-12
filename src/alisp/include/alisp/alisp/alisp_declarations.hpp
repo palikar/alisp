@@ -492,6 +492,11 @@ DEFUN(read_line, "read-line", R"((read-line)
 Read a single line form the standard input stream and return it.
 )");
 
+DEFUN(read_char, "read-char", R"((read-char)
+
+Read a single character form the standard input stream and return it.
+)");
+
 
 /*  _     _     _        */
 /* | |   (_)___| |_ ___  */

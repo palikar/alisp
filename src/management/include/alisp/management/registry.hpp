@@ -93,8 +93,6 @@ template<typename T, size_t tag> class Registry
 
     ~Registry()
     {
-        std::cout << "asdsa"
-                  << "\n";
         for (size_t i = 0; i < INLINED; ++i)
         {
             if (inline_res[i].id != 0) { inline_res[i].~Resource<T>(); }

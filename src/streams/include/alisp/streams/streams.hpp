@@ -66,6 +66,34 @@ class CoutStream : public ALStream
     std::string content() override { return ""; }
 };
 
+class CerrStream : public ALStream
+{
+  private:
+    inline static std::unique_ptr<CerrStream> m_instance;
+
+  public:
+    static CerrStream *get_instance()
+    {
+        if (!m_instance) { m_instance = std::make_unique<CerrStream>(); }
+        return m_instance.get();
+    }
+
+    CerrStream() {}
+
+    void write(const std::string &t_input) override { std::cerr << t_input; }
+    void write(const std::string_view &t_input) override { std::cerr << t_input; }
+    void write(const char *c_str) override { std::cerr << c_str; }
+    void write(char c) override { std::putc(c, stderr); }
+
+    int get_char() override { return 0; }
+    std::string get_chars(size_t) override { return ""; }
+    std::string get_line() override { return ""; }
+
+    bool hasmore() override { return true; }
+
+    std::string content() override { return ""; }
+};
+
 class CinStream : public ALStream
 {
   private:
@@ -84,7 +112,7 @@ class CinStream : public ALStream
     void write(const char *) override {}
     void write(char) override {}
 
-    int get_char() override { return std::getchar(); }
+    int get_char() override { return std::getc(stdin); }
 
     std::string get_chars(size_t count) override
     {

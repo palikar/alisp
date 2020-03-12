@@ -34,12 +34,14 @@ namespace alisp
 namespace al
 {
 
-inline management::Registry<std::unique_ptr<streams::ALStream, std::function<void(streams::ALStream *)>>, STREAM_REGISTRY_TAG> streams_registry;
+inline management::Registry<std::unique_ptr<streams::ALStream, std::function<void(streams::ALStream *)>>,
+                            STREAM_REGISTRY_TAG>
+  streams_registry;
 
 
 inline std::reference_wrapper<streams::ALStream> cout = *streams::CoutStream::get_instance();
+inline std::reference_wrapper<streams::ALStream> cerr = *streams::CerrStream ::get_instance();
 inline std::reference_wrapper<streams::ALStream> cin  = *streams::CinStream::get_instance();
-inline std::reference_wrapper<streams::ALStream> cerr  = *streams::CoutStream::get_instance();
 
 inline uint32_t cout_id;
 inline uint32_t cin_id;
@@ -56,6 +58,7 @@ struct StreamsHelper
   public:
     static void rebind_cout(ALObjectPtr t_stream);
     static void rebind_cin(ALObjectPtr t_stream);
+    static void rebind_cerr(ALObjectPtr t_stream);
 
     static streams::ALStream *get_stream(ALObjectPtr t_stream);
 
