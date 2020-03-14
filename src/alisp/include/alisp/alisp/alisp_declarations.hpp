@@ -337,6 +337,12 @@ Call the function pointed by `SYMBOL` and pass the symbols in `LIST`
 as arguments.
 )");
 
+DEFUN(apply, "apply", R"((apply SYMBOL (LIST))
+
+Call the function pointed by `SYMBOL` and pass the symbols in `LIST`
+as arguments.
+)");
+
 DEFUN(backquote, "backquote", R"((backquote LIST)
 
 Backquote the list `LIST`. `LIST is syntactic sugar for this function.

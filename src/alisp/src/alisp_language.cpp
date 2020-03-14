@@ -356,7 +356,7 @@ ALObjectPtr Flambda(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
     AL_CHECK(assert_list(obj->i(0)));
 
     AL_CHECK(if (!detail::check_arg_list(obj->i(0))) {
-        signal(Qdefun_signal, "Invalud argument list:", dump(obj->i(1)));
+        signal(Qdefun_signal, "Invalid argument list:", dump(obj->i(1)));
         return Qnil;
     });
 
@@ -585,6 +585,18 @@ ALObjectPtr Ffuncall(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     auto fun_obj = eval->eval(obj->i(0));
     auto args    = eval_transform(eval, splice(obj, 1));
+
+
+    return eval->handle_lambda(fun_obj, args);
+}
+
+
+ALObjectPtr Fapply(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<2>(obj));
+
+    auto fun_obj = eval->eval(obj->i(0));
+    auto args    = eval_transform(eval, obj->i(1));
 
 
     return eval->handle_lambda(fun_obj, args);
