@@ -13,24 +13,43 @@ namespace details
 
 }
 
+auto placeholder_sym = alisp::make_symbol("_");
 
 ALObjectPtr Fpartial(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(obj));
 
     auto fun = obj->i(0);
+    
+    ALObject::list_type args_list;
+    ALObject::list_type op_list;
 
-    // (partial '+ 1)
-    // (lambda (&rest a) `(apply + ,@rest))
+    op_list.push_back(fun);
 
-    // (partial '+ _ 1)
-    // (lambda (a &rest b) (+ a 1 rest))
+    size_t j = 0;
+    for (size_t i = 1; i < std::size(*obj); ++i)
+    {
+        auto o = eval->eval(obj->i(i));
+
+        if (placeholder_sym == o)
+        {
+            const auto s = std::string(1, char('a' + j++)) += "--";
+            args_list.push_back(make_symbol(s));
+            op_list.push_back(make_symbol(s));
+            continue;
+        }
+
+        op_list.push_back(o);
+    }
+
+    args_list.push_back(Qrest);
+    args_list.push_back(make_symbol("rest--"));
+
+    op_list.push_back(make_object(Qcomma_at, make_symbol("rest--")));
 
     return Flambda(
-      make_object(make_object(Qrest, make_symbol("rest--")),
-                  make_object(make_symbol("eval"),
-                              make_object(make_symbol("backquote"),
-                                          make_object(fun, obj->i(1), make_object(Qcomma_at, make_symbol("rest--")))))),
+      make_object(make_list(args_list),
+                  make_object(make_symbol("eval"), make_object(make_symbol("backquote"), make_list(op_list)))),
       env,
       eval);
 }
@@ -116,7 +135,8 @@ ALISP_EXPORT alisp::env::ModulePtr init_func(alisp::env::Environment *, alisp::e
 
     alisp::module_doc(fun_ptr, R"()");
 
-    alisp::module_defvar(fun_ptr, "_", alisp::make_symbol("_"));
+
+    alisp::module_defvar(fun_ptr, "_", func::placeholder_sym);
 
     alisp::module_defun(fun_ptr, "partial", &func::Fpartial);
     alisp::module_defun(fun_ptr, "thread-last", &func::Fthread_last);
