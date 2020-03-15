@@ -15,12 +15,25 @@ namespace details
 
 auto placeholder_sym = alisp::make_symbol("_");
 
+ALObjectPtr Fcompose(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_min_size<2>(obj));
+
+    auto fun_fin = obj->i(std::size(*obj) - 1);
+    auto res     = make_object(make_symbol("apply"), fun_fin, make_symbol("rest--"));
+
+    for (size_t i = std::size(*obj) - 2; i != 0; --i) { res = make_object(obj->i(i), res); }
+    res = make_object(obj->i(0), res);
+
+    return Flambda(make_object(make_object(Qrest, make_symbol("rest--")), res), env, eval);
+}
+
 ALObjectPtr Fpartial(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(obj));
 
     auto fun = obj->i(0);
-    
+
     ALObject::list_type args_list;
     ALObject::list_type op_list;
 
@@ -138,6 +151,7 @@ ALISP_EXPORT alisp::env::ModulePtr init_func(alisp::env::Environment *, alisp::e
 
     alisp::module_defvar(fun_ptr, "_", func::placeholder_sym);
 
+    alisp::module_defun(fun_ptr, "compose", &func::Fcompose);
     alisp::module_defun(fun_ptr, "partial", &func::Fpartial);
     alisp::module_defun(fun_ptr, "thread-last", &func::Fthread_last);
     alisp::module_defun(fun_ptr, "thread-first", &func::Fthread_first);

@@ -596,8 +596,7 @@ ALObjectPtr Fapply(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     AL_CHECK(assert_size<2>(obj));
 
     auto fun_obj = eval->eval(obj->i(0));
-    auto args    = eval_transform(eval, obj->i(1));
-
+    auto args    = eval_transform(eval, eval->eval(obj->i(1)));
 
     return eval->handle_lambda(fun_obj, args);
 }
