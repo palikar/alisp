@@ -109,7 +109,7 @@ std::pair<bool, int> LanguageEngine::eval_statement(std::string &command, bool e
     return { true, 0 };
 }
 
-void LanguageEngine::eval_file(const std::filesystem::path &t_path, bool insert_mod_path)
+std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_path, bool insert_mod_path)
 {
     AL_DEBUG("Evaluating file: "s += t_path);
     m_evaluator.set_current_file(t_path);
@@ -131,10 +131,15 @@ void LanguageEngine::eval_file(const std::filesystem::path &t_path, bool insert_
         auto file_content = utility::load_file(t_path);
         do_eval(file_content, t_path);
     }
+    catch (al_exit &ex)
+    {
+        return { false, ex.value() };
+    }
     catch (...)
     {
         handle_errors_lippincott<true>();
     }
+    return { true, 0 };
 }
 
 }  // namespace alisp

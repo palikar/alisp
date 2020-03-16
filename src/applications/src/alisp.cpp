@@ -34,14 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "alisp/applications/prompt.hpp"
 #include "alisp/alisp/alisp_engine.hpp"
 
-template<typename T>
-std::vector<T> select(std::vector<T> inVec, std::function<bool(const T&)> predicate)
-{
-    std::vector<T> result;
-    std::copy_if(inVec.begin(), inVec.end(), std::back_inserter(result), predicate);
-    return result;
-}
-
 
 int interactive(alisp::LanguageEngine &alisp_engine);
 
@@ -71,19 +63,13 @@ std::vector<std::string> alisp::prompt::get_completions(const std::string &t_wor
         }
     }
     
-    // auto pred = [&t_word](const std::string& word){
-    //                 return utility::starts_with(word, t_word);
-    //             };
-    // auto vec = select<std::string>(sym_vec, pred);
-
-    
-    
     return sym_vec;
 }
 
 void got_signal(int c)
 {
     signal(SIGINT, got_signal);
+    signal(SIGKILL, got_signal);
 
     if (g_alisp_engine)
     {
@@ -242,6 +228,7 @@ int main(int argc, char *argv[])
     sa.sa_handler = got_signal;
     sigfillset(&sa.sa_mask);
     sigaction(SIGINT, &sa, NULL);
+    sigaction(SIGKILL, &sa, NULL);
 
 
     if (!opts.input.empty())
@@ -262,7 +249,8 @@ int main(int argc, char *argv[])
             return 0;
         }
 
-        alisp_engine.eval_file(file_path);
+        auto [succ, val] = alisp_engine.eval_file(file_path);
+        if (!succ) { return val; }
         if (opts.interactive) { return interactive(alisp_engine); }
 
         return 0;
@@ -304,8 +292,8 @@ int interactive(alisp::LanguageEngine &alisp_engine)
         }
 
         auto [succ, val] = alisp_engine.eval_statement(command.value(), false);
-
         if (!succ) { return val; }
+        
     }
 
     return 0;

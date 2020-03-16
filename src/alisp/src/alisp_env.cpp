@@ -201,10 +201,11 @@ void Environment::load_module(eval::Evaluator *eval, const std::string t_file, c
     auto mod_ptr = loaded_mod->init_dynmod(this, eval);
     define_module(t_name, mod_ptr);
 
+    alias_module(t_name, t_name);
+    
     detail::ModuleChange mc{ *this, t_name };
     for (auto &eval_str : mod_ptr->eval_strings()) { eval->eval_string(eval_str); }
-    
-    alias_module(t_name, t_name);
+
 }
 
 void Environment::defer_callback(std::function<void()> t_callback)

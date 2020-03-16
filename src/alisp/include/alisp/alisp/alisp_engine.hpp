@@ -112,7 +112,7 @@ class LanguageEngine
 
     std::pair<bool, int> eval_statement(std::string &command, bool exit_on_error = true);
 
-    void eval_file(const std::filesystem::path &t_path, bool insert_mod_path = true);
+    std::pair<bool, int> eval_file(const std::filesystem::path &t_path, bool insert_mod_path = true);
 
     ALObjectPtr get_value(const std::string &t_sym_name) { return m_environment.find(make_symbol(t_sym_name)); }
 

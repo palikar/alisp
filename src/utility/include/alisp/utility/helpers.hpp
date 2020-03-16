@@ -19,6 +19,8 @@
 
 
 #include <tuple>
+#include <algorithm>
+#include <vector>
 #include <type_traits>
 
 
@@ -60,5 +62,12 @@ template<typename T> reversion_wrapper<T> reverse(T &&iterable)
     return { iterable };
 }
 
+template<typename T>
+std::vector<T> select(std::vector<T> inVec, std::function<bool(const T&)> predicate)
+{
+    std::vector<T> result;
+    std::copy_if(inVec.begin(), inVec.end(), std::back_inserter(result), predicate);
+    return result;
+}
 
 }  // namespace alisp::utility
