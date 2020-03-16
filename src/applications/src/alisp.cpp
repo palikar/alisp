@@ -34,10 +34,52 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "alisp/applications/prompt.hpp"
 #include "alisp/alisp/alisp_engine.hpp"
 
+template<typename T>
+std::vector<T> select(std::vector<T> inVec, std::function<bool(const T&)> predicate)
+{
+    std::vector<T> result;
+    std::copy_if(inVec.begin(), inVec.end(), std::back_inserter(result), predicate);
+    return result;
+}
+
+
 int interactive(alisp::LanguageEngine &alisp_engine);
 
 alisp::LanguageEngine *g_alisp_engine = nullptr;
 
+std::vector<std::string> alisp::prompt::get_completions(const std::string &t_word)
+{
+
+    
+    auto sym_vec = g_alisp_engine->get_symbols();
+    for (auto& [name, _] : g_alisp_engine->get_modules()) {
+        sym_vec.push_back(std::string(name) += ".");
+    }
+
+    for (auto& [name, _] : g_alisp_engine->get_modules().at("--main--")->root_scope()) {
+        sym_vec.push_back(name);
+    }
+
+    
+    if(std::find(std::begin(t_word), std::end(t_word), '.') != std::end(t_word)) {
+        auto parts = alisp::utility::split(t_word, '.');
+        auto pack = parts[0];
+        std::vector<std::string> words{};
+        for (auto& [name, _] : g_alisp_engine->get_modules().at(pack)->root_scope()) {
+            
+            sym_vec.push_back(pack + "." + name);
+        }
+    }
+    
+    // auto pred = [&t_word](const std::string& word){
+    //                 return utility::starts_with(word, t_word);
+    //             };
+    // auto vec = select<std::string>(sym_vec, pred);
+
+    
+    
+    return sym_vec;
+}
 
 void got_signal(int c)
 {
@@ -221,7 +263,7 @@ int main(int argc, char *argv[])
         }
 
         alisp_engine.eval_file(file_path);
-        if (opts.interactive) { interactive(alisp_engine); }
+        if (opts.interactive) { return interactive(alisp_engine); }
 
         return 0;
     }
@@ -229,7 +271,7 @@ int main(int argc, char *argv[])
     if (!opts.eval.empty())
     {
         auto [succ, val] = alisp_engine.eval_statement(opts.eval);
-        if (opts.interactive) { interactive(alisp_engine); }
+        if (opts.interactive) { return interactive(alisp_engine); }
         return val;
     }
 

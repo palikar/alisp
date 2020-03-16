@@ -35,11 +35,6 @@ namespace alisp::prompt
 std::vector<std::string> matches;
 size_t match_index = 0;
 
-std::vector<std::string> get_completions(const std::string &)
-{
-    return {};
-}
-
 char *completion_generator(const char *text, int state)
 {
 
@@ -81,8 +76,10 @@ void load_history()
     std::string line;
     while (std::getline(alisphist, line)) { add_history(line.c_str()); }
 }
+
 void init(std::string hist)
 {
+    rl_completer_quote_characters = "\"'";
     rl_attempted_completion_function = completer;
     history_file                     = std::move(hist);
     using_history();
@@ -92,7 +89,6 @@ void init(std::string hist)
 std::optional<std::string> repl(const std::string &prompt)
 {
     char *buf = readline(prompt.c_str());
-    ;
 
     if (buf == nullptr)
     {
@@ -115,13 +111,13 @@ SaveHistory::~SaveHistory()
     if (!fs::is_regular_file(history_file)) { return; }
 
     auto hist_list = history_list();
-    if (!hist_list) { return; }
+        if (!hist_list) { return; }
 
-    std::ofstream alisphist(history_file);
-    for (size_t i = 0; hist_list[i]; i++) { alisphist << hist_list[i]->line << '\n'; }
+        std::ofstream alisphist(history_file);
+        for (size_t i = 0; hist_list[i]; i++) { alisphist << hist_list[i]->line << '\n'; }
 
-    alisphist.close();
-}
+        alisphist.close();
+    }
 
 #else
 

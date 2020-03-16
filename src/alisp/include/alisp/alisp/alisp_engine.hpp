@@ -123,6 +123,24 @@ class LanguageEngine
         AL_DEBUG("Receiving signal: "s += std::to_string(t_c));
         m_evaluator.handle_signal(t_c);
     };
+
+    const std::vector<std::string> get_symbols() const
+    {
+        std::vector<std::string> vec;
+
+        for (auto [name, _] : env::Environment::g_global_symbol_table) {
+            vec.push_back(name);
+        }
+        
+        return vec;
+    }
+
+    const auto get_modules() const
+    {
+        return m_environment.get_modules();
+    }
+
+    
 };
 
 
