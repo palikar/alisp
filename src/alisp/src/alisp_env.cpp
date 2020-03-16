@@ -203,6 +203,21 @@ void Environment::load_module(eval::Evaluator *eval, const std::string t_file, c
     alias_module(t_name, t_name);
 }
 
+void Environment::defer_callback(std::function<void()> t_callback)
+{
+    if (m_stack.current_frame().size() == 1) { return; }
+    m_deferred_calls.emplace_back(m_stack.current_frame().size(), t_callback);
+}
+
+void Environment::resolve_callbacks()
+{
+    while (!m_deferred_calls.empty() and m_stack.current_frame().size() <= m_deferred_calls.back().first)
+    {
+        std::invoke(m_deferred_calls.back().second);
+        m_deferred_calls.pop_back();
+    }
+}
+
 void Environment::stack_dump() const
 {
     using namespace fmt;

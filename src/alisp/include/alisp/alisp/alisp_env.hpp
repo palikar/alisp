@@ -57,7 +57,8 @@ namespace detail
 struct CellStack
 {
   public:
-    using Scope      = std::unordered_map<std::string, ALObjectPtr>;
+    using Scope = std::unordered_map<std::string, ALObjectPtr>;
+    // using StackFrame = std::vector<std::pair<, std::vector<std::function<void()>>>>;
     using StackFrame = std::vector<Scope>;
     using Stack      = std::vector<StackFrame>;
 
@@ -159,6 +160,8 @@ class Environment
 
     size_t m_call_depth;
 
+    std::vector<std::pair<size_t, std::function<void()>>> m_deferred_calls;
+
 #ifdef ENABLE_STACK_TRACE
     std::vector<std::tuple<std::string, bool>> m_stack_trace;  // name, is_prime
     size_t m_unwind_defers{ 0 };
@@ -248,6 +251,10 @@ class Environment
     void put(const ALObjectPtr t_sym, ALObjectPtr t_val);
 
     void update(const ALObjectPtr t_sym, ALObjectPtr t_value);
+
+    void defer_callback(std::function<void()> t_callback);
+
+    void resolve_callbacks();
 
     void new_scope() { m_stack.push_scope(); }
 
@@ -418,7 +425,11 @@ struct ScopePushPop
 {
   public:
     explicit ScopePushPop(Environment &t_env) : m_env(t_env) { m_env.new_scope(); }
-    ~ScopePushPop() { m_env.destroy_scope(); }
+    ~ScopePushPop()
+    {
+        m_env.resolve_callbacks();
+        m_env.destroy_scope();
+    }
 
     ALISP_RAII_OBJECT(ScopePushPop);
 

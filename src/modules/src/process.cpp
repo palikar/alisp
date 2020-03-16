@@ -5,6 +5,7 @@
 
 #include <tuple>
 #include <utility>
+#include <memory>
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -42,13 +43,13 @@ static constexpr size_t SHELL     = 9;
 using opts = std::tuple<bufsize, defer_spawn, close_fds, session_leader, cwd, environment, input, output, error, shell>;
 
 // inline management::Registry<subprocess::Buffer, 0x05> buffer_registry;
-inline management::Registry<subprocess::Popen, 0x06> proc_registry;
+inline management::Registry<std::unique_ptr<subprocess::Popen>, 0x06> proc_registry;
 
 template<typename Args, typename Opts, size_t... I>
 inline auto open_proc(Args &&args, Opts &&options, std::index_sequence<I...>)
 {
-    return subprocess::Popen(std::forward<Args>(args),
-                             std::move<decltype(std::get<I>(options))>(std::get<I>(options))...);
+    return std::make_unique<subprocess::Popen>(std::forward<Args>(args),
+                                               std::move<decltype(std::get<I>(options))>(std::get<I>(options))...);
 }
 
 }  // namespace detail
@@ -58,7 +59,7 @@ auto process_stderr = alisp::make_symbol("stderr");
 auto process_pipe   = alisp::make_symbol("pipe");
 
 
-ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
 
@@ -127,9 +128,12 @@ ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     }
 
     auto new_id = detail::proc_registry
-                    .put_resource(detail::open_proc(
+                    .emplace_resource(detail::open_proc(
                       args, options, std::make_index_sequence<std::tuple_size<detail::opts>::value>()))
                     ->id;
+
+    env->defer_callback([id = new_id]() { detail::proc_registry.destroy_resource(id); });
+
     auto new_obj = resource_to_object(new_id);
     return new_obj;
 }
@@ -167,7 +171,7 @@ ALObjectPtr Fpid(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto pro = eval->eval(t_obj->i(0));
     AL_CHECK(assert_int(pro));
 
-    return make_int(detail::proc_registry[object_to_resource(pro)].pid());
+    return make_int(detail::proc_registry[object_to_resource(pro)]->pid());
 }
 
 ALObjectPtr Fretcode(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -177,7 +181,7 @@ ALObjectPtr Fretcode(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     auto pro = eval->eval(t_obj->i(0));
     AL_CHECK(assert_int(pro));
 
-    return make_int(detail::proc_registry[object_to_resource(pro)].retcode());
+    return make_int(detail::proc_registry[object_to_resource(pro)]->retcode());
 }
 
 ALObjectPtr Fwait(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -187,7 +191,7 @@ ALObjectPtr Fwait(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto pro = eval->eval(t_obj->i(0));
     AL_CHECK(assert_int(pro));
 
-    return make_int(detail::proc_registry[object_to_resource(pro)].wait());
+    return make_int(detail::proc_registry[object_to_resource(pro)]->wait());
 }
 
 ALObjectPtr Fpoll(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -197,7 +201,7 @@ ALObjectPtr Fpoll(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto pro = eval->eval(t_obj->i(0));
     AL_CHECK(assert_int(pro));
 
-    return make_int(detail::proc_registry[object_to_resource(pro)].poll());
+    return make_int(detail::proc_registry[object_to_resource(pro)]->poll());
 }
 
 ALObjectPtr Fstart(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -207,7 +211,7 @@ ALObjectPtr Fstart(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto pro = eval->eval(t_obj->i(0));
     AL_CHECK(assert_int(pro));
 
-    detail::proc_registry[object_to_resource(pro)].start_process();
+    detail::proc_registry[object_to_resource(pro)]->start_process();
     return Qt;
 }
 
@@ -222,11 +226,11 @@ ALObjectPtr Fkill(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     {
         auto sig = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(sig));
-        detail::proc_registry[object_to_resource(pro)].kill(static_cast<int>(sig->to_int()));
+        detail::proc_registry[object_to_resource(pro)]->kill(static_cast<int>(sig->to_int()));
         return Qt;
     }
 
-    detail::proc_registry[object_to_resource(pro)].kill();
+    detail::proc_registry[object_to_resource(pro)]->kill();
     return Qt;
 }
 
@@ -240,7 +244,7 @@ ALObjectPtr Fsend(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     AL_CHECK(assert_string(msgs));
 
     auto s = msgs->to_string();
-    return make_int(detail::proc_registry[object_to_resource(pro)].send(s.data(), s.size()));
+    return make_int(detail::proc_registry[object_to_resource(pro)]->send(s.data(), s.size()));
 }
 
 ALObjectPtr Fcommunicate(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -255,12 +259,12 @@ ALObjectPtr Fcommunicate(ALObjectPtr t_obj, env::Environment *, eval::Evaluator 
         auto msgs = eval->eval(t_obj->i(1));
         AL_CHECK(assert_string(msgs));
         auto s          = msgs->to_string();
-        auto [out, err] = detail::proc_registry[object_to_resource(pro)].communicate(s.data(), s.size());
+        auto [out, err] = detail::proc_registry[object_to_resource(pro)]->communicate(s.data(), s.size());
         return make_object(make_string(std::string{ out.buf.begin(), out.buf.end() }),
                            make_string(std::string{ err.buf.begin(), err.buf.end() }));
     }
 
-    auto [out, err] = detail::proc_registry[object_to_resource(pro)].communicate();
+    auto [out, err] = detail::proc_registry[object_to_resource(pro)]->communicate();
 
 
     return make_object(make_string(std::string{ out.buf.begin(), out.buf.end() }),

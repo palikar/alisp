@@ -626,6 +626,8 @@ ALObjectPtr Flet(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
     std::vector<std::pair<ALObjectPtr, ALObjectPtr>> cells;
     cells.reserve(std::size(varlist->children()));
 
+    env::detail::ScopePushPop spp{ *env };
+
     for (auto var : varlist->children())
     {
         if (plist(var))
@@ -640,7 +642,6 @@ ALObjectPtr Flet(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
         }
     }
 
-    env::detail::ScopePushPop spp{ *env };
 
     for (auto [ob, cell] : cells) { env->put(ob, cell); }
 

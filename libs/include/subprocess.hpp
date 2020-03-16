@@ -1113,6 +1113,20 @@ private:
  *13. start_process()    - Start the child process. Only to be used when
  *                         `defer_spawn` option was provided in Popen constructor.
  */
+std::vector<char*> strlist(std::vector<std::string> &input) {
+    std::vector<char*> result;
+
+    // remember the nullptr terminator
+    result.reserve(input.size()+1);
+
+    std::transform(begin(input), end(input),
+                   std::back_inserter(result),
+                   [](std::string &s) { return s.data(); }
+        );
+    result.push_back(nullptr);
+    return result;
+}
+
 class Popen
 {
 public:
@@ -1157,7 +1171,7 @@ public:
     Popen()
     {}
 
-    Popen(const Popen&) = default;
+    Popen(const Popen& p) = default;
     Popen& operator=(const Popen&) = default;
     Popen& operator=(Popen&&) = default;
     
@@ -1181,8 +1195,8 @@ public:
 
     int poll() noexcept(false);
 
-    // Does not fail, Caller is expected to recheck the
-    // status with a call to poll()
+// Does not fail, Caller is expected to recheck the
+// status with a call to poll()
     void kill(int sig_num = 9);
 
     void set_out_buf_cap(size_t cap) { stream_.set_out_buf_cap(cap); }
@@ -1248,10 +1262,11 @@ private:
     // Command in string format
   std::string args_;
     // Comamnd provided as sequence
-  std::vector<std::string> vargs_;
-  std::vector<char*> cargv_;
 
-  bool child_created_ = false;
+    std::vector<std::string> vargs_;
+    std::vector<std::string> cargv_;
+
+    bool child_created_ = false;
   // Pid of the child process
   int child_pid_ = -1;
 
@@ -1274,8 +1289,8 @@ inline void Popen::populate_c_argv()
 {
   cargv_.clear();
   cargv_.reserve(vargs_.size() + 1);
-  for (auto& arg : vargs_) cargv_.push_back(&arg[0]);
-  cargv_.push_back(nullptr);
+  for (auto& arg : vargs_) cargv_.push_back(arg);
+  // cargv_.push_back(nullptr);
 }
 
 inline void Popen::start_process() noexcept(false)
@@ -1665,9 +1680,9 @@ namespace detail {
         for (auto& kv : parent_->env_) {
           setenv(kv.first.c_str(), kv.second.c_str(), 1);
         }
-        sys_ret = execvp(parent_->exe_name_.c_str(), parent_->cargv_.data());
+        sys_ret = execvp(parent_->exe_name_.c_str(), strlist(parent_->cargv_).data());
       } else {
-        sys_ret = execvp(parent_->exe_name_.c_str(), parent_->cargv_.data());
+          sys_ret = execvp(parent_->exe_name_.c_str(), strlist(parent_->cargv_).data());
       }
 
       if (sys_ret == -1) throw OSError("execve failed", errno);
