@@ -51,6 +51,7 @@ namespace env
 extern ALObjectPtr intern(std::string name);
 extern void update_prime(ALObjectPtr t_sym, ALObjectPtr t_val);
 
+
 namespace detail
 {
 
@@ -282,6 +283,10 @@ class Environment
     void stack_dump() const;
 
     void callstack_dump() const;
+
+    auto get_modules() const {
+        return m_modules;
+    }
 
 #ifdef ENABLE_STACK_TRACE
 
