@@ -77,12 +77,20 @@ ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval
     if (contains(op, ":defer")) { std::get<detail::DEFER>(options) = defer_spawn{ true }; }
 
     if (auto [size, succ] = get_next(op, ":buff-size"); succ)
-    { std::get<detail::BUFSIZE>(options) = bufsize{ static_cast<int>(size->to_int()) }; }
+    {
+        auto s = eval->eval(size);
+        AL_CHECK(assert_int(s));
+        std::get<detail::BUFSIZE>(options) = bufsize{ static_cast<int>(s->to_int()) };
+    }
 
     if (contains(op, ":close-fds")) { std::get<detail::CLOSE_FDS>(options) = close_fds{ true }; }
 
     if (auto [cwd_str, succ] = get_next(op, ":cwd"); succ)
-    { std::get<detail::CWD>(options) = cwd{ cwd_str->to_string() }; }
+    {
+        auto s = eval->eval(cwd_str);
+        AL_CHECK(assert_string(s));
+        std::get<detail::CWD>(options) = cwd{ s->to_string() };
+    }
 
     if (contains(op, ":shell")) { std::get<detail::SHELL>(options) = shell{ true }; }
 
@@ -90,12 +98,12 @@ ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval
 
     if (auto [in, succ] = get_next(op, ":input"); succ)
     {
-        if (eq(in, process_stderr)) { std::get<detail::INPUT>(options) = input{ STDERR }; }
-        else if (eq(in, process_stdout))
+        if (eq(eval->eval(in), process_stderr)) { std::get<detail::INPUT>(options) = input{ STDERR }; }
+        else if (eq(eval->eval(in), process_stdout))
         {
             std::get<detail::INPUT>(options) = input{ STDOUT };
         }
-        else if (eq(in, process_pipe))
+        else if (eq(eval->eval(in), process_pipe))
         {
             std::get<detail::INPUT>(options) = input{ PIPE };
         }
@@ -103,12 +111,13 @@ ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval
 
     if (auto [out, succ] = get_next(op, ":output"); succ)
     {
-        if (eq(out, process_stderr)) { std::get<detail::OUTPUT>(options) = output{ STDERR }; }
-        else if (eq(out, process_stdout))
+
+        if (eq(eval->eval(out), process_stderr)) { std::get<detail::OUTPUT>(options) = output{ STDERR }; }
+        else if (eq(eval->eval(out), process_stdout))
         {
             std::get<detail::OUTPUT>(options) = output{ STDOUT };
         }
-        else if (eq(out, process_pipe))
+        else if (eq(eval->eval(out), process_pipe))
         {
             std::get<detail::OUTPUT>(options) = output{ PIPE };
         }
@@ -116,12 +125,12 @@ ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval
 
     if (auto [err, succ] = get_next(op, ":error"); succ)
     {
-        if (eq(err, process_stderr)) { std::get<detail::ERROR>(options) = error{ STDERR }; }
-        else if (eq(err, process_stdout))
+        if (eq(eval->eval(err), process_stderr)) { std::get<detail::ERROR>(options) = error{ STDERR }; }
+        else if (eq(eval->eval(err), process_stdout))
         {
             std::get<detail::ERROR>(options) = error{ STDOUT };
         }
-        else if (eq(err, process_pipe))
+        else if (eq(eval->eval(err), process_pipe))
         {
             std::get<detail::ERROR>(options) = error{ PIPE };
         }
@@ -293,6 +302,8 @@ ALISP_EXPORT alisp::env::ModulePtr init_process(alisp::env::Environment *, alisp
     alisp::module_defun(prop_ptr, "wait", &process::Fwait);
     alisp::module_defun(prop_ptr, "poll", &process::Fpoll);
     alisp::module_defun(prop_ptr, "kill", &process::Fkill);
+    alisp::module_defun(prop_ptr, "retcode", &process::Fretcode);
+
 
     alisp::module_defun(prop_ptr, "send", &process::Fsend);
     alisp::module_defun(prop_ptr, "communicate", &process::Fcommunicate);

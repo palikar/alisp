@@ -160,7 +160,7 @@ class Environment
 
     size_t m_call_depth;
 
-    std::vector<std::pair<size_t, std::function<void()>>> m_deferred_calls;
+    std::vector<std::tuple<size_t, size_t, std::function<void()>>> m_deferred_calls;
 
 #ifdef ENABLE_STACK_TRACE
     std::vector<std::tuple<std::string, bool>> m_stack_trace;  // name, is_prime

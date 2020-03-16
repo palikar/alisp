@@ -206,14 +206,16 @@ void Environment::load_module(eval::Evaluator *eval, const std::string t_file, c
 void Environment::defer_callback(std::function<void()> t_callback)
 {
     if (m_stack.current_frame().size() == 1) { return; }
-    m_deferred_calls.emplace_back(m_stack.current_frame().size(), t_callback);
+    m_deferred_calls.emplace_back(m_stack.stacks.size(), m_stack.current_frame().size(), t_callback);
 }
 
 void Environment::resolve_callbacks()
 {
-    while (!m_deferred_calls.empty() and m_stack.current_frame().size() <= m_deferred_calls.back().first)
+    while (!m_deferred_calls.empty()
+           and (m_stack.current_frame().size() <= std::get<0>(m_deferred_calls.back())
+                and m_stack.stacks.size() <= std::get<1>(m_deferred_calls.back())))
     {
-        std::invoke(m_deferred_calls.back().second);
+        std::invoke(std::get<2>(m_deferred_calls.back()));
         m_deferred_calls.pop_back();
     }
 }
