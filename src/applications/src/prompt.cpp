@@ -77,6 +77,7 @@ void load_history()
     while (std::getline(alisphist, line)) { add_history(line.c_str()); }
 }
 
+
 void init(std::string hist)
 {
     rl_completer_quote_characters    = "\"'";
@@ -84,6 +85,8 @@ void init(std::string hist)
     history_file                     = std::move(hist);
     using_history();
     if (!history_file.empty()) { load_history(); }
+    rl_parse_and_bind(rl_brackets_compl);
+    rl_parse_and_bind(rl_quote_compl);
 }
 
 std::optional<std::string> repl(const std::string &prompt)

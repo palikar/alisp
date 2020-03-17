@@ -27,6 +27,8 @@
 
 namespace alisp::prompt
 {
+inline char rl_brackets_compl[30] = "\"(\": \"\\C-v()\\e[D\"";
+inline char rl_quote_compl[30]    = "\"\\\"\": \"\\C-v\\\"\\C-v\\\"\\e[D\"";
 
 class SaveHistory
 {

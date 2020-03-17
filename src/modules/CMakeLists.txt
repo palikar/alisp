@@ -33,7 +33,8 @@ add_dynmodule(alisp_module_xml xml src/xml.cpp)
 
 
 target_link_libraries(alisp_module_xml PUBLIC tinyxml2)
-target_link_libraries(alisp_module_xml PUBLIC alisp_management)
+
+target_link_libraries(alisp_module_process PUBLIC alisp_management)
 
 if(ENABLE_TESTING)
     add_subdirectory(tests)
