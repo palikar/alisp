@@ -79,7 +79,7 @@ void load_history()
 
 void init(std::string hist)
 {
-    rl_completer_quote_characters = "\"'";
+    rl_completer_quote_characters    = "\"'";
     rl_attempted_completion_function = completer;
     history_file                     = std::move(hist);
     using_history();
@@ -111,13 +111,13 @@ SaveHistory::~SaveHistory()
     if (!fs::is_regular_file(history_file)) { return; }
 
     auto hist_list = history_list();
-        if (!hist_list) { return; }
+    if (!hist_list) { return; }
 
-        std::ofstream alisphist(history_file);
-        for (size_t i = 0; hist_list[i]; i++) { alisphist << hist_list[i]->line << '\n'; }
+    std::ofstream alisphist(history_file);
+    for (size_t i = 0; hist_list[i]; i++) { alisphist << hist_list[i]->line << '\n'; }
 
-        alisphist.close();
-    }
+    alisphist.close();
+}
 
 #else
 

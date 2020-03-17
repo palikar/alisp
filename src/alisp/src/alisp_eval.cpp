@@ -336,12 +336,12 @@ void Evaluator::handle_signal(int t_c)
         m_signal = t_c;
         m_status_flags |= SIGINT_FLAG;
     }
-    else if (t_c == SIGKILL)
+    else if (t_c == SIGTERM)
     {
-        AL_DEBUG("Handling a SIGKILL"s);
-        
+        AL_DEBUG("Handling a SIGTERM"s);
+
         m_signal = t_c;
-        m_status_flags |= SIGKILL_FLAG;
+        m_status_flags |= SIGTERM_FLAG;
     }
 }
 
@@ -357,10 +357,10 @@ void Evaluator::reset_evaluation_flag()
 
 void Evaluator::check_status()
 {
-    if ((m_status_flags & SIGKILL_FLAG) > 0)
+    if ((m_status_flags & SIGTERM_FLAG) > 0)
     {
         m_status_flags &= ~SIGINT_FLAG;
-        throw al_exit(0);
+        throw al_exit(1);
     }
 
     if ((m_status_flags & SIGINT_FLAG) > 0)

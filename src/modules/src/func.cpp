@@ -20,12 +20,12 @@ ALObjectPtr Fcompose(ALObjectPtr obj, env::Environment *env, eval::Evaluator *ev
     AL_CHECK(assert_min_size<2>(obj));
 
     auto fun_fin = obj->i(std::size(*obj) - 1);
-    auto res     = make_object(make_symbol("apply"), fun_fin, make_symbol("rest--"));
+    auto res     = make_object(env::intern("apply"), fun_fin, env::intern("rest--"));
 
     for (size_t i = std::size(*obj) - 2; i != 0; --i) { res = make_object(obj->i(i), res); }
     res = make_object(obj->i(0), res);
 
-    return Flambda(make_object(make_object(Qrest, make_symbol("rest--")), res), env, eval);
+    return Flambda(make_object(make_object(Qrest, env::intern("rest--")), res), env, eval);
 }
 
 ALObjectPtr Fpartial(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
@@ -47,8 +47,8 @@ ALObjectPtr Fpartial(ALObjectPtr obj, env::Environment *env, eval::Evaluator *ev
         if (placeholder_sym == o)
         {
             const auto s = std::string(1, char('a' + j++)) += "--";
-            args_list.push_back(make_symbol(s));
-            op_list.push_back(make_symbol(s));
+            args_list.push_back(env::intern(s));
+            op_list.push_back(env::intern(s));
             continue;
         }
 
@@ -56,13 +56,13 @@ ALObjectPtr Fpartial(ALObjectPtr obj, env::Environment *env, eval::Evaluator *ev
     }
 
     args_list.push_back(Qrest);
-    args_list.push_back(make_symbol("rest--"));
+    args_list.push_back(env::intern("rest--"));
 
-    op_list.push_back(make_object(Qcomma_at, make_symbol("rest--")));
+    op_list.push_back(make_object(Qcomma_at, env::intern("rest--")));
 
     return Flambda(
       make_object(make_list(args_list),
-                  make_object(make_symbol("eval"), make_object(make_symbol("backquote"), make_list(op_list)))),
+                  make_object(env::intern("eval"), make_object(env::intern("backquote"), make_list(op_list)))),
       env,
       eval);
 }

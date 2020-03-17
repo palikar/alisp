@@ -733,7 +733,7 @@ template<class Environment> class ALParser : public ParserBase
 
             if (check_char('.'))
             {
-                package_refs.push_back(quote(make_symbol(detail::Position::str(temp, this->position))));
+                package_refs.push_back(quote(env::intern(std::string{ detail::Position::str(temp, this->position) })));
                 ++this->position;
                 temp = this->position;
             }
@@ -743,8 +743,8 @@ template<class Environment> class ALParser : public ParserBase
 
         if (!package_refs.empty())
         {
-            package_refs.insert(package_refs.begin(), make_symbol("modref"));
-            package_refs.push_back(quote(make_symbol(word)));
+            package_refs.insert(package_refs.begin(), env::intern("modref"));
+            package_refs.push_back(quote(env::intern(std::string{ word })));
             return make_object(package_refs);
         }
 
@@ -756,7 +756,7 @@ template<class Environment> class ALParser : public ParserBase
             case hash::hash("--LINE--"): return make_int(position.line);
         }
 
-        return env::intern(std::string(word));
+        return env::intern(std::string{ word });
     }
 
     ALObjectPtr parse_string()
@@ -795,7 +795,7 @@ template<class Environment> class ALParser : public ParserBase
         skip_whitespace();
         auto obj = parse_next();
         if (!obj) { PARSE_ERROR("Expected expression after \'"); }
-        return make_object(make_symbol("quote"), obj);
+        return make_object(env::intern("quote"), obj);
     }
 
     ALObjectPtr parse_backquote()

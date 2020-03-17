@@ -51,7 +51,7 @@ class Evaluator
 
     static constexpr std::uint32_t SIGINT_FLAG            = 0x0001;
     static constexpr std::uint32_t ACTIVE_EVALUATION_FLAG = 0x0002;
-    static constexpr std::uint32_t SIGKILL_FLAG            = 0x0004;
+    static constexpr std::uint32_t SIGTERM_FLAG           = 0x0004;
 
 
   public:

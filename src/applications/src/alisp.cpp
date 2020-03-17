@@ -42,34 +42,27 @@ alisp::LanguageEngine *g_alisp_engine = nullptr;
 std::vector<std::string> alisp::prompt::get_completions(const std::string &t_word)
 {
 
-    
+
     auto sym_vec = g_alisp_engine->get_symbols();
-    for (auto& [name, _] : g_alisp_engine->get_modules()) {
-        sym_vec.push_back(std::string(name) += ".");
-    }
+    for (auto &[name, _] : g_alisp_engine->get_modules()) { sym_vec.push_back(std::string(name) += "."); }
 
-    for (auto& [name, _] : g_alisp_engine->get_modules().at("--main--")->root_scope()) {
-        sym_vec.push_back(name);
-    }
+    for (auto &[name, _] : g_alisp_engine->get_modules().at("--main--")->root_scope()) { sym_vec.push_back(name); }
 
-    
-    if(std::find(std::begin(t_word), std::end(t_word), '.') != std::end(t_word)) {
+
+    if (std::find(std::begin(t_word), std::end(t_word), '.') != std::end(t_word))
+    {
         auto parts = alisp::utility::split(t_word, '.');
-        auto pack = parts[0];
+        auto pack  = parts[0];
         std::vector<std::string> words{};
-        for (auto& [name, _] : g_alisp_engine->get_modules().at(pack)->root_scope()) {
-            
-            sym_vec.push_back(pack + "." + name);
-        }
+        for (auto &[name, _] : g_alisp_engine->get_modules().at(pack)->root_scope())
+        { sym_vec.push_back(pack + "." + name); }
     }
-    
+
     return sym_vec;
 }
 
 void got_signal(int c)
 {
-    signal(SIGINT, got_signal);
-    signal(SIGKILL, got_signal);
 
     if (g_alisp_engine)
     {
@@ -228,7 +221,7 @@ int main(int argc, char *argv[])
     sa.sa_handler = got_signal;
     sigfillset(&sa.sa_mask);
     sigaction(SIGINT, &sa, NULL);
-    sigaction(SIGKILL, &sa, NULL);
+    sigaction(SIGTERM, &sa, NULL);
 
 
     if (!opts.input.empty())
@@ -259,6 +252,7 @@ int main(int argc, char *argv[])
     if (!opts.eval.empty())
     {
         auto [succ, val] = alisp_engine.eval_statement(opts.eval);
+        if (!succ) { return val; }
         if (opts.interactive) { return interactive(alisp_engine); }
         return val;
     }
@@ -293,7 +287,6 @@ int interactive(alisp::LanguageEngine &alisp_engine)
 
         auto [succ, val] = alisp_engine.eval_statement(command.value(), false);
         if (!succ) { return val; }
-        
     }
 
     return 0;

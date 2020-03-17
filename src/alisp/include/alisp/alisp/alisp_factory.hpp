@@ -198,6 +198,28 @@ inline auto make_prime(Prim::func_type t_function, std::string t_name, [[maybe_u
     return sym;
 }
 
+
+inline auto operator"" _al(unsigned long long t_val)
+{
+    return make_int(t_val);
+}
+
+inline auto operator"" _al(long double t_val)
+{
+    return make_real(t_val);
+}
+
+inline auto operator"" _al(const char *t_name)
+{
+    return make_string(t_name);
+}
+
+inline auto operator"" _sym(const char *t_name)
+{
+    return make_symbol(t_name);
+}
+
+
 inline auto getraw(ALObjectPtr &t_obj)
 {
     if constexpr (USING_SHARED) { return t_obj.get(); }

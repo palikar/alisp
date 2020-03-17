@@ -43,6 +43,6 @@ static std::string history_file;
 void init(std::string history_file = "");
 std::optional<std::string> repl(const std::string &prompt);
 
-extern std::vector<std::string> get_completions(const std::string&);
-    
+extern std::vector<std::string> get_completions(const std::string &);
+
 }  // namespace alisp::prompt

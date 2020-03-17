@@ -202,10 +202,9 @@ void Environment::load_module(eval::Evaluator *eval, const std::string t_file, c
     define_module(t_name, mod_ptr);
 
     alias_module(t_name, t_name);
-    
+
     detail::ModuleChange mc{ *this, t_name };
     for (auto &eval_str : mod_ptr->eval_strings()) { eval->eval_string(eval_str); }
-
 }
 
 void Environment::defer_callback(std::function<void()> t_callback)

@@ -42,8 +42,8 @@ DEFVAR(Qcurrent_module, Vcurrent_module, "--module--", make_string(""));
 DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--", make_list());
 DEFVAR(Qlicense, Vlicense, "--al-license--", make_string(AL_LICENSE));
 
-DEFVAR(Qload_signal, Vload_signal, "load-signal", make_symbol("load-signal"));
-DEFVAR(Qdefun_signal, Vdefun_signal, "defun-signal", make_symbol("defun-signal"));
+DEFVAR(Qload_signal, Vload_signal, "load-signal", env::intern("load-signal"));
+DEFVAR(Qdefun_signal, Vdefun_signal, "defun-signal", env::intern("defun-signal"));
 
 DEFSYM(Qoptional, "&optional", R"(Used in an argument list to signify that the next arguments are optional.)");
 DEFSYM(Qrest,

@@ -148,7 +148,7 @@ struct JSONParser
 
         for (; offset < str.size();)
         {
-            auto key = alisp::make_symbol(":"s += parse_next(str, offset)->to_string());
+            auto key = alisp::env::intern(":"s += parse_next(str, offset)->to_string());
 
             consume_ws(str, offset);
             if (str.at(offset) != ':')

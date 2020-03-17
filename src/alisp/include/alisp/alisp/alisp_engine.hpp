@@ -128,19 +128,12 @@ class LanguageEngine
     {
         std::vector<std::string> vec;
 
-        for (auto [name, _] : env::Environment::g_global_symbol_table) {
-            vec.push_back(name);
-        }
-        
+        for (auto [name, _] : env::Environment::g_global_symbol_table) { vec.push_back(name); }
+
         return vec;
     }
 
-    const auto get_modules() const
-    {
-        return m_environment.get_modules();
-    }
-
-    
+    const auto get_modules() const { return m_environment.get_modules(); }
 };
 
 

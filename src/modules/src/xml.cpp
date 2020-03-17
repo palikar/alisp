@@ -45,14 +45,14 @@ ALObjectPtr node_to_sexp(const XMLNode *t_node)
         ALObject::list_type sub_list;
         for (const auto *at = child->FirstAttribute(); at; at = at->Next())
         {
-            sub_list.push_back(make_symbol(":@"s += std::string(at->Name())));
+            sub_list.push_back(env::intern(":@"s += std::string(at->Name())));
             sub_list.push_back(make_string(std::string(at->Value())));
         }
 
         auto text = child->GetText();
         if (text)
         {
-            sub_list.push_back(make_symbol(":#text"));
+            sub_list.push_back(env::intern(":#text"));
             sub_list.push_back(make_string(text));
         }
         auto l = make_list(sub_list);
@@ -63,7 +63,7 @@ ALObjectPtr node_to_sexp(const XMLNode *t_node)
     ALObject::list_type map_list;
     for (auto &[name, list] : val_map)
     {
-        map_list.push_back(make_symbol(name));
+        map_list.push_back(env::intern(name));
 
         if (list.size() == 1)
         {
@@ -96,7 +96,7 @@ ALObjectPtr xml_to_sexp(XMLDocument &t_doc)
         auto text = child->GetText();
         if (text)
         {
-            lis.push_back(make_symbol(":#text"));
+            lis.push_back(env::intern(":#text"));
             lis.push_back(make_string(text));
         }
 
@@ -107,11 +107,11 @@ ALObjectPtr xml_to_sexp(XMLDocument &t_doc)
         {
             auto at_name  = ":@"s += std::string(at->Name());
             auto at_value = std::string(at->Value());
-            child_obj->children().push_back(make_symbol(at_name));
+            child_obj->children().push_back(env::intern(at_name));
             child_obj->children().push_back(make_string(at_value));
         }
 
-        lis.push_back(make_symbol(name));
+        lis.push_back(env::intern(name));
         lis.push_back(child_obj);
     }
 
