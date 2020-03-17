@@ -1,0 +1,82 @@
+.TH Alisp 1
+.SH DESCRIPTION
+The alisp programming language
+.SH SYNOPSIS
+.B alisp
+[\fB\-v\fR]
+[\fB\-h\fR]
+[\fB\-i\fR]
+[\fB\-d\fR]
+[\fB\-l\fR]
+[\fB\-Q\fR]
+[\fB\-n\fR]
+[\fB\-I\fR \fIinclude\fR]...
+[\fB\-W\fR \fIwarning\fR]...
+[\fB\-e\fR \fIexpr\fR]
+[\fBfile\fR [\fIargs\fR]...]
+.SH OPTIONS
+.TP
+.BR \-v ", " \-\-version
+Show the version and build information of the current executable
+.TP
+.BR \-h ", " \-\-help
+Print help information.
+.TP
+.BR \-i ", " \-\-interactive
+Start interactive mode after file evaluation.
+.TP
+.BR \-d ", " \-\-parse-debug
+Debug output from the parser
+.TP
+.BR \-l ", " \-\-eval-debug
+Debug output from the evaluator.
+.TP
+.BR \-Q ", " \-\-quick-start
+Do not loady any scripts on initialization.
+.TP
+.BR \-n ", " \-\-no-assertions
+Disables debug mode
+.TP
+.BR \-I " " \fIdirectory\fR
+Extra include directories for module imports.
+.TP
+.BR \-W " " \fIwarning\fR
+Input string to evaluate
+.TP
+.BR \-e ", " \-\-eval " " \fIexpr\fR
+Show the version and build information of the current executable
+.TP
+.BR \fIfile\fR " "
+Input file
+.TP
+.BR \fIargs\fR...
+Arguments for the script being ran.
+.SH ENVIRONMENT VARIABLES
+.TP
+.BR ALPATH:
+A list of direcotries where the alisp interpreter will look for packages to load.
+.TP
+.BR ALISPRC:
+If set, the the inteprter will evaluate this file on startup and not ~/.alisprc.
+.TP
+.BR ALNODEBUG:
+If set, the interpreter will be started without debug mode and all of the assertions will be disabled.
+
+.SH Resources
+.BR Repository:
+https://github.com/palikar/alisp
+
+.TR
+.BR Documentation:
+https://alisp.readthedocs.io/en/latest/
+
+.TR
+.BR Bug tracking:
+https://github.com/palikar/alisp/issues
+.SH Authors
+
+.TR
+Original creator:
+Stanislav Arnaudov <https://github.com/palikar/>
+.SH LICENSE
+.BR GPLv2
