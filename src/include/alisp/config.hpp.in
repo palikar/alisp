@@ -69,6 +69,7 @@ inline constexpr size_t MEMORY_BUFFER_REGISTRY_TAG = 0x04;
 
 inline constexpr auto ENV_VAR_MODPATHS = "ALPATH";
 inline constexpr auto ENV_VAR_RC = "ALISPRC";
+inline constexpr auto ENV_VAR_NODEBUG = "ALNODEBUG";
 inline constexpr auto PROMPT_HISTORY_FILE = ".alisp_history";
 
 
@@ -77,7 +78,11 @@ inline constexpr auto ENV_VAR_HELP = R"(
 will look for packages to load.
 
         ALISPRC: If set, the the inteprter will evaluate this file
-on startup and not ~/.alisprc)";
+on startup and not ~/.alisprc .
+
+        ALNODEBUG: If set, the interpreter will be staxrted without
+debug mode and all of the assertions will be disabled.
+)";
 
 inline constexpr auto AL_LICENSE = "GPLv2";
 inline constexpr auto AL_LICENSE_TEXT = R"(

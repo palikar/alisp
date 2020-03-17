@@ -53,7 +53,8 @@ enum class EngineSettings
 {
     PARSER_DEBUG,
     EVAL_DEBUG,
-    QUICK_INIT
+    QUICK_INIT,
+    DISABLE_DEBUG_MODE
 };
 
 

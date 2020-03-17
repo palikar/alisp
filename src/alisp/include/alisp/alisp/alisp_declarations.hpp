@@ -41,6 +41,7 @@ DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--", make_object(AL_EXTRA_MODPATHS, AL_E
 DEFVAR(Qcurrent_module, Vcurrent_module, "--module--", make_string(""));
 DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--", make_list());
 DEFVAR(Qlicense, Vlicense, "--al-license--", make_string(AL_LICENSE));
+DEFVAR(Qdebug_mode, Vdebug_mode, "--debug-mode--", Qt);
 
 DEFVAR(Qload_signal, Vload_signal, "load-signal", env::intern("load-signal"));
 DEFVAR(Qdefun_signal, Vdefun_signal, "defun-signal", env::intern("defun-signal"));

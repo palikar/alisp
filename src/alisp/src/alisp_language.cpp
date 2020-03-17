@@ -686,6 +686,7 @@ ALObjectPtr Fexit(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Fassert(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
+    if (is_falsy(Vdebug_mode)) { return Qt; }
     AL_CHECK(assert_size<1>(obj));
     auto val = evl->eval(obj->i(0));
 
@@ -700,6 +701,7 @@ ALObjectPtr Fassert(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Fassert_not(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
+    if (is_falsy(Vdebug_mode)) { return Qt; }
     AL_CHECK(assert_size<1>(obj));
     auto val = evl->eval(obj->i(0));
 

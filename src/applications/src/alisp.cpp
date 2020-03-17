@@ -97,6 +97,7 @@ struct Options
     bool interactive{ false };
     bool show_help{ false };
     bool quick{ false };
+    bool no_debug{ false };
 };
 
 Options opts{};
@@ -113,6 +114,8 @@ int main(int argc, char *argv[])
       opts.parse_debug << clipp::option("-d", "--parse-debug") % "Debug output from the parser.",
       opts.eval_debug << clipp::option("-l", "--eval-debug") % "Debug output from the evaluator.",
       opts.quick << clipp::option("-Q", "--quick-start") % "Do not loady any scripts on initialization.",
+
+      opts.no_debug << clipp::option("-n", "--no-assertions") % "Disables debug mode",
 
 #ifdef DEUBG_LOGGING
       opts.debug_logging << clipp::option("-DL", "--debug-logging") % "Enable lots of debuggin output.",
@@ -206,10 +209,12 @@ int main(int argc, char *argv[])
 
 
     std::vector<alisp::EngineSettings> settings;
+    settings.reserve(4);
 
     if (opts.eval_debug) settings.push_back(alisp::EngineSettings::EVAL_DEBUG);
     if (opts.parse_debug) settings.push_back(alisp::EngineSettings::PARSER_DEBUG);
     if (opts.quick) settings.push_back(alisp::EngineSettings::QUICK_INIT);
+    if (opts.no_debug) settings.push_back(alisp::EngineSettings::DISABLE_DEBUG_MODE);
 
     alisp::LanguageEngine alisp_engine{
         settings, std::move(opts.args), std::move(opts.includes), std::move(opts.warnings)

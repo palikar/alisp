@@ -87,6 +87,8 @@ void LanguageEngine::init_system()
     Vcurrent_module->set("--main--");
 
     if (!check(EngineSettings::QUICK_INIT)) { load_init_scripts(); }
+
+    Vdebug_mode = check(EngineSettings::DISABLE_DEBUG_MODE) or utility::env_bool(ENV_VAR_NODEBUG) ? Qnil : Qt;
 }
 
 std::pair<bool, int> LanguageEngine::eval_statement(std::string &command, bool exit_on_error)
