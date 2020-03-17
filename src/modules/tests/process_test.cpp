@@ -40,5 +40,5 @@ TEST_CASE("Process Test", "[process]")
     auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     eval::Evaluator eval(env, p.get());
 
-    auto process = init_process(&env, &eval);
+    // auto process = init_process(&env, &eval);
 }

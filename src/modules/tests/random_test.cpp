@@ -40,5 +40,5 @@ TEST_CASE("Random Test", "[random]")
     auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     eval::Evaluator eval(env, p.get());
 
-    auto random = init_random(&env, &eval);
+    // auto random = init_random(&env, &eval);
 }

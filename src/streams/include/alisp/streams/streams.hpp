@@ -143,7 +143,7 @@ class FileStream : public ALStream
     std::fstream &m_stream;
 
   public:
-    FileStream(std::fstream &t_stream) : m_stream(t_stream) {}
+    explicit FileStream(std::fstream &t_stream) : m_stream(t_stream) {}
 
 
     void write(const std::string &t_input) override { m_stream << t_input; }

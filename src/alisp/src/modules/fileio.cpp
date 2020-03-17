@@ -583,7 +583,7 @@ ALObjectPtr Frelative(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
     {
         auto to_path = eval->eval(t_obj->i(1));
         AL_CHECK(assert_string(to_path));
-        return make_string(fs::relative(path->to_string(), to_path->to_string()));
+        return make_string(fs::relative(p, to_path->to_string()));
     }
 
     return make_string(path->to_string());

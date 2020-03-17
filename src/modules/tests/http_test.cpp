@@ -40,5 +40,5 @@ TEST_CASE("Http Test", "[http]")
     auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     eval::Evaluator eval(env, p.get());
 
-    auto http = init_http(&env, &eval);
+    // auto http = init_http(&env, &eval);
 }

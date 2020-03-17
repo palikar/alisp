@@ -40,5 +40,5 @@ TEST_CASE("Locale Test", "[locale]")
     auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     eval::Evaluator eval(env, p.get());
 
-    auto locale = init_locale(&env, &eval);
+    // auto locale = init_locale(&env, &eval);
 }

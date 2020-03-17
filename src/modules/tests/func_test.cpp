@@ -40,5 +40,5 @@ TEST_CASE("Func Test", "[func]")
     auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     eval::Evaluator eval(env, p.get());
 
-    auto base64 = init_func(&env, &eval);
+    // auto base64 = init_func(&env, &eval);
 }

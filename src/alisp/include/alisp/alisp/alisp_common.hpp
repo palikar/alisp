@@ -57,7 +57,7 @@ constexpr const char *alobject_type_to_string(ALObjectType type)
 class alobject_error : public std::runtime_error
 {
   public:
-    alobject_error(const std::string &t_why) : runtime_error(t_why) {}
+    explicit alobject_error(const std::string &t_why) : runtime_error(t_why) {}
 };
 
 class ALObject;

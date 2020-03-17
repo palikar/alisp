@@ -40,5 +40,5 @@ TEST_CASE("Re Test", "[re]")
     auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     eval::Evaluator eval(env, p.get());
 
-    auto re = init_re(&env, &eval);
+    // auto re = init_re(&env, &eval);
 }

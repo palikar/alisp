@@ -40,5 +40,5 @@ TEST_CASE("Xml Test", "[xml]")
     auto p = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
     eval::Evaluator eval(env, p.get());
 
-    auto xml = init_xml(&env, &eval);
+    // auto xml = init_xml(&env, &eval);
 }

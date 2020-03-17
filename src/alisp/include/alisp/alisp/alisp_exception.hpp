@@ -143,7 +143,7 @@ struct parse_exception : public al_exception
 struct environment_error : public al_exception
 {
   public:
-    environment_error(const std::string &t_why) : al_exception(t_why, SignalTag::ENV)
+    explicit environment_error(const std::string &t_why) : al_exception(t_why, SignalTag::ENV)
     {
         m_signal_name = "environment-signal";
     }
