@@ -193,7 +193,7 @@ bool Environment::load_builtin_module(const std::string &t_module_name, eval::Ev
     return true;
 }
 
-void Environment::load_module(eval::Evaluator *eval, const std::string t_file, const std::string t_name)
+void Environment::load_module(eval::Evaluator *eval, const std::string t_file, const std::string &t_name)
 {
     AL_DEBUG("Loading dyn modules: "s += t_name + " from " + t_file);
     auto loaded_mod = m_loaded_modules.insert({ t_name, std::make_unique<dynmoduels::AlispDynModule>(t_name, t_file) })

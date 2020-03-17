@@ -132,16 +132,16 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
 
   public:
     ALObject() : m_data(0.0), m_type(ALObjectType::REAL_VALUE) {}
-    ALObject(real_type value) : m_data(value), m_type(ALObjectType::REAL_VALUE) {}
-    ALObject(int_type value) : m_data(value), m_type(ALObjectType::INT_VALUE) {}
+    explicit ALObject(real_type value) : m_data(value), m_type(ALObjectType::REAL_VALUE) {}
+    explicit ALObject(int_type value) : m_data(value), m_type(ALObjectType::INT_VALUE) {}
     ALObject(string_type value, bool symbol = false)
       : m_data(value), m_type(symbol ? ALObjectType::SYMBOL : ALObjectType::STRING_VALUE)
     {
     }
 
-    ALObject(list_type value) : m_data(std::move(value)), m_type(ALObjectType::LIST) {}
+    explicit ALObject(list_type value) : m_data(std::move(value)), m_type(ALObjectType::LIST) {}
 
-    ALObject(view_type value) : m_data(std::move(value)), m_type(ALObjectType::LIST) { set_temp_flag(); }
+    explicit ALObject(view_type value) : m_data(std::move(value)), m_type(ALObjectType::LIST) { set_temp_flag(); }
     ALObject(list_type::iterator value_1, list_type::iterator value_2)
       : m_data(view_type(value_1, value_2)), m_type(ALObjectType::LIST)
     {

@@ -214,7 +214,7 @@ template<class Environment> class ALParser : public ParserBase
     constexpr static auto alphabet = build_alphabet();
 
   public:
-    ALParser(Environment &env_) : m_input(""), env(env_) {}
+    explicit ALParser(Environment &env_) : depth(0), m_input(""), env(env_) {}
 
 
     ALParser(const ALParser &) = delete;
@@ -364,7 +364,7 @@ template<class Environment> class ALParser : public ParserBase
         string_type octal_matches;
         string_type hex_matches;
 
-        StringParser(string_type &t_str) : m_str(t_str) {}
+        explicit StringParser(string_type &t_str) : m_str(t_str) {}
 
 
         void process_hex()

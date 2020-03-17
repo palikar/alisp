@@ -418,7 +418,7 @@ inline ALObjectPtr load(const std::string &str)
     return JSONParser::parse_next(str, offset);
 }
 
-static std::string dump(ALObjectPtr t_json, long depth = 1, std::string tab = "  ")
+static std::string dump(ALObjectPtr t_json, long depth = 1, const std::string &tab = "  ")
 {
 
     if (t_json->prop_exists("--json-object--"))

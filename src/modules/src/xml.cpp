@@ -187,7 +187,7 @@ void sexp_to_xml(ALObjectPtr t_obj, XMLDocument &t_doc, XMLNode *t_node)
     }
 }
 
-ALObjectPtr from_string(const std::string t_input)
+ALObjectPtr from_string(const std::string &t_input)
 {
     XMLDocument doc;
     doc.Parse(t_input.c_str());

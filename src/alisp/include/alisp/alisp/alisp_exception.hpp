@@ -187,7 +187,7 @@ struct module_error : public al_exception
     }
 
 
-    static std::string format(std::string t_module, const std::string t_why)
+    static std::string format(const std::string &t_module, const std::string t_why)
     {
         std::ostringstream ss;
         ss << "Module import error when loading " << t_module << ":\n\t" << t_why;
@@ -201,14 +201,14 @@ struct module_refence_error : public al_exception
 
 
   public:
-    module_refence_error(std::string t_module, const std::string &t_reference, bool symbol = false)
+    module_refence_error(const std::string &t_module, const std::string &t_reference, bool symbol = false)
       : al_exception(format(t_module, t_reference, symbol), SignalTag::MODULE_REFERNCE)
     {
         m_signal_name = "module-signal";
     }
 
 
-    static std::string format(std::string t_module, const std::string t_ref, bool t_symbol)
+    static std::string format(const std::string &t_module, const std::string t_ref, bool t_symbol)
     {
         std::ostringstream ss;
         ss << "Module reference error. \n\tThe module " << t_module << " does not contain a refernce to the ";
@@ -233,7 +233,7 @@ struct illegal_name_error : public al_exception
     }
 
 
-    static std::string format(std::string t_why, const std::string &t_name)
+    static std::string format(const std::string &t_why, const std::string &t_name)
     {
         std::ostringstream ss;
         ss << "Invalid name error for \"" << t_name << "\"\t" << t_why << '\n';

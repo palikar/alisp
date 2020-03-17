@@ -20,8 +20,8 @@ def read_list(file_name):
     line = line.strip()
     if line.endswith('\n'): line = line[0:-2]
     return [float(i) for i in line.split(',') if i ]
-    
-    
+
+
 
 def main():
 
@@ -33,7 +33,7 @@ def main():
     data = {}
     labels = []
     box_data = []
-    
+
     for build_dir in build_dirs:
         path = os.path.join(root_dir, build_dir)
         build_id = remove_prefix(build_dir, "time_build_")
@@ -41,28 +41,28 @@ def main():
         data[build_id] = times
         labels.append(build_id)
         box_data.append(times)
-        
 
-    matplotlib.rc('xtick', labelsize=13) 
+
+    matplotlib.rc('xtick', labelsize=13)
     matplotlib.rc('ytick', labelsize=17)
 
     plt.figure(figsize=(17, 10))
 
     x = [i for i in range(1, len(data.keys())+1)]
-    
+
     plt.boxplot(box_data, labels=labels)
 
-    for (build, times), i  in zip(data.items(), x):
+    for (_, times), i  in zip(data.items(), x):
         plt.scatter([i]*len(times), times, alpha=0.5, linewidths=None)
 
-    
+
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
 
     plt.xlabel("Build")
     plt.ylabel('Performance checks runtime (s)')
     plt.title('Performance comparison', fontsize=17)
-    
+
     plt.savefig(os.path.join(root_dir, 'perfrmance_plot.png'), bbox_inches='tight')
 
 

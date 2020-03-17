@@ -111,7 +111,7 @@ class Module
 
     const std::string &name() { return m_name; }
 
-    void add_module(ModulePtr t_module, const std::string t_alias)
+    void add_module(ModulePtr t_module, const std::string &t_alias)
     {
         m_modules.insert({ std::move(t_alias), t_module });
     }
@@ -183,18 +183,18 @@ class Environment
     {
         AL_DEBUG("Creating a new module: "s += t_name);
         auto new_mod = std::make_shared<Module>(t_name);
-        m_modules.insert({ t_name, new_mod });
+        m_modules.insert({ std::move(t_name), new_mod });
     }
 
     void define_module(const std::string t_name, ModulePtr t_mod)
     {
         AL_DEBUG("Adding a new module: "s += t_name);
-        m_modules.insert({ t_name, std::move(t_mod) });
+        m_modules.insert({ std::move(t_name), std::move(t_mod) });
     }
 
-    void load_module(eval::Evaluator *eval, const std::string t_file, const std::string t_name);
+    void load_module(eval::Evaluator *eval, const std::string t_file, const std::string &t_name);
 
-    void alias_module(const std::string &t_name, const std::string t_alias)
+    void alias_module(const std::string &t_name, const std::string &t_alias)
     {
         if (m_modules.find(t_name) == m_modules.end())
         {
@@ -202,7 +202,7 @@ class Environment
             return;
         }
         AL_DEBUG("Aliasing a module: "s += t_name + " -> " + t_alias);
-        m_active_module.get().add_module(m_modules.at(t_name), std::move(t_alias));
+        m_active_module.get().add_module(m_modules.at(t_name), t_alias);
     }
 
     void activate_module(const std::string &t_name);

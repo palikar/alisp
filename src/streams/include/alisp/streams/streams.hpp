@@ -187,7 +187,7 @@ class StringStream : public ALStream
 
   public:
     StringStream() : m_str(), m_pos(0) {}
-    StringStream(std::string t_str) : m_str(t_str), m_pos(0) {}
+    StringStream(std::string &t_str) : m_str(t_str), m_pos(0) {}
 
     void write(const std::string &t_input) override { m_str += t_input; }
     void write(const std::string_view &t_input) override { m_str.append(t_input.data()); }
