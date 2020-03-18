@@ -1,13 +1,31 @@
-add_executable(alisp
-    src/alisp.cpp
-    src/prompt.cpp
+add_executable(alcpp
+    src/alcppcompiler.cpp
     )
 
+target_include_directories(alcpp
+    PUBLIC include
+    PRIVATE src)
+
+target_link_libraries(alcpp
+    PRIVATE
+    project_options
+    project_warnings
+    language_options
+    PUBLIC
+    alisp_util
+    alisp_language
+    fmt::fmt
+    ${READLINE_LIB})
+
+
+
+add_executable(alisp
+    src/alisp.cpp
+    src/prompt.cpp)
 
 target_include_directories(alisp
     PUBLIC include
-    PRIVATE src
-    )
+    PRIVATE src)
 
 target_link_libraries(alisp
     PRIVATE

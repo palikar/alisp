@@ -115,6 +115,8 @@ class LanguageEngine
 
     std::pair<bool, int> eval_file(const std::filesystem::path &t_path, bool insert_mod_path = true);
 
+    std::pair<bool, int> eval_objs(std::vector<ALObjectPtr> t_objs);
+
     ALObjectPtr get_value(const std::string &t_sym_name) { return m_environment.find(make_symbol(t_sym_name)); }
 
     const std::string &get_home() const { return m_home_directory; }

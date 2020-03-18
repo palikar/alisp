@@ -144,4 +144,30 @@ std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_pa
     return { true, 0 };
 }
 
+std::pair<bool, int> LanguageEngine::eval_objs(std::vector<ALObjectPtr> t_objs)
+{
+
+    try
+    {
+        AL_DEBUG("Evaluating object");
+        for (auto sexp : t_objs)
+        {
+            auto eval_result = m_evaluator.eval(sexp);
+            if (check(EngineSettings::EVAL_DEBUG)) std::cout << "DEUBG[EVAL]: " << alisp::dump(eval_result) << "\n";
+        }
+        
+        return { true, 0 };
+    }
+    catch (al_exit &ex)
+    {
+        return { false, ex.value() };
+    }
+    catch (...)
+    {
+        handle_errors_lippincott<false>();
+         return { false, 0 };
+    }
+    return { true, 0 };
+}
+
 }  // namespace alisp
