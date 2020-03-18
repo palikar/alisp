@@ -329,6 +329,7 @@ if(BUILD_DOC)
     endif (DOXYGEN_FOUND)
 endif()
 
+set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(libs)
 add_subdirectory(src)

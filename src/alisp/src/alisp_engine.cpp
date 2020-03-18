@@ -74,8 +74,8 @@ void LanguageEngine::init_system()
     env::update_prime(Qcommand_line_args, make_list(m_argv));
     AL_DEBUG("CLI arguments: "s += dump(Vcommand_line_args));
 
-    const std::string al_path    = utility::env_string(ENV_VAR_MODPATHS);
-    const auto add_modules = [&](auto &path) { Vmodpaths->children().push_back(make_string(path)); };
+    const std::string al_path = utility::env_string(ENV_VAR_MODPATHS);
+    const auto add_modules    = [&](auto &path) { Vmodpaths->children().push_back(make_string(path)); };
     if (!al_path.empty())
     {
         AL_DEBUG("ALPATH used: "s += al_path);
@@ -155,7 +155,7 @@ std::pair<bool, int> LanguageEngine::eval_objs(std::vector<ALObjectPtr> t_objs)
             auto eval_result = m_evaluator.eval(sexp);
             if (check(EngineSettings::EVAL_DEBUG)) std::cout << "DEUBG[EVAL]: " << alisp::dump(eval_result) << "\n";
         }
-        
+
         return { true, 0 };
     }
     catch (al_exit &ex)
@@ -165,7 +165,7 @@ std::pair<bool, int> LanguageEngine::eval_objs(std::vector<ALObjectPtr> t_objs)
     catch (...)
     {
         handle_errors_lippincott<false>();
-         return { false, 0 };
+        return { false, 0 };
     }
     return { true, 0 };
 }

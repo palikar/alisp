@@ -185,11 +185,10 @@ inline auto make_list(ALObject::list_type elements)
     return make_object(elements);
 }
 
-template<typename ... I>
-inline auto make_list(I ... objs)
+template<typename... I> inline auto make_list(I... objs)
 {
     auto new_obj = detail::ALObjectHelper::get(ALObject::list_type{});
-    ( new_obj->children().push_back(objs), ...  );
+    (new_obj->children().push_back(objs), ...);
     return new_obj;
 }
 
