@@ -70,6 +70,72 @@ inline void module_doc(env::Module *t_module, std::string t_doc)
     module_defconst(t_module, "--doc--", make_string(t_doc));
 }
 
+inline void module_define_function(env::Module *t_module, const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc)
+{
+    auto &scope = t_module->root_scope();
+    auto name   = t_sym->to_string();
+
+    AL_DEBUG("Defining function: "s += name);
+
+    NameValidator::validate_object_name(name);
+
+    AL_CHECK(if (scope.count(name)) { throw environment_error("Function alredy exists: " + name); });
+
+    auto new_fun = make_object(t_params, t_body);
+    new_fun->set_function_flag();
+    new_fun->set_prop("--module--", make_string(t_module->name()));
+    new_fun->set_prop("--name--", make_string(name));
+
+#ifdef ENABLE_OBJECT_DOC
+    new_fun->set_prop("--doc--", make_string(t_doc));
+#endif
+
+    scope.insert({ name, new_fun });
+}
+
+inline void module_define_variable(env::Module *t_module, const ALObjectPtr t_sym, ALObjectPtr t_value, std::string t_doc)
+{
+    auto &scope = t_module->root_scope();
+    auto name   = t_sym->to_string();
+
+    AL_DEBUG("New variable: "s += name);
+
+    NameValidator::validate_object_name(name);
+
+    AL_CHECK(if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name); });
+    t_value->set_prop("--module--", make_string(t_module->name()));
+
+#ifdef ENABLE_OBJECT_DOC
+    t_value->set_prop("--doc--", make_string(t_doc));
+#endif
+
+    scope.insert({ name, t_value });
+}
+
+inline void module_define_macro(env::Module *t_module, const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc)
+{
+    auto &scope = t_module->root_scope();
+    auto name   = t_sym->to_string();
+
+    AL_DEBUG("Defining macro: "s += name);
+
+    NameValidator::validate_object_name(name);
+
+    AL_CHECK(if (scope.count(name)) { throw environment_error("Function alredy exists: " + name); });
+
+    auto new_fun = make_object(t_params, t_body);
+    new_fun->set_function_flag();
+    new_fun->set_macro_flag();
+    new_fun->set_prop("--module--", make_string(t_module->name()));
+    new_fun->set_prop("--name--", make_string(name));
+
+#ifdef ENABLE_OBJECT_DOC
+    new_fun->set_prop("--doc--", make_string(t_doc));
+#endif
+
+    scope.insert({ name, new_fun });
+}
+
 inline void module_dump(env::Module *t_module)
 {
     for (auto &[name, sym] : t_module->root_scope()) { std::cout << name << " : " << sym << "\n"; }
