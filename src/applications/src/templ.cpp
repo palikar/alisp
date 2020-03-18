@@ -83,36 +83,4 @@ int main(int argc, char *argv[])
     auto alisprc = fs::path(m_home_directory) / ".alisprc";
     if (utility::env_bool(ENV_VAR_RC)) { alisprc = fs::path(m_home_directory) / utility::env_string(ENV_VAR_RC); }
     if (fs::is_regular_file(alisprc)) { m_evaluator.eval_file(alisprc); }
-
-
-    auto sym_0 = make_list(
-      make_symbol("defun"),
-      make_symbol("do-it"),
-      make_list(make_symbol("a")),
-      make_list(make_symbol("println"), make_symbol("a")),
-      make_list(
-        make_symbol("let"),
-        make_list(make_list(make_symbol("a"), make_int(42))),
-        make_list(make_symbol("println"), make_symbol("a")),
-        make_list(make_symbol("let"),
-                  make_list(make_list(make_symbol("a"), make_list(make_symbol("+"), make_symbol("a"), make_int(1)))),
-                  make_list(make_symbol("println"), make_symbol("a"))),
-        make_list(make_symbol("println"), make_symbol("a"))),
-      make_list(make_symbol("println"), make_symbol("a")));
-    m_evaluator.eval(std::move(sym_0));
-
-    auto sym_1 = make_list(make_symbol("defvar"), make_symbol("a"), make_int(10));
-    m_evaluator.eval(std::move(sym_1));
-
-    auto sym_2 = make_list(make_symbol("println"), make_symbol("a"));
-    m_evaluator.eval(std::move(sym_2));
-
-    auto sym_3 = make_list(make_symbol("do-it"), make_symbol("a"));
-    m_evaluator.eval(std::move(sym_3));
-
-    auto sym_4 = make_list(make_symbol("println"), make_symbol("a"));
-    m_evaluator.eval(std::move(sym_4));
-
-    auto sym_5 = make_list(make_symbol("dump"), make_symbol("--argv--"));
-    m_evaluator.eval(std::move(sym_5));
 }

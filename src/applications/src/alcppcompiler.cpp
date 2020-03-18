@@ -36,7 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 using namespace alisp;
 using namespace fmt::literals;
-
 unsigned char templ_cpp[] = {
     0x2f, 0x2a, 0x20, 0x20, 0x20, 0x41, 0x6c, 0x69, 0x73, 0x70, 0x20, 0x2d, 0x20, 0x74, 0x68, 0x65, 0x20, 0x61, 0x6c,
     0x69, 0x73, 0x70, 0x20, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x70, 0x72, 0x65, 0x74, 0x65, 0x64, 0x20, 0x6c, 0x61, 0x6e,
@@ -186,23 +185,64 @@ unsigned char templ_cpp[] = {
 unsigned int templ_cpp_len = 2719;
 
 
+const char *staticMap(char c)
+{
+    switch (c)
+    {
+        case '\a': return "\\a";
+        case '\b': return "\\b";
+        case '\t': return "\\t";
+        case '\n': return "\\n";
+        case '\v': return "\\v";
+        case '\f': return "\\f";
+        case '\r': return "\\r";
+
+        case '\"': return "\\\"";
+        case '\'': return "\\\'";
+        case '\?': return "\\\?";
+        case '\\': return "\\\\";
+    }
+    return nullptr;
+}
+
+std::string escape_cpp(const std::string &input)
+{
+    std::stringstream ss;
+    for (char c : input)
+    {
+        const char *str = staticMap(c);
+        if (str) { ss << str; }
+        else if (!isprint(static_cast<unsigned char>(c)))
+        {
+            ss << "\\u" << std::hex << std::setfill('0') << std::setw(4)
+               << (static_cast<unsigned int>(static_cast<unsigned char>(c)));
+        }
+        else
+        {
+            ss << c;
+        }
+    }
+    return ss.str();
+}
+
+
 auto dump_cpp(ALObjectPtr obj)
 {
 
 
     switch (obj->type())
     {
-      case ALObjectType::INT_VALUE: return fmt::format("make_int({})", obj->to_int()); break;
-            
-      case ALObjectType::REAL_VALUE: return fmt::format("make_real({})", obj->to_real()); break;
+        case ALObjectType::INT_VALUE: return fmt::format("make_int({})", obj->to_int()); break;
 
-      case ALObjectType::STRING_VALUE: return fmt::format("make_string(\"{}\")", obj->to_string()); break;
+        case ALObjectType::REAL_VALUE: return fmt::format("make_real({})", obj->to_real()); break;
 
-      case ALObjectType::SYMBOL: return fmt::format("make_symbol(\"{}\")", obj->to_string()); break;
+        case ALObjectType::STRING_VALUE: return fmt::format("make_string(\"{}\")", escape_cpp(obj->to_string())); break;
 
-      case ALObjectType::LIST:
-          std::ostringstream str;
-          if (obj->length() == 0)
+        case ALObjectType::SYMBOL: return fmt::format("make_symbol(\"{}\")", obj->to_string()); break;
+
+        case ALObjectType::LIST:
+            std::ostringstream str;
+            if (obj->length() == 0)
             {
                 str << "Qnil,"
                     << "\n";
@@ -223,51 +263,61 @@ auto dump_cpp(ALObjectPtr obj)
     return std::string{};
 }
 
-struct CLIOptions {
+struct CLIOptions
+{
     std::string input{};
     std::string output{};
 
-    bool debug{false};
-    bool optimization{true};
+    bool debug{ false };
+    bool optimization{ false };
 
-    bool version{false};
-    bool show_help{false};
+    bool verbose{ false };
+    bool no_compile{ false };
+    bool no_cleanup{ false };
 
+    bool version{ false };
+    bool show_help{ false };
 };
 
 int main(int argc, char *argv[])
 {
+    namespace fs = std::filesystem;
 
     CLIOptions opts;
 
 
     auto cli = (
 
-      opts.version << clipp::option("-v", "--version")
-                        % "Show the version of the al cpp compiler",
+      opts.version << clipp::option("-v", "--version") % "Show the version of the al cpp compiler",
+      opts.verbose << clipp::option("-V", "--verbose") % "Print debug information",
+      opts.no_compile << clipp::option("-c", "--no-compile") % "Do not compile and link the executable.",
+      opts.no_cleanup << clipp::option("-n", "--no-cleanup") % "Do not delete temporary files.",
       opts.show_help << clipp::option("-h", "--help") % "Print help information.",
-      opts.debug << clipp::option("-g", "--debug") % "Start interactive mode after file evaluation.",
-      opts.optimization << clipp::option("-O", "--optimize") % "Debug output from the parser.",
+      opts.debug << clipp::option("-g", "--debug") % "Build the executable with debug symbols.",
+      opts.optimization << clipp::option("-O", "--optimize") % "Enable optimizations when compiling.",
 
-      (clipp::option("-o", "--ouput") & opts.output << clipp::value("output")) % "Output file",
+      (clipp::option("-o", "--ouput") & opts.output << clipp::value("output")) % "Output executable file",
 
-      opts.input << clipp::opt_value("file") % "Input file"
+      opts.input << clipp::opt_value("file") % "Input alisp file"
 
-        );
+    );
 
-    auto res = clipp::parse(argc, argv, cli);
+    const auto res = clipp::parse(argc, argv, cli);
 
-    if (res.any_bad_repeat() or res.any_blocked() or res.any_conflict())
+    if (res.any_bad_repeat() or res.any_blocked() or res.any_conflict() or res.any_error()
+        or res.unmapped_args_count() > 1)
     {
-        std::cout << "Usage:\n" << clipp::usage_lines(cli, "alisp") << "\n";
+        std::cout << "Usage:\n" << clipp::usage_lines(cli, "alcpp") << "\n";
         return 1;
     }
 
     if (opts.show_help)
     {
         std::cout << clipp::make_man_page(cli, "alcpp")
-            .prepend_section("DESCRIPTION", "The alisp cpp compiler")
-            .append_section("LICENSE", std::string("\t").append(AL_LICENSE));
+                       .prepend_section("DESCRIPTION",
+                                        "The alisp cpp compiler. It can transpile an alisp script into a cpp file and "
+                                        "then copile it with gcc.")
+                       .append_section("LICENSE", std::string("\t").append(AL_LICENSE));
         return 0;
     }
 
@@ -278,31 +328,41 @@ int main(int argc, char *argv[])
     }
 
 
+    if (!fs::is_regular_file(opts.input)) { return 0; }
+    const std::string input_file = fs::absolute(opts.input);
+
     env::Environment env;
     parser::ALParser<alisp::env::Environment> parser{ env };
-    
-    auto file_content = utility::load_file("/home/arnaud/code/alisp/build/scope.al");
 
-    auto obj_vec = parser.parse(file_content, "__COMPILE__");
+    auto file_content = utility::load_file(input_file);
+
+
+    const auto obj_vec = [&]() {
+        try
+        {
+            return parser.parse(file_content, "__COMPILE__");
+        }
+        catch (...)
+        {
+            handle_errors_lippincott<true>();
+        }
+        return std::vector<ALObjectPtr>{};
+    }();
+
 
     std::vector<std::string> syms{};
 
     std::stringstream ss;
     ss << std::string_view{ reinterpret_cast<char *>(templ_cpp), templ_cpp_len } << "\n";
-    int index = 0;
-    for (auto &el : obj_vec)
-    {
-        ss << "    auto sym_" << index++ << " = " << dump_cpp(el) << ";\n";
-        syms.push_back("sym_"s += std::to_string(index - 1));
-    }
-    ss << "\n";
-    for (auto &el : syms) { ss << fmt::format("    m_evaluator.eval({});", el) << "\n"; }
+    for (auto &el : obj_vec) { ss << fmt::format("    m_evaluator.eval({});", dump_cpp(el)); }
     ss << "\n";
     ss << "}"
        << "\n";
 
+    const std::string output_cpp_file = fs::absolute(opts.input).string() += ".cpp";
+
     std::ofstream outfile;
-    outfile.open("scope.al.cpp");
+    outfile.open(output_cpp_file);
     outfile << ss.str();
     outfile.close();
 
@@ -311,12 +371,12 @@ int main(int argc, char *argv[])
 
     std::stringstream compile_command;
 
-    std::vector<std::string> definitions = {
+    const std::vector<std::string> definitions = {
         "-DENABLE_LINE_TRACE", "-DENABLE_OBJECT_DOC",  "-DENABLE_STACK_TRACE",
         "-DLINK_MODULES",      "-DREADLINE_AVAILABLE", fmt::format("-DAL_PRELUDE_DIR=\\\"{}\\\"", AL_PRELUDE_DIR)
     };
 
-    std::vector<std::string> includes = {
+    const std::vector<std::string> includes = {
         fmt::format("-I{}/build/src/include", project_root),
         fmt::format("-I{}/src/include", project_root),
         fmt::format("-I{}/libs/include", project_root),
@@ -330,29 +390,29 @@ int main(int argc, char *argv[])
         "/home/arnaud/.conan/data/fmt/6.0.0/bincrafters/stable/package/038baac88f4c7bfa972ce5adac1616bed8fe2ef4/include"
     };
 
-    std::vector<std::string> warnings = { "-Wall", " -Wextra", " -Wpedantic" };
+    const std::vector<std::string> warnings = { "-Wall", " -Wextra", " -Wpedantic" };
 
-    std::vector<std::string> linking = { "-pthread" };
+    const std::vector<std::string> linking = { "-pthread" };
 
+
+    std::string output_o_file = output_cpp_file + ".o";
 
     compile_command << "g++ ";
-    compile_command << "-c "
-                    << "scope.al.cpp ";
-    compile_command << "-o "
-                    << "scope.al.cpp.o ";
+    compile_command << "-c " << output_cpp_file << " ";
+    compile_command << "-o " << output_o_file << " ";
 
 
     for (auto &el : definitions) { compile_command << el << " "; }
 
     for (auto &el : includes) { compile_command << el << " "; }
 
-    compile_command << "-O3 ";
+    if (opts.optimization) { compile_command << "-O3 "; }
+
+    if (opts.debug) { compile_command << "-g "; }
+
     compile_command << "-std=gnu++17 ";
 
-    std::cout << compile_command.str() << "\n";
-
-
-    std::vector<std::string> linking_libs = {
+    const std::vector<std::string> linking_libs = {
         "-Wl,-rpath,/home/arnaud/.conan/data/fmt/6.0.0/bincrafters/stable/package/"
         "038baac88f4c7bfa972ce5adac1616bed8fe2ef4/lib",
         "/home/arnaud/.conan/data/fmt/6.0.0/bincrafters/stable/package/038baac88f4c7bfa972ce5adac1616bed8fe2ef4/lib/"
@@ -375,32 +435,38 @@ int main(int argc, char *argv[])
 
     std::stringstream link_command;
 
+    const std::string output_file = [&]() {
+        if (!opts.output.empty()) { return opts.output; }
+        else
+        {
+            return std::string{ "a.out" };
+        }
+    }();
+
     link_command << "c++ ";
-    link_command << "scope.al.cpp.o ";
-    link_command << "-o "
-                 << "scope ";
+    link_command << output_o_file << " ";
+    link_command << "-o " << output_file << " ";
 
     for (auto &el : linking_libs) { link_command << el << " "; }
 
-    std::cout << link_command.str() << "\n";
 
-    system(compile_command.str().c_str());
-    system(link_command.str().c_str());
+    if (!opts.no_compile)
+    {
+
+        if (opts.verbose) { std::cout << compile_command.str() << "\n"; }
+        system(compile_command.str().c_str());
+
+        if (opts.verbose) { std::cout << link_command.str() << "\n"; }
+        system(link_command.str().c_str());
+    }
+
+    if (!opts.no_cleanup)
+    {
+        if (opts.verbose) { std::cout << "Deleting: " << output_cpp_file << "\n"; }
+        fs::remove(output_cpp_file);
+        if (opts.verbose) { std::cout << "Deleting: " << output_o_file << "\n"; }
+        fs::remove(output_o_file);
+    }
 
     return 0;
 }
-
-
-// file
-// optimizations
-// output
-// c++ standard
-// include direcotries
-// link libraries [external]
-// link libraries [from alisp]
-// warnings
-// definitions
-
-
-// Compiling
-// /usr/bin/c++
