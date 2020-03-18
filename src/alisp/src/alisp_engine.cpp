@@ -74,7 +74,7 @@ void LanguageEngine::init_system()
     env::update_prime(Qcommand_line_args, make_list(m_argv));
     AL_DEBUG("CLI arguments: "s += dump(Vcommand_line_args));
 
-    std::string al_path    = utility::env_string(ENV_VAR_MODPATHS);
+    const std::string al_path    = utility::env_string(ENV_VAR_MODPATHS);
     const auto add_modules = [&](auto &path) { Vmodpaths->children().push_back(make_string(path)); };
     if (!al_path.empty())
     {

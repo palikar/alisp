@@ -33,45 +33,80 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "alisp/utility.hpp"
 #include "alisp/alisp/alisp_engine.hpp"
 
-alisp::LanguageEngine *g_alisp_engine = nullptr;
+using namespace alisp;
 
-void got_signal(int c)
-{
+void got_signal(int)
+{}
 
-    if (g_alisp_engine)
-    {
-
-        alisp::prompt::SaveHistory hist;
-
-        try
-        {
-            g_alisp_engine->handle_signal(c);
-        }
-        catch (...)
-        {
-            alisp::handle_errors_lippincott<false>();
-        }
-    }
-}
 
 int main(int argc, char *argv[])
 {
+    using namespace alisp;
+    namespace fs = std::filesystem;
+    
+    env::Environment m_environment;
+    parser::ALParser<env::Environment> m_parser{m_environment};
+    eval::Evaluator m_evaluator(m_environment, &m_parser);
 
 
-    std::vector<alisp::EngineSettings> settings;
-    settings.reserve(4);
+    const std::string m_home_directory = utility::env_string("HOME");
+    
+    std::vector<std::string> args{};
+    args.reserve(static_cast<size_t>(argc));
+    for (int i = 1; i < argc; ++i) {
+        args.push_back(argv[i]);
+    }
 
-    // settings.push_back(alisp::EngineSettings::EVAL_DEBUG);
-    // settings.push_back(alisp::EngineSettings::PARSER_DEBUG);
-    // settings.push_back(alisp::EngineSettings::QUICK_INIT);
-    // settings.push_back(alisp::EngineSettings::DISABLE_DEBUG_MODE);
+    env::init_modules();
+    al::init_streams();
+    warnings::init_warning({});
 
-    alisp::LanguageEngine alisp_engine{settings};
-    g_alisp_engine = &alisp_engine;
+    env::update_prime(Qcommand_line_args, make_list(args));
 
-    struct sigaction sa;
-    memset(&sa, 0, sizeof(sa));
-    sa.sa_handler = got_signal;
-    sigfillset(&sa.sa_mask);
-    sigaction(SIGINT, &sa, NULL);
-    sigaction(SIGTERM, &sa, NULL);
+    const std::string al_path    = utility::env_string(ENV_VAR_MODPATHS);
+    const auto add_modules = [&](auto &path) { Vmodpaths->children().push_back(make_string(path)); };
+    if (!al_path.empty())
+    {
+        auto paths = utility::split(al_path, ':');
+        std::for_each(std::begin(paths), std::end(paths), add_modules);
+    }
+
+    Vcurrent_module->set("--main--");
+    Vdebug_mode = utility::env_bool(ENV_VAR_NODEBUG) ? Qnil : Qt;
+
+    
+    if (fs::is_directory(prelude_directory))
+    {
+        for (auto &al_file : fs::directory_iterator(prelude_directory))
+        {
+            m_evaluator.eval_file(al_file.path().string());
+        }
+    }
+
+    auto alisprc = fs::path(m_home_directory) / ".alisprc";    
+    if (utility::env_bool(ENV_VAR_RC)) { alisprc = fs::path(m_home_directory) / utility::env_string(ENV_VAR_RC); }
+    if (fs::is_regular_file(alisprc))
+    {
+        m_evaluator.eval_file(alisprc);
+    }
+
+    
+    auto sym_0 = make_list(make_symbol("defun"),make_symbol("do-it"),make_list(make_symbol("a")),make_list(make_symbol("println"),make_symbol("a")),make_list(make_symbol("let"),make_list(make_list(make_symbol("a"),make_int(42))),make_list(make_symbol("println"),make_symbol("a")),make_list(make_symbol("let"),make_list(make_list(make_symbol("a"),make_list(make_symbol("+"),make_symbol("a"),make_int(1)))),make_list(make_symbol("println"),make_symbol("a"))),make_list(make_symbol("println"),make_symbol("a"))),make_list(make_symbol("println"),make_symbol("a")));
+    m_evaluator.eval(std::move(sym_0));
+    
+    auto sym_1 = make_list(make_symbol("defvar"),make_symbol("a"),make_int(10));
+    m_evaluator.eval(std::move(sym_1));
+
+    auto sym_2 = make_list(make_symbol("println"),make_symbol("a"));
+    m_evaluator.eval(std::move(sym_2));
+
+    auto sym_3 = make_list(make_symbol("do-it"),make_symbol("a"));
+    m_evaluator.eval(std::move(sym_3));
+
+    auto sym_4 = make_list(make_symbol("println"),make_symbol("a"));
+    m_evaluator.eval(std::move(sym_4));
+
+    auto sym_5 = make_list(make_symbol("dump"),make_symbol("--argv--"));
+    m_evaluator.eval(std::move(sym_5));
+    
+}
