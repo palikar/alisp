@@ -62,7 +62,7 @@ target_link_libraries(alisp
 
 
 
-install(TARGETS alisp
+install(TARGETS alisp alcpp
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${alisp}/
     RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}

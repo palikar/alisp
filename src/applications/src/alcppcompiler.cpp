@@ -27,9 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_map>
 #include <string_view>
 
-// #include <clipp.hpp>
+#include <clipp.hpp>
 #include <fmt/format.h>
-// #include <rang.hpp>
 
 #include "alisp/config.hpp"
 #include "alisp/utility.hpp"
@@ -193,17 +192,17 @@ auto dump_cpp(ALObjectPtr obj)
 
     switch (obj->type())
     {
-        case ALObjectType::INT_VALUE: return fmt::format("make_int({})", obj->to_int()); break;
+      case ALObjectType::INT_VALUE: return fmt::format("make_int({})", obj->to_int()); break;
+            
+      case ALObjectType::REAL_VALUE: return fmt::format("make_real({})", obj->to_real()); break;
 
-        case ALObjectType::REAL_VALUE: return fmt::format("make_real({})", obj->to_real()); break;
+      case ALObjectType::STRING_VALUE: return fmt::format("make_string(\"{}\")", obj->to_string()); break;
 
-        case ALObjectType::STRING_VALUE: return fmt::format("make_string(\"{}\")", obj->to_string()); break;
+      case ALObjectType::SYMBOL: return fmt::format("make_symbol(\"{}\")", obj->to_string()); break;
 
-        case ALObjectType::SYMBOL: return fmt::format("make_symbol(\"{}\")", obj->to_string()); break;
-
-        case ALObjectType::LIST:
-            std::ostringstream str;
-            if (obj->length() == 0)
+      case ALObjectType::LIST:
+          std::ostringstream str;
+          if (obj->length() == 0)
             {
                 str << "Qnil,"
                     << "\n";
@@ -224,17 +223,67 @@ auto dump_cpp(ALObjectPtr obj)
     return std::string{};
 }
 
+struct CLIOptions {
+    std::string input{};
+    std::string output{};
+
+    bool debug{false};
+    bool optimization{true};
+
+    bool version{false};
+    bool show_help{false};
+
+};
 
 int main(int argc, char *argv[])
 {
 
+    CLIOptions opts;
+
+
+    auto cli = (
+
+      opts.version << clipp::option("-v", "--version")
+                        % "Show the version of the al cpp compiler",
+      opts.show_help << clipp::option("-h", "--help") % "Print help information.",
+      opts.debug << clipp::option("-g", "--debug") % "Start interactive mode after file evaluation.",
+      opts.optimization << clipp::option("-O", "--optimize") % "Debug output from the parser.",
+
+      (clipp::option("-o", "--ouput") & opts.output << clipp::value("output")) % "Output file",
+
+      opts.input << clipp::opt_value("file") % "Input file"
+
+        );
+
+    auto res = clipp::parse(argc, argv, cli);
+
+    if (res.any_bad_repeat() or res.any_blocked() or res.any_conflict())
+    {
+        std::cout << "Usage:\n" << clipp::usage_lines(cli, "alisp") << "\n";
+        return 1;
+    }
+
+    if (opts.show_help)
+    {
+        std::cout << clipp::make_man_page(cli, "alcpp")
+            .prepend_section("DESCRIPTION", "The alisp cpp compiler")
+            .append_section("LICENSE", std::string("\t").append(AL_LICENSE));
+        return 0;
+    }
+
+    if (opts.version)
+    {
+        std::cout << alisp::get_build_info();
+        return 0;
+    }
+
 
     env::Environment env;
     parser::ALParser<alisp::env::Environment> parser{ env };
-
+    
     auto file_content = utility::load_file("/home/arnaud/code/alisp/build/scope.al");
 
-    auto obj_vec = parser.parse(file_content, "__EVAL__");
+    auto obj_vec = parser.parse(file_content, "__COMPILE__");
 
     std::vector<std::string> syms{};
 
@@ -297,7 +346,7 @@ int main(int argc, char *argv[])
 
     for (auto &el : includes) { compile_command << el << " "; }
 
-    compile_command << "-g ";
+    compile_command << "-O3 ";
     compile_command << "-std=gnu++17 ";
 
     std::cout << compile_command.str() << "\n";
