@@ -417,7 +417,6 @@ int main(int argc, char *argv[])
     CLIOptions opts;
 
     auto cli = (
-
       opts.version << clipp::option("-v", "--version") % "Show the version of the al cpp compiler",
       opts.verbose << clipp::option("-V", "--verbose") % "Print debug information",
       opts.no_compile << clipp::option("-c", "--no-compile") % "Do not compile and link the executable.",
@@ -427,11 +426,9 @@ int main(int argc, char *argv[])
       opts.optimization << clipp::option("-O", "--optimize") % "Enable optimizations when compiling.",
       opts.com_module << clipp::option("-m", "--module") % "Compile the file as a module that can be imported.",
 
-
       (clipp::option("-o", "--ouput") & opts.output << clipp::value("output")) % "Output executable file",
 
       opts.input << clipp::opt_value("file") % "Input alisp file"
-
     );
 
     const auto res = clipp::parse(argc, argv, cli);
@@ -459,7 +456,12 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    if (!fs::is_regular_file(opts.input)) { return 0; }
+    if (!fs::is_regular_file(opts.input))
+    {
+        std::cout << "Usage:\n" << clipp::usage_lines(cli, "alcpp") << "\n";
+        return 1;
+    }
+    
     const std::string input_file = fs::absolute(opts.input);
 
     if (opts.verbose)

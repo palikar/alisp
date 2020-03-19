@@ -344,6 +344,7 @@ install(FILES "${alisp_BINARY_DIR}/lib/pkgconfig/alisp.pc"
 
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/doc/alisp.1 DESTINATION ${CMAKE_INSTALL_PREFIX}/man/man1)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/doc/alcpp.1 DESTINATION ${CMAKE_INSTALL_PREFIX}/man/man1)
 
 
 if(BUILD_EXAMPLES)
