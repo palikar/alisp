@@ -24,7 +24,7 @@ install(TARGETS alisp_management
     ARCHIVE DESTINATION       ${CMAKE_INSTALL_SHAREDSTATEDIR}
     )
 
-
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 
 
