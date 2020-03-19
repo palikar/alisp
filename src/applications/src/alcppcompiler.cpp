@@ -359,7 +359,6 @@ auto dump_var(ALObjectPtr obj)
     return str.str();
 }
 
-
 auto dump_cpp_module(ALObjectPtr obj)
 {
 
@@ -417,7 +416,6 @@ int main(int argc, char *argv[])
 
     CLIOptions opts;
 
-
     auto cli = (
 
       opts.version << clipp::option("-v", "--version") % "Show the version of the al cpp compiler",
@@ -461,15 +459,22 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-
     if (!fs::is_regular_file(opts.input)) { return 0; }
     const std::string input_file = fs::absolute(opts.input);
+
+    if (opts.verbose)
+    {
+        if (opts.com_module) { fmt::print("Compiling thet input file {} as a module.\n", input_file); }
+        else
+        {
+            fmt::print("Compiling thet input file {} as an executable.\n", input_file);
+        }
+    }
 
     env::Environment env;
     parser::ALParser<alisp::env::Environment> parser{ env };
 
     auto file_content = utility::load_file(input_file);
-
 
     const auto obj_vec = [&]() {
         try
@@ -522,7 +527,6 @@ int main(int argc, char *argv[])
     outfile << contents;
     outfile.close();
 
-
     const std::string project_root{ AL_ROOT };
 
     std::stringstream compile_command;
@@ -550,7 +554,6 @@ int main(int argc, char *argv[])
 
     const std::vector<std::string> linking = { "-pthread" };
 
-
     std::string output_o_file = output_cpp_file + ".o";
 
     compile_command << "g++ ";
@@ -558,7 +561,6 @@ int main(int argc, char *argv[])
     compile_command << "-o " << output_o_file << " ";
 
     if (opts.com_module) { compile_command << "-fPIC "; }
-
 
     for (auto &el : definitions) { compile_command << el << " "; }
 
@@ -607,10 +609,11 @@ int main(int argc, char *argv[])
     link_command << output_o_file << " ";
     link_command << "-o " << output_file << " ";
 
+    if (opts.optimization) { link_command << "-flto "; }
+
     if (opts.com_module) { link_command << "-fPIC -shared "; }
 
     for (auto &el : linking_libs) { link_command << el << " "; }
-
 
     if (!opts.no_compile)
     {

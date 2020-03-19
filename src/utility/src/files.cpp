@@ -67,7 +67,7 @@ bool check_elf(const std::string &t_filename)
 {
     std::ifstream infile(t_filename.c_str(), std::ios::in | std::ios::ate | std::ios::binary);
     infile.seekg(0, std::ios::beg);
-    
+
     if (!infile.is_open()) { return false; }
 
     if (skip_elf(infile))
