@@ -99,6 +99,7 @@ class Module
     std::unordered_map<std::string, ModulePtr> m_modules;
     std::string m_name;
     std::vector<std::string> m_evals;
+    std::vector<ALObjectPtr> m_eval_obj;
 
   public:
     Module(std::string t_name) : m_name(std::move(t_name)) {}
@@ -106,8 +107,11 @@ class Module
     detail::CellStack::Scope &root_scope() { return m_root_scope; }
 
     std::vector<std::string> &eval_strings() { return m_evals; }
+    std::vector<ALObjectPtr> &eval_objs() { return m_eval_obj; }
 
     void eval_string(std::string t_eval) { m_evals.push_back(std::move(t_eval)); }
+    void eval_obj(ALObjectPtr t_obj) { m_eval_obj.push_back(std::move(t_obj)); }
+    
 
     const std::string &name() { return m_name; }
 

@@ -188,7 +188,7 @@ bool Environment::load_builtin_module(const std::string &t_module_name, eval::Ev
 
     detail::ModuleChange mc{ *this, t_module_name };
     for (auto &eval_str : new_mod->eval_strings()) { eval->eval_string(eval_str); }
-
+    for (auto &eval_obj : new_mod->eval_objs()) { eval->eval(eval_obj); }
 
     return true;
 }
@@ -205,6 +205,7 @@ void Environment::load_module(eval::Evaluator *eval, const std::string t_file, c
 
     detail::ModuleChange mc{ *this, t_name };
     for (auto &eval_str : mod_ptr->eval_strings()) { eval->eval_string(eval_str); }
+    for (auto &eval_obj : mod_ptr->eval_objs()) { eval->eval(eval_obj); }
 }
 
 void Environment::defer_callback(std::function<void()> t_callback)

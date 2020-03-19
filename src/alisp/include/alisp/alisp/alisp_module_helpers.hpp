@@ -48,6 +48,11 @@ inline void module_eval(env::Module *t_module, std::string t_eval)
     t_module->eval_string(std::move(t_eval));
 }
 
+inline void module_eval(env::Module *t_module, ALObjectPtr t_obj)
+{
+    t_module->eval_obj(std::move(t_obj));
+}
+
 inline void module_defvar(env::Module *t_module, std::string t_name, ALObjectPtr val, std::string t_doc = {})
 {
     auto &new_var = t_module->get_root().insert({ t_name, std::move(val) }).first->second;
@@ -70,7 +75,7 @@ inline void module_doc(env::Module *t_module, std::string t_doc)
     module_defconst(t_module, "--doc--", make_string(t_doc));
 }
 
-inline void module_define_function(env::Module *t_module, const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc)
+inline void module_define_function(env::Module *t_module, const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc = {})
 {
     auto &scope = t_module->root_scope();
     auto name   = t_sym->to_string();
@@ -93,7 +98,7 @@ inline void module_define_function(env::Module *t_module, const ALObjectPtr t_sy
     scope.insert({ name, new_fun });
 }
 
-inline void module_define_variable(env::Module *t_module, const ALObjectPtr t_sym, ALObjectPtr t_value, std::string t_doc)
+inline void module_define_variable(env::Module *t_module, const ALObjectPtr t_sym, ALObjectPtr t_value, std::string t_doc = {})
 {
     auto &scope = t_module->root_scope();
     auto name   = t_sym->to_string();
@@ -112,7 +117,7 @@ inline void module_define_variable(env::Module *t_module, const ALObjectPtr t_sy
     scope.insert({ name, t_value });
 }
 
-inline void module_define_macro(env::Module *t_module, const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc)
+inline void module_define_macro(env::Module *t_module, const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc = {})
 {
     auto &scope = t_module->root_scope();
     auto name   = t_sym->to_string();

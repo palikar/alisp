@@ -31,6 +31,8 @@ add_dynmodule(alisp_module_random random src/random.cpp)
 add_dynmodule(alisp_module_re re src/re.cpp)
 add_dynmodule(alisp_module_xml xml src/xml.cpp)
 
+add_dynmodule(alisp_templ_xml templ src/templ.cpp)
+
 
 target_link_libraries(alisp_module_xml PUBLIC tinyxml2)
 

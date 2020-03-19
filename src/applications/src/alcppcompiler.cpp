@@ -33,6 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "alisp/config.hpp"
 #include "alisp/utility.hpp"
 #include "alisp/alisp/alisp_engine.hpp"
+#include "alisp/utility/macros.hpp"
+#include "alisp/alisp/alisp_macros.hpp"
+#include "alisp/alisp/alisp_assertions.hpp"
 
 using namespace alisp;
 using namespace fmt::literals;
@@ -185,6 +188,38 @@ unsigned char templ_cpp[] = {
 unsigned int templ_cpp_len = 2719;
 
 
+unsigned char templ_mod_cpp[] = {
+    0x23, 0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x20, 0x22, 0x61, 0x6c,
+    0x69, 0x73, 0x70, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x68,
+    0x70, 0x70, 0x22, 0x0a, 0x23, 0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65,
+    0x20, 0x22, 0x61, 0x6c, 0x69, 0x73, 0x70, 0x2f, 0x61, 0x6c, 0x69, 0x73,
+    0x70, 0x2f, 0x61, 0x6c, 0x69, 0x73, 0x70, 0x5f, 0x6d, 0x6f, 0x64, 0x75,
+    0x6c, 0x65, 0x5f, 0x68, 0x65, 0x6c, 0x70, 0x65, 0x72, 0x73, 0x2e, 0x68,
+    0x70, 0x70, 0x22, 0x0a, 0x0a, 0x41, 0x4c, 0x49, 0x53, 0x50, 0x5f, 0x45,
+    0x58, 0x50, 0x4f, 0x52, 0x54, 0x20, 0x61, 0x6c, 0x69, 0x73, 0x70, 0x3a,
+    0x3a, 0x65, 0x6e, 0x76, 0x3a, 0x3a, 0x4d, 0x6f, 0x64, 0x75, 0x6c, 0x65,
+    0x50, 0x74, 0x72, 0x20, 0x69, 0x6e, 0x69, 0x74, 0x5f, 0x7b, 0x30, 0x7d,
+    0x28, 0x5b, 0x5b, 0x6d, 0x61, 0x79, 0x62, 0x65, 0x5f, 0x75, 0x6e, 0x75,
+    0x73, 0x65, 0x64, 0x5d, 0x5d, 0x20, 0x61, 0x6c, 0x69, 0x73, 0x70, 0x3a,
+    0x3a, 0x65, 0x6e, 0x76, 0x3a, 0x3a, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f,
+    0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x2a, 0x20, 0x65, 0x6e, 0x76, 0x2c, 0x20,
+    0x5b, 0x5b, 0x6d, 0x61, 0x79, 0x62, 0x65, 0x5f, 0x75, 0x6e, 0x75, 0x73,
+    0x65, 0x64, 0x5d, 0x5d, 0x20, 0x61, 0x6c, 0x69, 0x73, 0x70, 0x3a, 0x3a,
+    0x65, 0x76, 0x61, 0x6c, 0x3a, 0x3a, 0x45, 0x76, 0x61, 0x6c, 0x75, 0x61,
+    0x74, 0x6f, 0x72, 0x2a, 0x20, 0x65, 0x76, 0x61, 0x6c, 0x29, 0x0a, 0x7b,
+    0x7b, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x75, 0x73,
+    0x69, 0x6e, 0x67, 0x20, 0x6e, 0x61, 0x6d, 0x65, 0x73, 0x70, 0x61, 0x63,
+    0x65, 0x20, 0x61, 0x6c, 0x69, 0x73, 0x70, 0x3b, 0x0a, 0x20, 0x20, 0x20,
+    0x20, 0x61, 0x75, 0x74, 0x6f, 0x20, 0x4d, 0x20, 0x3d, 0x20, 0x61, 0x6c,
+    0x69, 0x73, 0x70, 0x3a, 0x3a, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x5f,
+    0x69, 0x6e, 0x69, 0x74, 0x28, 0x22, 0x7b, 0x30, 0x7d, 0x22, 0x29, 0x3b,
+    0x0a, 0x20, 0x20, 0x20, 0x20, 0x61, 0x75, 0x74, 0x6f, 0x20, 0x6d, 0x5f,
+    0x70, 0x74, 0x72, 0x20, 0x3d, 0x20, 0x4d, 0x2e, 0x67, 0x65, 0x74, 0x28,
+    0x29, 0x3b, 0x0a
+};
+unsigned int templ_mod_cpp_len = 315;
+
+
 const char *staticMap(char c)
 {
     switch (c)
@@ -263,11 +298,121 @@ auto dump_cpp(ALObjectPtr obj)
     return std::string{};
 }
 
+auto dump_defun(ALObjectPtr obj)
+{
+    AL_CHECK(assert_min_size<3>(obj));
+    AL_CHECK(assert_symbol(obj->i(1)));
+    AL_CHECK(assert_list(obj->i(2)));
+
+    std::ostringstream str;
+    
+    if (obj->size() >= 4 and pstring(obj->i(3)))
+    {
+        str << fmt::format(
+            "alisp::module_define_function(m_ptr,{}, {}, {}, \"{}\");",
+            dump_cpp( obj->i(1)),
+            dump_cpp( obj->i(2)),
+            dump_cpp(splice(obj, 4)),
+            obj->i(3)->to_string());
+        return str.str();
+    };
+
+    str << fmt::format(
+        "alisp::module_define_function(m_ptr,{}, {}, {});",
+        dump_cpp( obj->i(1)),
+        dump_cpp( obj->i(2)),
+        dump_cpp(splice(obj, 3)));
+    return str.str();    
+}
+
+auto dump_macro(ALObjectPtr obj)
+{
+    AL_CHECK(assert_min_size<3>(obj));
+    AL_CHECK(assert_symbol(obj->i(1)));
+    AL_CHECK(assert_list(obj->i(2)));
+
+    std::ostringstream str;
+    
+    if (obj->size() >= 4 and pstring(obj->i(3)))
+    {
+        str << fmt::format(
+            "alisp::module_define_function(m_ptr,{}, {}, {}, \"{}\");",
+            dump_cpp( obj->i(1)),
+            dump_cpp( obj->i(2)),
+            dump_cpp(splice(obj, 4)),
+            obj->i(3)->to_string());
+        return str.str();
+    };
+
+    str << fmt::format(
+        "alisp::module_define_macro(m_ptr,{}, {}, {});",
+        dump_cpp( obj->i(1)),
+        dump_cpp( obj->i(2)),
+        dump_cpp(splice(obj, 3)));
+    return str.str();    
+}
+
+auto dump_var(ALObjectPtr obj)
+{
+    AL_CHECK(assert_min_size<3>(obj));
+    AL_CHECK(assert_max_size<4>(obj));
+    AL_CHECK(assert_symbol(obj->i(1)));
+
+    std::ostringstream str;
+    
+    if (obj->size() >= 4 and pstring(obj->i(3)))
+    {
+        str << fmt::format(
+            "alisp::module_define_variable(m_ptr,{}, {}, \"{}\");",
+            dump_cpp( obj->i(1)),
+            dump_cpp( obj->i(2)),
+            obj->i(3)->to_string());
+        return str.str();
+    };
+
+    str << fmt::format(
+        "alisp::module_define_variable(m_ptr,{}, {});",
+        dump_cpp( obj->i(1)),
+        dump_cpp( obj->i(2)));
+    return str.str();    
+}
+
+
+auto dump_cpp_module(ALObjectPtr obj)
+{
+
+    if (plist(obj)) {
+        std::ostringstream str;
+
+        if (obj->length() == 0)
+        {
+            str << "Qnil,"
+                << "\n";
+            return str.str();
+        }
+
+        if (obj->i(0) == Qdefun){
+            str << dump_defun(obj);
+            return str.str();
+        } else if (obj->i(0) == Qdefvar){
+            str << dump_var(obj);
+            return str.str();
+        } else if (obj->i(0) == Qdefmacro){
+            str << dump_macro(obj);
+            return str.str();
+        }
+    }
+    return fmt::format("alisp::module_eval(m_ptr, {});", dump_cpp(obj));
+    
+}
+
 struct CLIOptions
 {
     std::string input{};
     std::string output{};
 
+    bool com_module{ false };
+    
     bool debug{ false };
     bool optimization{ false };
 
@@ -295,9 +440,11 @@ int main(int argc, char *argv[])
       opts.show_help << clipp::option("-h", "--help") % "Print help information.",
       opts.debug << clipp::option("-g", "--debug") % "Build the executable with debug symbols.",
       opts.optimization << clipp::option("-O", "--optimize") % "Enable optimizations when compiling.",
+      opts.com_module << clipp::option("-m", "--module") % "Compile the file as a module that can be imported.",
+
 
       (clipp::option("-o", "--ouput") & opts.output << clipp::value("output")) % "Output executable file",
-
+      
       opts.input << clipp::opt_value("file") % "Input alisp file"
 
     );
@@ -349,21 +496,40 @@ int main(int argc, char *argv[])
         return std::vector<ALObjectPtr>{};
     }();
 
+    auto contents = [&](){
+        if (opts.com_module) {
+            
+            const std::string module_name = fs::path(input_file).stem();
+            std::stringstream ss;
+            ss << fmt::format(std::string_view{ reinterpret_cast<char *>(templ_mod_cpp), templ_mod_cpp_len }, module_name) << "\n";
 
-    std::vector<std::string> syms{};
+            for (auto &el : obj_vec) {
+                ss << dump_cpp_module(el) << "\n";
+            }
+        
+            ss << "\n";
+            ss << "}"
+               << "\n";
+            return ss.str();
+        } else {
+                
+            std::stringstream ss;
+            ss << std::string_view{ reinterpret_cast<char *>(templ_cpp), templ_cpp_len } << "\n";
+            for (auto &el : obj_vec) { ss << fmt::format("    m_evaluator.eval({});", dump_cpp(el)); }
+            ss << "\n";
+            ss << "}"
+               << "\n";
 
-    std::stringstream ss;
-    ss << std::string_view{ reinterpret_cast<char *>(templ_cpp), templ_cpp_len } << "\n";
-    for (auto &el : obj_vec) { ss << fmt::format("    m_evaluator.eval({});", dump_cpp(el)); }
-    ss << "\n";
-    ss << "}"
-       << "\n";
+            return ss.str();
+        }
+
+    }();
 
     const std::string output_cpp_file = fs::absolute(opts.input).string() += ".cpp";
 
     std::ofstream outfile;
     outfile.open(output_cpp_file);
-    outfile << ss.str();
+    outfile << contents;
     outfile.close();
 
 

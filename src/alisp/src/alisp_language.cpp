@@ -335,9 +335,9 @@ ALObjectPtr Fdefmacro(ALObjectPtr obj, env::Environment *env, eval::Evaluator *)
     AL_CHECK(assert_list(obj->i(1)));
 
     AL_CHECK(if (!detail::check_arg_list(obj->i(1))) {
-        signal(Qdefun_signal, "Invalud argument list:", dump(obj->i(1)));
-        return Qnil;
-    });
+            signal(Qdefun_signal, "Invalud argument list:", dump(obj->i(1)));
+            return Qnil;
+        });
 
     if (obj->size() >= 3 and pstring(obj->i(2)))
     {
