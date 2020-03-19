@@ -1,0 +1,64 @@
+.TH Alcpp 1
+.SH DESCRIPTION
+The alisp cpp compiler. It can transpile an alisp script into a cpp file and then copile it with gcc.
+.SH SYNOPSIS
+.B alcpp
+[\fB\-v\fR]
+[\fB\-h\fR]
+[\fB\-c\fR]
+[\fB\-n\fR]
+[\fB\-V\fR]
+[\fB\-g\fR]
+[\fB\-O\fR]
+[\fB\-o\fR \fIouput\fR]
+\fIfile\fR
+.SH OPTIONS
+.TP
+.BR \-v ", " \-\-version
+Show the version of the al cpp compiler
+.TP
+.BR \-V ", " \-\-verbose
+Print debug information
+.TP
+.BR \-h ", " \-\-help
+Print help information.
+.TP
+.BR \-c ", " \-\-no-compile
+ Do not compile and link the executable.
+.TP
+.BR \-n ", " \-\-no-cleanup
+ Do not delete temporary files.
+.TP
+.BR \-g ", " \-\-debug
+Build the executable with debug symbols.
+.TP
+.BR \-O ", " \-\-optimize
+Enable optimizations when compiling.
+.TP
+.BR \-m ", " \-\-module
+Compile the file as a module that can be imported.
+.TP
+.BR \-o " " \-\-output " " \fIoutput\fR
+Teh output executable or shared library file.
+.TP
+.BR \fIfile\fR
+ Input alisp file
+
+.SH Resources
+.BR Repository:
+https://github.com/palikar/alisp
+
+.TR
+.BR Documentation:
+https://alisp.readthedocs.io/en/latest/
+
+.TR
+.BR Bug tracking:
+https://github.com/palikar/alisp/issues
+.SH Authors
+
+.TR
+Original creator:
+Stanislav Arnaudov <https://github.com/palikar/>
+.SH LICENSE
+.BR GPLv2
