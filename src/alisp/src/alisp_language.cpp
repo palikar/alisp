@@ -244,7 +244,7 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
 
             if (fs::equivalent(eval_file, eval->get_current_file())) { continue; }
 
-            std::cout << utility::check_elf(eval_file) << "\n";
+            // std::cout << eval_file << ": " << utility::check_elf(eval_file) << "\n";
             if (hash::hash(std::string_view(postfix)) == hash::hash(".so") or utility::check_elf(eval_file))
             {
                 env->load_module(eval, eval_file.string(), module_name);

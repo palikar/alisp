@@ -29,66 +29,12 @@
 namespace alisp::utility
 {
 
-inline bool skip_bom(std::ifstream &infile)
-{
-    size_t bytes_needed = 4;
-    char buffer[4];
+bool skip_bom(std::ifstream &infile);
 
-    memset(buffer, '\0', bytes_needed);
+bool skip_elf(std::ifstream &infile);
 
-    infile.read(buffer, static_cast<std::streamsize>(bytes_needed));
+bool check_elf(const std::string &t_filename);
 
-    if ((buffer[0] == '\x7f') && (buffer[1] == '\x45') && (buffer[2] == '\x4c') && (buffer[3] == '\x46'))
-    {
-
-        infile.seekg(3);
-        return true;
-    }
-
-    infile.seekg(0);
-
-    return false;
-}
-
-inline bool check_elf(const std::string &t_filename)
-{
-    std::ifstream infile(t_filename.c_str(), std::ios::in | std::ios::ate | std::ios::binary);
-
-    if (!infile.is_open()) { return false; }
-
-    if (skip_bom(infile))
-    {
-        infile.close();
-        return true;
-    }
-    infile.close();
-    return false;
-}
-
-inline std::string load_file(const std::string &t_filename)
-{
-    std::ifstream infile(t_filename.c_str(), std::ios::in | std::ios::ate | std::ios::binary);
-
-    if (!infile.is_open()) {}
-
-    auto size = infile.tellg();
-    infile.seekg(0, std::ios::beg);
-
-    assert(size >= 0);
-
-    if (skip_bom(infile))
-    {
-        size -= 3;
-        assert(size >= 0);
-    }
-
-    if (size == std::streampos(0)) { return std::string(); }
-    else
-    {
-        std::vector<char> v(static_cast<size_t>(size));
-        infile.read(&v[0], static_cast<std::streamsize>(size));
-        return std::string(v.begin(), v.end());
-    }
-}
+std::string load_file(const std::string &t_filename);
 
 }  // namespace alisp::utility
