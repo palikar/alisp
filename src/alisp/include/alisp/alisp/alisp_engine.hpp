@@ -121,6 +121,8 @@ class LanguageEngine
 
     const std::string &get_home() const { return m_home_directory; }
 
+    void interactive();
+
     void handle_signal(int t_c)
     {
         AL_DEBUG("Receiving signal: "s += std::to_string(t_c));

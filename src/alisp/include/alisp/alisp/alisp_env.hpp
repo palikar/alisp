@@ -111,7 +111,7 @@ class Module
 
     void eval_string(std::string t_eval) { m_evals.push_back(std::move(t_eval)); }
     void eval_obj(ALObjectPtr t_obj) { m_eval_obj.push_back(std::move(t_obj)); }
-    
+
 
     const std::string &name() { return m_name; }
 

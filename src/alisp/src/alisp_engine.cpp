@@ -170,4 +170,9 @@ std::pair<bool, int> LanguageEngine::eval_objs(std::vector<ALObjectPtr> t_objs)
     return { true, 0 };
 }
 
+void LanguageEngine::interactive()
+{
+    Vmodpaths->children().push_back(make_string(utility::env_string("PWD")));
+}
+
 }  // namespace alisp

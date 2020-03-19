@@ -27,9 +27,9 @@
 #include "alisp/alisp/alisp_exception.hpp"
 #include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_assertions.hpp"
-
 #include "alisp/alisp/alisp_loadable_modules.hpp"
 
+#include "alisp/utility/files.hpp"
 #include "alisp/utility/macros.hpp"
 #include "alisp/utility/hash.hpp"
 
@@ -244,8 +244,8 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
 
             if (fs::equivalent(eval_file, eval->get_current_file())) { continue; }
 
-            // std::cout << eval_file << "\n";
-            if (hash::hash(std::string_view(postfix)) == hash::hash(".so"))
+            std::cout << utility::check_elf(eval_file) << "\n";
+            if (hash::hash(std::string_view(postfix)) == hash::hash(".so") or utility::check_elf(eval_file))
             {
                 env->load_module(eval, eval_file.string(), module_name);
                 if (import_all) { env->import_root_scope(module_name, env->current_module()); }
@@ -335,9 +335,9 @@ ALObjectPtr Fdefmacro(ALObjectPtr obj, env::Environment *env, eval::Evaluator *)
     AL_CHECK(assert_list(obj->i(1)));
 
     AL_CHECK(if (!detail::check_arg_list(obj->i(1))) {
-            signal(Qdefun_signal, "Invalud argument list:", dump(obj->i(1)));
-            return Qnil;
-        });
+        signal(Qdefun_signal, "Invalud argument list:", dump(obj->i(1)));
+        return Qnil;
+    });
 
     if (obj->size() >= 3 and pstring(obj->i(2)))
     {
