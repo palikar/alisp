@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <vector>
 #include <type_traits>
+#include <functional>
 
 
 namespace alisp::utility
