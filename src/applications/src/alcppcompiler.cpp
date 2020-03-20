@@ -416,20 +416,19 @@ int main(int argc, char *argv[])
 
     CLIOptions opts;
 
-    auto cli = (
-      opts.version << clipp::option("-v", "--version") % "Show the version of the al cpp compiler",
-      opts.verbose << clipp::option("-V", "--verbose") % "Print debug information",
-      opts.no_compile << clipp::option("-c", "--no-compile") % "Do not compile and link the executable.",
-      opts.no_cleanup << clipp::option("-n", "--no-cleanup") % "Do not delete temporary files.",
-      opts.show_help << clipp::option("-h", "--help") % "Print help information.",
-      opts.debug << clipp::option("-g", "--debug") % "Build the executable with debug symbols.",
-      opts.optimization << clipp::option("-O", "--optimize") % "Enable optimizations when compiling.",
-      opts.com_module << clipp::option("-m", "--module") % "Compile the file as a module that can be imported.",
+    auto cli =
+      (opts.version << clipp::option("-v", "--version") % "Show the version of the al cpp compiler",
+       opts.verbose << clipp::option("-V", "--verbose") % "Print debug information",
+       opts.no_compile << clipp::option("-c", "--no-compile") % "Do not compile and link the executable.",
+       opts.no_cleanup << clipp::option("-n", "--no-cleanup") % "Do not delete temporary files.",
+       opts.show_help << clipp::option("-h", "--help") % "Print help information.",
+       opts.debug << clipp::option("-g", "--debug") % "Build the executable with debug symbols.",
+       opts.optimization << clipp::option("-O", "--optimize") % "Enable optimizations when compiling.",
+       opts.com_module << clipp::option("-m", "--module") % "Compile the file as a module that can be imported.",
 
-      (clipp::option("-o", "--ouput") & opts.output << clipp::value("output")) % "Output executable file",
+       (clipp::option("-o", "--ouput") & opts.output << clipp::value("output")) % "Output executable file",
 
-      opts.input << clipp::opt_value("file") % "Input alisp file"
-    );
+       opts.input << clipp::opt_value("file") % "Input alisp file");
 
     const auto res = clipp::parse(argc, argv, cli);
 
@@ -461,7 +460,7 @@ int main(int argc, char *argv[])
         std::cout << "Usage:\n" << clipp::usage_lines(cli, "alcpp") << "\n";
         return 1;
     }
-    
+
     const std::string input_file = fs::absolute(opts.input);
 
     if (opts.verbose)
