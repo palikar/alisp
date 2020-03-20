@@ -590,7 +590,6 @@ ALObjectPtr Ffuncall(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return eval->handle_lambda(fun_obj, args);
 }
 
-
 ALObjectPtr Fapply(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
