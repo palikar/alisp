@@ -1,3 +1,20 @@
+/*   Alisp - the alisp interpreted language
+     Copyright (C) 2020 Stanislav Arnaudov
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any prior version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
+
 #include "alisp/config.hpp"
 #include "alisp/alisp/alisp_module_helpers.hpp"
 #include "alisp/management/registry.hpp"
@@ -33,13 +50,13 @@ template<typename Facet, typename T> auto str_with_locale(const std::locale &t_l
 ALObjectPtr Fnum_true_name(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
-    
+
     if (std::size(*t_obj) > 0)
     {
         auto id = eval->eval(t_obj->i(0));
         AL_CHECK(assert_int(id));
         return make_string(
-            std::use_facet<std::numpunct<char>>(detail::loc_registry[object_to_resource(id)]).truename());
+          std::use_facet<std::numpunct<char>>(detail::loc_registry[object_to_resource(id)]).truename());
     }
 
     return make_string(std::use_facet<std::numpunct<char>>(detail::g_defautl_loc).truename());
@@ -54,7 +71,7 @@ ALObjectPtr Fnum_false_name(ALObjectPtr t_obj, env::Environment *, eval::Evaluat
         auto id = eval->eval(t_obj->i(0));
         AL_CHECK(assert_int(id));
         return make_string(
-            std::use_facet<std::numpunct<char>>(detail::loc_registry[object_to_resource(id)]).falsename());
+          std::use_facet<std::numpunct<char>>(detail::loc_registry[object_to_resource(id)]).falsename());
     }
 
     return make_string(std::use_facet<std::numpunct<char>>(detail::g_defautl_loc).falsename());
@@ -69,9 +86,9 @@ ALObjectPtr Fnum_thousand_sep(ALObjectPtr t_obj, env::Environment *, eval::Evalu
         auto id = eval->eval(t_obj->i(0));
         AL_CHECK(assert_int(id));
         return make_char(
-            std::use_facet<std::numpunct<char>>(detail::loc_registry[object_to_resource(id)]).thousands_sep());
+          std::use_facet<std::numpunct<char>>(detail::loc_registry[object_to_resource(id)]).thousands_sep());
     }
-    
+
     return make_char(std::use_facet<std::numpunct<char>>(detail::g_defautl_loc).thousands_sep());
 }
 
@@ -84,9 +101,9 @@ ALObjectPtr Fnum_decimal_point(ALObjectPtr t_obj, env::Environment *, eval::Eval
         auto id = eval->eval(t_obj->i(0));
         AL_CHECK(assert_int(id));
         return make_char(
-            std::use_facet<std::numpunct<char>>(detail::loc_registry[object_to_resource(id)]).decimal_point());
+          std::use_facet<std::numpunct<char>>(detail::loc_registry[object_to_resource(id)]).decimal_point());
     }
-    
+
     return make_char(std::use_facet<std::numpunct<char>>(detail::g_defautl_loc).decimal_point());
 }
 
@@ -99,7 +116,7 @@ ALObjectPtr Fmoney_positive_sign(ALObjectPtr t_obj, env::Environment *, eval::Ev
         auto id = eval->eval(t_obj->i(0));
         AL_CHECK(assert_int(id));
         return make_string(
-            std::use_facet<std::moneypunct<char>>(detail::loc_registry[object_to_resource(id)]).positive_sign());
+          std::use_facet<std::moneypunct<char>>(detail::loc_registry[object_to_resource(id)]).positive_sign());
     }
 
     return make_string(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).positive_sign());
@@ -114,7 +131,7 @@ ALObjectPtr Fmoney_negative_sign(ALObjectPtr t_obj, env::Environment *, eval::Ev
         auto id = eval->eval(t_obj->i(0));
         AL_CHECK(assert_int(id));
         return make_string(
-            std::use_facet<std::moneypunct<char>>(detail::loc_registry[object_to_resource(id)]).negative_sign());
+          std::use_facet<std::moneypunct<char>>(detail::loc_registry[object_to_resource(id)]).negative_sign());
     }
 
     return make_string(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).negative_sign());
@@ -123,13 +140,13 @@ ALObjectPtr Fmoney_negative_sign(ALObjectPtr t_obj, env::Environment *, eval::Ev
 ALObjectPtr Fmoney_symobl(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
-    
+
     if (std::size(*t_obj) > 0)
     {
         auto id = eval->eval(t_obj->i(0));
         AL_CHECK(assert_int(id));
         return make_string(
-            std::use_facet<std::moneypunct<char>>(detail::loc_registry[object_to_resource(id)]).curr_symbol());
+          std::use_facet<std::moneypunct<char>>(detail::loc_registry[object_to_resource(id)]).curr_symbol());
     }
 
     return make_string(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).curr_symbol());
@@ -138,13 +155,13 @@ ALObjectPtr Fmoney_symobl(ALObjectPtr t_obj, env::Environment *, eval::Evaluator
 ALObjectPtr Fmoney_thousand_sep(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
-    
+
     if (std::size(*t_obj) > 0)
     {
         auto id = eval->eval(t_obj->i(0));
         AL_CHECK(assert_int(id));
         return make_char(
-            std::use_facet<std::moneypunct<char>>(detail::loc_registry[object_to_resource(id)]).thousands_sep());
+          std::use_facet<std::moneypunct<char>>(detail::loc_registry[object_to_resource(id)]).thousands_sep());
     }
 
     return make_char(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).thousands_sep());
@@ -159,7 +176,7 @@ ALObjectPtr Fmoney_decimal_point(ALObjectPtr t_obj, env::Environment *, eval::Ev
         auto id = eval->eval(t_obj->i(0));
         AL_CHECK(assert_int(id));
         return make_char(
-            std::use_facet<std::moneypunct<char>>(detail::loc_registry[object_to_resource(id)]).decimal_point());
+          std::use_facet<std::moneypunct<char>>(detail::loc_registry[object_to_resource(id)]).decimal_point());
     }
 
     return make_char(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).decimal_point());
@@ -176,7 +193,7 @@ ALObjectPtr Fput_money(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         auto s =
-            detail::str_with_locale<std::money_put<char>>(detail::loc_registry[object_to_resource(id)], obj->to_real());
+          detail::str_with_locale<std::money_put<char>>(detail::loc_registry[object_to_resource(id)], obj->to_real());
         return make_string(s);
     }
 
@@ -192,11 +209,14 @@ ALObjectPtr Fput_num(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
 
     std::stringstream ss;
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         ss.imbue(detail::loc_registry[object_to_resource(id)]);
-    } else {
+    }
+    else
+    {
         ss.imbue(std::locale());
     }
 
@@ -219,17 +239,19 @@ ALObjectPtr Fput_time(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
     auto fmt = obj_fmt->to_string();
 
     std::stringstream ss;
-    
-    if (std::size(*t_obj) > 2) {
+
+    if (std::size(*t_obj) > 2)
+    {
         auto id = eval->eval(t_obj->i(2));
         AL_CHECK(assert_int(id));
         ss.imbue(detail::loc_registry[object_to_resource(id)]);
-    } else {
+    }
+    else
+    {
         ss.imbue(std::locale());
     }
 
-    
-    
+
     ss.imbue(std::locale());
     std::use_facet<std::time_put<char>>(ss.getloc())
       .put({ ss }, ss, ' ', std::localtime(&t), &fmt[0], &fmt[0] + fmt.size());
@@ -245,7 +267,8 @@ ALObjectPtr Fisspace(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     AL_CHECK(assert_int(obj));
     auto t = obj->to_int();
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         return std::isspace(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -263,7 +286,8 @@ ALObjectPtr Fisblank(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     AL_CHECK(assert_int(obj));
     auto t = obj->to_int();
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         return std::isblank(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -280,12 +304,13 @@ ALObjectPtr Fiscntrl(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     AL_CHECK(assert_int(obj));
     auto t = obj->to_int();
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         return std::iscntrl(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
     }
-    
+
     return std::iscntrl(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
@@ -297,12 +322,13 @@ ALObjectPtr Fisupper(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     AL_CHECK(assert_int(obj));
     auto t = obj->to_int();
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         return std::isupper(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
     }
-        
+
     return std::isupper(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
@@ -314,7 +340,8 @@ ALObjectPtr Fislower(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     AL_CHECK(assert_int(obj));
     auto t = obj->to_int();
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         return std::islower(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -331,7 +358,8 @@ ALObjectPtr Fisalpha(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     AL_CHECK(assert_int(obj));
     auto t = obj->to_int();
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         return std::isalpha(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -348,7 +376,8 @@ ALObjectPtr Fisdigit(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     AL_CHECK(assert_int(obj));
     auto t = obj->to_int();
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         return std::isdigit(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -365,12 +394,13 @@ ALObjectPtr Fispunct(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     AL_CHECK(assert_int(obj));
     auto t = obj->to_int();
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         return std::ispunct(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
     }
-    
+
     return std::ispunct(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
@@ -382,7 +412,8 @@ ALObjectPtr Fisxdigit(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
     AL_CHECK(assert_int(obj));
     auto t = obj->to_int();
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         return std::isxdigit(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -399,7 +430,8 @@ ALObjectPtr Fisalnum(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     AL_CHECK(assert_int(obj));
     auto t = obj->to_int();
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         return std::isalnum(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -416,12 +448,13 @@ ALObjectPtr Fisprint(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     AL_CHECK(assert_int(obj));
     auto t = obj->to_int();
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         return std::isprint(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
     }
-    
+
     return std::isprint(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
@@ -433,7 +466,8 @@ ALObjectPtr Fisgraph(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     AL_CHECK(assert_char(obj));
     auto t = obj->to_int();
 
-    if (std::size(*t_obj) > 1) {
+    if (std::size(*t_obj) > 1)
+    {
         auto id = eval->eval(t_obj->i(1));
         AL_CHECK(assert_int(id));
         return std::isgraph(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -491,7 +525,8 @@ ALObjectPtr Flocale_name(ALObjectPtr t_obj, env::Environment *env, eval::Evaluat
 {
     AL_CHECK(assert_max_size<1>(t_obj));
 
-    if (std::size(*t_obj) > 0) {
+    if (std::size(*t_obj) > 0)
+    {
         auto obj = eval->eval(t_obj->i(0));
         AL_CHECK(assert_int(obj));
         return make_string(detail::loc_registry[object_to_resource(obj)].name());
@@ -528,9 +563,9 @@ ALISP_EXPORT alisp::env::ModulePtr init_locale(alisp::env::Environment *, alisp:
     alisp::module_defun(loc_ptr, "iscntrl", &loc::Fiscntrl);
     alisp::module_defun(loc_ptr, "isblank", &loc::Fisblank);
     alisp::module_defun(loc_ptr, "isspace", &loc::Fisspace);
-    
+
     alisp::module_defun(loc_ptr, "put-time", &loc::Fput_time);
-    
+
     alisp::module_defun(loc_ptr, "put-money", &loc::Fput_money);
     alisp::module_defun(loc_ptr, "money-decimal-point", &loc::Fmoney_decimal_point);
     alisp::module_defun(loc_ptr, "money-thousand-sep", &loc::Fmoney_thousand_sep);
@@ -542,7 +577,7 @@ ALISP_EXPORT alisp::env::ModulePtr init_locale(alisp::env::Environment *, alisp:
     alisp::module_defun(loc_ptr, "put-num", &loc::Fput_num);
     alisp::module_defun(loc_ptr, "num-thousand-sep", &loc::Fnum_thousand_sep);
     alisp::module_defun(loc_ptr, "num-false-name", &loc::Fnum_false_name);
-    alisp::module_defun(loc_ptr, "num-true-name", &loc::Fnum_true_name);    
+    alisp::module_defun(loc_ptr, "num-true-name", &loc::Fnum_true_name);
 
     return Mlocale;
 }
