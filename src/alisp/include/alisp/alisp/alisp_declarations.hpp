@@ -470,6 +470,7 @@ Print the value of VALUE of form on the standard error stream and put a new
 line character.
 )");
 
+
 DEFUN(dump, "dump", R"((dump FORM))");
 DEFUN(dumpstack, "dumpstack", R"((dumpstack)
 
@@ -482,6 +483,8 @@ DEFUN(dumpcallstack, "dumpcallstack", R"((dumpcallstack)
 Print a formatted version of the current call stack on the standard
 output. This function is meant for debugging.
 )");
+
+DEFUN(dumpsystem, "dumpsystem", R"((dumpsystem))");
 
 DEFUN(dumplicense, "dumplicense", R"((dumplicense)
 

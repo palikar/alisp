@@ -253,8 +253,6 @@ std::string escape_cpp(const std::string &input)
 
 auto dump_cpp(ALObjectPtr obj)
 {
-
-
     switch (obj->type())
     {
         case ALObjectType::INT_VALUE: return fmt::format("make_int({})", obj->to_int()); break;
@@ -263,14 +261,23 @@ auto dump_cpp(ALObjectPtr obj)
 
         case ALObjectType::STRING_VALUE: return fmt::format("make_string(\"{}\")", escape_cpp(obj->to_string())); break;
 
-        case ALObjectType::SYMBOL: return fmt::format("make_symbol(\"{}\")", obj->to_string()); break;
+        case ALObjectType::SYMBOL:
+
+            if (eq(obj, Qnil)) { return std::string{ "Qnil" }; }
+
+            if (eq(obj, Qt)) { return std::string{ "Qt" }; }
+
+            if (env::Environment::g_prime_values.count(obj->to_string()) != 0) { return "P"s += obj->to_string(); }
+
+            return fmt::format("make_symbol(\"{}\")", obj->to_string());
+            break;
 
         case ALObjectType::LIST:
             std::ostringstream str;
+
             if (obj->length() == 0)
             {
-                str << "Qnil,"
-                    << "\n";
+                str << "make_list(),";
                 break;
             }
 
@@ -512,7 +519,7 @@ int main(int argc, char *argv[])
 
             std::stringstream ss;
             ss << std::string_view{ reinterpret_cast<char *>(templ_cpp), templ_cpp_len } << "\n";
-            for (auto &el : obj_vec) { ss << fmt::format("    m_evaluator.eval({});", dump_cpp(el)); }
+            for (auto &el : obj_vec) { ss << fmt::format("    m_evaluator.eval({});\n", dump_cpp(el)); }
             ss << "\n";
             ss << "}"
                << "\n";

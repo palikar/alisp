@@ -289,6 +289,8 @@ class Environment
 
     void callstack_dump() const;
 
+    void env_dump() const;
+
     auto get_modules() const { return m_modules; }
 
 #ifdef ENABLE_STACK_TRACE

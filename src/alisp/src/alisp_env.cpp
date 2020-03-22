@@ -232,7 +232,7 @@ void Environment::stack_dump() const
 
     cout.flush();
 
-    cout << format("+{:-^48}+", "Environment") << '\n';
+    cout << format("+{:-^48}+", "Stack") << '\n';
 
     size_t frame_index    = 0;
     const auto stack_size = std::size(m_stack.stacks);
@@ -284,6 +284,37 @@ void Environment::stack_dump() const
 
     cout << format("+{:-^10}+", "");
     cout << format("{:-^37}+", "") << '\n';
+}
+
+void Environment::env_dump() const
+{
+
+    using namespace fmt;
+    using namespace std;
+
+    cout.flush();
+
+    cout << format("+{:-^48}+", "Environment") << '\n';
+
+    cout << format("+{:-^15}+{:-^32}+", "", "") << '\n';
+    cout << format("|{:<15}|{:^32}|", "Primitives", "") << '\n';
+    cout << format("+{:-^15}+{:-^32}+", "", "") << '\n';
+
+    size_t index = 1;
+    for (auto &[sym, _] : g_prime_values) { cout << format("|{:<5}{:^43}|", index++, sym) << '\n'; }
+
+
+    for (auto &[mod_name, mod] : m_modules)
+    {
+        cout << format("+{:-^15}+{:-^32}+", "", "") << '\n';
+        cout << format("|{:<15}|{:^32}|", mod_name, "") << '\n';
+        cout << format("+{:-^15}+{:-^32}+", "", "") << '\n';
+
+        index = 1;
+        for (auto &[sym, _] : mod->get_root()) { cout << format("|{:<5}{:^43}|", index++, sym) << '\n'; }
+    }
+
+    cout << format("+{:-^48}+", "") << '\n';
 }
 
 void Environment::callstack_dump() const

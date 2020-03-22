@@ -103,6 +103,12 @@ ALObjectPtr Fdumpcallstack(ALObjectPtr, env::Environment *env, eval::Evaluator *
     return Qt;
 }
 
+ALObjectPtr Fdumpsystem(ALObjectPtr, env::Environment *env, eval::Evaluator *)
+{
+    env->env_dump();
+    return Qt;
+}
+
 ALObjectPtr Fdumplicense(ALObjectPtr, env::Environment *, eval::Evaluator *)
 {
     al::cout << AL_LICENSE_TEXT << '\n';

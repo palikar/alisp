@@ -54,7 +54,6 @@ struct ALObjectHelper
         }
     }
 
-
     template<typename T> static auto init_ptr_temp(T &&val)
     {
         if constexpr (USING_SHARED)
@@ -66,7 +65,6 @@ struct ALObjectHelper
             return val;
         }
     }
-
 
     template<typename T> static auto allocate_ptr(T &&) { return nullptr; }
 
@@ -160,12 +158,12 @@ template<typename T> inline auto make_real(T value)
 
 inline auto make_string(std::string value)
 {
-    return make_object(value);
+    return make_object(std::move(value));
 }
 
 inline auto make_list(ALObjectPtr obj)
 {
-    return detail::ALObjectHelper::get(std::vector{ obj });
+    return detail::ALObjectHelper::get(std::vector{ std::move(obj) });
 }
 
 inline auto make_list()
@@ -205,7 +203,6 @@ inline auto make_prime(Prim::func_type t_function, std::string t_name, [[maybe_u
     return sym;
 }
 
-
 inline auto operator"" _al(unsigned long long t_val)
 {
     return make_int(t_val);
@@ -225,7 +222,6 @@ inline auto operator"" _sym(const char *t_name)
 {
     return make_symbol(t_name);
 }
-
 
 inline auto getraw(ALObjectPtr &t_obj)
 {
