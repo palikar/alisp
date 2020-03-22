@@ -757,8 +757,8 @@ template<class Environment> class ALParser : public ParserBase
         }
 
         const std::string word_string{ word };
-        if (env::Environment::g_prime_values.count(word_string) > 0)
-        { return env::Environment::g_prime_values.at(word_string); }
+        // if (env::Environment::g_prime_values.count(word_string) > 0)
+        // { return env::Environment::g_prime_values.at(word_string); }
 
         return env::intern(word_string);
     }

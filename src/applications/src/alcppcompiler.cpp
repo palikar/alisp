@@ -267,7 +267,7 @@ auto dump_cpp(ALObjectPtr obj)
 
             if (eq(obj, Qt)) { return std::string{ "Qt" }; }
 
-            if (env::Environment::g_prime_values.count(obj->to_string()) != 0) { return "P"s += obj->to_string(); }
+            // if (env::Environment::g_prime_values.count(obj->to_string()) > 0) { return "P"s += obj->to_string(); }
 
             return fmt::format("make_symbol(\"{}\")", obj->to_string());
             break;
