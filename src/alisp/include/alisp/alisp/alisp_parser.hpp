@@ -756,7 +756,11 @@ template<class Environment> class ALParser : public ParserBase
             case hash::hash("--LINE--"): return make_int(position.line);
         }
 
-        return env::intern(std::string{ word });
+        const std::string word_string{ word };
+        if (env::Environment::g_prime_values.count(word_string) > 0)
+        { return env::Environment::g_prime_values.at(word_string); }
+
+        return env::intern(word_string);
     }
 
     ALObjectPtr parse_string()
