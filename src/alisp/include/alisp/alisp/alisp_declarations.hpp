@@ -33,18 +33,17 @@ namespace alisp
 /* | |__| (_) | | | \__ \ || (_| | | | | |_\__ \ */
 /*  \____\___/|_| |_|___/\__\__,_|_| |_|\__|___/ */
 
+DEFVAR(Qt, Vt, "t", Qt, R"()");
+DEFVAR(Qnil, Vnil, "nil", Qnil, R"()");
 
-DEFVAR(Qt, Vt, "t", make_object(Qt, "Used to represent truthy value."));
-DEFVAR(Qnil, Vnil, "nil", make_object(Qnil, "Used to represent falsey value."));
+DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--", make_object(AL_EXTRA_MODPATHS, AL_EXTRA_MODPATHS), R"()");
+DEFVAR(Qcurrent_module, Vcurrent_module, "--module--", make_string(""), R"()");
+DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--", make_list(), R"()");
+DEFVAR(Qlicense, Vlicense, "--al-license--", make_string(AL_LICENSE), R"()");
+DEFVAR(Qdebug_mode, Vdebug_mode, "--debug-mode--", Qt, R"()");
 
-DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--", make_object(AL_EXTRA_MODPATHS, AL_EXTRA_MODPATHS));
-DEFVAR(Qcurrent_module, Vcurrent_module, "--module--", make_string(""));
-DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--", make_list());
-DEFVAR(Qlicense, Vlicense, "--al-license--", make_string(AL_LICENSE));
-DEFVAR(Qdebug_mode, Vdebug_mode, "--debug-mode--", Qt);
-
-DEFVAR(Qload_signal, Vload_signal, "load-signal", env::intern("load-signal"));
-DEFVAR(Qdefun_signal, Vdefun_signal, "defun-signal", env::intern("defun-signal"));
+DEFVAR(Qload_signal, Vload_signal, "load-signal", env::intern("load-signal"), R"()");
+DEFVAR(Qdefun_signal, Vdefun_signal, "defun-signal", env::intern("defun-signal"), R"()");
 
 DEFSYM(Qoptional, "&optional", R"(Used in an argument list to signify that the next arguments are optional.)");
 DEFSYM(Qrest,
@@ -58,18 +57,17 @@ DEFSYM(Qcomma_at,
 another list.)");
 
 
-/*  _                                                ____                _ _
- */
-/* | |    __ _ _ __   __ _ _   _  __ _  __ _  ___   / ___|___  _ __  ___| |_ _
- * __ _   _  ___| |_ ___  */
-/* | |   / _` | '_ \ / _` | | | |/ _` |/ _` |/ _ \ | |   / _ \| '_ \/ __| __|
- * '__| | | |/ __| __/ __| */
-/* | |__| (_| | | | | (_| | |_| | (_| | (_| |  __/ | |__| (_) | | | \__ \ |_| |
- * | |_| | (__| |_\__ \ */
-/* |_____\__,_|_| |_|\__, |\__,_|\__,_|\__, |\___|  \____\___/|_| |_|___/\__|_|
- * \__,_|\___|\__|___/ */
-/*                   |___/             |___/ */
-
+/*  _                                              */
+/* | |    __ _ _ __   __ _ _   _  __ _  __ _  ___  */
+/* | |   / _` | '_ \ / _` | | | |/ _` |/ _` |/ _ \ */
+/* | |__| (_| | | | | (_| | |_| | (_| | (_| |  __/ */
+/* |_____\__,_|_| |_|\__, |\__,_|\__,_|\__, |\___| */
+/*                   |___/             |___/       */
+/*   ____                _                   _        */
+/*  / ___|___  _ __  ___| |_ _ __ _   _  ___| |_ ___  */
+/* | |   / _ \| '_ \/ __| __| '__| | | |/ __| __/ __| */
+/* | |__| (_) | | | \__ \ |_| |  | |_| | (__| |_\__ \ */
+/*  \____\___/|_| |_|___/\__|_|   \__,_|\___|\__|___/ */
 
 DEFUN(import,
       "import",

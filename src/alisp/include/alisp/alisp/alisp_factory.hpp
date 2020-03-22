@@ -166,6 +166,14 @@ inline auto make_list(ALObjectPtr obj)
     return detail::ALObjectHelper::get(std::vector{ std::move(obj) });
 }
 
+inline auto make_doc(ALObjectPtr obj, [[maybe_unused]] const std::string &t_doc = {})
+{
+#ifdef ENABLE_OBJECT_DOC
+    obj->set_prop("--doc--", detail::ALObjectHelper::get(t_doc));
+#endif
+    return obj;
+}
+
 inline auto make_list()
 {
     return detail::ALObjectHelper::get(ALObject::list_type{});
