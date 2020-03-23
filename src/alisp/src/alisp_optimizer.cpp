@@ -17,3 +17,37 @@
 
 
 #include "alisp/alisp/alisp_optimizer.hpp"
+
+
+namespace alisp
+{
+namespace optimizer
+{
+
+ALObjectPtr MainOptimizer::do_optimize(ALObjectPtr t_obj)
+{
+    if (std::size(*t_obj) > 1 && (eq(t_obj->i(0), Qquote) || eq(t_obj->i(0), Qbackquote))) { return t_obj; }
+
+    for (auto el : *t_obj)
+    {
+        if (!plist(el)) { continue; }
+        el = do_optimize(el);
+    }
+
+    auto res = m_opt.optimize(t_obj);
+    return res;
+}
+
+void MainOptimizer::optimize(std::vector<ALObjectPtr> &t_objs)
+{
+
+    for (auto &obj : t_objs)
+    {
+        if (!plist(obj)) continue;
+        obj = do_optimize(obj);
+    }
+}
+
+}  // namespace optimizer
+
+}  // namespace alisp

@@ -25,6 +25,7 @@ namespace alisp
 void LanguageEngine::do_eval(std::string &t_input, const std::string &t_file, bool t_print_res)
 {
     auto parse_result = m_parser->parse(t_input, t_file);
+    g_optimizer.optimize(parse_result);
 
     for (auto sexp : parse_result)
     {

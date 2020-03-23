@@ -69,7 +69,8 @@ another list.)");
 /* | |__| (_) | | | \__ \ |_| |  | |_| | (__| |_\__ \ */
 /*  \____\___/|_| |_|___/\__|_|   \__,_|\___|\__|___/ */
 
-DEFUN(import, "import",
+DEFUN(import,
+      "import",
       R"((import MODULE [:file file] [:all] [( [(SYM MAPPED)]... )])
 
 Import the module MODULE. MODULE should be a symbol and the imported
@@ -364,7 +365,8 @@ Example:
 )");
 
 
-DEFUN(condition_case, "condition-case",
+DEFUN(condition_case,
+      "condition-case",
       R"((condition-case SYMBOL BODY [[HANDLERS]...])
 )");
 
@@ -1092,14 +1094,16 @@ DEFUN(string_find, "string-find", R"((string-find STRING SUBSTRING)
 Return the first index where `SUBSTRING` is contained in `STRINGE`.
 )");
 
-DEFUN(string_replace, "string-replace",
+DEFUN(string_replace,
+      "string-replace",
       R"((string-replace STRING SUBSTRING NEWSTRING)
 
 Replace one occurrence of `SUBSTRING` in STRING with `NEWSTRING`. The
 new string is returned.
 )");
 
-DEFUN(string_replaceall, "string-replaceall",
+DEFUN(string_replaceall,
+      "string-replaceall",
       R"((string-replaceall STRING SUBSTRING NEWSTRING)
 
 Replace all occurrences of `SUBSTRING` in STRING with `NEWSTRING`. The

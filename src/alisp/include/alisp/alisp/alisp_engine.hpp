@@ -39,6 +39,7 @@
 #include "alisp/alisp/alisp_modules.hpp"
 #include "alisp/alisp/alisp_streams.hpp"
 #include "alisp/alisp/alisp_warnings.hpp"
+#include "alisp/alisp/alisp_optimizer.hpp"
 
 #include "alisp/utility/files.hpp"
 #include "alisp/utility/env.hpp"
@@ -72,6 +73,7 @@ class LanguageEngine
     env::Environment m_environment;
     std::unique_ptr<parser::ALParser<env::Environment>> m_parser;
     eval::Evaluator m_evaluator;
+    optimizer::MainOptimizer g_optimizer;
 
     std::vector<EngineSettings> m_settings;
     std::vector<std::string> m_argv;

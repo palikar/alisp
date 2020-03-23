@@ -273,22 +273,22 @@ auto dump_cpp(ALObjectPtr obj)
             return fmt::format("make_symbol(\"{}\")", obj->to_string());
             break;
 
-      case ALObjectType::LIST:
-          std::ostringstream str;
+        case ALObjectType::LIST:
+            std::ostringstream str;
 
-          if (obj->length() == 0)
-                  {
-                      str << "make_list(),";
-                      break;
-                  }
+            if (obj->length() == 0)
+            {
+                str << "make_list(),";
+                break;
+            }
 
-                  str << "make_list(";
-                  for (auto ob : *obj)
-                  {
-                      str << dump_cpp(ob);
-                      str << ",";
-                  }
-                  str.seekp(-1, std::ios_base::end);
+            str << "make_list(";
+            for (auto ob : *obj)
+            {
+                str << dump_cpp(ob);
+                str << ",";
+            }
+            str.seekp(-1, std::ios_base::end);
             str << ")";
             return str.str();
     }

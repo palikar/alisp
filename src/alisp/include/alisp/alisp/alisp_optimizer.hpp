@@ -21,6 +21,7 @@
 #include <vector>
 #include <string>
 #include <utility>
+#include <iterator>
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_env.hpp"
@@ -35,6 +36,21 @@ namespace alisp
 namespace optimizer
 {
 
+namespace detail
+{
+
+template<typename... T> inline bool oreq(ALObjectPtr t_obj, T &&... o)
+{
+
+    return (eq(t_obj, o) || ...);
+}
+
+static bool is_const(ALObjectPtr t_obj)
+{
+
+    return pint(t_obj) || pstring(t_obj) || preal(t_obj) || eq(t_obj, Qt) || eq(t_obj, Qnil);
+}
+
 template<typename... T> struct Optimizer : T...
 {
     Optimizer() = default;
@@ -42,67 +58,103 @@ template<typename... T> struct Optimizer : T...
 
     auto optimize(ALObjectPtr t_list)
     {
-        ((t_list = static_cast<T &>(*this).optimize(std::move( t_list))), ...);
-        return  t_list;
+        ((t_list = static_cast<T &>(*this).optimize(std::move(t_list))), ...);
+        return t_list;
     }
-
-
-    
 };
 
-
-struct PrimesInlining {
+struct PrimesInlining
+{
     auto optimize(ALObjectPtr t_list)
     {
+        if (!(std::size(*t_list) > 1 && psym(t_list->i(0)))) { return t_list; }
+
+        auto head = t_list->i(0);
+        if (env::Environment::g_prime_values.count(head->to_string()) > 0)
+        {
+            t_list->children()[0] = env::Environment::g_prime_values.at(head->to_string());
+            return t_list;
+        }
 
         return t_list;
     }
 };
 
-struct DeadCode {
-    
+struct DeadCode
+{
+    template<size_t start = 0, size_t off = 0> void remove_consts(ALObjectPtr t_list)
+    {
+        if (!plist(t_list)) return;
+
+        for (size_t i = start; i < std::size(*t_list) - off; ++i)
+        {
+            if (is_const(t_list->i(i))) { std::remove(t_list->begin(), t_list->end(), t_list->i(i)); }
+        }
+        t_list->children().erase(t_list->children().begin(), t_list->children().end());
+    }
+
     auto optimize(ALObjectPtr t_list)
     {
+        if (std::size(*t_list) > 1 && oreq(t_list->i(0), Qlet, Plet, Qletx, Pletx, Qwhen, Pwhen, Qunless, Punless))
+        { remove_consts<2, 1>(t_list); }
+
+        if (std::size(*t_list) > 1 && oreq(t_list->i(0), Qdolist, Pdolist)) { remove_consts<2, 0>(t_list); }
 
         return t_list;
     }
 };
 
-struct IfWhenUnless {
-    
+struct If
+{
     auto optimize(ALObjectPtr t_list)
     {
+        if (!(std::size(*t_list) > 1 && (eq(t_list->i(0), Qif) || eq(t_list->i(0), Pif)))) { return t_list; }
 
+        if (is_const(t_list->i(1)))
+        {
+            if (is_truthy(t_list->i(1))) { return t_list->i(2); }
+            else
+            {
+
+                if (!(std::size(*t_list) > 2))
+                {
+                    auto new_lis = splice(t_list, 3);
+                    new_lis->children().insert(std::begin(*new_lis), Pprogn);
+                    return new_lis;
+                }
+
+                return Qnil;
+            }
+        }
         return t_list;
     }
 };
 
-struct ConstantFolding {
-    
-    auto optimize(ALObjectPtr t_list)
-    {
+struct ConstantFolding
+{
 
-        return t_list;
-    }
+    auto optimize(ALObjectPtr t_list) { return t_list; }
 };
 
+}  // namespace detail
 
-typedef Optimizer<PrimesInlining, DeadCode, IfWhenUnless, ConstantFolding> PipelineOptimizer; 
+typedef detail::Optimizer<detail::DeadCode, detail::If, detail::ConstantFolding, detail::PrimesInlining>
+  PipelineOptimizer;
 
-class MainOptimizer {
+class MainOptimizer
+{
   private:
-    
+    PipelineOptimizer m_opt;
+
+    ALObjectPtr do_optimize(ALObjectPtr t_obj);
 
   public:
-    MainOptimizer() {
-        
-    }
-    
+    MainOptimizer() : m_opt() {}
 
-    std::vector<ALObjectPtr> optimize(std::vector<ALObjectPtr>& t_objs);
-    
+
+    void optimize(std::vector<ALObjectPtr> &t_objs);
 };
 
-}
+}  // namespace optimizer
 
-}
+}  // namespace alisp
