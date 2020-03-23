@@ -71,6 +71,7 @@ add_library(alisp_language
     src/alisp_env.cpp
     src/alisp_eval.cpp
     src/alisp_object.cpp
+    src/alisp_optimizer.cpp
     src/alisp_engine.cpp
     src/alisp_modules.cpp
     src/alisp_streams.cpp
@@ -78,7 +79,7 @@ add_library(alisp_language
     src/alisp_memory.cpp
     src/alisp_warnings.cpp
     src/alisp_loadable_modules.cpp
-
+    
     src/alisp_eval_functions.cpp
     src/alisp_stream_functions.cpp
     src/alisp_file_functions.cpp

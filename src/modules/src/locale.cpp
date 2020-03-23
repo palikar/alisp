@@ -521,7 +521,7 @@ ALObjectPtr Fset_default_locale(ALObjectPtr t_obj, env::Environment *, eval::Eva
     return Qnil;
 }
 
-ALObjectPtr Flocale_name(ALObjectPtr t_obj, env::Environment *env, eval::Evaluator *eval)
+ALObjectPtr Flocale_name(ALObjectPtr t_obj, env::Environment*, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
 

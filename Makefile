@@ -26,6 +26,9 @@ format_project:
 repo_stats:
 	@gitstats ./ ./stats
 
+dump_prims:
+	@grep -h -R "DEFUN\(\)" ./src/ | grep "#define" -v | sed -e 's/DEFUN(\(\w*\),\s\"\(\S*\)\".*/ {"\2", "P\1"},/g'
+
 doc_debug:
 	@mkdocs serve
 
