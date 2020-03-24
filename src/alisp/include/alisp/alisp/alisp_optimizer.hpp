@@ -88,17 +88,26 @@ struct DeadCode
 
         for (size_t i = start; i < std::size(*t_list) - off; ++i)
         {
-            if (is_const(t_list->i(i))) { std::remove(t_list->begin(), t_list->end(), t_list->i(i)); }
+            if (is_const(t_list->i(i)))
+            {
+                t_list->children().erase(std::remove(t_list->begin(), t_list->end(), t_list->i(i)),
+                                         t_list->children().end());
+            }
         }
-        t_list->children().erase(t_list->children().begin(), t_list->children().end());
     }
 
     auto optimize(ALObjectPtr t_list)
     {
-        if (std::size(*t_list) > 1 && oreq(t_list->i(0), Qlet, Plet, Qletx, Pletx, Qwhen, Pwhen, Qunless, Punless))
+        if (!(std::size(*t_list) > 1)) { return t_list; }
+
+        if (oreq(t_list->i(0), Qlet, Plet, Qletx, Pletx, Qwhen, Pwhen, Qunless, Punless))
         { remove_consts<2, 1>(t_list); }
 
-        if (std::size(*t_list) > 1 && oreq(t_list->i(0), Qdolist, Pdolist)) { remove_consts<2, 0>(t_list); }
+        if (oreq(t_list->i(0), Qdolist, Pdolist, Qwhile, Pwhile)) { remove_consts<2, 0>(t_list); }
+
+        if (oreq(t_list->i(0), Qif, Pif)) { remove_consts<3, 1>(t_list); }
+
+        if (oreq(t_list->i(0), Qprogn1, Pprogn1, Qprogn2, Pprogn2)) { remove_consts<3, 0>(t_list); }
 
         return t_list;
     }
@@ -116,7 +125,7 @@ struct If
             else
             {
 
-                if (!(std::size(*t_list) > 2))
+                if (std::size(*t_list) > 3)
                 {
                     auto new_lis = splice(t_list, 3);
                     new_lis->children().insert(std::begin(*new_lis), Pprogn);
@@ -130,6 +139,43 @@ struct If
     }
 };
 
+struct When
+{
+    auto optimize(ALObjectPtr t_list)
+    {
+        if (!(std::size(*t_list) > 1 && oreq(t_list->i(0), Qwhen, Pwhen))) { return t_list; }
+
+        if (!(std::size(*t_list) > 2 && is_const(t_list->i(1)))) { return t_list; }
+
+        if (is_truthy(t_list->i(1)))
+        {
+            auto new_lis = splice(t_list, 2);
+            new_lis->children().insert(std::begin(*new_lis), Pprogn);
+            return new_lis;
+        }
+
+        return t_list;
+    }
+};
+
+struct Unless
+{
+    auto optimize(ALObjectPtr t_list)
+    {
+        if (!(std::size(*t_list) > 1 && oreq(t_list->i(0), Qunless, Punless))) { return t_list; }
+
+        if (!(std::size(*t_list) > 2 && is_const(t_list->i(1)))) { return t_list; }
+
+        if (is_falsy(t_list->i(1)))
+        {
+            auto new_lis = splice(t_list, 2);
+            new_lis->children().insert(std::begin(*new_lis), Pprogn);
+            return new_lis;
+        }
+        return t_list;
+    }
+};
+
 struct ConstantFolding
 {
 
@@ -138,8 +184,9 @@ struct ConstantFolding
 
 }  // namespace detail
 
-typedef detail::Optimizer<detail::DeadCode, detail::If, detail::ConstantFolding, detail::PrimesInlining>
-  PipelineOptimizer;
+typedef detail::
+  Optimizer<detail::DeadCode, detail::If, detail::When, detail::Unless, detail::ConstantFolding, detail::PrimesInlining>
+    PipelineOptimizer;
 
 class MainOptimizer
 {
