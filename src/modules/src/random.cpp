@@ -70,7 +70,9 @@ ALObjectPtr Fsample(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     std::uniform_int_distribution<> distr(0, static_cast<int>(a->size()) - 1);
     ALObject::list_type lis;
     for (int i = 0; i < k->to_int(); ++i)
-    { lis.push_back(a->children()[static_cast<size_t>(distr(detail::rand_eng))]); }
+    {
+        lis.push_back(a->children()[static_cast<size_t>(distr(detail::rand_eng))]);
+    }
 
     return make_list(lis);
 }

@@ -49,7 +49,10 @@ template<typename T>
     T t = 0;
     for (const auto c : t_str)
     {
-        if (c < '0' || c > '9') { return t; }
+        if (c < '0' || c > '9')
+        {
+            return t;
+        }
         t *= 10;
         t += c - '0';
     }
@@ -144,7 +147,10 @@ struct JSONParser
 
     static void consume_ws(const std::string &str, size_t &offset)
     {
-        while (isspace(str.at(offset)) && offset <= str.size()) { ++offset; }
+        while (isspace(str.at(offset)) && offset <= str.size())
+        {
+            ++offset;
+        }
     }
 
     static ALObjectPtr parse_object(const std::string &str, size_t &offset)
@@ -272,7 +278,9 @@ struct JSONParser
                         {
                             c = str.at(offset + i);
                             if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))
-                            { val += c; }
+                            {
+                                val += c;
+                            }
                             else
                             {
                                 signal(json::json_signal,
@@ -314,7 +322,10 @@ struct JSONParser
         for (; offset < str.size();)
         {
             c = str.at(offset++);
-            if (c >= '0' && c <= '9') { val += c; }
+            if (c >= '0' && c <= '9')
+            {
+                val += c;
+            }
             else if (c == '.' && !isDouble)
             {
                 val += c;
@@ -328,7 +339,10 @@ struct JSONParser
         if (offset < str.size() && (c == 'E' || c == 'e'))
         {
             c = str.at(offset++);
-            if (c == '-') { isExpNegative = true; }
+            if (c == '-')
+            {
+                isExpNegative = true;
+            }
             else if (c == '+')
             {
                 // do nothing
@@ -341,7 +355,10 @@ struct JSONParser
             for (; offset < str.size();)
             {
                 c = str.at(offset++);
-                if (c >= '0' && c <= '9') { exp_str += c; }
+                if (c >= '0' && c <= '9')
+                {
+                    exp_str += c;
+                }
                 else if (!isspace(c) && c != ',' && c != ']' && c != '}')
                 {
                     signal(json::json_signal,
@@ -362,7 +379,10 @@ struct JSONParser
         }
         --offset;
 
-        if (isDouble) { return make_real((isNegative ? -1 : 1) * detail::parse_num<double>(val) * std::pow(10, exp)); }
+        if (isDouble)
+        {
+            return make_real((isNegative ? -1 : 1) * detail::parse_num<double>(val) * std::pow(10, exp));
+        }
         else
         {
             if (!exp_str.empty())
@@ -422,7 +442,10 @@ struct JSONParser
             case 'f': return parse_bool(str, offset);
             case 'n': return parse_null(str, offset);
             default:
-                if ((value <= '9' && value >= '0') || value == '-') { return parse_number(str, offset); }
+                if ((value <= '9' && value >= '0') || value == '-')
+                {
+                    return parse_number(str, offset);
+                }
         }
         signal(json::json_signal, std::string("JSON ERROR: Parse: Unexpected starting character '") + value + "'");
         return nullptr;
@@ -441,16 +464,24 @@ static std::string dump(ALObjectPtr t_json, long depth = 1, const std::string &t
     if (t_json->prop_exists("--json-object--"))
     {
         std::string pad = "";
-        for (long i = 0; i < depth; ++i, pad += tab) {}
+        for (long i = 0; i < depth; ++i, pad += tab)
+        {
+        }
 
         std::string s = "{\n";
         bool skip     = true;
 
-        if (std::size(*t_json) == 0) { return "{}"; }
+        if (std::size(*t_json) == 0)
+        {
+            return "{}";
+        }
 
         for (size_t i = 0; i < std::size(*t_json) - 1; i += 2)
         {
-            if (!skip) { s += ",\n"; }
+            if (!skip)
+            {
+                s += ",\n";
+            }
 
             s += (pad + "\"" + detail::json_escape(utility::erase_substr(t_json->i(i)->to_string(), ":"))
                   + "\" : " + dump(t_json->i(i + 1), depth + 1, tab));
@@ -467,7 +498,10 @@ static std::string dump(ALObjectPtr t_json, long depth = 1, const std::string &t
 
         for (auto &p : *t_json)
         {
-            if (!skip) { s += ", "; }
+            if (!skip)
+            {
+                s += ", ";
+            }
             s += dump(p, depth + 1, tab);
             skip = false;
         }
@@ -523,8 +557,14 @@ ALObjectPtr Fload_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
     auto file = eval->eval(obj->i(0));
     assert_string(file);
 
-    if (!fs::exists(file->to_string())) { return Qnil; }
-    if (!fs::is_regular_file(file->to_string())) { return Qnil; }
+    if (!fs::exists(file->to_string()))
+    {
+        return Qnil;
+    }
+    if (!fs::is_regular_file(file->to_string()))
+    {
+        return Qnil;
+    }
 
     return detail::load(utility::load_file(file->to_string()));
 }
@@ -545,7 +585,10 @@ ALObjectPtr Fdump_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
 
     std::ofstream outfile;
     outfile.open(file->to_string(), std::ios_base::out);
-    if (outfile.is_open()) { return Qnil; }
+    if (outfile.is_open())
+    {
+        return Qnil;
+    }
     outfile << detail::dump(js);
 
     return Qt;

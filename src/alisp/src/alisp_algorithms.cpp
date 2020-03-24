@@ -48,7 +48,10 @@ ALObjectPtr Fslice(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     ALObject::list_type new_list{};
 
     auto &child = list->children();
-    for (auto i = start; i < end; ++i) { new_list.push_back(child[i]); }
+    for (auto i = start; i < end; ++i)
+    {
+        new_list.push_back(child[i]);
+    }
 
     return make_object(new_list);
 }
@@ -78,14 +81,20 @@ ALObjectPtr Fzip(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     for (auto &l : *eval_list)
     {
         auto curr_size = std::size(l->children());
-        if (curr_size < min_size) { min_size = curr_size; }
+        if (curr_size < min_size)
+        {
+            min_size = curr_size;
+        }
     }
 
     for (size_t i = 0; i < min_size; ++i)
     {
         ALObject::list_type next_tuple{};
 
-        for (auto &el : *eval_list) { next_tuple.push_back(el->children()[i]); }
+        for (auto &el : *eval_list)
+        {
+            next_tuple.push_back(el->children()[i]);
+        }
 
         new_list.push_back(make_object(next_tuple));
     }
@@ -106,7 +115,10 @@ ALObjectPtr Ffilter(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     ALObject::list_type new_list{};
     for (auto &el : *list)
     {
-        if (is_truthy(eval->handle_lambda(fun_obj, make_list(el)))) { new_list.push_back(el); }
+        if (is_truthy(eval->handle_lambda(fun_obj, make_list(el))))
+        {
+            new_list.push_back(el);
+        }
     }
 
     return make_object(new_list);
@@ -124,7 +136,10 @@ ALObjectPtr Fany(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     for (auto &el : *list)
     {
-        if (is_truthy(eval->handle_lambda(fun_obj, make_list(el)))) { return Qt; }
+        if (is_truthy(eval->handle_lambda(fun_obj, make_list(el))))
+        {
+            return Qt;
+        }
     }
 
     return Qnil;
@@ -142,7 +157,10 @@ ALObjectPtr Fall(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     for (auto &el : *list)
     {
-        if (is_falsy(eval->handle_lambda(fun_obj, make_list(el)))) { return Qnil; }
+        if (is_falsy(eval->handle_lambda(fun_obj, make_list(el))))
+        {
+            return Qnil;
+        }
     }
 
     return Qt;

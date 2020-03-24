@@ -42,7 +42,9 @@ std::string_view Position::str(const Position &begin, const Position &end) noexc
 {
 
     if (begin.pos != nullptr && end.pos != nullptr)
-    { return std::string_view(begin.pos, static_cast<size_t>(std::distance(begin.pos, end.pos))); }
+    {
+        return std::string_view(begin.pos, static_cast<size_t>(std::distance(begin.pos, end.pos)));
+    }
     else
     {
         return {};
@@ -86,7 +88,10 @@ Position &Position::operator--() noexcept
 
 const char &Position::operator*() const noexcept
 {
-    if (pos == end) { return ""[0]; }
+    if (pos == end)
+    {
+        return ""[0];
+    }
     else
     {
         return *pos;
@@ -112,7 +117,10 @@ Position &Position::operator+=(size_t distance) noexcept
 Position Position::operator+(size_t distance) const noexcept
 {
     Position ret(*this);
-    for (size_t i = 0; i < distance; ++i) { ++ret; }
+    for (size_t i = 0; i < distance; ++i)
+    {
+        ++ret;
+    }
     return ret;
 }
 

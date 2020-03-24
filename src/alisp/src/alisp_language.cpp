@@ -42,9 +42,15 @@ namespace detail
 
 static ALObjectPtr handle_backquote_list(ALObjectPtr obj, eval::Evaluator *eval)
 {
-    if (not plist(obj)) { return obj; }
+    if (not plist(obj))
+    {
+        return obj;
+    }
 
-    if (obj->i(0) == Qcomma) { return eval->eval(obj->i(1)); }
+    if (obj->i(0) == Qcomma)
+    {
+        return eval->eval(obj->i(1));
+    }
 
     ALObject::list_type new_elements;
 
@@ -80,22 +86,37 @@ static ALObjectPtr handle_backquote_list(ALObjectPtr obj, eval::Evaluator *eval)
 
 static bool check_arg_list(ALObjectPtr t_list)
 {
-    if (t_list == Qnil) { return true; }
+    if (t_list == Qnil)
+    {
+        return true;
+    }
 
     for (auto &el : *t_list)
     {
-        if (!psym(el)) { return false; }
+        if (!psym(el))
+        {
+            return false;
+        }
     }
 
 
-    if (std::count(std::begin(*t_list), std::end(*t_list), Qrest) > 1) { return false; }
+    if (std::count(std::begin(*t_list), std::end(*t_list), Qrest) > 1)
+    {
+        return false;
+    }
 
 
-    if (std::count(std::begin(*t_list), std::end(*t_list), Qoptional) > 1) { return false; }
+    if (std::count(std::begin(*t_list), std::end(*t_list), Qoptional) > 1)
+    {
+        return false;
+    }
 
     auto rest_pos = std::find(std::begin(*t_list), std::end(*t_list), Qrest);
     auto opt_pos  = std::find(std::begin(*t_list), std::end(*t_list), Qoptional);
-    if (rest_pos != std::end(*t_list) and opt_pos != std::end(*t_list) and rest_pos < opt_pos) { return false; }
+    if (rest_pos != std::end(*t_list) and opt_pos != std::end(*t_list) and rest_pos < opt_pos)
+    {
+        return false;
+    }
 
 
     return true;
@@ -199,16 +220,25 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
     std::string module_file = module_name;
     std::string import_as   = module_name;
 
-    if (contains(obj, ":all")) { import_all = true; }
+    if (contains(obj, ":all"))
+    {
+        import_all = true;
+    }
 
     auto [file, file_succ] = get_next(obj, ":file");
-    if (file_succ and pstring(file)) { module_file = file->to_string(); }
+    if (file_succ and pstring(file))
+    {
+        module_file = file->to_string();
+    }
 
     auto [name_sexp, as_succ] = get_next(obj, ":as");
     if (as_succ)
     {
         auto new_name = eval->eval(name_sexp);
-        if (psym(new_name)) { import_as = new_name->to_string(); }
+        if (psym(new_name))
+        {
+            import_as = new_name->to_string();
+        }
     }
 
     if (env->module_loaded(module_name))
@@ -216,7 +246,10 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
 
         env->alias_module(module_name, import_as);
 
-        if (import_all) { env->import_root_scope(module_name, env->current_module()); }
+        if (import_all)
+        {
+            env->import_root_scope(module_name, env->current_module());
+        }
 
         return Qt;
     }
@@ -227,7 +260,10 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
 
         env->alias_module(module_name, import_as);
 
-        if (import_all) { env->import_root_scope(module_name, env->current_module()); }
+        if (import_all)
+        {
+            env->import_root_scope(module_name, env->current_module());
+        }
 
         return Qt;
     }
@@ -240,15 +276,24 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
 
             AL_DEBUG("Testing module file: "s += eval_file.string());
 
-            if (!fs::exists(eval_file)) { continue; }
+            if (!fs::exists(eval_file))
+            {
+                continue;
+            }
 
-            if (fs::equivalent(eval_file, eval->get_current_file())) { continue; }
+            if (fs::equivalent(eval_file, eval->get_current_file()))
+            {
+                continue;
+            }
 
             // std::cout << eval_file << ": " << utility::check_elf(eval_file) << "\n";
             if (hash::hash(std::string_view(postfix)) == hash::hash(".so") or utility::check_elf(eval_file))
             {
                 env->load_module(eval, eval_file.string(), module_name);
-                if (import_all) { env->import_root_scope(module_name, env->current_module()); }
+                if (import_all)
+                {
+                    env->import_root_scope(module_name, env->current_module());
+                }
                 return Qt;
             }
 
@@ -256,7 +301,10 @@ ALObjectPtr Fimport(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
             env->alias_module(module_name, import_as);
             env::detail::ModuleChange mc{ *env, module_name };
             eval->eval_file(eval_file);
-            if (import_all) { env->import_root_scope(module_name, mc.old_module()); }
+            if (import_all)
+            {
+                env->import_root_scope(module_name, mc.old_module());
+            }
 
             return Qt;
         }
@@ -316,7 +364,10 @@ ALObjectPtr Fmodref(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
         auto next_sym = eval->eval(obj->i(curr_index));
         AL_CHECK(assert_symbol(next_sym));
         auto next_mod = curr_mod->get_module(next_sym->to_string());
-        if (!next_mod) { throw module_refence_error(curr_mod->name(), next_sym->to_string()); }
+        if (!next_mod)
+        {
+            throw module_refence_error(curr_mod->name(), next_sym->to_string());
+        }
         curr_mod = next_mod;
         ++curr_index;
     }
@@ -324,7 +375,10 @@ ALObjectPtr Fmodref(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
     auto next_sym = eval->eval(obj->i(curr_index));
     AL_CHECK(assert_symbol(next_sym));
     auto sym = curr_mod->get_symbol(next_sym->to_string());
-    if (!sym) { throw module_refence_error(curr_mod->name(), next_sym->to_string(), true); }
+    if (!sym)
+    {
+        throw module_refence_error(curr_mod->name(), next_sym->to_string(), true);
+    }
     return sym;
 }
 
@@ -375,7 +429,10 @@ ALObjectPtr Fsetq(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
     for (size_t i = 0; i < len; i += 2)
     {
         AL_CHECK(assert_symbol(obj->i(i)));
-        if (i + 1 >= len) { return Qnil; }
+        if (i + 1 >= len)
+        {
+            return Qnil;
+        }
         auto new_val = evl->eval(obj->i(i + 1));
         env->update(obj->i(i), new_val);
     }
@@ -417,7 +474,10 @@ ALObjectPtr Ffunction(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 ALObjectPtr Fbackquote(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    if (!plist(obj->i(0))) { return obj->i(0); }
+    if (!plist(obj->i(0)))
+    {
+        return obj->i(0);
+    }
     return detail::handle_backquote_list(obj->i(0), eval);
 }
 
@@ -425,8 +485,11 @@ ALObjectPtr Fif(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_min_size<2>(obj));
 
-    if (is_truthy(evl->eval(obj->i(0)))) { return evl->eval(obj->i(1)); }
-    else if (obj->length() == 3)
+    if (is_truthy(evl->eval(obj->i(0))))
+    {
+        return evl->eval(obj->i(1));
+    }
+    else if (obj->length() >= 3)
     {
         return eval_list(evl, obj, 2);
     }
@@ -465,7 +528,10 @@ ALObjectPtr Fwhen(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_min_size<2>(obj));
 
-    if (is_truthy(evl->eval(obj->i(0)))) { return eval_list(evl, obj, 1); }
+    if (is_truthy(evl->eval(obj->i(0))))
+    {
+        return eval_list(evl, obj, 1);
+    }
     return Qnil;
 }
 
@@ -473,7 +539,10 @@ ALObjectPtr Funless(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_min_size<2>(obj));
 
-    if (!is_truthy(evl->eval(obj->i(0)))) { return eval_list(evl, obj, 1); }
+    if (!is_truthy(evl->eval(obj->i(0))))
+    {
+        return eval_list(evl, obj, 1);
+    }
     return Qnil;
 }
 
@@ -559,7 +628,10 @@ ALObjectPtr Fcond(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
     for (auto condition : *obj)
     {
-        if (is_truthy(evl->eval(condition->i(0)))) { return eval_list(evl, condition, 1); }
+        if (is_truthy(evl->eval(condition->i(0))))
+        {
+            return eval_list(evl, condition, 1);
+        }
     }
     return Qnil;
 }
@@ -642,7 +714,10 @@ ALObjectPtr Flet(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
     }
 
 
-    for (auto [ob, cell] : cells) { env->put(ob, cell); }
+    for (auto [ob, cell] : cells)
+    {
+        env->put(ob, cell);
+    }
 
     return eval_list(evl, obj, 1);
 }
@@ -676,7 +751,10 @@ ALObjectPtr Fletx(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl)
 ALObjectPtr Fexit(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_max_size<1>(obj));
-    if (obj->size() == 0) { throw al_exit(0); }
+    if (obj->size() == 0)
+    {
+        throw al_exit(0);
+    }
     auto val = evl->eval(obj->i(0));
     AL_CHECK(assert_int(val));
     throw al_exit(static_cast<int>(val->to_int()));
@@ -685,7 +763,10 @@ ALObjectPtr Fexit(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Fassert(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    if (is_falsy(Vdebug_mode)) { return Qt; }
+    if (is_falsy(Vdebug_mode))
+    {
+        return Qt;
+    }
     AL_CHECK(assert_size<1>(obj));
     auto val = evl->eval(obj->i(0));
 
@@ -700,7 +781,10 @@ ALObjectPtr Fassert(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Fassert_not(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    if (is_falsy(Vdebug_mode)) { return Qt; }
+    if (is_falsy(Vdebug_mode))
+    {
+        return Qt;
+    }
     AL_CHECK(assert_size<1>(obj));
     auto val = evl->eval(obj->i(0));
 
@@ -734,7 +818,10 @@ ALObjectPtr Fequal(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 ALObjectPtr Freturn(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_min_size<1>(obj));
-    if (std::size(*obj) == 0) { throw al_return(Qnil); }
+    if (std::size(*obj) == 0)
+    {
+        throw al_return(Qnil);
+    }
     auto val = evl->eval(obj->i(0));
     throw al_return(val);
     return Qnil;
@@ -764,15 +851,27 @@ ALObjectPtr Fsym_list(ALObjectPtr obj, env::Environment *env, eval::Evaluator *e
         AL_CHECK(assert_symbol(package));
         ALObject::list_type syms;
         auto mod = env->get_module(package->to_string());
-        if (mod == nullptr) { return Qnil; }
-        for (auto &[sym, _] : mod->get_root()) { syms.push_back(env::intern(sym)); }
+        if (mod == nullptr)
+        {
+            return Qnil;
+        }
+        for (auto &[sym, _] : mod->get_root())
+        {
+            syms.push_back(env::intern(sym));
+        }
         return make_list(syms);
     }
 
     ALObject::list_type syms;
     auto mod = env->current_module_ref();
-    for (auto &[sym, _] : mod.get_root()) { syms.push_back(env::intern(sym)); }
-    for (auto &[sym, _] : env::Environment::g_global_symbol_table) { syms.push_back(env::intern(sym)); }
+    for (auto &[sym, _] : mod.get_root())
+    {
+        syms.push_back(env::intern(sym));
+    }
+    for (auto &[sym, _] : env::Environment::g_global_symbol_table)
+    {
+        syms.push_back(env::intern(sym));
+    }
 
     return make_list(syms);
 }

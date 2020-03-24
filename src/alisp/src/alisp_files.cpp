@@ -30,7 +30,10 @@ ALObjectPtr FileHelpers::open_file(ALObjectPtr t_file, ALObjectPtr t_output, ALO
     auto file_ptr = std::unique_ptr<files::FileObj, std::function<void(files::FileObj *)>>(
       new files::FileObj{ fs::path(t_file->to_string()), std::move(file_stream), output, input },
       [](files::FileObj *ptr) {
-          if (ptr->m_file.is_open()) { ptr->m_file.close(); }
+          if (ptr->m_file.is_open())
+          {
+              ptr->m_file.close();
+          }
           delete ptr;
       });
 
@@ -71,7 +74,10 @@ std::string FileHelpers::temp_file_path(std::string t_prefix)
           std::filesystem::temp_directory_path()
           / fmt::format(
             "{}-{}-{:04x}", t_prefix, std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()), count);
-        if (!std::filesystem::exists(p)) { return p; }
+        if (!std::filesystem::exists(p))
+        {
+            return p;
+        }
     }
 
     return "";

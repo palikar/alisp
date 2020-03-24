@@ -81,7 +81,9 @@ template<typename T> struct DLSym
     DLSym(DLModule &t_mod, const std::string &t_symbol)
       : m_symbol(reinterpret_cast<T>(GetProcAddress(t_mod.m_data, t_symbol.c_str())))
     {
-        if (!m_symbol) {}
+        if (!m_symbol)
+        {
+        }
     }
 
     T m_symbol;
@@ -91,7 +93,9 @@ struct DLModule
 {
     explicit DLModule(const std::string &t_filename) : m_data(LoadLibrary(to_proper_string(t_filename).c_str()))
     {
-        if (!m_data) {}
+        if (!m_data)
+        {
+        }
     }
 
     DLModule(DLModule &&) = default;

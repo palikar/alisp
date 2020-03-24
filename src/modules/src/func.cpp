@@ -39,7 +39,10 @@ ALObjectPtr Fcompose(ALObjectPtr obj, env::Environment *env, eval::Evaluator *ev
     auto fun_fin = obj->i(std::size(*obj) - 1);
     auto res     = make_object(env::intern("apply"), fun_fin, env::intern("rest--"));
 
-    for (size_t i = std::size(*obj) - 2; i != 0; --i) { res = make_object(obj->i(i), res); }
+    for (size_t i = std::size(*obj) - 2; i != 0; --i)
+    {
+        res = make_object(obj->i(i), res);
+    }
     res = make_object(obj->i(0), res);
 
     return Flambda(make_object(make_object(Qrest, env::intern("rest--")), res), env, eval);
@@ -98,7 +101,10 @@ ALObjectPtr Fthread_first(ALObjectPtr obj, env::Environment *, eval::Evaluator *
         ALObject::list_type l;
         l.push_back(next_ls->i(0));
         l.push_back(first);
-        for (size_t j = 1; j < std::size(*next_ls); ++j) { l.push_back(next_ls->i(j)); }
+        for (size_t j = 1; j < std::size(*next_ls); ++j)
+        {
+            l.push_back(next_ls->i(j));
+        }
         first = make_list(l);
     }
 
@@ -118,7 +124,10 @@ ALObjectPtr Fthread_last(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
         auto next_ls = obj->i(i);
         ALObject::list_type l;
         l.push_back(next_ls->i(0));
-        for (size_t j = 1; j < std::size(*next_ls); ++j) { l.push_back(next_ls->i(j)); }
+        for (size_t j = 1; j < std::size(*next_ls); ++j)
+        {
+            l.push_back(next_ls->i(j));
+        }
         l.push_back(first);
         first = make_list(l);
     }
@@ -137,10 +146,16 @@ ALObjectPtr Freduce(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     const size_t size = std::size(*list);
 
-    if (size < 2) { return Qnil; }
+    if (size < 2)
+    {
+        return Qnil;
+    }
 
     auto res = list->i(0);
-    for (size_t i = 1; i < size; ++i) { res = eval->handle_lambda(fun, make_object(res, list->i(i))); }
+    for (size_t i = 1; i < size; ++i)
+    {
+        res = eval->handle_lambda(fun, make_object(res, list->i(i)));
+    }
 
     return res;
 }

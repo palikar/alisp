@@ -44,9 +44,15 @@ std::vector<std::string> alisp::prompt::get_completions(const std::string &t_wor
 
 
     auto sym_vec = g_alisp_engine->get_symbols();
-    for (auto &[name, _] : g_alisp_engine->get_modules()) { sym_vec.push_back(std::string(name) += "."); }
+    for (auto &[name, _] : g_alisp_engine->get_modules())
+    {
+        sym_vec.push_back(std::string(name) += ".");
+    }
 
-    for (auto &[name, _] : g_alisp_engine->get_modules().at("--main--")->root_scope()) { sym_vec.push_back(name); }
+    for (auto &[name, _] : g_alisp_engine->get_modules().at("--main--")->root_scope())
+    {
+        sym_vec.push_back(name);
+    }
 
 
     if (std::find(std::begin(t_word), std::end(t_word), '.') != std::end(t_word))
@@ -55,7 +61,9 @@ std::vector<std::string> alisp::prompt::get_completions(const std::string &t_wor
         auto pack  = parts[0];
         std::vector<std::string> words{};
         for (auto &[name, _] : g_alisp_engine->get_modules().at(pack)->root_scope())
-        { sym_vec.push_back(pack + "." + name); }
+        {
+            sym_vec.push_back(pack + "." + name);
+        }
     }
 
     return sym_vec;
@@ -89,6 +97,8 @@ struct Options
     std::vector<std::string> includes;
     std::vector<std::string> warnings;
 
+    bool optimize{ false };
+
     bool debug_logging{ false };
 
     bool parse_debug{ false };
@@ -116,6 +126,7 @@ int main(int argc, char *argv[])
       opts.quick << clipp::option("-Q", "--quick-start") % "Do not loady any scripts on initialization.",
 
       opts.no_debug << clipp::option("-n", "--no-assertions") % "Disables debug mode",
+      opts.optimize << clipp::option("-O", "--optimize") % "Enable code optimizations",
 
 #ifdef DEUBG_LOGGING
       opts.debug_logging << clipp::option("-DL", "--debug-logging") % "Enable lots of debuggin output.",
@@ -215,6 +226,7 @@ int main(int argc, char *argv[])
     if (opts.parse_debug) settings.push_back(alisp::EngineSettings::PARSER_DEBUG);
     if (opts.quick) settings.push_back(alisp::EngineSettings::QUICK_INIT);
     if (opts.no_debug) settings.push_back(alisp::EngineSettings::DISABLE_DEBUG_MODE);
+    if (opts.optimize) settings.push_back(alisp::EngineSettings::OPTIMIZATION);
 
     alisp::LanguageEngine alisp_engine{
         settings, std::move(opts.args), std::move(opts.includes), std::move(opts.warnings)
@@ -248,8 +260,14 @@ int main(int argc, char *argv[])
         }
 
         auto [succ, val] = alisp_engine.eval_file(file_path);
-        if (!succ) { return val; }
-        if (opts.interactive) { return interactive(alisp_engine); }
+        if (!succ)
+        {
+            return val;
+        }
+        if (opts.interactive)
+        {
+            return interactive(alisp_engine);
+        }
 
         return 0;
     }
@@ -257,8 +275,14 @@ int main(int argc, char *argv[])
     if (!opts.eval.empty())
     {
         auto [succ, val] = alisp_engine.eval_statement(opts.eval);
-        if (!succ) { return val; }
-        if (opts.interactive) { return interactive(alisp_engine); }
+        if (!succ)
+        {
+            return val;
+        }
+        if (opts.interactive)
+        {
+            return interactive(alisp_engine);
+        }
         return val;
     }
 
@@ -273,7 +297,10 @@ int interactive(alisp::LanguageEngine &alisp_engine)
 
     auto alisp_hisotry = fs::path(alisp_engine.get_home()) / PROMPT_HISTORY_FILE;
 
-    if (!fs::is_regular_file(alisp_hisotry)) { std::ofstream file{ alisp_hisotry }; }
+    if (!fs::is_regular_file(alisp_hisotry))
+    {
+        std::ofstream file{ alisp_hisotry };
+    }
 
     alisp::prompt::init(alisp_hisotry);
 
@@ -293,7 +320,10 @@ int interactive(alisp::LanguageEngine &alisp_engine)
         }
 
         auto [succ, val] = alisp_engine.eval_statement(command.value(), false);
-        if (!succ) { return val; }
+        if (!succ)
+        {
+            return val;
+        }
     }
 
     return 0;

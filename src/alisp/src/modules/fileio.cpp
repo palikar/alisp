@@ -52,7 +52,10 @@ std::vector<std::string> glob(const std::string &pattern)
 
     // collect all the filenames into a std::list<std::string>
     vector<string> filenames;
-    for (size_t i = 0; i < glob_result.gl_pathc; ++i) { filenames.push_back(string(glob_result.gl_pathv[i])); }
+    for (size_t i = 0; i < glob_result.gl_pathc; ++i)
+    {
+        filenames.push_back(string(glob_result.gl_pathv[i]));
+    }
 
     // cleanup
     globfree(&glob_result);
@@ -67,7 +70,10 @@ std::string expand_user(std::string path)
     {
         assert(path.size() == 1 or path[1] == '/');  // or other error handling
         char const *home = getenv("HOME");
-        if (home or ((home = getenv("USERPROFILE")))) { path.replace(0, 1, home); }
+        if (home or ((home = getenv("USERPROFILE"))))
+        {
+            path.replace(0, 1, home);
+        }
         else
         {
             char const *hdrive = getenv("HOMEDRIVE"), *hpath = getenv("HOMEPATH");
@@ -105,7 +111,10 @@ ALObjectPtr Fdirectories(ALObjectPtr t_obj, env::Environment *, eval::Evaluator 
 
     for (auto &entr : fs::directory_iterator(path->to_string()))
     {
-        if (!entr.is_directory()) { continue; }
+        if (!entr.is_directory())
+        {
+            continue;
+        }
         entries.push_back(make_string(entr.path().string()));
     }
 
@@ -123,7 +132,9 @@ ALObjectPtr Fentries(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     ALObject::list_type entries;
 
     for (auto &entr : fs::directory_iterator(path->to_string()))
-    { entries.push_back(make_string(entr.path().string())); }
+    {
+        entries.push_back(make_string(entr.path().string()));
+    }
 
     return make_object(entries);
 }
@@ -153,7 +164,10 @@ ALObjectPtr Ftouch(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 
     std::fstream fs;
     fs.open(path->to_string(), std::ios::out | std::ios::app);
-    if (!fs.is_open()) { return Qnil; }
+    if (!fs.is_open())
+    {
+        return Qnil;
+    }
     fs.close();
 
     return Qt;
@@ -305,11 +319,20 @@ ALObjectPtr Fread_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
 
-    if (!fs::exists(path->to_string())) { return Qnil; }
-    if (!fs::is_regular_file(path->to_string())) { return Qnil; }
+    if (!fs::exists(path->to_string()))
+    {
+        return Qnil;
+    }
+    if (!fs::is_regular_file(path->to_string()))
+    {
+        return Qnil;
+    }
 
     std::ifstream infile(path->to_string().c_str(), std::ios::in | std::ios::ate | std::ios::binary);
-    if (!infile.is_open()) { return Qnil; }
+    if (!infile.is_open())
+    {
+        return Qnil;
+    }
 
     auto size = infile.tellg();
     infile.seekg(0, std::ios::beg);
@@ -319,7 +342,10 @@ ALObjectPtr Fread_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *
     infile.read(&v[0], static_cast<std::streamsize>(size));
 
     ALObject::list_type bytes;
-    for (auto &ch : v) { bytes.push_back(make_int(static_cast<int>(ch))); }
+    for (auto &ch : v)
+    {
+        bytes.push_back(make_int(static_cast<int>(ch)));
+    }
 
     return make_object(bytes);
 }
@@ -333,8 +359,14 @@ ALObjectPtr Fread_text(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     AL_CHECK(assert_string(path));
 
 
-    if (!fs::exists(path->to_string())) { return Qnil; }
-    if (!fs::is_regular_file(path->to_string())) { return Qnil; }
+    if (!fs::exists(path->to_string()))
+    {
+        return Qnil;
+    }
+    if (!fs::is_regular_file(path->to_string()))
+    {
+        return Qnil;
+    }
 
     return make_string(utility::load_file(path->to_string()));
 }
@@ -351,8 +383,14 @@ ALObjectPtr Fwrite_text(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *
     AL_CHECK(assert_string(text));
 
 
-    if (!fs::exists(path->to_string())) { return Qnil; }
-    if (!fs::is_regular_file(path->to_string())) { return Qnil; }
+    if (!fs::exists(path->to_string()))
+    {
+        return Qnil;
+    }
+    if (!fs::is_regular_file(path->to_string()))
+    {
+        return Qnil;
+    }
 
     std::ofstream outfile;
     outfile.open(path->to_string(), std::ios_base::out);
@@ -373,13 +411,25 @@ ALObjectPtr Fwrite_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator 
     AL_CHECK(assert_string(path));
     AL_CHECK(assert_byte_array(bytes));
 
-    if (!fs::exists(path->to_string())) { return Qnil; }
-    if (!fs::is_regular_file(path->to_string())) { return Qnil; }
+    if (!fs::exists(path->to_string()))
+    {
+        return Qnil;
+    }
+    if (!fs::is_regular_file(path->to_string()))
+    {
+        return Qnil;
+    }
 
     std::ofstream outfile;
     outfile.open(path->to_string(), std::ios_base::out | std::ios_base::binary);
-    if (outfile.is_open()) { return Qnil; }
-    for (auto &b : *bytes) { outfile.put(static_cast<char>(b->to_int())); }
+    if (outfile.is_open())
+    {
+        return Qnil;
+    }
+    for (auto &b : *bytes)
+    {
+        outfile.put(static_cast<char>(b->to_int()));
+    }
     outfile.close();
 
     return Qt;
@@ -397,8 +447,14 @@ ALObjectPtr Fappend_text(ALObjectPtr t_obj, env::Environment *, eval::Evaluator 
     AL_CHECK(assert_string(text));
 
 
-    if (!fs::exists(path->to_string())) { return Qnil; }
-    if (!fs::is_regular_file(path->to_string())) { return Qnil; }
+    if (!fs::exists(path->to_string()))
+    {
+        return Qnil;
+    }
+    if (!fs::is_regular_file(path->to_string()))
+    {
+        return Qnil;
+    }
 
     std::ofstream outfile;
     outfile.open(path->to_string(), std::ios_base::app);
@@ -419,13 +475,25 @@ ALObjectPtr Fappend_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator
     AL_CHECK(assert_string(path));
     AL_CHECK(assert_byte_array(bytes));
 
-    if (!fs::exists(path->to_string())) { return Qnil; }
-    if (!fs::is_regular_file(path->to_string())) { return Qnil; }
+    if (!fs::exists(path->to_string()))
+    {
+        return Qnil;
+    }
+    if (!fs::is_regular_file(path->to_string()))
+    {
+        return Qnil;
+    }
 
     std::ofstream outfile;
     outfile.open(path->to_string(), std::ios_base::out | std::ios_base::binary | std::ios_base::app);
-    if (outfile.is_open()) { return Qnil; }
-    for (auto &b : *bytes) { outfile.put(static_cast<char>(b->to_int())); }
+    if (outfile.is_open())
+    {
+        return Qnil;
+    }
+    for (auto &b : *bytes)
+    {
+        outfile.put(static_cast<char>(b->to_int()));
+    }
     outfile.close();
 
     return Qt;
@@ -564,7 +632,10 @@ ALObjectPtr Fbase(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     AL_CHECK(assert_string(ext));
 
     const auto p = fs::path(path->to_string());
-    if (fs::is_directory(p)) { return Qnil; }
+    if (fs::is_directory(p))
+    {
+        return Qnil;
+    }
 
     return make_string(p.stem().filename());
 }
@@ -804,9 +875,15 @@ ALObjectPtr Fancestor_of(ALObjectPtr t_obj, env::Environment *, eval::Evaluator 
     for (size_t i = 0; i < std::size(parts1); ++i)
     {
 
-        if (std::size(parts2) <= i) { return Qnil; }
+        if (std::size(parts2) <= i)
+        {
+            return Qnil;
+        }
 
-        if (parts2[i] != parts1[i]) { return Qnil; }
+        if (parts2[i] != parts1[i])
+        {
+            return Qnil;
+        }
     }
 
     return Qt;
@@ -830,9 +907,15 @@ ALObjectPtr Fdescendant_of(ALObjectPtr t_obj, env::Environment *, eval::Evaluato
     for (size_t i = 0; i < std::size(parts1); ++i)
     {
 
-        if (std::size(parts2) <= i) { return Qnil; }
+        if (std::size(parts2) <= i)
+        {
+            return Qnil;
+        }
 
-        if (parts2[i] != parts1[i]) { return Qnil; }
+        if (parts2[i] != parts1[i])
+        {
+            return Qnil;
+        }
     }
 
     return Qt;

@@ -56,7 +56,10 @@ ALObjectPtr Fprop_get(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
     AL_CHECK(assert_string(prop));
     auto &prop_name = prop->to_string();
 
-    if (!target->prop_exists(prop_name)) { return Qnil; }
+    if (!target->prop_exists(prop_name))
+    {
+        return Qnil;
+    }
 
     return target->get_prop(prop_name);
 }
@@ -81,7 +84,10 @@ ALObjectPtr Fprop_list(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
 
     auto target = eval->eval(obj->i(0));
     ALObject::list_type props;
-    for (auto &[name, _] : target->props()) { props.push_back(make_string(name)); }
+    for (auto &[name, _] : target->props())
+    {
+        props.push_back(make_string(name));
+    }
     return make_object(props);
 }
 

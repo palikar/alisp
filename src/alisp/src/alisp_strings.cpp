@@ -70,7 +70,10 @@ ALObjectPtr Fstring_contains(ALObjectPtr obj, env::Environment *, eval::Evaluato
     AL_CHECK(assert_string(str_1));
     AL_CHECK(assert_string(str_2));
 
-    if (str_1->to_string().find(str_2->to_string()) != std::string::npos) { return Qt; }
+    if (str_1->to_string().find(str_2->to_string()) != std::string::npos)
+    {
+        return Qt;
+    }
     return Qnil;
 }
 
@@ -82,7 +85,10 @@ ALObjectPtr Fstring_endswith(ALObjectPtr obj, env::Environment *, eval::Evaluato
     AL_CHECK(assert_string(str_1));
     AL_CHECK(assert_string(str_2));
 
-    if (utility::ends_with(str_1->to_string(), str_2->to_string())) { return Qt; }
+    if (utility::ends_with(str_1->to_string(), str_2->to_string()))
+    {
+        return Qt;
+    }
     return Qnil;
 }
 
@@ -94,7 +100,10 @@ ALObjectPtr Fstring_startswith(ALObjectPtr obj, env::Environment *, eval::Evalua
     AL_CHECK(assert_string(str_1));
     AL_CHECK(assert_string(str_2));
 
-    if (utility::starts_with(str_1->to_string(), str_2->to_string())) { return Qt; }
+    if (utility::starts_with(str_1->to_string(), str_2->to_string()))
+    {
+        return Qt;
+    }
     return Qnil;
 }
 
@@ -141,7 +150,10 @@ ALObjectPtr Fstring_find(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
     AL_CHECK(assert_string(str_2));
 
     auto pos = str_1->to_string().find(str_2->to_string());
-    if (pos != std::string::npos) { return make_int(pos); }
+    if (pos != std::string::npos)
+    {
+        return make_int(pos);
+    }
     return Qnil;
 }
 

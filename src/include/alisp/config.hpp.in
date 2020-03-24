@@ -70,6 +70,7 @@ inline constexpr size_t MEMORY_BUFFER_REGISTRY_TAG = 0x04;
 inline constexpr auto ENV_VAR_MODPATHS = "ALPATH";
 inline constexpr auto ENV_VAR_RC = "ALISPRC";
 inline constexpr auto ENV_VAR_NODEBUG = "ALNODEBUG";
+inline constexpr auto ENV_VAR_OPTIMIZE = "ALOPTIMIZE";
 inline constexpr auto PROMPT_HISTORY_FILE = ".alisp_history";
 
 

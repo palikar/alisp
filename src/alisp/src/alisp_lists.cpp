@@ -46,7 +46,10 @@ ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     {
         for (auto &el : list->children())
         {
-            if (psym(el) or plist(el)) { eval->handle_lambda(fun_obj, make_list(quote(el))); }
+            if (psym(el) or plist(el))
+            {
+                eval->handle_lambda(fun_obj, make_list(quote(el)));
+            }
             else
             {
                 eval->handle_lambda(fun_obj, make_list(el));
@@ -57,7 +60,10 @@ ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     else if (pstring(list))
     {
 
-        for (auto &el : list->to_string()) { eval->handle_lambda(fun_obj, make_list(make_char(el))); }
+        for (auto &el : list->to_string())
+        {
+            eval->handle_lambda(fun_obj, make_list(make_char(el)));
+        }
         return Qt;
     }
 
@@ -166,12 +172,17 @@ ALObjectPtr Fnth(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     auto index = eval->eval(obj->i(1));
     AL_CHECK(assert_int(index));
 
-    if (pstring(list)) { return make_char(list->to_string()[static_cast<size_t>(index->to_int())]); }
+    if (pstring(list))
+    {
+        return make_char(list->to_string()[static_cast<size_t>(index->to_int())]);
+    }
 
     AL_CHECK(assert_list(list));
 
     if (static_cast<ALObject::list_type::size_type>(index->to_int()) >= std::size(list->children()))
-    { throw std::runtime_error("Index out of bound!"); }
+    {
+        throw std::runtime_error("Index out of bound!");
+    }
 
     return list->i(static_cast<ALObject::list_type::size_type>(index->to_int()));
 }
@@ -185,7 +196,10 @@ ALObjectPtr Fcontains(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
 
     for (auto &el : *list)
     {
-        if (equal(el, element)) { return Qt; }
+        if (equal(el, element))
+        {
+            return Qt;
+        }
     }
 
 
@@ -205,7 +219,10 @@ ALObjectPtr Flist(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
 {
     AL_CHECK(assert_min_size<0>(obj));
     ALObject::list_type new_list{};
-    for (auto el : *obj) { new_list.push_back(el); }
+    for (auto el : *obj)
+    {
+        new_list.push_back(el);
+    }
     return make_list(new_list);
 }
 
@@ -299,10 +316,16 @@ ALObjectPtr Frange(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
         return static_cast<ALObject::int_type>(1);
     }();
 
-    if (step == 0) { return Qnil; }
+    if (step == 0)
+    {
+        return Qnil;
+    }
 
     ALObject::list_type nums;
-    for (auto i = start->to_int(); i < end->to_int(); i += step) { nums.push_back(make_int(i)); }
+    for (auto i = start->to_int(); i < end->to_int(); i += step)
+    {
+        nums.push_back(make_int(i));
+    }
 
     return make_object(nums);
 }

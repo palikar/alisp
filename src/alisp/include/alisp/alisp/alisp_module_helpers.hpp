@@ -152,7 +152,10 @@ inline void module_define_macro(env::Module *t_module,
 
 inline void module_dump(env::Module *t_module)
 {
-    for (auto &[name, sym] : t_module->root_scope()) { std::cout << name << " : " << sym << "\n"; }
+    for (auto &[name, sym] : t_module->root_scope())
+    {
+        std::cout << name << " : " << sym << "\n";
+    }
 }
 
 

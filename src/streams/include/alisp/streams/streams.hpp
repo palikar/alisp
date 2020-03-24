@@ -63,7 +63,10 @@ class CoutStream : public ALStream
   public:
     static CoutStream *get_instance()
     {
-        if (!m_instance) { m_instance = std::make_unique<CoutStream>(); }
+        if (!m_instance)
+        {
+            m_instance = std::make_unique<CoutStream>();
+        }
         return m_instance.get();
     }
 
@@ -91,7 +94,10 @@ class CerrStream : public ALStream
   public:
     static CerrStream *get_instance()
     {
-        if (!m_instance) { m_instance = std::make_unique<CerrStream>(); }
+        if (!m_instance)
+        {
+            m_instance = std::make_unique<CerrStream>();
+        }
         return m_instance.get();
     }
 
@@ -119,7 +125,10 @@ class CinStream : public ALStream
   public:
     static CinStream *get_instance()
     {
-        if (!m_instance) { m_instance = std::make_unique<CinStream>(); }
+        if (!m_instance)
+        {
+            m_instance = std::make_unique<CinStream>();
+        }
         return m_instance.get();
     }
     CinStream() {}
@@ -135,7 +144,10 @@ class CinStream : public ALStream
     {
         std::string str;
 
-        for (size_t i = 0; i < count; ++i) { str.push_back(static_cast<char>(std::getchar())); }
+        for (size_t i = 0; i < count; ++i)
+        {
+            str.push_back(static_cast<char>(std::getchar()));
+        }
 
         return str;
     }
@@ -174,7 +186,10 @@ class FileStream : public ALStream
     {
         std::string str;
 
-        for (size_t i = 0; i < count; ++i) { str.push_back(static_cast<char>(m_stream.get())); }
+        for (size_t i = 0; i < count; ++i)
+        {
+            str.push_back(static_cast<char>(m_stream.get()));
+        }
 
         return str;
     }

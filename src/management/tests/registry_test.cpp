@@ -43,7 +43,10 @@ TEST_CASE("Basic registry test [dynamic]", "[registry]")
 
     management::Registry<std::string, 42> str_registry;
 
-    for (int i = 0; i < 20; ++i) { str_registry.put_resource(std::string{ "this is str: " + std::to_string(i) }); }
+    for (int i = 0; i < 20; ++i)
+    {
+        str_registry.put_resource(std::string{ "this is str: " + std::to_string(i) });
+    }
 
     auto id  = str_registry.put_resource(std::string("new_str"))->id;
     auto res = str_registry.get_resource(id)->res;
@@ -58,7 +61,10 @@ TEST_CASE("Basic registry test [emplace]", "[registry]")
 
     management::Registry<std::string, 42> str_registry;
 
-    for (int i = 0; i < 20; ++i) { str_registry.emplace_resource("this is str: " + std::to_string(i)); }
+    for (int i = 0; i < 20; ++i)
+    {
+        str_registry.emplace_resource("this is str: " + std::to_string(i));
+    }
 
     auto id  = str_registry.emplace_resource("new_str")->id;
     auto res = str_registry.get_resource(id)->res;

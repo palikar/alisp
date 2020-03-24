@@ -31,7 +31,10 @@ bool env_bool(const char *t_name)
 std::string env_string(const char *t_name)
 {
     auto e = std::getenv(t_name);
-    if (e != nullptr) { return std::string{ e }; }
+    if (e != nullptr)
+    {
+        return std::string{ e };
+    }
     return {};
 }
 

@@ -100,13 +100,19 @@ ALObjectPtr Fto_char(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     if (pstring(ch))
     {
         auto value = ch->to_string();
-        if (value.size() != 1) { return Qnil; }
+        if (value.size() != 1)
+        {
+            return Qnil;
+        }
         return make_char(value[0]);
     }
     else if (pint(ch))
     {
         auto value = ch->to_int();
-        if (!(0 <= value && value <= 127)) { return Qnil; }
+        if (!(0 <= value && value <= 127))
+        {
+            return Qnil;
+        }
         return make_char(value);
     }
     else

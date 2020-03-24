@@ -237,7 +237,10 @@ std::string escape_cpp(const std::string &input)
     for (char c : input)
     {
         const char *str = staticMap(c);
-        if (str) { ss << str; }
+        if (str)
+        {
+            ss << str;
+        }
         else if (!isprint(static_cast<unsigned char>(c)))
         {
             ss << "\\u" << std::hex << std::setfill('0') << std::setw(4)
@@ -264,11 +267,20 @@ auto dump_cpp(ALObjectPtr obj)
 
         case ALObjectType::SYMBOL:
 
-            if (eq(obj, Qnil)) { return std::string{ "Qnil" }; }
+            if (eq(obj, Qnil))
+            {
+                return std::string{ "Qnil" };
+            }
 
-            if (eq(obj, Qt)) { return std::string{ "Qt" }; }
+            if (eq(obj, Qt))
+            {
+                return std::string{ "Qt" };
+            }
 
-            if (prime_map.count(obj->to_string()) > 0) { return prime_map.at(obj->to_string()); }
+            if (prime_map.count(obj->to_string()) > 0)
+            {
+                return prime_map.at(obj->to_string());
+            }
 
             return fmt::format("make_symbol(\"{}\")", obj->to_string());
             break;
@@ -474,7 +486,10 @@ int main(int argc, char *argv[])
 
     if (opts.verbose)
     {
-        if (opts.com_module) { fmt::print("Compiling thet input file {} as a module.\n", input_file); }
+        if (opts.com_module)
+        {
+            fmt::print("Compiling thet input file {} as a module.\n", input_file);
+        }
         else
         {
             fmt::print("Compiling thet input file {} as an executable.\n", input_file);
@@ -508,7 +523,10 @@ int main(int argc, char *argv[])
                               module_name)
                << "\n";
 
-            for (auto &el : obj_vec) { ss << dump_cpp_module(el) << "\n"; }
+            for (auto &el : obj_vec)
+            {
+                ss << dump_cpp_module(el) << "\n";
+            }
 
             ss << "\n";
             ss << "return M;\n";
@@ -521,7 +539,10 @@ int main(int argc, char *argv[])
 
             std::stringstream ss;
             ss << std::string_view{ reinterpret_cast<char *>(templ_cpp), templ_cpp_len } << "\n";
-            for (auto &el : obj_vec) { ss << fmt::format("    m_evaluator.eval({});\n", dump_cpp(el)); }
+            for (auto &el : obj_vec)
+            {
+                ss << fmt::format("    m_evaluator.eval({});\n", dump_cpp(el));
+            }
             ss << "\n";
             ss << "}"
                << "\n";
@@ -570,15 +591,30 @@ int main(int argc, char *argv[])
     compile_command << "-c " << output_cpp_file << " ";
     compile_command << "-o " << output_o_file << " ";
 
-    if (opts.com_module) { compile_command << "-fPIC "; }
+    if (opts.com_module)
+    {
+        compile_command << "-fPIC ";
+    }
 
-    for (auto &el : definitions) { compile_command << el << " "; }
+    for (auto &el : definitions)
+    {
+        compile_command << el << " ";
+    }
 
-    for (auto &el : includes) { compile_command << el << " "; }
+    for (auto &el : includes)
+    {
+        compile_command << el << " ";
+    }
 
-    if (opts.optimization) { compile_command << "-O3 "; }
+    if (opts.optimization)
+    {
+        compile_command << "-O3 ";
+    }
 
-    if (opts.debug) { compile_command << "-g "; }
+    if (opts.debug)
+    {
+        compile_command << "-g ";
+    }
 
     compile_command << "-std=gnu++17 ";
 
@@ -606,11 +642,17 @@ int main(int argc, char *argv[])
     std::stringstream link_command;
 
     const std::string output_file = [&]() {
-        if (!opts.output.empty()) { return opts.output; }
+        if (!opts.output.empty())
+        {
+            return opts.output;
+        }
         else
         {
             auto stem = fs::path(input_file).stem().string();
-            if (opts.com_module) { return stem + std::string{ ".so" }; }
+            if (opts.com_module)
+            {
+                return stem + std::string{ ".so" };
+            }
             return stem;
         }
     }();
@@ -619,27 +661,48 @@ int main(int argc, char *argv[])
     link_command << output_o_file << " ";
     link_command << "-o " << output_file << " ";
 
-    if (opts.optimization) { link_command << "-flto "; }
+    if (opts.optimization)
+    {
+        link_command << "-flto ";
+    }
 
-    if (opts.com_module) { link_command << "-fPIC -shared "; }
+    if (opts.com_module)
+    {
+        link_command << "-fPIC -shared ";
+    }
 
-    for (auto &el : linking_libs) { link_command << el << " "; }
+    for (auto &el : linking_libs)
+    {
+        link_command << el << " ";
+    }
 
     if (!opts.no_compile)
     {
 
-        if (opts.verbose) { std::cout << compile_command.str() << "\n"; }
+        if (opts.verbose)
+        {
+            std::cout << compile_command.str() << "\n";
+        }
         system(compile_command.str().c_str());
 
-        if (opts.verbose) { std::cout << link_command.str() << "\n"; }
+        if (opts.verbose)
+        {
+            std::cout << link_command.str() << "\n";
+        }
         system(link_command.str().c_str());
     }
 
     if (!opts.no_cleanup)
     {
-        if (opts.verbose) { std::cout << "Deleting: " << output_cpp_file << "\n"; }
+        if (opts.verbose)
+        {
+            std::cout << "Deleting: " << output_cpp_file << "\n";
+        }
         fs::remove(output_cpp_file);
-        if (opts.verbose) { std::cout << "Deleting: " << output_o_file << "\n"; }
+        if (opts.verbose)
+        {
+            std::cout << "Deleting: " << output_o_file << "\n";
+        }
         fs::remove(output_o_file);
     }
 

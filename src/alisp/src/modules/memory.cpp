@@ -47,7 +47,10 @@ ALObjectPtr Fmmap(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 
     auto &buf_s = MemoryHelpers::get_buffer(mem_source);
     auto &buf_t = MemoryHelpers::get_buffer(mem_target);
-    for (size_t i = 0; i < static_cast<size_t>(size->to_int()); ++i) { *(buf_t.m_ptr + i) = *(buf_s.m_ptr + i); }
+    for (size_t i = 0; i < static_cast<size_t>(size->to_int()); ++i)
+    {
+        *(buf_t.m_ptr + i) = *(buf_s.m_ptr + i);
+    }
 
 
     return Qt;
@@ -100,7 +103,9 @@ ALObjectPtr Fget_range(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     ALObject::list_type bytes;
     auto &buf = MemoryHelpers::get_buffer(mem);
     for (size_t i = static_cast<size_t>(start->to_int()); i < static_cast<size_t>(end->to_int()); ++i)
-    { bytes.push_back(make_int(static_cast<ALObject::int_type>(*(buf.m_ptr + i)))); }
+    {
+        bytes.push_back(make_int(static_cast<ALObject::int_type>(*(buf.m_ptr + i))));
+    }
 
     return make_object(bytes);
 }
@@ -114,7 +119,10 @@ ALObjectPtr Ffill_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *
     AL_CHECK(assert_byte(val));
 
     auto &buf = MemoryHelpers::get_buffer(mem);
-    for (size_t i = 0; i < buf.m_size; ++i) { *(buf.m_ptr + i) = static_cast<unsigned char>(val->to_int()); }
+    for (size_t i = 0; i < buf.m_size; ++i)
+    {
+        *(buf.m_ptr + i) = static_cast<unsigned char>(val->to_int());
+    }
 
     return Qt;
 }
@@ -128,7 +136,10 @@ ALObjectPtr Fset_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     AL_CHECK(assert_byte_array(array));
 
     auto &buf = MemoryHelpers::get_buffer(mem);
-    for (size_t i = 0; i < array->size(); ++i) { *(buf.m_ptr + i) = static_cast<unsigned char>(array->i(i)->to_int()); }
+    for (size_t i = 0; i < array->size(); ++i)
+    {
+        *(buf.m_ptr + i) = static_cast<unsigned char>(array->i(i)->to_int());
+    }
 
     return Qt;
 }
@@ -142,7 +153,9 @@ ALObjectPtr Fget_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     ALObject::list_type bytes;
     auto &buf = MemoryHelpers::get_buffer(mem);
     for (size_t i = 0; i < buf.m_size; ++i)
-    { bytes.push_back(make_int(static_cast<ALObject::int_type>(*(buf.m_ptr + i)))); }
+    {
+        bytes.push_back(make_int(static_cast<ALObject::int_type>(*(buf.m_ptr + i))));
+    }
 
     return make_object(bytes);
 }

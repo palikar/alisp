@@ -42,7 +42,10 @@ void ErrorMessanger::set_input(std::string input)
 
 void ErrorMessanger::set_file(std::string file)
 {
-    if (file.empty()) { this->file_input = false; }
+    if (file.empty())
+    {
+        this->file_input = false;
+    }
     else
     {
         this->current_file = std::move(file);

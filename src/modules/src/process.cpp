@@ -87,11 +87,17 @@ ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval
     AL_CHECK(assert_list(op));
 
     std::vector<std::string> args;
-    for (auto el : *l) { args.push_back(eval->eval(el)->to_string()); }
+    for (auto el : *l)
+    {
+        args.push_back(eval->eval(el)->to_string());
+    }
 
     detail::opts options{};
 
-    if (contains(op, ":defer")) { std::get<detail::DEFER>(options) = defer_spawn{ true }; }
+    if (contains(op, ":defer"))
+    {
+        std::get<detail::DEFER>(options) = defer_spawn{ true };
+    }
 
     if (auto [size, succ] = get_next(op, ":buff-size"); succ)
     {
@@ -100,7 +106,10 @@ ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval
         std::get<detail::BUFSIZE>(options) = bufsize{ static_cast<int>(s->to_int()) };
     }
 
-    if (contains(op, ":close-fds")) { std::get<detail::CLOSE_FDS>(options) = close_fds{ true }; }
+    if (contains(op, ":close-fds"))
+    {
+        std::get<detail::CLOSE_FDS>(options) = close_fds{ true };
+    }
 
     if (auto [cwd_str, succ] = get_next(op, ":cwd"); succ)
     {
@@ -109,13 +118,21 @@ ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval
         std::get<detail::CWD>(options) = cwd{ s->to_string() };
     }
 
-    if (contains(op, ":shell")) { std::get<detail::SHELL>(options) = shell{ true }; }
+    if (contains(op, ":shell"))
+    {
+        std::get<detail::SHELL>(options) = shell{ true };
+    }
 
-    if (contains(op, ":env")) {}
+    if (contains(op, ":env"))
+    {
+    }
 
     if (auto [in, succ] = get_next(op, ":input"); succ)
     {
-        if (eq(eval->eval(in), process_stderr)) { std::get<detail::INPUT>(options) = input{ STDERR }; }
+        if (eq(eval->eval(in), process_stderr))
+        {
+            std::get<detail::INPUT>(options) = input{ STDERR };
+        }
         else if (eq(eval->eval(in), process_stdout))
         {
             std::get<detail::INPUT>(options) = input{ STDOUT };
@@ -129,7 +146,10 @@ ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval
     if (auto [out, succ] = get_next(op, ":output"); succ)
     {
 
-        if (eq(eval->eval(out), process_stderr)) { std::get<detail::OUTPUT>(options) = output{ STDERR }; }
+        if (eq(eval->eval(out), process_stderr))
+        {
+            std::get<detail::OUTPUT>(options) = output{ STDERR };
+        }
         else if (eq(eval->eval(out), process_stdout))
         {
             std::get<detail::OUTPUT>(options) = output{ STDOUT };
@@ -142,7 +162,10 @@ ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval
 
     if (auto [err, succ] = get_next(op, ":error"); succ)
     {
-        if (eq(eval->eval(err), process_stderr)) { std::get<detail::ERROR>(options) = error{ STDERR }; }
+        if (eq(eval->eval(err), process_stderr))
+        {
+            std::get<detail::ERROR>(options) = error{ STDERR };
+        }
         else if (eq(eval->eval(err), process_stdout))
         {
             std::get<detail::ERROR>(options) = error{ STDOUT };
@@ -169,7 +192,10 @@ ALObjectPtr Fcheck_output(ALObjectPtr obj, env::Environment *, eval::Evaluator *
     assert_min_size<1>(obj);
 
     std::vector<std::string> args;
-    for (auto el : *obj) { args.push_back(eval->eval(el)->to_string()); }
+    for (auto el : *obj)
+    {
+        args.push_back(eval->eval(el)->to_string());
+    }
 
     auto buf = subprocess::check_output(args);
 
@@ -181,12 +207,18 @@ ALObjectPtr Fcheck_output_bytes(ALObjectPtr obj, env::Environment *, eval::Evalu
     assert_min_size<1>(obj);
 
     std::vector<std::string> args;
-    for (auto el : *obj) { args.push_back(eval->eval(el)->to_string()); }
+    for (auto el : *obj)
+    {
+        args.push_back(eval->eval(el)->to_string());
+    }
 
     auto buf = subprocess::check_output(args);
 
     ALObject::list_type bytes;
-    for (auto b : buf.buf) { bytes.push_back(make_int(b)); }
+    for (auto b : buf.buf)
+    {
+        bytes.push_back(make_int(b));
+    }
     return make_list(bytes);
 }
 

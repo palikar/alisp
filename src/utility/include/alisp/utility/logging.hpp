@@ -97,8 +97,14 @@ template<typename... Logs> class LogKeeper : Logs...
         if (logger.category == t_category || logger.category == LogCategory::ANY)
         {
 
-            if (!m_debug and t_category == LogCategory::DEBUG) { return; }
-            if (!m_standard and t_category != LogCategory::DEBUG) { return; }
+            if (!m_debug and t_category == LogCategory::DEBUG)
+            {
+                return;
+            }
+            if (!m_standard and t_category != LogCategory::DEBUG)
+            {
+                return;
+            }
             logger.log(t_entry);
         }
     }

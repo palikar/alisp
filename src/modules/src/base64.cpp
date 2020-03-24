@@ -91,7 +91,10 @@ struct Base64
         };
 
         size_t in_len = input.size();
-        if (in_len % 4 != 0) { return false; }
+        if (in_len % 4 != 0)
+        {
+            return false;
+        }
 
         size_t out_len = in_len / 4 * 3;
         if (input[in_len - 1] == '=') out_len--;
@@ -181,7 +184,10 @@ struct Base16
     static bool Decode(const std::string &input, std::string &output)
     {
         size_t len = input.length();
-        if (len & 1) { return false; }
+        if (len & 1)
+        {
+            return false;
+        }
 
         output.reserve(len / 2);
         for (auto it = input.begin(); it != input.end();)
@@ -216,7 +222,10 @@ struct Base32
         uint64_t buffer = 0;
         for (int i = 0; i < 5; i++)
         {
-            if (i != 0) { buffer = (buffer << 8); }
+            if (i != 0)
+            {
+                buffer = (buffer << 8);
+            }
             buffer = buffer | in5[i];
         }
         // output 8 bytes
@@ -240,11 +249,17 @@ struct Base32
         {
             // input check
             if (in8[i] >= 32) return false;
-            if (i != 0) { buffer = (buffer << 5); }
+            if (i != 0)
+            {
+                buffer = (buffer << 5);
+            }
             buffer = buffer | in8[i];
         }
         // output 5 bytes
-        for (int j = 4; j >= 0; j--) { out5[4 - j] = (unsigned char)(buffer >> (j * 8)); }
+        for (int j = 4; j >= 0; j--)
+        {
+            out5[4 - j] = (unsigned char)(buffer >> (j * 8));
+        }
         return true;
     }
 
@@ -265,7 +280,10 @@ struct Base32
 
         unsigned char padd[5];
         memset(padd, 0, sizeof(unsigned char) * 5);
-        for (int i = 0; i < r; i++) { padd[i] = in[inLen - r + i]; }
+        for (int i = 0; i < r; i++)
+        {
+            padd[i] = in[inLen - r + i];
+        }
         if (!Encode32Block(&padd[0], &outBuff[0])) return false;
         memmove(&out[d * 8], &outBuff[0], sizeof(unsigned char) * GetEncode32Length(r));
 
@@ -289,7 +307,10 @@ struct Base32
 
         unsigned char padd[8];
         memset(padd, 0, sizeof(unsigned char) * 8);
-        for (int i = 0; i < r; i++) { padd[i] = in[inLen - r + i]; }
+        for (int i = 0; i < r; i++)
+        {
+            padd[i] = in[inLen - r + i];
+        }
         if (!Decode32Block(&padd[0], &outBuff[0])) return false;
 
         memmove(&out[d * 5], &outBuff[0], sizeof(unsigned char) * GetDecode32Length(r));
@@ -308,7 +329,10 @@ struct Base32
     {
         int bits   = bytes * 8;
         int length = bits / 5;
-        if ((bits % 5) > 0) { length++; }
+        if ((bits % 5) > 0)
+        {
+            length++;
+        }
         return length;
     }
 
@@ -326,7 +350,10 @@ struct Base32
     static void ReverseMap(unsigned char *inAlpha32, unsigned char *outMap)
     {
         memset(outMap, 0, sizeof(unsigned char) * 256);
-        for (int i = 0; i < 32; i++) { outMap[(int)inAlpha32[i]] = i; }
+        for (int i = 0; i < 32; i++)
+        {
+            outMap[(int)inAlpha32[i]] = i;
+        }
     }
 
     static bool Unmap32(unsigned char *inout32, int inout32Len, unsigned char *alpha32)
@@ -334,7 +361,10 @@ struct Base32
         if ((inout32 == 0) || (inout32Len <= 0) || (alpha32 == 0)) return false;
         unsigned char rmap[256];
         ReverseMap(alpha32, rmap);
-        for (int i = 0; i < inout32Len; i++) { inout32[i] = rmap[(int)inout32[i]]; }
+        for (int i = 0; i < inout32Len; i++)
+        {
+            inout32[i] = rmap[(int)inout32[i]];
+        }
         return true;
     }
 
@@ -358,7 +388,10 @@ struct Base32
         Unmap32(data32, encodeLength, reinterpret_cast<unsigned char *>(&alphabet[0]));
         int decodeLength         = GetDecode32Length(input.size());
         unsigned char *decode256 = (unsigned char *)alloca(sizeof(char) * decodeLength);
-        if (!Decode32(data32, encodeLength, decode256)) { return false; }
+        if (!Decode32(data32, encodeLength, decode256))
+        {
+            return false;
+        }
         output = std::string(reinterpret_cast<char *>(decode256), decodeLength);
         return true;
     }
@@ -391,7 +424,10 @@ ALObjectPtr Fbase64_encode_bytes(ALObjectPtr obj, env::Environment *, eval::Eval
     std::vector<char> v;
     v.reserve(std::size(*list));
 
-    for (auto &b : *list) { v.emplace_back(static_cast<char>(b->to_int())); }
+    for (auto &b : *list)
+    {
+        v.emplace_back(static_cast<char>(b->to_int()));
+    }
 
     return make_string(detail::Base64::Encode(std::string(v.begin(), v.end())));
 }
@@ -404,7 +440,10 @@ ALObjectPtr Fbase64_decode_string(ALObjectPtr obj, env::Environment *, eval::Eva
     assert_string(str);
     std::string out;
     auto res = detail::Base64::Decode(str->to_string(), out);
-    if (res) { return make_string(out); }
+    if (res)
+    {
+        return make_string(out);
+    }
     return Qnil;
 }
 
@@ -420,7 +459,10 @@ ALObjectPtr Fbase64_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Eval
     {
 
         ALObject::list_type bytes;
-        for (const char c : out) { bytes.push_back(make_int(static_cast<ALObject::int_type>(c))); }
+        for (const char c : out)
+        {
+            bytes.push_back(make_int(static_cast<ALObject::int_type>(c)));
+        }
         return make_list(bytes);
     }
     return Qnil;
@@ -446,7 +488,10 @@ ALObjectPtr Fbase16_encode_bytes(ALObjectPtr obj, env::Environment *, eval::Eval
     std::vector<char> v;
     v.reserve(std::size(*list));
 
-    for (auto &b : *list) { v.emplace_back(static_cast<char>(b->to_int())); }
+    for (auto &b : *list)
+    {
+        v.emplace_back(static_cast<char>(b->to_int()));
+    }
 
     return make_string(detail::Base16::Encode(std::string(v.begin(), v.end())));
 }
@@ -459,7 +504,10 @@ ALObjectPtr Fbase16_decode_string(ALObjectPtr obj, env::Environment *, eval::Eva
     assert_string(str);
     std::string out;
     auto res = detail::Base16::Decode(str->to_string(), out);
-    if (res) { return make_string(out); }
+    if (res)
+    {
+        return make_string(out);
+    }
     return Qnil;
 }
 
@@ -475,7 +523,10 @@ ALObjectPtr Fbase16_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Eval
     {
 
         ALObject::list_type bytes;
-        for (const char c : out) { bytes.push_back(make_int(static_cast<ALObject::int_type>(c))); }
+        for (const char c : out)
+        {
+            bytes.push_back(make_int(static_cast<ALObject::int_type>(c)));
+        }
         return make_list(bytes);
     }
     return Qnil;
@@ -499,7 +550,10 @@ ALObjectPtr Fbase32_decode_string(ALObjectPtr obj, env::Environment *, eval::Eva
     assert_string(str);
     std::string out;
     auto res = detail::Base32::Decode(str->to_string(), out);
-    if (res) { return make_string(out); }
+    if (res)
+    {
+        return make_string(out);
+    }
     return Qnil;
 }
 
@@ -515,7 +569,10 @@ ALObjectPtr Fbase32_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Eval
     {
 
         ALObject::list_type bytes;
-        for (const char c : out) { bytes.push_back(make_int(static_cast<ALObject::int_type>(c))); }
+        for (const char c : out)
+        {
+            bytes.push_back(make_int(static_cast<ALObject::int_type>(c)));
+        }
         return make_list(bytes);
     }
     return Qnil;
@@ -531,7 +588,10 @@ ALObjectPtr Fbase32_encode_bytes(ALObjectPtr obj, env::Environment *, eval::Eval
     std::vector<char> v;
     v.reserve(std::size(*list));
 
-    for (auto &b : *list) { v.emplace_back(static_cast<char>(b->to_int())); }
+    for (auto &b : *list)
+    {
+        v.emplace_back(static_cast<char>(b->to_int()));
+    }
 
     return make_string(detail::Base32::Encode(std::string(v.begin(), v.end())));
 }

@@ -55,7 +55,8 @@ enum class EngineSettings
     PARSER_DEBUG,
     EVAL_DEBUG,
     QUICK_INIT,
-    DISABLE_DEBUG_MODE
+    DISABLE_DEBUG_MODE,
+    OPTIMIZATION
 };
 
 
@@ -135,7 +136,10 @@ class LanguageEngine
     {
         std::vector<std::string> vec;
 
-        for (auto [name, _] : env::Environment::g_global_symbol_table) { vec.push_back(name); }
+        for (auto [name, _] : env::Environment::g_global_symbol_table)
+        {
+            vec.push_back(name);
+        }
 
         return vec;
     }

@@ -65,7 +65,10 @@ template<typename T, size_t tag> class Registry
             return i;
         }
 
-        if (inlined_cnt < INLINED) { return (inlined_cnt++ | INLINED_BIT | TAG_BITS | VALID_BIT); }
+        if (inlined_cnt < INLINED)
+        {
+            return (inlined_cnt++ | INLINED_BIT | TAG_BITS | VALID_BIT);
+        }
 
         return (static_cast<std::uint32_t>(dyn_res.size())) | TAG_BITS | VALID_BIT;
     }
@@ -73,7 +76,10 @@ template<typename T, size_t tag> class Registry
     Resource<T> *get_memory(uint32_t t_id)
     {
 
-        if (is_inlined(t_id)) { return &inline_res[get_true_id(t_id)]; }
+        if (is_inlined(t_id))
+        {
+            return &inline_res[get_true_id(t_id)];
+        }
 
         const auto dyn_index = (get_true_id(t_id));
         return dyn_res.data() + dyn_index;
@@ -88,19 +94,28 @@ template<typename T, size_t tag> class Registry
   public:
     Registry()
     {
-        for (size_t i = 0; i < INLINED; ++i) { inline_res[i].id = 0; }
+        for (size_t i = 0; i < INLINED; ++i)
+        {
+            inline_res[i].id = 0;
+        }
     }
 
     ~Registry()
     {
         for (size_t i = 0; i < INLINED; ++i)
         {
-            if (inline_res[i].id != 0) { inline_res[i].~Resource<T>(); }
+            if (inline_res[i].id != 0)
+            {
+                inline_res[i].~Resource<T>();
+            }
         }
 
         for (size_t i = 0; i < dyn_res.size(); ++i)
         {
-            if (dyn_res[i].id != 0) { dyn_res[i].~Resource<T>(); }
+            if (dyn_res[i].id != 0)
+            {
+                dyn_res[i].~Resource<T>();
+            }
         }
         dyn_res.clear();
     }
@@ -118,7 +133,10 @@ template<typename T, size_t tag> class Registry
 
         const auto dyn_id = get_true_id(id);
 
-        if (dyn_res.size() <= dyn_id) { dyn_res.push_back({ t_res, id }); }
+        if (dyn_res.size() <= dyn_id)
+        {
+            dyn_res.push_back({ t_res, id });
+        }
         else
         {
             dyn_res.at(dyn_id) = { t_res, id };
@@ -139,7 +157,10 @@ template<typename T, size_t tag> class Registry
 
         const auto dyn_id = get_true_id(id);
 
-        if (dyn_res.size() <= dyn_id) { dyn_res.push_back({ T{ std::forward<decltype(t_args)>(t_args)... }, id }); }
+        if (dyn_res.size() <= dyn_id)
+        {
+            dyn_res.push_back({ T{ std::forward<decltype(t_args)>(t_args)... }, id });
+        }
         else
         {
             dyn_res.at(dyn_id) = { T{ std::forward<decltype(t_args)>(t_args)... }, id };
@@ -177,16 +198,28 @@ template<typename T, size_t tag> class Registry
         if (id_belongs(t_id))
         {
 
-            if (std::find(std::begin(free_list), std::end(free_list), t_id) != std::end(free_list)) { return false; }
+            if (std::find(std::begin(free_list), std::end(free_list), t_id) != std::end(free_list))
+            {
+                return false;
+            }
 
-            if (is_inlined(t_id)) { return (get_memory(t_id)->id & VALID_BIT) > 0; }
+            if (is_inlined(t_id))
+            {
+                return (get_memory(t_id)->id & VALID_BIT) > 0;
+            }
 
             const auto true_id = get_true_id(t_id);
 
 
-            if (dyn_res.size() <= true_id) { return false; }
+            if (dyn_res.size() <= true_id)
+            {
+                return false;
+            }
 
-            if ((dyn_res.at(true_id).id & VALID_BIT) == 0) { return false; }
+            if ((dyn_res.at(true_id).id & VALID_BIT) == 0)
+            {
+                return false;
+            }
 
             return true;
         }

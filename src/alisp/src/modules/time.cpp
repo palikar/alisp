@@ -203,7 +203,9 @@ ALObjectPtr Fstrftime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
 #endif
     if (auto size = std::strftime(mbstr, sizeof(mbstr), time_fmt->to_string().c_str(), &tm); size != 0)
-    { return make_string(std::string(mbstr, size)); }
+    {
+        return make_string(std::string(mbstr, size));
+    }
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif

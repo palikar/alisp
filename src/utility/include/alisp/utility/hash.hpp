@@ -36,7 +36,10 @@ template<typename Itr> static constexpr std::uint32_t hash(Itr begin, Itr end)
 
     std::uint32_t hash = 0x811c9dc5;
 
-    while (begin != end) { hash = (hash ^ *(begin++)) * prime; }
+    while (begin != end)
+    {
+        hash = (hash ^ *(begin++)) * prime;
+    }
 
     return hash;
 
@@ -91,7 +94,10 @@ template<typename Itr> static constexpr std::uint32_t hash(Itr begin, Itr end)
     while (begin != end)
     {
         hash = (hash << 4) + *(begin++);
-        if ((high = (hash & 0xF0000000))) { hash ^= high >> 24; }
+        if ((high = (hash & 0xF0000000)))
+        {
+            hash ^= high >> 24;
+        }
         hash &= ~high;
     }
 

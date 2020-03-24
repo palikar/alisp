@@ -46,11 +46,17 @@ struct LiteString
         auto b2       = other.begin();
         const auto e2 = other.end();
 
-        if (e1 - b1 != e2 - b2) { return false; }
+        if (e1 - b1 != e2 - b2)
+        {
+            return false;
+        }
 
         while (b1 != e1)
         {
-            if (*b1 != *b2) { return false; }
+            if (*b1 != *b2)
+            {
+                return false;
+            }
             ++b1;
             ++b2;
         }

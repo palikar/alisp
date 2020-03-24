@@ -47,11 +47,16 @@ char *completion_generator(const char *text, int state)
         for (const auto &word : get_completions(text))
         {
             if (word.size() >= textstr.size() && word.compare(0, textstr.size(), textstr) == 0)
-            { matches.push_back(word); }
+            {
+                matches.push_back(word);
+            }
         }
     }
 
-    if (match_index >= matches.size()) { return nullptr; }
+    if (match_index >= matches.size())
+    {
+        return nullptr;
+    }
     else
     {
         return strdup(matches[match_index++].c_str());
@@ -68,13 +73,22 @@ void load_history()
 {
     namespace fs = std::filesystem;
 
-    if (history_file.empty()) { return; }
-    if (!fs::is_regular_file(history_file)) { return; }
+    if (history_file.empty())
+    {
+        return;
+    }
+    if (!fs::is_regular_file(history_file))
+    {
+        return;
+    }
 
     std::ifstream alisphist(history_file);
 
     std::string line;
-    while (std::getline(alisphist, line)) { add_history(line.c_str()); }
+    while (std::getline(alisphist, line))
+    {
+        add_history(line.c_str());
+    }
 }
 
 
@@ -84,7 +98,10 @@ void init(std::string hist)
     rl_attempted_completion_function = completer;
     history_file                     = std::move(hist);
     using_history();
-    if (!history_file.empty()) { load_history(); }
+    if (!history_file.empty())
+    {
+        load_history();
+    }
     rl_parse_and_bind(rl_brackets_compl);
     rl_parse_and_bind(rl_quote_compl);
 }
@@ -99,7 +116,10 @@ std::optional<std::string> repl(const std::string &prompt)
         return {};
     }
 
-    if (strlen(buf) > 0 && *buf != ' ') { add_history(buf); }
+    if (strlen(buf) > 0 && *buf != ' ')
+    {
+        add_history(buf);
+    }
     std::string command{ buf };
     free(buf);
 
@@ -110,14 +130,26 @@ SaveHistory::~SaveHistory()
 {
     namespace fs = std::filesystem;
 
-    if (history_file.empty()) { return; }
-    if (!fs::is_regular_file(history_file)) { return; }
+    if (history_file.empty())
+    {
+        return;
+    }
+    if (!fs::is_regular_file(history_file))
+    {
+        return;
+    }
 
     auto hist_list = history_list();
-    if (!hist_list) { return; }
+    if (!hist_list)
+    {
+        return;
+    }
 
     std::ofstream alisphist(history_file);
-    for (size_t i = 0; hist_list[i]; i++) { alisphist << hist_list[i]->line << '\n'; }
+    for (size_t i = 0; hist_list[i]; i++)
+    {
+        alisphist << hist_list[i]->line << '\n';
+    }
 
     alisphist.close();
 }

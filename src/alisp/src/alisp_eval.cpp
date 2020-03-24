@@ -36,7 +36,10 @@ namespace eval
 void Evaluator::new_evaluation()
 {
     ++m_eval_depth;
-    if (m_eval_depth > MAX_EAVALUATION_DEPTH) { throw eval_error("Maximum evaluation depth reached!"); }
+    if (m_eval_depth > MAX_EAVALUATION_DEPTH)
+    {
+        throw eval_error("Maximum evaluation depth reached!");
+    }
 }
 
 void Evaluator::end_evaluation()
@@ -160,7 +163,10 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
             auto func = eval(obj->i(0));
 
-            if (psym(func)) { func = env.find(func); }
+            if (psym(func))
+            {
+                func = env.find(func);
+            }
 
             AL_CHECK(
               if (!func->check_function_flag()) { throw eval_error("Head of a list must be bound to function"); });
@@ -169,10 +175,15 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
             env::detail::CallTracer tracer{ env };
 
-            if (obj->prop_exists("--line--")) { tracer.line(obj->get_prop("--line--")->to_int()); }
+            if (obj->prop_exists("--line--"))
+            {
+                tracer.line(obj->get_prop("--line--")->to_int());
+            }
 
             if (func->prop_exists("--name--"))
-            { tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag()); }
+            {
+                tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag());
+            }
             else
             {
                 tracer.function_name("anonymous", false);
@@ -233,7 +244,10 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
             catch (...)
             {
 #ifdef ENABLE_STACK_TRACE
-                if (m_catching_depth == 0) { tracer.dump(); }
+                if (m_catching_depth == 0)
+                {
+                    tracer.dump();
+                }
 #endif
                 throw;
             }
@@ -257,7 +271,10 @@ ALObjectPtr Evaluator::eval_function(ALObjectPtr func, ALObjectPtr args)
     auto eval_args      = eval_transform(this, args);
     try
     {
-        if (!plist(body) || std::size(*body) == 0) { return Qnil; }
+        if (!plist(body) || std::size(*body) == 0)
+        {
+            return Qnil;
+        }
         env::detail::FunctionCall fc{ env, func };
         handle_argument_bindings(params, eval_args);
         return eval_list(this, body, 0);
@@ -280,12 +297,18 @@ ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
     AL_DEBUG("Calling lambda: "s += dump(func));
 
     auto obj = func;
-    if (psym(func)) { obj = eval(func); }
+    if (psym(func))
+    {
+        obj = eval(func);
+    }
 
     AL_CHECK(if (!obj->check_function_flag()) { throw eval_error("Cannot apply a non function object."); });
 
     env::detail::FunctionCall fc{ env, func };
-    if (obj->check_prime_flag()) { return obj->get_prime()(args, &env, this); }
+    if (obj->check_prime_flag())
+    {
+        return obj->get_prime()(args, &env, this);
+    }
     else
     {
         return apply_function(obj, args);
@@ -300,9 +323,15 @@ void Evaluator::eval_file(const std::string &t_file)
 
     auto parse_result = m_parser->parse(file_content, t_file);
 
-    if (parse_result.empty()) { warn::warn_eval("Evaluating an empty file: "s + t_file); }
+    if (parse_result.empty())
+    {
+        warn::warn_eval("Evaluating an empty file: "s + t_file);
+    }
 
-    for (auto sexp : parse_result) { eval(sexp); }
+    for (auto sexp : parse_result)
+    {
+        eval(sexp);
+    }
 }
 
 void Evaluator::eval_string(std::string &t_eval)
@@ -317,7 +346,10 @@ void Evaluator::eval_string(std::string &t_eval)
 
     auto parse_result = m_parser->parse(t_eval, "--EVAL--");
 
-    for (auto sexp : parse_result) { eval(sexp); }
+    for (auto sexp : parse_result)
+    {
+        eval(sexp);
+    }
 }
 
 void Evaluator::handle_signal(int t_c)
@@ -389,7 +421,10 @@ detail::EvalDepthTrack::EvalDepthTrack(Evaluator &t_eval) : m_eval(t_eval)
 detail::EvalDepthTrack::~EvalDepthTrack()
 {
     m_eval.end_evaluation();
-    if (m_eval.evaluation_depth() == 0) { m_eval.reset_evaluation_flag(); }
+    if (m_eval.evaluation_depth() == 0)
+    {
+        m_eval.reset_evaluation_flag();
+    }
 }
 
 detail::CatchTrack::CatchTrack(Evaluator &t_eval) : m_eval(t_eval)

@@ -169,9 +169,18 @@ template<class Environment> class ALParser : public ParserBase
         set_alphabet(alph, detail::whitespace_alphabet, '\n');
         set_alphabet(alph, detail::whitespace_alphabet, '\r');
 
-        for (size_t c = 'a'; c <= 'z'; ++c) { set_alphabet(alph, detail::id_alphabet, c); }
-        for (size_t c = 'A'; c <= 'Z'; ++c) { set_alphabet(alph, detail::id_alphabet, c); }
-        for (size_t c = '0'; c <= '9'; ++c) { set_alphabet(alph, detail::id_alphabet, c); }
+        for (size_t c = 'a'; c <= 'z'; ++c)
+        {
+            set_alphabet(alph, detail::id_alphabet, c);
+        }
+        for (size_t c = 'A'; c <= 'Z'; ++c)
+        {
+            set_alphabet(alph, detail::id_alphabet, c);
+        }
+        for (size_t c = '0'; c <= '9'; ++c)
+        {
+            set_alphabet(alph, detail::id_alphabet, c);
+        }
 
         set_alphabet(alph, detail::id_alphabet, '.');
         set_alphabet(alph, detail::id_alphabet, '-');
@@ -194,13 +203,25 @@ template<class Environment> class ALParser : public ParserBase
         set_alphabet(alph, detail::id_alphabet, '&');
 
 
-        for (size_t c = '0'; c <= '9'; ++c) { set_alphabet(alph, detail::int_alphabet, c); }
-        for (size_t c = 'a'; c <= 'f'; ++c) { set_alphabet(alph, detail::int_alphabet, c); }
-        for (size_t c = 'A'; c <= 'F'; ++c) { set_alphabet(alph, detail::int_alphabet, c); }
+        for (size_t c = '0'; c <= '9'; ++c)
+        {
+            set_alphabet(alph, detail::int_alphabet, c);
+        }
+        for (size_t c = 'a'; c <= 'f'; ++c)
+        {
+            set_alphabet(alph, detail::int_alphabet, c);
+        }
+        for (size_t c = 'A'; c <= 'F'; ++c)
+        {
+            set_alphabet(alph, detail::int_alphabet, c);
+        }
         set_alphabet(alph, detail::int_alphabet, '-');
         set_alphabet(alph, detail::int_alphabet, '+');
 
-        for (size_t c = '0'; c <= '9'; ++c) { set_alphabet(alph, detail::double_alphabet, c); }
+        for (size_t c = '0'; c <= '9'; ++c)
+        {
+            set_alphabet(alph, detail::double_alphabet, c);
+        }
         set_alphabet(alph, detail::double_alphabet, '-');
         set_alphabet(alph, detail::double_alphabet, '+');
         set_alphabet(alph, detail::double_alphabet, '.');
@@ -226,7 +247,10 @@ template<class Environment> class ALParser : public ParserBase
     static int digit_to_number(char character, int base)
     {
         int digit;
-        if ('0' <= character && character <= '9') { digit = character - '0'; }
+        if ('0' <= character && character <= '9')
+        {
+            digit = character - '0';
+        }
         else if ('a' <= character && character <= 'z')
         {
             digit = character - 'a' + 10;
@@ -401,12 +425,20 @@ template<class Environment> class ALParser : public ParserBase
             unicode_size      = 0;
 
             char buf[4];
-            if (u_size != match_size) { throw std::runtime_error("Incomplete unicode escape sequence"); }
+            if (u_size != match_size)
+            {
+                throw std::runtime_error("Incomplete unicode escape sequence");
+            }
             if (u_size == 4 && ch >= 0xD800 && ch <= 0xDFFF)
-            { throw std::runtime_error("Invalid 16 bit universal character"); }
+            {
+                throw std::runtime_error("Invalid 16 bit universal character");
+            }
 
 
-            if (ch < 0x80) { m_str += static_cast<char>(ch); }
+            if (ch < 0x80)
+            {
+                m_str += static_cast<char>(ch);
+            }
             else if (ch < 0x800)
             {
                 buf[0] = static_cast<char>(0xC0 | (ch >> 6));
@@ -444,13 +476,19 @@ template<class Environment> class ALParser : public ParserBase
             if (is_octal)
             {
 
-                if (is_octal_char) { octal_matches.push_back(t_char); }
+                if (is_octal_char)
+                {
+                    octal_matches.push_back(t_char);
+                }
                 else
                 {
                     return false;
                 }
 
-                if (std::size(octal_matches) == 3) { process_octal(); }
+                if (std::size(octal_matches) == 3)
+                {
+                    process_octal();
+                }
 
                 return true;
             }
@@ -458,13 +496,19 @@ template<class Environment> class ALParser : public ParserBase
             if (is_hex)
             {
 
-                if (is_hex_char) { hex_matches.push_back(t_char); }
+                if (is_hex_char)
+                {
+                    hex_matches.push_back(t_char);
+                }
                 else
                 {
                     return false;
                 }
 
-                if (std::size(hex_matches) == 2 * sizeof(char)) { process_hex(); }
+                if (std::size(hex_matches) == 2 * sizeof(char))
+                {
+                    process_hex();
+                }
 
                 return true;
             }
@@ -472,13 +516,19 @@ template<class Environment> class ALParser : public ParserBase
             if (unicode_size > 0)
             {
 
-                if (is_hex_char) { hex_matches.push_back(t_char); }
+                if (is_hex_char)
+                {
+                    hex_matches.push_back(t_char);
+                }
                 else
                 {
                     return false;
                 }
 
-                if (std::size(hex_matches) == unicode_size) { process_unicode(); }
+                if (std::size(hex_matches) == unicode_size)
+                {
+                    process_unicode();
+                }
                 return true;
             }
 
@@ -555,18 +605,26 @@ template<class Environment> class ALParser : public ParserBase
         while (this->position.has_more()
                && (check_char(*cr_lf.c_str()) || check_char(*nl.c_str())
                    || char_in_alphabet(*position, detail::whitespace_alphabet)))
-        { ++position; }
+        {
+            ++position;
+        }
     }
 
     void skip_whitespace()
     {
 
-        while (this->position.has_more() && char_in_alphabet(*position, detail::whitespace_alphabet)) { ++position; }
+        while (this->position.has_more() && char_in_alphabet(*position, detail::whitespace_alphabet))
+        {
+            ++position;
+        }
     }
 
     void skip_eol()
     {
-        while (position.has_more() && check_char(*nl.c_str())) { ++position; }
+        while (position.has_more() && check_char(*nl.c_str()))
+        {
+            ++position;
+        }
     }
 
     bool check_char(const char c) { return *this->position == c; }
@@ -575,7 +633,10 @@ template<class Environment> class ALParser : public ParserBase
     {
         auto temp = position;
 
-        if (check_char('-') || check_char('+')) { ++position; }
+        if (check_char('-') || check_char('+'))
+        {
+            ++position;
+        }
 
         bool valid = char_in_alphabet(*position, detail::int_alphabet);
 
@@ -607,7 +668,10 @@ template<class Environment> class ALParser : public ParserBase
     {
         auto temp = position;
 
-        if (check_char('-') || check_char('+')) { ++position; }
+        if (check_char('-') || check_char('+'))
+        {
+            ++position;
+        }
 
         bool valid         = check_char('.') || (digit_to_number(*position, 10) >= 0);
         bool dot_found     = false;
@@ -701,7 +765,10 @@ template<class Environment> class ALParser : public ParserBase
 
         while (position.has_more() && char_in_alphabet(*position, detail::int_alphabet))
         {
-            if (!parser.parse(*position)) { PARSE_ERROR("Invalid integer"); };
+            if (!parser.parse(*position))
+            {
+                PARSE_ERROR("Invalid integer");
+            };
             ++position;
         }
 
@@ -714,7 +781,10 @@ template<class Environment> class ALParser : public ParserBase
 
         while (position.has_more() && char_in_alphabet(*position, detail::double_alphabet))
         {
-            if (!parser.parse(*position)) { PARSE_ERROR("Invalid real number"); };
+            if (!parser.parse(*position))
+            {
+                PARSE_ERROR("Invalid real number");
+            };
             ++position;
         }
 
@@ -765,7 +835,10 @@ template<class Environment> class ALParser : public ParserBase
 
     ALObjectPtr parse_string()
     {
-        if (*this->position != '\"') { PARSE_ERROR("Invalid string literal."); }
+        if (*this->position != '\"')
+        {
+            PARSE_ERROR("Invalid string literal.");
+        }
         ++this->position;
 
         std::string text{ "" };
@@ -786,7 +859,10 @@ template<class Environment> class ALParser : public ParserBase
             ++position;
         }
 
-        if (*this->position != '\"') { PARSE_ERROR("Invalid string literal."); }
+        if (*this->position != '\"')
+        {
+            PARSE_ERROR("Invalid string literal.");
+        }
         ++position;
 
         return make_string(std::string{ text });
@@ -794,21 +870,33 @@ template<class Environment> class ALParser : public ParserBase
 
     ALObjectPtr parse_quote()
     {
-        if (!check_char('\'')) { PARSE_ERROR("Expected \'"); }
+        if (!check_char('\''))
+        {
+            PARSE_ERROR("Expected \'");
+        }
         ++position;
         skip_whitespace();
         auto obj = parse_next();
-        if (!obj) { PARSE_ERROR("Expected expression after \'"); }
+        if (!obj)
+        {
+            PARSE_ERROR("Expected expression after \'");
+        }
         return make_object(env::intern("quote"), obj);
     }
 
     ALObjectPtr parse_backquote()
     {
-        if (!check_char('`')) { PARSE_ERROR("Expected \'`\'"); }
+        if (!check_char('`'))
+        {
+            PARSE_ERROR("Expected \'`\'");
+        }
         ++position;
         skip_whitespace();
         auto obj = parse_next();
-        if (!obj) { PARSE_ERROR("Expected expression after \'`\'"); }
+        if (!obj)
+        {
+            PARSE_ERROR("Expected expression after \'`\'");
+        }
         return make_object(Qbackquote, obj);
     }
 
@@ -816,13 +904,19 @@ template<class Environment> class ALParser : public ParserBase
     {
         skip_whitespace();
         auto obj = parse_next();
-        if (!obj) { PARSE_ERROR("Expected expression after \'"); }
+        if (!obj)
+        {
+            PARSE_ERROR("Expected expression after \'");
+        }
         return make_object(Qfunction, obj);
     }
 
     ALObjectPtr parse_question()
     {
-        if (!check_char('?')) { PARSE_ERROR("Expected \'?\'"); }
+        if (!check_char('?'))
+        {
+            PARSE_ERROR("Expected \'?\'");
+        }
         ++position;
 
         if (check_char('\\'))
@@ -857,7 +951,10 @@ template<class Environment> class ALParser : public ParserBase
 
     ALObjectPtr parse_hashtag()
     {
-        if (!check_char('#')) { PARSE_ERROR("Expected \'#\'"); }
+        if (!check_char('#'))
+        {
+            PARSE_ERROR("Expected \'#\'");
+        }
         ++position;
 
         switch (*position)
@@ -878,7 +975,10 @@ template<class Environment> class ALParser : public ParserBase
 
     ALObjectPtr parse_list()
     {
-        if (!check_char('(')) { PARSE_ERROR("Malformed list. Missing openning parentheses."); }
+        if (!check_char('('))
+        {
+            PARSE_ERROR("Malformed list. Missing openning parentheses.");
+        }
 
         ++position;
         skip_whitespace();
@@ -898,7 +998,10 @@ template<class Environment> class ALParser : public ParserBase
 
             auto next_obj = parse_next();
 
-            if (next_obj) { objs.emplace_back(next_obj); }
+            if (next_obj)
+            {
+                objs.emplace_back(next_obj);
+            }
             else
             {
                 PARSE_ERROR("Malformed list. Cannot parse element.");
@@ -919,7 +1022,10 @@ template<class Environment> class ALParser : public ParserBase
                 break;
             }
 
-            if (!position.has_more()) { PARSE_ERROR("Malformed list. Missing closing parentheses."); }
+            if (!position.has_more())
+            {
+                PARSE_ERROR("Malformed list. Missing closing parentheses.");
+            }
         }
 
         auto new_list = make_object(objs);
@@ -932,7 +1038,10 @@ template<class Environment> class ALParser : public ParserBase
 
     ALObjectPtr parse_comma()
     {
-        if (!check_char(',')) { PARSE_ERROR("Expected comma"); }
+        if (!check_char(','))
+        {
+            PARSE_ERROR("Expected comma");
+        }
 
         ++position;
         if (check_char('@'))
@@ -940,14 +1049,20 @@ template<class Environment> class ALParser : public ParserBase
             ++position;
             skip_whitespace();
             auto obj = parse_next();
-            if (!obj) { PARSE_ERROR("Expected expression after \'@,\'"); }
+            if (!obj)
+            {
+                PARSE_ERROR("Expected expression after \'@,\'");
+            }
             return make_object(Qcomma_at, obj);
         }
         else
         {
             skip_whitespace();
             auto obj = parse_next();
-            if (!obj) { PARSE_ERROR("Expected expression after \',\'"); }
+            if (!obj)
+            {
+                PARSE_ERROR("Expected expression after \',\'");
+            }
             return make_object(Qcomma, obj);
         }
     }
@@ -955,7 +1070,10 @@ template<class Environment> class ALParser : public ParserBase
     ALObjectPtr parse_next()
     {
         detail::DepthTracker dt{ depth };
-        if (depth > detail::MAX_DEPTH && detail::MAX_DEPTH != 0) { return nullptr; }
+        if (depth > detail::MAX_DEPTH && detail::MAX_DEPTH != 0)
+        {
+            return nullptr;
+        }
 
         if (!position.has_more()) return nullptr;
 
@@ -981,7 +1099,10 @@ template<class Environment> class ALParser : public ParserBase
         if (check_real()) return parse_real();
         if (check_id()) return parse_id();
 
-        if (position.has_more()) { PARSE_ERROR("Unparsed input. Cannot parse."); }
+        if (position.has_more())
+        {
+            PARSE_ERROR("Unparsed input. Cannot parse.");
+        }
 
         return nullptr;
     }
@@ -1005,7 +1126,10 @@ template<class Environment> class ALParser : public ParserBase
         while (position.has_more())
         {
             auto next_object = parse_next();
-            if (next_object) { objects.emplace_back(next_object); }
+            if (next_object)
+            {
+                objects.emplace_back(next_object);
+            }
         }
 
         return objects;

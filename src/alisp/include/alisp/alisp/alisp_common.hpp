@@ -100,7 +100,10 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
   private:
     template<typename Type, typename Visitor, typename Or> decltype(auto) visit_or(Visitor &&visitor, Or &&other) const
     {
-        if (const auto val = std::get_if<Type>(&m_data)) { return visitor(*val); }
+        if (const auto val = std::get_if<Type>(&m_data))
+        {
+            return visitor(*val);
+        }
         else
         {
             return other();
@@ -157,7 +160,10 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
 
     ALObjectPtr i(const size_t index)
     {
-        if (check_temp_flag()) { return std::get<view_type>(m_data)[index]; }
+        if (check_temp_flag())
+        {
+            return std::get<view_type>(m_data)[index];
+        }
         return children()[index];
     }
 
@@ -165,7 +171,10 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
 
     auto length() const noexcept
     {
-        if (check_temp_flag()) { return std::get<view_type>(m_data).size(); }
+        if (check_temp_flag())
+        {
+            return std::get<view_type>(m_data).size();
+        }
 
         return visit_or<list_type>([](const auto &vec) { return std::size(vec); },
                                    []() { return list_type::size_type(0); });
@@ -201,8 +210,14 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
 
     real_type to_real() const
     {
-        if (std::get_if<real_type>(&m_data)) { return std::get<real_type>(m_data); }
-        if (std::get_if<int_type>(&m_data)) { return static_cast<real_type>(std::get<int_type>(m_data)); }
+        if (std::get_if<real_type>(&m_data))
+        {
+            return std::get<real_type>(m_data);
+        }
+        if (std::get_if<int_type>(&m_data))
+        {
+            return static_cast<real_type>(std::get<int_type>(m_data));
+        }
         throw alobject_error("Not a number object.");
         return 0.0;
     }
@@ -298,34 +313,49 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
 
     auto begin()
     {
-        if (check_temp_flag()) { return std::get<view_type>(m_data).begin(); }
+        if (check_temp_flag())
+        {
+            return std::get<view_type>(m_data).begin();
+        }
         return std::begin(children());
     }
 
     auto end()
     {
-        if (check_temp_flag()) { return std::get<view_type>(m_data).end(); }
+        if (check_temp_flag())
+        {
+            return std::get<view_type>(m_data).end();
+        }
         return std::end(children());
     }
 
     auto cbegin() const
     {
 
-        if (check_temp_flag()) { return std::get<view_type>(m_data).begin(); }
+        if (check_temp_flag())
+        {
+            return std::get<view_type>(m_data).begin();
+        }
 
         return std::cbegin(children());
     }
 
     auto cend() const
     {
-        if (check_temp_flag()) { return std::get<view_type>(m_data).end(); }
+        if (check_temp_flag())
+        {
+            return std::get<view_type>(m_data).end();
+        }
         return std::cend(children());
     }
 
     ALObjectPtr get_prop(const std::string &t_name)
     {
         auto search = m_props.find(t_name);
-        if (search != m_props.end()) { return search->second; }
+        if (search != m_props.end())
+        {
+            return search->second;
+        }
         return nullptr;
     }
 
@@ -345,7 +375,10 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
             case ALObjectType::INT_VALUE:
                 oss << to_int() << " <#o" << std::oct << to_int() << " "
                     << "#x" << std::hex << to_int() << std::dec;
-                if (check_char_flag()) { oss << " ?" << char(to_int()); }
+                if (check_char_flag())
+                {
+                    oss << " ?" << char(to_int());
+                }
                 oss << ">";
                 break;
             case ALObjectType::REAL_VALUE: oss << to_real(); break;
@@ -361,7 +394,10 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
                 break;
         }
 
-        if (check_const_flag()) { oss << "<c>"; }
+        if (check_const_flag())
+        {
+            oss << "<c>";
+        }
         oss << ")";
 
         return oss.str();
@@ -409,7 +445,10 @@ inline std::string dump(ALObjectPtr obj)
             }
 
             str << "(";
-            for (auto ob : *obj) { str << dump(ob) << " "; }
+            for (auto ob : *obj)
+            {
+                str << dump(ob) << " ";
+            }
             str.seekp(-1, std::ios_base::end);
             str << ")";
             break;

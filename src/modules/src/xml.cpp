@@ -57,7 +57,10 @@ ALObjectPtr node_to_sexp(const XMLNode *t_node)
 
         auto name = ":"s += std::string{ child->Name() };
 
-        if (val_map.count(name) == 0) { val_map.insert({ name, ALObject::list_type{} }); }
+        if (val_map.count(name) == 0)
+        {
+            val_map.insert({ name, ALObject::list_type{} });
+        }
 
         ALObject::list_type sub_list;
         for (const auto *at = child->FirstAttribute(); at; at = at->Next())
@@ -149,7 +152,9 @@ void sexp_to_node(ALObjectPtr t_obj, XMLDocument &t_doc, XMLNode *t_node, std::s
             auto obj = t_obj->i(i + 1);
 
             if (key[0] == '@')
-            { t_node->ToElement()->SetAttribute(utility::erase_substr(key, "@").c_str(), obj->to_string().c_str()); }
+            {
+                t_node->ToElement()->SetAttribute(utility::erase_substr(key, "@").c_str(), obj->to_string().c_str());
+            }
             else if (key[0] == '#')
             {
 
@@ -191,7 +196,9 @@ void sexp_to_xml(ALObjectPtr t_obj, XMLDocument &t_doc, XMLNode *t_node)
             auto key = utility::erase_substr(t_obj->i(i)->to_string(), ":");
             auto obj = t_obj->i(i + 1);
 
-            if (key[0] == '@') {}
+            if (key[0] == '@')
+            {
+            }
             else if (key[0] == '#')
             {
             }
@@ -258,7 +265,10 @@ ALObjectPtr Fdump_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
 
     std::ofstream outfile;
     outfile.open(file->to_string(), std::ios_base::out);
-    if (outfile.is_open()) { return Qnil; }
+    if (outfile.is_open())
+    {
+        return Qnil;
+    }
     outfile << detail::to_string(xml);
 
     return Qt;
@@ -272,8 +282,14 @@ ALObjectPtr Fload_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
     auto file = eval->eval(obj->i(0));
     assert_string(file);
 
-    if (!fs::exists(file->to_string())) { return Qnil; }
-    if (!fs::is_regular_file(file->to_string())) { return Qnil; }
+    if (!fs::exists(file->to_string()))
+    {
+        return Qnil;
+    }
+    if (!fs::is_regular_file(file->to_string()))
+    {
+        return Qnil;
+    }
 
     return detail::from_string(utility::load_file(file->to_string()));
 }

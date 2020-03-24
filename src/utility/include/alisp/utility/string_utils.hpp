@@ -72,7 +72,10 @@ inline bool starts_with(const std::string &str, const std::string &prefix)
 inline std::string replace(std::string subject, const std::string &search, const std::string &replace)
 {
     size_t pos = 0;
-    if ((pos = subject.find(search, pos)) != std::string::npos) { subject.replace(pos, search.length(), replace); }
+    if ((pos = subject.find(search, pos)) != std::string::npos)
+    {
+        subject.replace(pos, search.length(), replace);
+    }
     return subject;
 }
 
@@ -105,7 +108,10 @@ inline std::string &str_tolower(std::string &s)
 inline std::string trim(const std::string &str)
 {
     size_t first = str.find_first_not_of(' ');
-    if (std::string::npos == first) { return str; }
+    if (std::string::npos == first)
+    {
+        return str;
+    }
     size_t last = str.find_last_not_of(' ');
     return str.substr(first, (last - first + 1));
 }

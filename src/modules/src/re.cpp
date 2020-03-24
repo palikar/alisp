@@ -63,17 +63,26 @@ ALObjectPtr match_to_obj(std::smatch &t_match)
     ALObject::list_type matches{};
     matches.reserve(t_match.size());
 
-    for (auto &el : t_match) { matches.push_back(make_string(el.str())); }
+    for (auto &el : t_match)
+    {
+        matches.push_back(make_string(el.str()));
+    }
     return make_list(matches);
 }
 
 std::regex obj_to_regex(ALObjectPtr t_obj)
 {
-    if (pstring(t_obj)) { return std::regex(t_obj->to_string()); }
+    if (pstring(t_obj))
+    {
+        return std::regex(t_obj->to_string());
+    }
     else if (pint(t_obj))
     {
         auto i = object_to_resource(t_obj);
-        if (reg_registry.belong(i)) { return reg_registry[i]; }
+        if (reg_registry.belong(i))
+        {
+            return reg_registry[i];
+        }
     }
     return {};
 }
@@ -85,30 +94,69 @@ std::regex_constants::match_flag_type handle_match_flags(ALObjectPtr t_obj)
     for (auto &el : *t_obj)
     {
 
-        if (eq(el, reflag_default)) { val |= std::regex_constants::match_default; }
+        if (eq(el, reflag_default))
+        {
+            val |= std::regex_constants::match_default;
+        }
 
-        if (eq(el, reflag_not_bol)) { val |= std::regex_constants::match_not_bol; }
+        if (eq(el, reflag_not_bol))
+        {
+            val |= std::regex_constants::match_not_bol;
+        }
 
-        if (eq(el, reflag_not_eol)) { val |= std::regex_constants::match_not_eol; }
+        if (eq(el, reflag_not_eol))
+        {
+            val |= std::regex_constants::match_not_eol;
+        }
 
-        if (eq(el, reflag_not_bow)) { val |= std::regex_constants::match_not_bow; }
-        if (eq(el, reflag_not_eow)) { val |= std::regex_constants::match_not_eow; }
+        if (eq(el, reflag_not_bow))
+        {
+            val |= std::regex_constants::match_not_bow;
+        }
+        if (eq(el, reflag_not_eow))
+        {
+            val |= std::regex_constants::match_not_eow;
+        }
 
-        if (eq(el, reflag_any)) { val |= std::regex_constants::match_any; }
+        if (eq(el, reflag_any))
+        {
+            val |= std::regex_constants::match_any;
+        }
 
-        if (eq(el, reflag_not_null)) { val |= std::regex_constants::match_not_null; }
+        if (eq(el, reflag_not_null))
+        {
+            val |= std::regex_constants::match_not_null;
+        }
 
-        if (eq(el, reflag_continous)) { val |= std::regex_constants::match_continuous; }
+        if (eq(el, reflag_continous))
+        {
+            val |= std::regex_constants::match_continuous;
+        }
 
-        if (eq(el, reflag_prev_avail)) { val |= std::regex_constants::match_prev_avail; }
+        if (eq(el, reflag_prev_avail))
+        {
+            val |= std::regex_constants::match_prev_avail;
+        }
 
-        if (eq(el, reflag_format_default)) { val |= std::regex_constants::format_default; }
+        if (eq(el, reflag_format_default))
+        {
+            val |= std::regex_constants::format_default;
+        }
 
-        if (eq(el, reflag_format_sed)) { val |= std::regex_constants::format_sed; }
+        if (eq(el, reflag_format_sed))
+        {
+            val |= std::regex_constants::format_sed;
+        }
 
-        if (eq(el, reflag_format_no_copy)) { val |= std::regex_constants::format_no_copy; }
+        if (eq(el, reflag_format_no_copy))
+        {
+            val |= std::regex_constants::format_no_copy;
+        }
 
-        if (eq(el, reflag_format_first_only)) { val |= std::regex_constants::format_first_only; }
+        if (eq(el, reflag_format_first_only))
+        {
+            val |= std::regex_constants::format_first_only;
+        }
     }
 
     return val;
@@ -120,25 +168,55 @@ std::regex_constants::syntax_option_type handle_regex_flags(ALObjectPtr t_obj)
 
     for (auto &el : *t_obj)
     {
-        if (eq(el, reflag_icase)) { val |= std::regex_constants::icase; }
+        if (eq(el, reflag_icase))
+        {
+            val |= std::regex_constants::icase;
+        }
 
-        if (eq(el, reflag_nosubs)) { val |= std::regex_constants::nosubs; }
+        if (eq(el, reflag_nosubs))
+        {
+            val |= std::regex_constants::nosubs;
+        }
 
-        if (eq(el, reflag_optimize)) { val |= std::regex_constants::optimize; }
+        if (eq(el, reflag_optimize))
+        {
+            val |= std::regex_constants::optimize;
+        }
 
-        if (eq(el, reflag_collate)) { val |= std::regex_constants::collate; }
+        if (eq(el, reflag_collate))
+        {
+            val |= std::regex_constants::collate;
+        }
 
-        if (eq(el, reflag_ecma_script)) { val |= std::regex_constants::ECMAScript; }
+        if (eq(el, reflag_ecma_script))
+        {
+            val |= std::regex_constants::ECMAScript;
+        }
 
-        if (eq(el, reflag_basic)) { val |= std::regex_constants::basic; }
+        if (eq(el, reflag_basic))
+        {
+            val |= std::regex_constants::basic;
+        }
 
-        if (eq(el, reflag_extended)) { val |= std::regex_constants::extended; }
+        if (eq(el, reflag_extended))
+        {
+            val |= std::regex_constants::extended;
+        }
 
-        if (eq(el, reflag_awk)) { val |= std::regex_constants::awk; }
+        if (eq(el, reflag_awk))
+        {
+            val |= std::regex_constants::awk;
+        }
 
-        if (eq(el, reflag_grep)) { val |= std::regex_constants::grep; }
+        if (eq(el, reflag_grep))
+        {
+            val |= std::regex_constants::grep;
+        }
 
-        if (eq(el, reflag_egrep)) { val |= std::regex_constants::egrep; }
+        if (eq(el, reflag_egrep))
+        {
+            val |= std::regex_constants::egrep;
+        }
     }
 
     return val;

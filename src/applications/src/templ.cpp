@@ -54,7 +54,10 @@ int main(int argc, char *argv[])
 
     std::vector<std::string> args{};
     args.reserve(static_cast<size_t>(argc));
-    for (int i = 1; i < argc; ++i) { args.push_back(argv[i]); }
+    for (int i = 1; i < argc; ++i)
+    {
+        args.push_back(argv[i]);
+    }
 
     env::init_modules();
     al::init_streams();
@@ -77,10 +80,18 @@ int main(int argc, char *argv[])
     if (fs::is_directory(prelude_directory))
     {
         for (auto &al_file : fs::directory_iterator(prelude_directory))
-        { m_evaluator.eval_file(al_file.path().string()); }
+        {
+            m_evaluator.eval_file(al_file.path().string());
+        }
     }
 
     auto alisprc = fs::path(m_home_directory) / ".alisprc";
-    if (utility::env_bool(ENV_VAR_RC)) { alisprc = fs::path(m_home_directory) / utility::env_string(ENV_VAR_RC); }
-    if (fs::is_regular_file(alisprc)) { m_evaluator.eval_file(alisprc); }
+    if (utility::env_bool(ENV_VAR_RC))
+    {
+        alisprc = fs::path(m_home_directory) / utility::env_string(ENV_VAR_RC);
+    }
+    if (fs::is_regular_file(alisprc))
+    {
+        m_evaluator.eval_file(alisprc);
+    }
 }

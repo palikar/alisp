@@ -47,7 +47,10 @@ struct ALObjectHelper
   public:
     template<typename T> static auto init_ptr(T &&val)
     {
-        if constexpr (USING_SHARED) { return std::shared_ptr<ALObject>(val); }
+        if constexpr (USING_SHARED)
+        {
+            return std::shared_ptr<ALObject>(val);
+        }
         else
         {
             return val;
@@ -139,7 +142,10 @@ template<typename T> inline auto make_char(T value)
 
     auto obj = make_object(static_cast<ALObject::int_type>(value));
 
-    if (0 <= value && value <= 127) { obj->set_char_flag(); }
+    if (0 <= value && value <= 127)
+    {
+        obj->set_char_flag();
+    }
 
     return obj;
 }
@@ -182,7 +188,10 @@ inline auto make_list()
 inline auto make_list(std::vector<std::string> strs)
 {
     auto new_obj = detail::ALObjectHelper::get(ALObject::list_type{});
-    for (auto &str : strs) { new_obj->children().push_back(make_object(str)); }
+    for (auto &str : strs)
+    {
+        new_obj->children().push_back(make_object(str));
+    }
     return new_obj;
 }
 
@@ -233,7 +242,10 @@ inline auto operator"" _sym(const char *t_name)
 
 inline auto getraw(ALObjectPtr &t_obj)
 {
-    if constexpr (USING_SHARED) { return t_obj.get(); }
+    if constexpr (USING_SHARED)
+    {
+        return t_obj.get();
+    }
     else
     {
         return t_obj;

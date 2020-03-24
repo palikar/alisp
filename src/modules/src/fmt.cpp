@@ -118,15 +118,24 @@ struct FmtParser
 
     static void consume_ws(const std::string &str, size_t &offset)
     {
-        while (isspace(str.at(offset)) && offset <= str.size()) { ++offset; }
+        while (isspace(str.at(offset)) && offset <= str.size())
+        {
+            ++offset;
+        }
     }
 
     static auto inspect(const std::string &str, size_t offset, std::initializer_list<char> chars)
     {
-        if (offset >= str.size() or str.at(offset) == '}') { return false; }
+        if (offset >= str.size() or str.at(offset) == '}')
+        {
+            return false;
+        }
         for (auto c : chars)
         {
-            if (c == str.at(offset)) { return true; }
+            if (c == str.at(offset))
+            {
+                return true;
+            }
         }
         return false;
     }
@@ -310,12 +319,17 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
     auto args_size   = std::size(*t_args);
 
     if (index + 1 >= args_size)
-    { signal(fmt_signal, "FMT ERROR: Not enough arguments provided"s, index + 1, dump(t_args)); }
+    {
+        signal(fmt_signal, "FMT ERROR: Not enough arguments provided"s, index + 1, dump(t_args));
+    }
 
     auto obj = t_args->i(index + 1);
 
     auto sign = [&](auto t_obj) {
-        if (t_block.sign == '+') { return t_obj->to_real() > 0 ? '+' : '-'; }
+        if (t_block.sign == '+')
+        {
+            return t_obj->to_real() > 0 ? '+' : '-';
+        }
         else if (t_block.sign == '-')
         {
             return t_obj->to_real() < 0 ? '-' : '\0';
@@ -336,21 +350,29 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
 
             case 's':
             {
-                if (!pstring(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected string"s, dump(obj)); }
+                if (!pstring(obj))
+                {
+                    signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected string"s, dump(obj));
+                }
                 return obj->to_string();
             }
 
             case 'c':
             {
                 if (!obj->check_char_flag() and !obj->is_int())
-                { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected char"s, dump(obj)); }
+                {
+                    signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected char"s, dump(obj));
+                }
                 return std::string(1, char(obj->to_int()));
             }
 
             case 'b':
             case 'B':
             {
-                if (!pint(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj)); }
+                if (!pint(obj))
+                {
+                    signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj));
+                }
                 return std::string{ sign(obj) } += (std::isupper(t_block.type) ? "0B" : "0b"s) +=
                        int_to_bin(obj->to_int());
             }
@@ -358,30 +380,45 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             case 'x':
             case 'X':
             {
-                if (!pint(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj)); }
+                if (!pint(obj))
+                {
+                    signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj));
+                }
                 return std::string{ sign(obj) } += (std::isupper(t_block.type) ? "0X" : "0x"s) +=
                        int_to_hex(obj->to_int());
             }
 
             case 'o':
             {
-                if (!pint(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj)); }
+                if (!pint(obj))
+                {
+                    signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj));
+                }
                 return (std::string{ sign(obj) } += "0") += int_to_bin(obj->to_int());
             }
 
             case 'd':
             {
-                if (!pint(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj)); }
+                if (!pint(obj))
+                {
+                    signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj));
+                }
                 return std::string{ sign(obj) } += std::to_string(obj->to_int());
             }
 
             case 'n':
             {
-                if (!pint(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj)); }
+                if (!pint(obj))
+                {
+                    signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj));
+                }
                 std::ostringstream ss_n;
                 ss_n.imbue(std::locale());
                 ss_n << std::string{ sign(obj) };
-                if (t_block.precision == -1) { ss_n << std::setprecision(t_block.precision); }
+                if (t_block.precision == -1)
+                {
+                    ss_n << std::setprecision(t_block.precision);
+                }
                 ss_n << obj->to_real();
                 return ss_n.str();
             }
@@ -389,10 +426,16 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             case 'a':
             case 'A':
             {
-                if (!preal(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj)); }
+                if (!preal(obj))
+                {
+                    signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj));
+                }
                 std::ostringstream ss_a;
                 ss_a << std::string{ sign(obj) };
-                if (t_block.precision == -1) { ss_a << std::setprecision(t_block.precision); }
+                if (t_block.precision == -1)
+                {
+                    ss_a << std::setprecision(t_block.precision);
+                }
                 ss_a << obj->to_real();
                 return ss_a.str();
             }
@@ -400,10 +443,16 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             case 'e':
             case 'E':
             {
-                if (!preal(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj)); }
+                if (!preal(obj))
+                {
+                    signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj));
+                }
                 std::ostringstream ss_e;
                 ss_e << std::string{ sign(obj) };
-                if (t_block.precision == -1) { ss_e << std::scientific; }
+                if (t_block.precision == -1)
+                {
+                    ss_e << std::scientific;
+                }
                 ss_e << obj->to_real();
                 return ss_e.str();
             }
@@ -411,10 +460,16 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             case 'f':
             case 'F':
             {
-                if (!preal(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj)); }
+                if (!preal(obj))
+                {
+                    signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj));
+                }
                 std::ostringstream ss_f;
                 ss_f << std::string{ sign(obj) };
-                if (t_block.precision == -1) { ss_f << std::fixed << std::setprecision(t_block.precision); }
+                if (t_block.precision == -1)
+                {
+                    ss_f << std::fixed << std::setprecision(t_block.precision);
+                }
                 ss_f << obj->to_real();
                 return ss_f.str();
             }
@@ -422,10 +477,16 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             case 'g':
             case 'G':
             {
-                if (!preal(obj)) { signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj)); }
+                if (!preal(obj))
+                {
+                    signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj));
+                }
                 std::ostringstream ss_g;
                 ss_g << std::string{ sign(obj) };
-                if (t_block.precision == -1) { ss_g << std::setprecision(t_block.precision); }
+                if (t_block.precision == -1)
+                {
+                    ss_g << std::setprecision(t_block.precision);
+                }
                 ss_g << obj->to_real();
                 return ss_g.str();
             }

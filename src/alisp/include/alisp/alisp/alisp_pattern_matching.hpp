@@ -111,7 +111,10 @@ auto visit_match_impl([[maybe_unused]] ALObjectPtr obj,
     if constexpr (N >= sizeof...(Checks))
     {
 
-        if constexpr (std::is_void_v<std::common_type_t<std::invoke_result_t<Matches, ALObjectPtr>...>>) { return; }
+        if constexpr (std::is_void_v<std::common_type_t<std::invoke_result_t<Matches, ALObjectPtr>...>>)
+        {
+            return;
+        }
         else
         {
             return std::common_type_t<std::invoke_result_t<Matches, ALObjectPtr>...>{};
@@ -119,7 +122,10 @@ auto visit_match_impl([[maybe_unused]] ALObjectPtr obj,
     }
     else
     {
-        if (std::get<N>(patterns).check(obj)) { return std::get<N>(patterns).call(obj); }
+        if (std::get<N>(patterns).check(obj))
+        {
+            return std::get<N>(patterns).call(obj);
+        }
         else
         {
             return visit_match_impl<N + 1>(obj, patterns);
@@ -179,7 +185,10 @@ inline auto make_visit(ALObjectPtr obj, detail::pattern_entry<Matches, Checks>..
 template<typename T> inline auto default_return()
 {
     static_assert(std::is_default_constructible_v<T>, "The type must be default constructable");
-    if constexpr (std::is_void_v<T>) { return; }
+    if constexpr (std::is_void_v<T>)
+    {
+        return;
+    }
     else
     {
         return T{};

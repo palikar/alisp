@@ -128,7 +128,10 @@ class Module
     ALObjectPtr get_symbol(const std::string &t_name)
     {
         auto sym = m_root_scope.find(t_name);
-        if (sym != std::end(m_root_scope)) { return sym->second; };
+        if (sym != std::end(m_root_scope))
+        {
+            return sym->second;
+        };
         warn::warn_env(("Referencing non existent symbol "s += t_name) += " in module"s += m_name);
         return nullptr;
     }
@@ -136,7 +139,10 @@ class Module
     Module *get_module(const std::string &t_name)
     {
         auto mod = m_modules.find(t_name);
-        if (mod != std::end(m_modules)) { return mod->second.get(); };
+        if (mod != std::end(m_modules))
+        {
+            return mod->second.get();
+        };
         warn::warn_env("Referencing non existen module:"s += t_name);
         return nullptr;
     }
@@ -218,7 +224,10 @@ class Environment
     Module *get_module(const std::string &t_name)
     {
         auto mod = m_modules.find(t_name);
-        if (mod != std::end(m_modules)) { return mod->second.get(); };
+        if (mod != std::end(m_modules))
+        {
+            return mod->second.get();
+        };
         warn::warn_env("Referencing non existen module:"s += t_name);
         return nullptr;
     }
@@ -232,13 +241,22 @@ class Environment
         auto &from_root = m_modules.at(t_from)->get_root();
         auto &to_root   = m_modules.at(t_to)->get_root();
 
-        if (from_root.empty()) { warn::warn_import("Importing an empty root scope."); }
+        if (from_root.empty())
+        {
+            warn::warn_import("Importing an empty root scope.");
+        }
 
         for (auto &[name, sym] : from_root)
         {
             AL_DEBUG("Adding a symbol: "s += name);
-            if (!sym->prop_exists("--module--")) { continue; }
-            if (sym->get_prop("--module--")->to_string().compare(t_from) == 0) { to_root.insert({ name, sym }); }
+            if (!sym->prop_exists("--module--"))
+            {
+                continue;
+            }
+            if (sym->get_prop("--module--")->to_string().compare(t_from) == 0)
+            {
+                to_root.insert({ name, sym });
+            }
         }
 
         // m_modules.at(t_to)->get_root() = m_modules.at(t_from)->get_root();
@@ -269,7 +287,10 @@ class Environment
     void call_function()
     {
         ++m_call_depth;
-        if (m_call_depth > MAX_FUNCTION_CALL_DEPTH) { throw environment_error("Maximum function calldepth reached!"); }
+        if (m_call_depth > MAX_FUNCTION_CALL_DEPTH)
+        {
+            throw environment_error("Maximum function calldepth reached!");
+        }
         m_stack.push_frame();
     }
 
@@ -307,7 +328,10 @@ class Environment
 
             for (size_t i = 0; i < m_unwind_defers; ++i)
             {
-                if (!std::empty(m_stack_trace)) { m_stack_trace.pop_back(); }
+                if (!std::empty(m_stack_trace))
+                {
+                    m_stack_trace.pop_back();
+                }
             }
             m_unwind_defers = 0;
         }
@@ -348,7 +372,10 @@ struct CallTracer
 
     ~CallTracer()
     {
-        if (m_catch_depth == 0) { m_env.trace_unwind(); }
+        if (m_catch_depth == 0)
+        {
+            m_env.trace_unwind();
+        }
         else
         {
             m_env.defer_unwind();
@@ -416,7 +443,10 @@ struct FunctionCall
     }
     ~FunctionCall()
     {
-        if (!m_prev_mod.empty()) { m_env.activate_module(m_prev_mod); }
+        if (!m_prev_mod.empty())
+        {
+            m_env.activate_module(m_prev_mod);
+        }
         m_env.finish_function();
     }
 

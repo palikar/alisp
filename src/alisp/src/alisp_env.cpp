@@ -47,12 +47,21 @@ ALObjectPtr Environment::find(const ALObjectPtr t_sym)
 
     for (auto &scope : utility::reverse(m_stack.current_frame()))
     {
-        if (scope.count(name)) { return scope.at(name); };
+        if (scope.count(name))
+        {
+            return scope.at(name);
+        };
     }
 
-    if (g_prime_values.count(name)) { return g_prime_values.at(name); }
+    if (g_prime_values.count(name))
+    {
+        return g_prime_values.at(name);
+    }
 
-    if (m_active_module.get().root_scope().count(name)) { return m_active_module.get().root_scope().at(name); };
+    if (m_active_module.get().root_scope().count(name))
+    {
+        return m_active_module.get().root_scope().at(name);
+    };
 
     throw environment_error("\tUnbounded Symbol: " + name);
 }
@@ -179,7 +188,10 @@ void Environment::activate_module(const std::string &t_name)
 bool Environment::load_builtin_module(const std::string &t_module_name, eval::Evaluator *eval)
 {
     auto module_import = g_builtin_modules.find(t_module_name);
-    if (module_import == std::end(g_builtin_modules)) { return false; }
+    if (module_import == std::end(g_builtin_modules))
+    {
+        return false;
+    }
 
     AL_DEBUG("Loading builitng dyn module: "s += t_module_name);
 
@@ -187,8 +199,14 @@ bool Environment::load_builtin_module(const std::string &t_module_name, eval::Ev
     m_modules.insert({ t_module_name, new_mod });
 
     detail::ModuleChange mc{ *this, t_module_name };
-    for (auto &eval_str : new_mod->eval_strings()) { eval->eval_string(eval_str); }
-    for (auto &eval_obj : new_mod->eval_objs()) { eval->eval(eval_obj); }
+    for (auto &eval_str : new_mod->eval_strings())
+    {
+        eval->eval_string(eval_str);
+    }
+    for (auto &eval_obj : new_mod->eval_objs())
+    {
+        eval->eval(eval_obj);
+    }
 
     return true;
 }
@@ -204,13 +222,22 @@ void Environment::load_module(eval::Evaluator *eval, const std::string t_file, c
     alias_module(t_name, t_name);
 
     detail::ModuleChange mc{ *this, t_name };
-    for (auto &eval_str : mod_ptr->eval_strings()) { eval->eval_string(eval_str); }
-    for (auto &eval_obj : mod_ptr->eval_objs()) { eval->eval(eval_obj); }
+    for (auto &eval_str : mod_ptr->eval_strings())
+    {
+        eval->eval_string(eval_str);
+    }
+    for (auto &eval_obj : mod_ptr->eval_objs())
+    {
+        eval->eval(eval_obj);
+    }
 }
 
 void Environment::defer_callback(std::function<void()> t_callback)
 {
-    if (m_stack.current_frame().size() == 1) { return; }
+    if (m_stack.current_frame().size() == 1)
+    {
+        return;
+    }
     m_deferred_calls.emplace_back(m_stack.stacks.size(), m_stack.current_frame().size(), t_callback);
 }
 
@@ -301,7 +328,10 @@ void Environment::env_dump() const
     cout << format("+{:-^15}+{:-^32}+", "", "") << '\n';
 
     size_t index = 1;
-    for (auto &[sym, _] : g_prime_values) { cout << format("|{:<5}{:^43}|", index++, sym) << '\n'; }
+    for (auto &[sym, _] : g_prime_values)
+    {
+        cout << format("|{:<5}{:^43}|", index++, sym) << '\n';
+    }
 
 
     for (auto &[mod_name, mod] : m_modules)
@@ -311,7 +341,10 @@ void Environment::env_dump() const
         cout << format("+{:-^15}+{:-^32}+", "", "") << '\n';
 
         index = 1;
-        for (auto &[sym, _] : mod->get_root()) { cout << format("|{:<5}{:^43}|", index++, sym) << '\n'; }
+        for (auto &[sym, _] : mod->get_root())
+        {
+            cout << format("|{:<5}{:^43}|", index++, sym) << '\n';
+        }
     }
 
     cout << format("+{:-^48}+", "") << '\n';
@@ -330,7 +363,10 @@ void Environment::callstack_dump() const
     for (auto &[fun, prime] : utility::reverse(m_stack_trace))
     {
 
-        if (prime) { cout << format("|{:<46}{:>}|", fun, "<-") << '\n'; }
+        if (prime)
+        {
+            cout << format("|{:<46}{:>}|", fun, "<-") << '\n';
+        }
         else
         {
             cout << format("|{:<48}|", fun) << '\n';

@@ -131,7 +131,10 @@ struct parse_exception : public al_exception
 
         for (auto i = static_cast<size_t>(start_index); i < static_cast<size_t>(end_index); ++i)
         {
-            if (end_index > 10 && i < 10) { ss << " "; }
+            if (end_index > 10 && i < 10)
+            {
+                ss << " ";
+            }
             ss << "\t" << i << " |"
                << "\t" << lines[i] << "\n";
         }
@@ -169,7 +172,10 @@ struct argument_error : public al_exception
     {
         std::ostringstream ss;
         ss << t_why << '\n';
-        if (obj) { ss << "\tFound: " << dump(obj) << '\n'; }
+        if (obj)
+        {
+            ss << "\tFound: " << dump(obj) << '\n';
+        }
         return ss.str();
     }
 };
@@ -212,7 +218,10 @@ struct module_refence_error : public al_exception
     {
         std::ostringstream ss;
         ss << "Module reference error. \n\tThe module " << t_module << " does not contain a refernce to the ";
-        if (t_symbol) { ss << "symbol " << t_ref; }
+        if (t_symbol)
+        {
+            ss << "symbol " << t_ref;
+        }
         else
         {
             ss << "module " << t_ref;
@@ -364,7 +373,10 @@ template<bool should_exit = false> void handle_errors_lippincott()
         std::cout << rang::fg::red << "Interrupt Exception." << rang::fg::reset;
     }
 
-    if constexpr (should_exit) { exit(1); }
+    if constexpr (should_exit)
+    {
+        exit(1);
+    }
 }
 
 template<typename... T> void signal(ALObjectPtr t_sym, T... t_data)

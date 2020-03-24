@@ -130,7 +130,10 @@ ALObjectPtr Flt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     AL_CHECK(assert_number(one));
     AL_CHECK(assert_number(two));
 
-    if (one->to_real() < two->to_real()) { return Qt; }
+    if (one->to_real() < two->to_real())
+    {
+        return Qt;
+    }
     else
     {
         warn::warn_math("Comparing non-numbers ");
@@ -148,7 +151,10 @@ ALObjectPtr Fleq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     AL_CHECK(assert_number(one));
     AL_CHECK(assert_number(two));
 
-    if (one->to_real() <= two->to_real()) { return Qt; }
+    if (one->to_real() <= two->to_real())
+    {
+        return Qt;
+    }
     else
     {
         warn::warn_math("Comparing non-numbers ");
@@ -166,7 +172,10 @@ ALObjectPtr Fgt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     AL_CHECK(assert_number(one));
     AL_CHECK(assert_number(two));
 
-    if (one->to_real() > two->to_real()) { return Qt; }
+    if (one->to_real() > two->to_real())
+    {
+        return Qt;
+    }
     else
     {
         warn::warn_math("Comparing non-numbers ");
@@ -184,7 +193,10 @@ ALObjectPtr Fgeq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     AL_CHECK(assert_number(one));
     AL_CHECK(assert_number(two));
 
-    if (one->to_real() >= two->to_real()) { return Qt; }
+    if (one->to_real() >= two->to_real())
+    {
+        return Qt;
+    }
     else
     {
         warn::warn_math("Comparing non-numbers ");
@@ -202,7 +214,10 @@ ALObjectPtr Feq_math(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     AL_CHECK(assert_number(one));
     AL_CHECK(assert_number(two));
 
-    if (one->to_real() == two->to_real()) { return Qt; }
+    if (one->to_real() == two->to_real())
+    {
+        return Qt;
+    }
     else
     {
         warn::warn_math("Comparing non-numbers ");
@@ -220,7 +235,10 @@ ALObjectPtr Fneq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     AL_CHECK(assert_number(one));
     AL_CHECK(assert_number(two));
 
-    if (one->to_real() != two->to_real()) { return Qt; }
+    if (one->to_real() != two->to_real())
+    {
+        return Qt;
+    }
     else
     {
         warn::warn_math("Comparing non-numbers ");
@@ -269,7 +287,10 @@ ALObjectPtr Fmin(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
         for (auto el : *eval_obj)
         {
             auto current = el->to_int();
-            if (current < min_element) { min_element = current; }
+            if (current < min_element)
+            {
+                min_element = current;
+            }
         }
         return make_int(min_element);
     }
@@ -280,7 +301,10 @@ ALObjectPtr Fmin(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
         for (auto el : *eval_obj)
         {
             auto current = el->to_real();
-            if (current < min_element) { min_element = current; }
+            if (current < min_element)
+            {
+                min_element = current;
+            }
         }
         return make_double(min_element);
     }
@@ -299,7 +323,10 @@ ALObjectPtr Fmax(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
         for (auto el : *eval_obj)
         {
             auto current = el->to_int();
-            if (max_element < current) { max_element = current; }
+            if (max_element < current)
+            {
+                max_element = current;
+            }
         }
         return make_int(max_element);
     }
@@ -310,7 +337,10 @@ ALObjectPtr Fmax(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
         for (auto el : *eval_obj)
         {
             auto current = el->to_real();
-            if (max_element < current) { max_element = current; }
+            if (max_element < current)
+            {
+                max_element = current;
+            }
         }
         return make_double(max_element);
     }

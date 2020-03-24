@@ -25,14 +25,21 @@ namespace alisp
 void LanguageEngine::do_eval(std::string &t_input, const std::string &t_file, bool t_print_res)
 {
     auto parse_result = m_parser->parse(t_input, t_file);
-    g_optimizer.optimize(parse_result);
+
+    if (check(EngineSettings::OPTIMIZATION) or utility::env_bool(ENV_VAR_OPTIMIZE))
+    {
+        g_optimizer.optimize(parse_result);
+    }
 
     for (auto sexp : parse_result)
     {
         if (check(EngineSettings::PARSER_DEBUG)) std::cout << "DEUBG[PARSER]: " << alisp::dump(sexp) << "\n";
         auto eval_result = m_evaluator.eval(sexp);
         if (check(EngineSettings::EVAL_DEBUG)) std::cout << "DEUBG[EVAL]: " << alisp::dump(eval_result) << "\n";
-        if (t_print_res) { std::cout << *eval_result << "\n"; }
+        if (t_print_res)
+        {
+            std::cout << *eval_result << "\n";
+        }
     }
 }
 
@@ -53,7 +60,10 @@ void LanguageEngine::load_init_scripts()
 
     auto alisprc = fs::path(m_home_directory) / ".alisprc";
 
-    if (utility::env_bool(ENV_VAR_RC)) { alisprc = fs::path(m_home_directory) / utility::env_string(ENV_VAR_RC); }
+    if (utility::env_bool(ENV_VAR_RC))
+    {
+        alisprc = fs::path(m_home_directory) / utility::env_string(ENV_VAR_RC);
+    }
 
     if (fs::is_regular_file(alisprc))
     {
@@ -87,7 +97,10 @@ void LanguageEngine::init_system()
 
     Vcurrent_module->set("--main--");
 
-    if (!check(EngineSettings::QUICK_INIT)) { load_init_scripts(); }
+    if (!check(EngineSettings::QUICK_INIT))
+    {
+        load_init_scripts();
+    }
 
     Vdebug_mode = check(EngineSettings::DISABLE_DEBUG_MODE) or utility::env_bool(ENV_VAR_NODEBUG) ? Qnil : Qt;
 }
@@ -102,12 +115,18 @@ std::pair<bool, int> LanguageEngine::eval_statement(std::string &command, bool e
     }
     catch (al_exit &ex)
     {
-        if (exit_on_error) { return { false, ex.value() }; }
+        if (exit_on_error)
+        {
+            return { false, ex.value() };
+        }
     }
     catch (...)
     {
         handle_errors_lippincott<false>();
-        if (exit_on_error) { return { false, 0 }; }
+        if (exit_on_error)
+        {
+            return { false, 0 };
+        }
     }
     return { true, 0 };
 }
@@ -121,7 +140,9 @@ std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_pa
     {
 
         if (t_path.has_parent_path())
-        { Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path()))); }
+        {
+            Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path())));
+        }
         else
         {
             AL_DEBUG("Adding path to the modpaths: "s += fs::absolute(fs::current_path()).string());

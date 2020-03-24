@@ -68,7 +68,10 @@ bool check_elf(const std::string &t_filename)
     std::ifstream infile(t_filename.c_str(), std::ios::in | std::ios::ate | std::ios::binary);
     infile.seekg(0, std::ios::beg);
 
-    if (!infile.is_open()) { return false; }
+    if (!infile.is_open())
+    {
+        return false;
+    }
 
     if (skip_elf(infile))
     {
@@ -83,7 +86,9 @@ std::string load_file(const std::string &t_filename)
 {
     std::ifstream infile(t_filename.c_str(), std::ios::in | std::ios::ate | std::ios::binary);
 
-    if (!infile.is_open()) {}
+    if (!infile.is_open())
+    {
+    }
 
     auto size = infile.tellg();
     infile.seekg(0, std::ios::beg);
@@ -96,7 +101,10 @@ std::string load_file(const std::string &t_filename)
         assert(size >= 0);
     }
 
-    if (size == std::streampos(0)) { return std::string(); }
+    if (size == std::streampos(0))
+    {
+        return std::string();
+    }
     else
     {
         std::vector<char> v(static_cast<size_t>(size));
