@@ -136,3 +136,6 @@
 #else
 #define AL_CHECK(EXR) EXR
 #endif
+
+
+#define AL_EVAL(obj, eval_obj, index) eval_obj->eval(obj->i(index))

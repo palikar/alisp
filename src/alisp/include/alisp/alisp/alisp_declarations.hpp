@@ -69,6 +69,10 @@ another list.)");
 /* | |__| (_) | | | \__ \ |_| |  | |_| | (__| |_\__ \ */
 /*  \____\___/|_| |_|___/\__|_|   \__,_|\___|\__|___/ */
 
+DEFUN(make_symbol, "make_symbol", R"(make_symbol NAME)");
+
+DEFUN(intern, "intern", R"(intern NAME)");
+
 DEFUN(import,
       "import",
       R"((import MODULE [:file file] [:all] [( [(SYM MAPPED)]... )])

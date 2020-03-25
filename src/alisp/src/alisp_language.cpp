@@ -897,5 +897,23 @@ ALObjectPtr Fcondition_case(ALObjectPtr obj, env::Environment *env, eval::Evalua
     return Qnil;
 }
 
+ALObjectPtr Fmake_symbol(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(obj));
+    auto name = AL_EVAL(obj, eval, 0);
+    AL_CHECK(assert_string(name));
+
+    return make_symbol(name->to_string());
+}
+
+ALObjectPtr Fintern(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(obj));
+    auto name = AL_EVAL(obj, eval, 0);
+    AL_CHECK(assert_string(name));
+
+    return env::intern(name->to_string());
+}
+
 
 }  // namespace alisp
