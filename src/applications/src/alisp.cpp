@@ -59,6 +59,12 @@ std::vector<std::string> alisp::prompt::get_completions(const std::string &t_wor
     {
         auto parts = alisp::utility::split(t_word, '.');
         auto pack  = parts[0];
+
+        if (g_alisp_engine->get_modules().count(pack) == 0)
+        {
+            return sym_vec;
+        }
+
         std::vector<std::string> words{};
         for (auto &[name, _] : g_alisp_engine->get_modules().at(pack)->root_scope())
         {

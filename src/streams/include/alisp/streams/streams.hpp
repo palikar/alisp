@@ -314,13 +314,13 @@ inline ALStream &operator<<(ALStream &os, const char *c)
 
 inline ALStream &operator<<(ALStream &os, const std::string &c)
 {
-    os.write(c.c_str());
+    os.write(c);
     return os;
 }
 
 inline ALStream &operator<<(ALStream &os, const std::string_view &c)
 {
-    os.write(c.data());
+    os.write(c);
     return os;
 }
 
