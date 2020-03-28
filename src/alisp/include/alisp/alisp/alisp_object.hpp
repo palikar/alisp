@@ -372,6 +372,11 @@ inline bool pfunction(ALObjectPtr obj)
     return obj->check_function_flag();
 }
 
+inline bool pprime(ALObjectPtr obj)
+{
+    return obj->get_prime() != nullptr;
+}
+
 inline bool contains(ALObjectPtr obj, const std::string &t_str)
 {
     if (!plist(obj))

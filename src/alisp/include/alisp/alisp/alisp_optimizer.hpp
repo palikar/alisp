@@ -228,6 +228,12 @@ struct ConstantFolding
 
         std::vector<typ> new_values{};
 
+        const auto const_count = std::count_if(std::begin(*t_list) + offset, std::end(*t_list), check);
+
+        if (const_count <= 1)
+        {
+            return;
+        }
         auto end = std::remove_if(std::begin(*t_list) + offset, std::end(*t_list), [&](auto el) {
             if (check(el))
             {
@@ -275,12 +281,12 @@ struct ConstantFolding
             fold<ALObject::int_type>(t_list, std::multiplies<int>(), pint, 1);
         }
 
-        if (oreq(t_list->i(0), Qminus, Pminus))
+        if (oreq(t_list->i(0), Qminus, Pminus) and pint(t_list->i(1)))
         {
             fold<ALObject::int_type, 2>(t_list, std::minus<int>(), pint, t_list->i(1)->to_int());
         }
 
-        if (oreq(t_list->i(0), Qminus, Pminus))
+        if (oreq(t_list->i(0), Qdev, Pdev) and pint(t_list->i(1)))
         {
             fold<ALObject::int_type, 2>(t_list, std::divides<int>(), pint, t_list->i(1)->to_int());
         }

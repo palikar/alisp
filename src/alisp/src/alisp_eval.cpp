@@ -161,7 +161,16 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
         case ALObjectType::LIST:
         {
 
-            auto func = eval(obj->i(0));
+            auto func = [this, &obj]() {
+                if (pprime(obj))
+                {
+                    return obj;
+                }
+                else
+                {
+                    return eval(obj->i(0));
+                }
+            }();
 
             if (psym(func))
             {

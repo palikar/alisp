@@ -54,21 +54,28 @@ constexpr const char *alobject_type_to_string(ALObjectType type)
 }
 
 
-class alobject_error : public std::runtime_error
-{
-  public:
-    explicit alobject_error(const std::string &t_why) : runtime_error(t_why) {}
-};
-
 class ALObject;
 #ifdef USE_MANUAL_MEMORY
 using ALObjectPtr                  = ALObject *;
 inline constexpr bool USING_SHARED = false;
 #else
 using ALObjectPtr                  = std::shared_ptr<ALObject>;
+using ALObjectCPtr                 = std::shared_ptr<const ALObject>;
 inline constexpr bool USING_SHARED = true;
 #endif
 
+
+class alobject_error : public std::runtime_error
+{
+  private:
+    ALObjectCPtr m_obj{ nullptr };
+
+  public:
+    explicit alobject_error(const std::string &t_why) : runtime_error(t_why) {}
+    alobject_error(const std::string &t_why, ALObjectCPtr t_obj) : runtime_error(t_why), m_obj(t_obj) {}
+
+    ALObjectCPtr obj() { return m_obj; }
+};
 
 namespace env
 {
@@ -118,11 +125,13 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
             if constexpr (std::is_same_v<Type, list_type>)
             {
                 if (check_temp_flag()) return;
-                throw alobject_error("Not a list object.");
+                throw alobject_error("Not a list object.", shared_from_this());
             }
-            if constexpr (std::is_same_v<Type, string_type>) throw alobject_error("Not a string object.");
-            if constexpr (std::is_same_v<Type, real_type>) throw alobject_error("Not a real object.");
-            if constexpr (std::is_same_v<Type, int_type>) throw alobject_error("Not a int object.");
+            if constexpr (std::is_same_v<Type, string_type>)
+                throw alobject_error("Not a string object.", shared_from_this());
+            if constexpr (std::is_same_v<Type, real_type>)
+                throw alobject_error("Not a real object.", shared_from_this());
+            if constexpr (std::is_same_v<Type, int_type>) throw alobject_error("Not a int object.", shared_from_this());
         }
     }
 
@@ -185,14 +194,16 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     list_type &children()
     {
         check<list_type>();
-        if (check_temp_flag()) throw alobject_error("Accesing the children elements of a temporary object.");
+        if (check_temp_flag())
+            throw alobject_error("Accesing the children elements of a temporary object.", shared_from_this());
         return std::get<list_type>(m_data);
     }
 
     const list_type &children() const
     {
         check<list_type>();
-        if (check_temp_flag()) throw alobject_error("Accesing the children elements of a temporary object.");
+        if (check_temp_flag())
+            throw alobject_error("Accesing the children elements of a temporary object.", shared_from_this());
         return std::get<list_type>(m_data);
     }
 
@@ -218,7 +229,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         {
             return static_cast<real_type>(std::get<int_type>(m_data));
         }
-        throw alobject_error("Not a number object.");
+        throw alobject_error("Not a number object.", shared_from_this());
         return 0.0;
     }
 
@@ -329,6 +340,24 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         return std::end(children());
     }
 
+    auto begin() const
+    {
+        if (check_temp_flag())
+        {
+            return std::get<view_type>(m_data).begin();
+        }
+        return std::begin(children());
+    }
+
+    auto end() const
+    {
+        if (check_temp_flag())
+        {
+            return std::get<view_type>(m_data).end();
+        }
+        return std::end(children());
+    }
+
     auto cbegin() const
     {
 
@@ -423,7 +452,7 @@ inline std::ostream &operator<<(std::ostream &os, const ALObjectPtr t_obj)
     return os;
 }
 
-inline std::string dump(ALObjectPtr obj)
+inline std::string dump(ALObjectCPtr obj)
 {
     std::ostringstream str;
 
@@ -445,7 +474,7 @@ inline std::string dump(ALObjectPtr obj)
             }
 
             str << "(";
-            for (auto ob : *obj)
+            for (const auto ob : *obj)
             {
                 str << dump(ob) << " ";
             }

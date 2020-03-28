@@ -367,6 +367,7 @@ template<bool should_exit = false> void handle_errors_lippincott()
                      "something.\n"
                   << rang::fg::reset;
         std::cout << '\t' << p_exc.what() << "\n";
+        std::cout << "\tDump: " << dump(p_exc.obj()) << "\n";
     }
     catch (interrupt_error &p_exc)
     {
