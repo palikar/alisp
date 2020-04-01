@@ -161,6 +161,22 @@ Example:
 
 )");
 
+DEFUN(defconst, "defconst", R"((defconst NAME VALUE [DOC])
+
+Define a new constant variable with a name `NAME` in the current
+module. `VALUE` is the initial value of the variable and `DOC` is an
+optional docstring. A variable *has* to be defines before used. A
+variable defined through `defconst` will live till the end of the
+program. If another part of the porgram tries to chang a constant
+variable, an error signal will be emitted.
+
+Example:
+```elisp
+(defconst new-var 42)
+```
+
+)");
+
 DEFUN(eval, "eval", R"((eval FORM)
 
 Evaluate the form `FORM`. The usual form for evaluation apply.

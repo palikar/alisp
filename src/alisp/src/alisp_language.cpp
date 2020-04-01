@@ -332,6 +332,23 @@ ALObjectPtr Fdefvar(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eva
     return Qt;
 }
 
+ALObjectPtr Fdefconst(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_min_size<2>(obj));
+    AL_CHECK(assert_max_size<3>(obj));
+    AL_CHECK(assert_symbol(obj->i(0)));
+
+    if (obj->size() >= 3 and pstring(obj->i(2)))
+    {
+        env->define_variable(obj->i(0), eval->eval(obj->i(1)), obj->i(2)->to_string(), true);
+        return Qt;
+    };
+
+    env->define_variable(obj->i(0), eval->eval(obj->i(1)), "", true);
+
+    return Qt;
+}
+
 ALObjectPtr Fdefun(ALObjectPtr obj, env::Environment *env, eval::Evaluator *)
 {
     AL_CHECK(assert_min_size<2>(obj));
