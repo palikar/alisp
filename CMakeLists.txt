@@ -334,10 +334,6 @@ set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(libs)
 add_subdirectory(src)
 
-install(
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/scripts/libs/format.al
-    DESTINATION ${IMPORT_PATHS})
-
 configure_file(cmake/alisp.ch.in lib/pkgconfig/alisp.pc @ONLY)
 install(FILES "${alisp_BINARY_DIR}/lib/pkgconfig/alisp.pc"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")

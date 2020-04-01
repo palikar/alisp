@@ -1117,11 +1117,15 @@ template<class Environment> class ALParser : public ParserBase
         const auto end   = begin == nullptr ? nullptr : begin + input.size();
         this->position   = detail::Position(begin, end);
 
-        m_file = file_name;
-
+        m_file  = file_name;
         m_input = input;
+        depth   = 0;
 
-        depth = 0;
+        if (*position == '#' && *(++position) == '!')
+        {
+            skip_line();
+        }
+
 
         while (position.has_more())
         {
