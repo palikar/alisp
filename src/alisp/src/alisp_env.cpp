@@ -122,7 +122,7 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, 
 
     AL_CHECK(if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name); });
     t_value->set_prop("--module--", make_string(m_active_module.get().name()));
-    
+
 #ifdef ENABLE_OBJECT_DOC
     t_value->set_prop("--doc--", make_string(t_doc));
 #endif
