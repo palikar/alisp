@@ -283,7 +283,7 @@ ALObjectPtr Fmin(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     auto is_int = are_objects_int(eval_obj);
     if (is_int)
     {
-        auto min_element = obj->i(0)->to_int();
+        auto min_element = eval_obj->i(0)->to_int();
         for (auto el : *eval_obj)
         {
             auto current = el->to_int();
@@ -297,7 +297,7 @@ ALObjectPtr Fmin(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     else
     {
 
-        auto min_element = obj->i(0)->to_real();
+        auto min_element = eval_obj->i(0)->to_real();
         for (auto el : *eval_obj)
         {
             auto current = el->to_real();
