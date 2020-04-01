@@ -35,16 +35,26 @@ namespace alisp
 
 ALObjectPtr Fand(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    auto eval_obj = eval_transform(evl, obj);
-    bool sum      = reduce<false>(evl, eval_obj, AND_OBJ_FUN, true);
-    return sum ? Qt : Qnil;
+    for (auto el : *obj)
+    {
+        if (is_falsy(evl->eval(el)))
+        {
+            return Qnil;
+        }
+    }
+    return Qt;
 }
 
 ALObjectPtr For(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 {
-    auto eval_obj = eval_transform(evl, obj);
-    bool sum      = reduce<false>(evl, eval_obj, OR_OBJ_FUN, false);
-    return sum ? Qt : Qnil;
+    for (auto el : *obj)
+    {
+        if (is_truthy(evl->eval(el)))
+        {
+            return Qt;
+        }
+    }
+    return Qnil;
 }
 
 ALObjectPtr Fnot(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)

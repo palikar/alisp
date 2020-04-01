@@ -1077,12 +1077,17 @@ Example:
 /*                         |___/      */
 
 DEFUN(string_append, "string-append", R"((string-append STRING1 STRING2))");
+
 DEFUN(string_prepend, "string-prepend", R"((string-prepend STRING1 STRING2))");
+
+DEFUN(string_reverse, "string-reverse", R"((string-reverse STRING))");
 
 DEFUN(string_equals, "string-equals", R"((string-equals STRING1 STRING2)
 
 Return `t` if the proviced strings equal lexicographically. Return `nil` otherwise.
 )");
+
+DEFUN(string_less, "string-less", R"((string-less STRING1 STRING2))");
 
 DEFUN(string_contains, "string-contains", R"((string-contains STRING SUBSTRING)
 

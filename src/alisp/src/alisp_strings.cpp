@@ -62,6 +62,17 @@ ALObjectPtr Fstring_equals(ALObjectPtr obj, env::Environment *, eval::Evaluator 
     return str_1->to_string().compare(str_2->to_string()) == 0 ? Qt : Qnil;
 }
 
+ALObjectPtr Fstring_less(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<2>(obj));
+    auto str_1 = eval->eval(obj->i(0));
+    auto str_2 = eval->eval(obj->i(1));
+    AL_CHECK(assert_string(str_1));
+    AL_CHECK(assert_string(str_2));
+
+    return str_1->to_string().compare(str_2->to_string()) < 0 ? Qt : Qnil;
+}
+
 ALObjectPtr Fstring_contains(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
@@ -155,6 +166,17 @@ ALObjectPtr Fstring_find(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
         return make_int(pos);
     }
     return Qnil;
+}
+
+ALObjectPtr Fstring_reverse(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(obj));
+    auto str_1 = eval->eval(obj->i(0));
+    AL_CHECK(assert_string(str_1));
+
+    std::string copy = str_1->to_string();
+    std::reverse(copy.begin(), copy.end());
+    return make_string(copy);
 }
 
 ALObjectPtr Fstring_replace(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)

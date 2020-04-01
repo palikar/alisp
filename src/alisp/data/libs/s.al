@@ -1,12 +1,22 @@
-;; (import 's :all)
 (import 're)
 
+(defun s--mapcar-head (fn-head fn-rest l)
+  "Like MAPCAR, but applies a different function to the first element."
+  (if l
+      (list (funcall fn-head (head l)) (mapcar fn-rest (tail list)))))
 
 (defun s--times (s times)
   (let ((str ""))
     (dotimes (i times)
       (setq str (string-join str s)))
     str))
+
+(defun s--join-with-sep (strs s)
+  (let ((res ""))
+    (dolist (str strs)
+      (setq res (string-join res str s)))
+    (string-substring res 0 (- (string-length res) (string-length s)))
+    ))
 
 (defun s-trim (s)
   (string-strip s))
@@ -28,11 +38,6 @@
   
   )
 
-;; (dump (s-trim " space  "))
-;; (dump (s-trim-left " space  "))
-;; (dump (s-trim-right " space  "))
-
-
 (defun s-chomp (s)
   (cond
    ((string-endswith s "\r\n") (string-substring s 0 (- (string-length s) 2)))
@@ -41,14 +46,8 @@
    ((string-endswith s "\r") (string-substring s 0 (- (string-length s) 1)))
    (t s)))
 
-;; (dump (s-chomp "new\n"))
-;; (dump (s-chomp "new\r"))
-;; (dump (s-chomp "new\r\n"))
-
 (defun s-collapse-whitespace (s)
   (re.re-replace "[ \t\n\r]+" s " "))
-
-;; (dump (s-collapse-whitespace "only   one space   please"))
 
 (defun s-word-wrap (len s)
   (let ((words (string-split s " "))
@@ -62,63 +61,35 @@
         (setq i 0)))
     res))
 
-;; (dump (s-word-wrap 10 "This is too long"))
-;; (dump (s-word-wrap 10 "This is way way too long"))
-;; (dump (s-word-wrap 10 "It-wraps-words-but-does-not-break-them"))
-
 (defun s-center (len s)
   (let ((l (string-length s)))
     (if (< l len)
         (string-join (s--times " " (/ (- len l) 2)) s (s--times " " (/ (- len l) 2)))
       s)))
 
-;; (dump (s-center 5 "ab"))
-
 (defun s-pad-left (len padding s)
   (string-join (s--times padding len) s))
+
 (defun s-pad-right (len padding s)
   (string-join s (s--times padding len)))
-
-;; (dump (s-pad-left 3 "0" "3"))
-;; (dump (s-pad-left 3 "0" "23"))
-;; (dump (s-pad-left 3 "0" "1234"))
-;; (dump (s-pad-right 3 "." "3") )
-;; (dump (s-pad-right 3 "." "23"))
-;; (dump (s-pad-right 3 "." "1234"))
 
 (defun s-truncate (len s)
   (if (> (string-length s) len)
       (string-join (string-substring s 0 (- len 3)) "...")
     s))
 
-
-;; (dump (s-truncate 6 "This is too long"))
-;; (dump (s-truncate 16 "This is also too long this is also too long "))
-;; (dump (s-truncate 16 "But this is not!"))
-
 (defun s-left (len s)
   (string-substring s 0 len))
-
-;; (dump (s-left 3 "lib/file.js"))
-;; (dump (s-left 3 "li"))
 
 (defun s-right (len s)
   (if (>= (string-length s) len )
       (string-substring s (- (string-length s) len) (string-length s))
     s))
 
-;; (dump (s-right 3 "lib/file.js"))
-;; (dump (s-right 3 "li"))
-
 (defun s-chop-suffix (suffix s)
   (if (string-endswith s suffix)
       (string-substring s 0 (- (string-length s) (string-length suffix)))
     s))
-
-;; (dump (s-chop-suffix "-test.js" "penguin-test.js"))
-;; (dump (s-chop-suffix "\n" "no newlines\n"))
-;; (dump (s-chop-suffix "\n" "some newlines\n\n"))
-
 
 (defun s-chop-suffixes (suffixes s)
   (let ((res s))
@@ -126,26 +97,16 @@
       (setq res (s-chop-suffix suf res)))
     res))
 
-;; (dump (s-chop-suffixes '("_test.js" "-test.js" "Test.js") "penguin-test.js"))
-;; (dump (s-chop-suffixes '("\r" "\n") "penguin\r\n"))
-;; (dump (s-chop-suffixes '("\n" "\r") "penguin\r\n"))
-
 (defun s-chop-prefix (prefix s)
   (if (string-startswith s prefix)
       (string-substring s (string-length prefix) (string-length s) )
     s))
 
-;; (dump (s-chop-prefix "/tmp" "/tmp/file.js"))
-;; (dump (s-chop-prefix "/tmp" "/tmp/tmp/file.js"))
-
 (defun s-chop-prefixes (prefixes s)
   (let ((res s))
-    (dolist (pref suffixes)
-      (setq res (s-chop-pref pref res)))
+    (dolist (pref prefixes)
+      (setq res (s-chop-prefix pref res)))
     res))
-
-;; (dump (s-chop-prefixes '("/tmp" "/my") "/tmp/my/file.js"))
-;; (dump (s-chop-prefixes '("/my" "/tmp") "/tmp/my/file.js"))
 
 (defun s-shared-start (s1 s2)
   (let ((search-length (min (string-length s1) (string-length s2)))
@@ -155,11 +116,6 @@
       (setq i (+ i 1)))
     (string-substring s1 0 i)))
 
-;; (dump (s-shared-start "bar" "baz"))
-;; (dump (s-shared-start "foobar" "foo"))
-;; (dump (s-shared-start "bar" "foo"))
-
-
 (defun s-shared-end (s1 s2)
   (let* ((l1 (string-length s1))
          (l2 (string-length s2))
@@ -168,11 +124,7 @@
     (while (and (< i search-length)
                 (== (nth s1 (- l1 i 1)) (nth s2 (- l2 i 1))))
       (setq i (+ i 1)))
-    (if (== 0 i) "" (string-substring s1 (- i)))))
-
-;; (dump (s-shared-end "bar" "var"))
-;; (dump (s-shared-end "foo" "foo"))
-;; (dump (s-shared-end "bar" "foo"))
+    (if (== 0 i) "" (string-substring s1 (- i 1) (string-length s1)))))
 
 (defun s-repeat (num s)
   (s--times s num))
@@ -188,7 +140,6 @@
 (defun s-append (suffix s)
   (string-join s suffix))
 
-
 (defun s-lines (s)
   (string-splitlines s))
 
@@ -196,10 +147,6 @@
   (if start
       (re.re-search regexp (string-substring s start (string-length s)))
     (re.re-search regexp s)))
-
-;; (dump (s-match "^def" "abcdefg"))
-;; (dump (s-match "^abc" "abcdefg"))
-;; (dump (s-match "/.*/([a-z]+)\\.([a-z]+)" "/some/weird/file.html"))
 
 (defun s-match-strings-all (regex string)
   (if start
@@ -226,33 +173,16 @@
           res)
       `(,s))))
 
-;; (dump (s-slice-at "-" "abc"))
-;; (dump (s-slice-at "-" "abc-def"))
-;; (dump (s-slice-at "[.#]" "abc.def.ghi#id"))
-
 (defun s-split (separator s &optional omit-nulls)
   (if omit-nulls
       (progn
         (filter (lambda (x) (!= (string-length x) 0)) (string-split s separator)))
     (string-split s separator)))
 
-;; (dump (s-split "|" "a|bc|12|3"))
-;; (dump (s-split ":" "a,c,d"))
-;; (dump (s-split "," "a,c,d"))
-;; (dump (s-split "\n" "z\nefg\n"))
-;; (dump (s-split "\n" "z\nefg\n" t))
-
 (defun list-concat (l1 l2)
   (dolist (el l2)
     (push l1 el))
   l1)
-
-(defun s--join-with-sep (strs s)
-  (let ((res ""))
-    (dolist (str strs)
-      (setq res (string-join res str s)))
-    (string-substring res 0 (- (string-length res) (string-length s)))
-    ))
 
 (defun s-split-up-to (separator s n &optional omit-nulls)
   (let ((splits (s-split separator s omit-nulls))
@@ -264,50 +194,133 @@
     res
     ))
 
-;; (dump (s-split-up-to "-" "Author-Track-number-one" 1)) ;; => '("Author" "Track-number-one")
-;; (dump (s-split-up-to "-" "Author-Track-number-one" 2)) ;; => '("Author" "Track" "number-one"))
-;; (dump (s-split-up-to "|" "foo||bar|baz|qux" 3  t))                  ;; => '("foo" "bar" "baz|qux")
+(defun s-join (separator strings)
+  (s--join-with-sep strings separator))
 
+(defun s-equals? (s1 s2)
+  (string-equals s1 s2))
 
-(defun s-join (separator strings))
+(defun s-less? (s1 s2)
+  (string-less s1 s2))
 
-(defun s-equals? (s1 s2))
-(defun s-less? (s1 s2))
-(defun s-matches? (regexp s &optional start))
-(defun s-blank? (s))
-(defun s-present? (s))
-(defun s-ends-with? (suffix s &optional ignore-case))
-(defun s-starts-with? (prefix s &optional ignore-case))
-(defun s-contains? (needle s &optional ignore-case))
-(defun s-lowercase? (s))
-(defun s-uppercase? (s))
-(defun s-mixedcase? (s))
-(defun s-capitalized? (s))
-(defun s-numeric? (s))
+(defun s-matches? (regexp s &optional start)
+  (if start
+      (if (re.re-match regexp (string-substring s start (string-length s))) 't 'nil)
+    (if (re.re-match regexp s) 't 'nil)))
 
-(defun s-replace (old new s))
-(defun s-replace-all (replacements s))
-(defun s-downcase (s))
-(defun s-upcase (s))
-(defun s-capitalize (s))
-(defun s-titleize (s))
-(defun s-with (s form &rest more))
-(defun s-index-of (needle s &optional ignore-case))
-(defun s-reverse (s))
-(defun s-presence (s))
-(defun s-format (template replacer &optional extra))
-(defun s-lex-format (format-str))
-(defun s-count-matches (regexp s &optional start end))
-(defun s-wrap (s prefix &optional suffix))
+(defun s-blank? (s)
+  (if (or (eq s nil) (== (string-length s) 0)) 't 'nil))
 
-(defun s-split-words (s))
-(defun s-lower-camel-case (s))
-(defun s-upper-camel-case (s))
-(defun s-snake-case (s))
-(defun s-dashed-words (s))
-(defun s-capitalized-words (s))
-(defun s-titleized-words (s))
-(defun s-word-initials (s))
+(defun s-present? (s)
+  (not (s-blank? s)))
 
+(defun s-ends-with? (suffix s &optional ignore-case)
+  (if ignore-case
+      (string-endswith (string-lower s) (string-lower suffix))
+    (string-endswith s suffix)))
+
+(defun s-starts-with? (prefix s &optional ignore-case)
+  (if ignore-case
+      (string-startswith (string-lower s) (string-lower prefix))
+    (string-endswith s prefix)))
+
+(defun s-contains? (needle s &optional ignore-case)
+  (if ignore-case
+      (string-contains (string-lower s) (string-lower needle))
+    (string-contains s needle)))
+
+(defun s-lowercase? (s)
+  (if (re.re-match "[[:lower:]]*" s) 't 'nil))
+
+(defun s-uppercase? (s)
+  (if (re.re-match "[[:upper:]]*" s) 't 'nil))
+
+(defun s-mixedcase? (s)
+  (and (re.re-search "[[:upper:]]+" s)
+       (re.re-search "[[:lower:]]+" s)))
+
+(defun s-capitalized? (s)
+  (if (re.re-match "^[[:upper:]][^[:upper:]]*$" s) 't 'nil))
+
+(defun s-numeric? (s)
+  (if (re.re-match "^[0-9]+$" s) 't 'nil))
+
+(defun s-replace (old new s)
+  (string-replace s old new ))
+
+(defun s-replace-all (replacements s)
+  (string-replace-all old new s))
+
+(defun s-downcase (s)
+  (string-lower s))
+
+(defun s-upcase (s)
+  (string-uppe s))
+
+(defun s-capitalize (s)
+  (string-join (string-upper (string-substring s 0 1)) (string-lower (string-substring s 1 (string-length s)))))
+
+(defun s-titleize (s)
+  (string-capitalize s))
+
+(defmacro s-with (s form &rest more)
+  (if (not more)
+      (if (plist form)
+          `(,(car form) ,@(tail form) ,s)
+        (list form s))
+    `(s-with (s-with ,s ,form) ,@more))
+  )
+
+(defun s-index-of (needle s &optional ignore-case)
+  (if ignore-case
+      (find (string-lower s) (string-lower needle))
+    (find s needle)))
+
+(defun s-reverse (s)
+  (string-reverse s))
+
+(defun s-presence (s)
+  (not s-blank? s))
+
+(defun s-count-matches (regexp s &optional start end)
+  (let* ((beg (if start start 0))
+         (end (if end end (string-length s)))
+         (str (string-substring s beg end)))
+    (length (re.re-search-all regexp str))))
+
+(defun s-wrap (s prefix &optional suffix)
+  (if suffix
+      (string-join prefix s suffix)
+    (string-join prefix s prefix)))
+
+(defun s-split-words (s)
+  (string-split s " "))
+
+(defun s-lower-camel-case (s)
+  
+  )
+
+(defun s-upper-camel-case (s)
+  (let ((words (s-split-words s)))
+    (s-join "" (mapcar 'string-capizalize words))))
+
+(defun s-snake-case (s)
+  (let ((words (s-split-words s)))
+    (s-join "_" (mapcar 'string-lower words))))
+
+(defun s-dashed-words (s)
+  (let ((words (s-split-words s)))
+    (s-join "-" (mapcar 'string-lower words))))
+
+(defun s-capitalized-words (s)
+  (let ((words (s-split-words s)))
+    (s-join " " (mapcar 's-capitalize words))))
+
+(defun s-titleized-words (s)
+  (let ((words (s-split-words s)))
+    (s-join " " (mapcar 's-titleize words))))
+
+(defun s-word-initials (s)
+  (s-join "" (mapcar (lambda (ss) (string-substring ss 0 1)) (s-split-words s))))
 
 
