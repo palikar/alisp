@@ -71,6 +71,19 @@ ALObjectPtr Fsort(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list;
 }
 
+ALObjectPtr Freverse(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(obj));
+
+    auto list = eval->eval(obj->i(0));
+    AL_CHECK(assert_list(list));
+
+    ALObject::list_type new_list;
+    std::reverse_copy(std::begin(*list), std::end(*list), std::back_inserter(new_list));
+
+    return make_list(new_list);
+}
+
 ALObjectPtr Fzip(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<2>(obj));

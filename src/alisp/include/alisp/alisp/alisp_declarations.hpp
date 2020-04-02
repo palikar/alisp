@@ -1189,6 +1189,10 @@ Check if the character CHAR is a digit.
 /*            |___/                                       */
 
 
+DEFUN(reverse, "reverse", R"((reverse LIST)
+
+)");
+
 DEFUN(slice, "slice", R"((slice LIST FROM TO)
 
 Select a subsection of the list `LIST` and return a new list with the

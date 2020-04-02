@@ -1,8 +1,54 @@
 
-(defun d-map (fn list))
-(defun d-map-when (pred rep list))
-(defun d-map-first (pred rep list))
-(defun d-map-last (pred rep list))
+
+(defun even? (arg)
+  (== 0 (mod arg 2)))
+
+(defun odd? (arg)
+  (!= 0 (mod arg 2)))
+
+(defun square (arg)
+  (* arg arg))
+
+
+(defun d-map (fn list)
+  (mapcar fn list))
+
+;; (dump (d-map (lambda (x) (* x 2))'(1 2 3 4 5)))
+
+(defun d-map-when (pred rep l)
+  (let ((res (list)))
+    (dolist (el l)
+      (when (pred el)
+        (push res (rep el))))
+    res))
+
+;; (dump (d-map-when (lambda (x) (== (mod x 2) 0)) (lambda (x) (* x 2)) '(1 2 3 4 5 6 7 8)))
+
+(defun d-map-first (pred rep l)
+  (let ((res (list))
+        (found nil))
+    (dolist (el l)
+      (if (and (pred el) (not found))
+          (progn
+            (push res (rep el))
+            (setq found 't)))
+      (push res el))
+    res))
+
+(defun d-map-last (pred rep l)
+  (let ((res (list))
+        (found nil))
+    (dolist (el (reverse l))
+      (if (and (pred el) (not found))
+          (progn
+            (push res (rep el))
+            (setq found 't))
+        (push res el)))
+    (reverse res)))
+
+;; (dump (d-map-first even? square '(1 2 3 4 5 6 7 8)))
+;; (dump (d-map-last even? square '(1 2 3 4 5 6 7 8)))
+
 (defun d-map-indexed (fn list))
 (defun d-annotate (fn list))
 (defun d-splice (pred fun list))
