@@ -319,7 +319,7 @@ ALObjectPtr Fmax(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     auto is_int = are_objects_int(eval_obj);
     if (is_int)
     {
-        auto max_element = obj->i(0)->to_int();
+        auto max_element = eval_obj->i(0)->to_int();
         for (auto el : *eval_obj)
         {
             auto current = el->to_int();

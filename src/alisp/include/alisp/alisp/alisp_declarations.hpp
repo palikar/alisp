@@ -663,6 +663,8 @@ Example:
 
 )");
 
+DEFUN(insert, "insert", R"((insert LIST INDEX ELEMENT))");
+
 DEFUN(nth, "nth", R"((nth LIST INDEX)
 
 Return the element of LIST that is at position INDEX.

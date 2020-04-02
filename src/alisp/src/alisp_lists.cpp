@@ -187,6 +187,22 @@ ALObjectPtr Fnth(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list->i(static_cast<ALObject::list_type::size_type>(index->to_int()));
 }
 
+//inplace
+ALObjectPtr Finsert(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<3>(obj));
+    auto list  = eval->eval(obj->i(0));
+    auto index = eval->eval(obj->i(1));
+    auto el = eval->eval(obj->i(2));
+    AL_CHECK(assert_int(index));
+    AL_CHECK(assert_list(list));
+
+    auto& ch = list->children();
+    ch.insert(std::begin(ch) + index->to_int(), el);
+    
+    return list;
+}
+
 ALObjectPtr Fcontains(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
