@@ -77,15 +77,24 @@ ALObjectPtr Fmapcar(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     auto fun_obj = eval->eval(obj->i(0));
     auto list    = eval->eval(obj->i(1));
+
+
+    AL_CHECK(assert_function(fun_obj));
+    AL_CHECK(assert_list(list));
+
     ALObject::list_type new_l;
 
     for (auto &el : list->children())
     {
-        // if (psym(el) or plist(el)) { eval->handle_lambda(fun_obj,
-        // make_list(quote(el))); } else
-        // {
-        new_l.push_back(eval->handle_lambda(fun_obj, make_list(el)));
-        // }
+
+        if (psym(el) or plist(el))
+        {
+            new_l.push_back(eval->handle_lambda(fun_obj, make_list(quote(el))));
+        }
+        else
+        {
+            new_l.push_back(eval->handle_lambda(fun_obj, make_list(el)));
+        }
     }
 
     return make_list(new_l);
@@ -187,19 +196,19 @@ ALObjectPtr Fnth(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list->i(static_cast<ALObject::list_type::size_type>(index->to_int()));
 }
 
-//inplace
+// inplace
 ALObjectPtr Finsert(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<3>(obj));
     auto list  = eval->eval(obj->i(0));
     auto index = eval->eval(obj->i(1));
-    auto el = eval->eval(obj->i(2));
+    auto el    = eval->eval(obj->i(2));
     AL_CHECK(assert_int(index));
     AL_CHECK(assert_list(list));
 
-    auto& ch = list->children();
+    auto &ch = list->children();
     ch.insert(std::begin(ch) + index->to_int(), el);
-    
+
     return list;
 }
 

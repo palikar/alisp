@@ -695,7 +695,6 @@ ALObjectPtr Fapply(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     auto fun_obj = eval->eval(obj->i(0));
     auto args    = eval_transform(eval, eval->eval(obj->i(1)));
-
     return eval->handle_lambda(fun_obj, args);
 }
 

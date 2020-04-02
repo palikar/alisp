@@ -1,4 +1,3 @@
-
 (defun even? (arg)
   (== 0 (mod arg 2)))
 
@@ -8,12 +7,8 @@
 (defun square (arg)
   (* arg arg))
 
-
-
 (defun d-map (fn list)
   (mapcar fn list))
-
-;; (dump (d-map (lambda (x) (* x 2))'(1 2 3 4 5)))
 
 (defun d-map-when (pred rep l)
   (let ((res (list)))
@@ -21,8 +16,6 @@
       (when (pred el)
         (push res (rep el))))
     res))
-
-;; (dump (d-map-when (lambda (x) (== (mod x 2) 0)) (lambda (x) (* x 2)) '(1 2 3 4 5 6 7 8)))
 
 (defun d-map-first (pred rep l)
   (let ((res (list))
@@ -46,25 +39,17 @@
         (push res el)))
     (reverse res)))
 
-;; (dump (d-map-first even? square '(1 2 3 4 5 6 7 8)))
-;; (dump (d-map-last even? square '(1 2 3 4 5 6 7 8)))
-
 (defun d-map-indexed (fn lis)
   (let ((res (list)))
     (dotimes (i (length lis))
       (push res (fn i (nth lis i))))
     res))
 
-;; (dump (d-map-indexed (lambda (index item) (- item index)) '(1 2 3 4))) ;; => '(1 1 1 1)
-
-
 (defun d-annotate (fn lis)
   (let ((res (list)))
     (dolist (el lis)
       (push res (list (fn el) el)))
     res))
-
-;; (dump (d-annotate square '(1 2 3))) ;; => '((2 . 1) (3 . 2) (4 . 3))
 
 (defun d-splice (pred fun lis)
   (let ((res (list)))
@@ -75,8 +60,6 @@
         (push res el)))
     res))
 
-;; (dump (d-splice 'even? (lambda (x) (list x x)) '(1 2 3 4))) ;; => '(1 2 2 3 4 4)
-
 (defun d-splice-list (pred new-list lis)
   (let ((res (list)))
     (dolist (el lis)
@@ -86,8 +69,6 @@
         (push res el)))
     res))
 
-;; (dump (d-splice-list 'even? '(a b c) '(1 2 3 4))) ;; => '(1 a b c 2)
-
 (defun d-mapcat (fn lis)
   (let ((res (list)))
     (dolist (el lis)
@@ -95,26 +76,17 @@
         (push res new-el)))
     res))
 
-;; (dump (d-mapcat (lambda (item) (list 0 item)) '(1 2 3))) ;; => '(0 1 0 2 0 3)
-
 (defun d-copy (arg)
   (let ((res (list)))
     (dolist (el arg)
       (push res el))
     res))
 
-;; (dump (d-copy '(1 2 3))) ;; => '(1 2 3)
-
 (defun d-filter (pred lis)
   (filter pred lis))
 
-
-;; (dump (d-filter (lambda (num) (== 0 (mod num 2))) '(1 2 3 4))) ;; => '(2 4)
-
 (defun d-remove (pred lis)
   (filter (lambda (x) (not (pred x))) lis))
-
-;; (dump (d-remove (lambda (num) (== 0 (mod num 2))) '(1 2 3 4))) ;; => '(2 4)
 
 (defun d-remove-first (pred lis)
   (let ((res (list))
@@ -125,8 +97,6 @@
         (push res el)))
     res))
 
-;; (dump (d-remove-first 'even? '(1 3 5 4 7 8 10))) ;; => '(1 3 5 7 8 10)
-
 (defun d-remove-last (pred lis)
   (let ((res (list))
         (found nil))
@@ -136,15 +106,11 @@
         (push res el)))
     (reverse res)))
 
-;; (dump (d-remove-last 'even? '(1 3 5 4 7 8 10))) ;; => '(1 3 5 7 8 10)
-
 (defun d-remove-item (item list)
   (delete list item))
 
 (defun d-non-nil (list)
   (filter (lambda (x) (not ( equal x nil))) list))
-
-;; (dump (d-non-nil '(1 nil 2 nil nil 3 4 nil 5 nil))) ;; => '(1 2 3 4 5)
 
 (defun d-slice (lis from &optional to step)
   (let ((res (list)))
@@ -152,18 +118,11 @@
       (push res (nth lis i)))    
     res))
 
-;; (dump (d-slice '(1 2 3 4 5) 1)) ;; => '(2 3 4 5)
-;; (dump (d-slice '(1 2 3 4 5) 1 -2)) ;; => '(1 2 3)
-;; (dump (d-slice '(1 2 3 4 5 6 7 8 9) 1 -1 2)) ;; => '(2 4 6 8)
-
 (defun d-take (n lis)
   (let ((res (list)))
     (dolist (i (range 0 (min (length lis) n)))
       (push res (nth lis i)))
     res))
-
-;; (dump (d-take 3 '(1 2 3 4 5))) ;; => '(1 2 3)
-;; (dump (d-take 17 '(1 2 3 4 5))) ;; => '(1 2 3 4 5)
 
 (defun d-take-last (n lis)
   (let ((res (list)))
@@ -171,27 +130,17 @@
       (push res (nth lis i)))
     res))
 
-;; (dump (d-take-last 3 '(1 2 3 4 5))) ;; => '(3 4 5)
-;; (dump (d-take-last 17 '(1 2 3 4 5))) ;; => '(1 2 3 4 5)
-;; (dump (d-take-last 1 '(1 2 3 4 5))) ;; => '(5)
-
 (defun d-drop (n lis)
   (let ((res (list)))
     (dolist (i (range n (length lis)))
       (push res (nth lis i)))
     res))
 
-;; (dump (d-drop 3 '(1 2 3 4 5))) ;; => '(4 5)
-;; (dump (d-drop 17 '(1 2 3 4 5))) ;; => '()
-
 (defun d-drop-last (n lis)
   (let ((res (list)))
     (dolist (i (range 0 (- (length lis) n)))
       (push res (nth lis i)))
     res))
-
-;; (dump (d-drop-last 3 '(1 2 3 4 5))) ;; => '(1 2)
-;; (dump (d-drop-last 17 '(1 2 3 4 5))) ;; => '()
 
 (defun d-take-while (pred lis)
   (let ((res (list)))
@@ -200,9 +149,6 @@
           (push res el)
         (return res)))
     res))
-
-;; (dump (d-take-while 'even? '(1 2 3 4))) ;; => '()
-;; (dump (d-take-while 'even? '(2 4 5 6))) ;; => '(2 4)
 
 (defun d-drop-while (pred lis)
   (let ((res (list))
@@ -213,18 +159,11 @@
         (setq found 't)))
     res))
 
-;; (dump (d-drop-while 'even? '(1 2 3 4))) ;; => '(1 2 3 4)
-;; (dump (d-drop-while 'even? '(2 4 5 6))) ;; => '(5 6)
-
 (defun d-select-by-indices (indices lis)
   (let ((res (list)))
     (dolist (i indices)
       (push res (nth lis i)))
     res))
-
-;; (dump (d-select-by-indices '(4 10 2 3 6) '("v" "e" "l" "o" "c" "i" "r" "a" "p" "t" "o" "r"))) ;; => '("c" "o" "l" "o" "r")
-;; (dump (d-select-by-indices '(2 1 0) '("a" "b" "c"))) ;; => '("c" "b" "a")
-;; (dump (d-select-by-indices '(0 1 2 0 1 3 3 1) '("f" "a" "r" "l"))) ;; => '("f" "a" "r" "f" "a" "l" "l" "a")
 
 (defun d-select-columns (columns table)
   (let ((res (list)))
@@ -236,18 +175,12 @@
         (push res new-row)))
     res))
 
-;; (dump (d-select-columns '(0 2) '((1 2 3) (a b c) (:a :b :c)))) ;; => '((1 3) (a c) (:a :c))
-;; (dump (d-select-columns '(1) '((1 2 3) (a b c) (:a :b :c)))) ;; => '((2) (b) (:b))
-;; (dump (d-select-columns nil '((1 2 3) (a b c) (:a :b :c)))) ;; => '(nil nil nil)
-
 (defun d-select-column (column table)
   (let ((res (list)))
     (dolist (row table)
       (when (equal column nil) (push res 'nil) (continue))
       (push res (nth row column)))
     res))
-
-;; (dump (d-select-column 1 '((1 2 3) (a b c) (:a :b :c)))) ;; => '(2 b :b)
 
 (defun d-keep (fn lis)
   (let ((res (list))
@@ -257,19 +190,12 @@
       (unless (equal el-res nil) (push res el-res)))
     res))
 
-;; (dump (d-keep (lambda (num) (when (> num 3) (* 10 num))) '(1 2 3 4 5 6))) ;; => '(40 50 60)
-
 (defun d-concat (&rest lists)
   (let ((res (list)))
     (dolist (lis lists)
       (dolist (el lis)
         (push res el)))
     res))
-
-;; (dump (d-concat '(1))) ;; => '(1)
-;; (dump (d-concat '(1) '(2))) ;; => '(1 2)
-;; (dump (d-concat '(1) '(2 3) '(4))) ;; => '(1 2 3 4)
-
 
 (defun d-flatten (l)
   (let ((res (list)))
@@ -279,10 +205,6 @@
         (push res el)))
     res))
 
-;; (dump (d-flatten '((1)))) ;; => '(1)
-;; (dump (d-flatten '((1 (2 3) (((4 (5)))))))) ;; => '(1 2 3 4 5)
-;; (dump (d-flatten '(1 2 (3 4)))) ;; => '(1 2 (3 . 4))
-
 (defun d-replace (old new lis)
   (when (equal lis nil) (return nil))
   (let ((res (list)))
@@ -291,10 +213,6 @@
           (push res new)
         (push res el)))
     res))
-
-;; (dump (d-replace 1 "1" '(1 2 3 4 3 2 1))) ;; => '("1" 2 3 4 3 2 "1")
-;; (dump (d-replace "foo" "bar" '("a" "nice" "foo" "sentence" "about" "foo"))) ;; => '("a" "nice" "bar" "sentence" "about" "bar")
-;; (dump (d-replace 1 2 nil)) ;; => nil
 
 (defun d-replace-first (old new l)
   (when (equal l nil) (return nil))
@@ -308,10 +226,6 @@
         (push res el)))
     res))
 
-;; (dump (d-replace-first 1 "1" '(1 2 3 4 3 2 1))) ;; => '("1" 2 3 4 3 2 1)
-;; (dump (d-replace-first "foo" "bar" '("a" "nice" "foo" "sentence" "about" "foo"))) ;; => '("a" "nice" "bar" "sentence" "about" "foo")
-;; (dump (d-replace-first 1 2 nil)) ;; => nil
-
 (defun d-replace-last (old new l)
   (when (equal l nil) (return nil))
   (let ((res (list))
@@ -324,19 +238,11 @@
         (push res el)))
     (reverse res)))
 
-;; (dump (d-replace-last 1 "1" '(1 2 3 4 3 2 1))) ;; => '(1 2 3 4 3 2 "1")
-;; (dump (d-replace-last "foo" "bar" '("a" "nice" "foo" "sentence" "about" "foo"))) ;; => '("a" "nice" "foo" "sentence" "about" "bar")
-;; (dump (d-replace-last 1 2 nil)) ;; => nil
-
-
 (defun d-insert-at (n x lis)
   (let ((res (list)))
     (dolist (el lis)
       (push res el))
     (insert res (min n (length res)) x)))
-
-;; (dump (d-insert-at 1 'x '(a b c))) ;; => '(a x b c)
-;; (dump (d-insert-at 12 'x '(a b c))) ;; => '(a b c x)
 
 (defun d-replace-at (n x lis)
   (let ((res (list)))
@@ -346,10 +252,6 @@
         (push res (nth lis i))))
     res))
 
-;; (dump (d-replace-at 0 9 '(0 1 2 3 4 5))) ;; => '(9 1 2 3 4 5)
-;; (dump (d-replace-at 1 9 '(0 1 2 3 4 5))) ;; => '(0 9 2 3 4 5)
-;; (dump (d-replace-at 4 9 '(0 1 2 3 4 5))) ;; => '(0 1 2 3 9 5)
-
 (defun d-update-at (n func lis)
   (let ((res (list)))
     (dotimes (i (length lis))
@@ -358,19 +260,12 @@
         (push res (nth lis i))))
     res))
 
-;; (dump (d-update-at 0 (lambda (x) (+ x 9)) '(0 1 2 3 4 5))) ;; => '(9 1 2 3 4 5)
-;; (dump (d-update-at 1 (lambda (x) (+ x 8)) '(0 1 2 3 4 5))) ;; => '(0 9 2 3 4 5)
-
 (defun d-remove-at (n lis)
   (let ((res (list)))
     (dotimes (i (length lis))
       (unless (== i n)
         (push res (nth lis i))))
     res))
-
-;; (dump (d-remove-at 0 '("0" "1" "2" "3" "4" "5"))) ;; => '("1" "2" "3" "4" "5")
-;; (dump (d-remove-at 1 '("0" "1" "2" "3" "4" "5"))) ;; => '("0" "2" "3" "4" "5")
-;; (dump (d-remove-at 2 '("0" "1" "2" "3" "4" "5"))) ;; => '("0" "1" "3" "4" "5")
 
 (defun d-remove-at-indices (indices lis)
   (let ((res (list)))
@@ -379,28 +274,187 @@
         (push res (nth lis i))))
     res))
 
-;; (dump (d-remove-at-indices '(0) '("0" "1" "2" "3" "4" "5"))) ;; => '("1" "2" "3" "4" "5")
-;; (dump (d-remove-at-indices '(0 2 4) '("0" "1" "2" "3" "4" "5"))) ;; => '("1" "3" "5")
-;; (dump (d-remove-at-indices '(0 5) '("0" "1" "2" "3" "4" "5"))) ;; => '("1" "2" "3" "4")
 
 
-(defun d-reduce-from (fn initial-value list))
-(defun d-reduce-r-from (fn initial-value list))
-(defun d-reduce (fn list))
-(defun d-reduce-r (fn list))
-(defun d-reductions-from (fn init list))
-(defun d-reductions-r-from (fn init list))
-(defun d-reductions (fn list))
-(defun d-reductions-r (fn list))
-(defun d-count (pred list))
-(defun d-sum (list))
-(defun d-running-sum (list))
-(defun d-product (list))
-(defun d-running-product (list))
-(defun d-inits (list))
-(defun d-tails (list))
-(defun d-common-prefix (&rest lists))
-(defun d-common-suffix (&rest lists))
+(defun d-reduce-from (fn initial-value lis)
+  (let ((val (fn initial-value (head lis))))
+    (dolist (el (tail lis))
+      (setq val (fn val el)))
+    val))
+
+;; (dump (d-reduce-from '- 10 '(1 2 3))) ;; => 4
+;; (dump (d-reduce-from '- 50 '(1 2 3))) ;; => 4
+;; (dump (d-reduce-from '+ 0 '(1 2 3))) ;; => 4
+
+
+(defun d-reduce-r-from (fn initial-value lis)
+  (let ((val (fn (last lis) initial-value)))
+    (dolist (el (reverse (init lis)))
+      (setq val (fn el val)))
+    val))
+
+;; (dump (d-reduce-r-from '- 10 '(1 2 3))) ;; => -8
+
+(defun d-reduce (fn lis)
+  (let ((val (fn (nth lis 0) (nth lis 1))))
+    (dolist (i (range 2 (length lis)))
+      (setq val (fn val (nth lis i))))
+    val))
+
+;; (dump (d-reduce '- '(1 2 3 4))) ;; => -8
+;; (dump (d-reduce 'list '(1 2 3 4))) ;; => '(((1 2) 3) 4)
+
+
+(defun d-reduce-r (fn lis)
+  (let* ((len (length lis))
+         (val (fn (nth lis (- len 1)) (nth lis (- len 2)) )))
+    (dolist (i (range 3 (+ len 1)))
+      (setq val (fn val (nth lis (- len i))  )))
+    val))
+
+;; (dump (d-reduce-r '- '(1 2 3 4))) ;; => -2
+
+(defun d-reductions-from (fn init lis)
+  (let ((res (list init (fn init (head lis)))))
+    (dolist (i (range 1 (length lis)))
+      (push res (fn (last res) (nth lis i))))
+    res))
+
+;; (dump (d-reductions-from 'max 0 '(2 1 4 3))) ;; => '(0 2 2 4 4)
+;; (dump (d-reductions-from '* 1 '(1 2 3 4))) ;; => '(1 1 2 6 24)
+
+(defun d-reductions-r-from (fn initial-value lis)
+  (let ((res (list initial-value (fn (last lis) initial-value))))
+    (dolist (el (reverse (init lis)))
+      (push res (fn el (last res))))
+    (reverse res)))
+
+;; (dump (d-reductions-r-from 'max 0 '(2 1 4 3))) ;; => '(4 4 4 3 0)
+;; (dump (d-reductions-r-from '* 1 '(1 2 3 4))) ;; => '(24 24 12 4 1)
+
+(defun d-reductions (fn lis)
+  (let ((res (list (head lis) (fn (nth lis 0) (nth lis 1)))))
+    (dolist (i (range 2 (length lis)))
+      (push res (fn (last res) (nth lis i))))
+    res))
+
+;; (dump (d-reductions '+ '(1 2 3 4))) ;; => '(1 3 6 10)
+;; (dump (d-reductions '* '(1 2 3 4))) ;; => '(1 2 6 24)
+
+(defun d-reductions-r (fn lis)
+  (let* ((len (length lis))
+         (res (list (fn (nth lis (- len 1)) (nth lis (- len 2)) ))))
+    (dolist (i (range 3 (+ len 1)))
+      (push res (fn (last res) (nth lis (- len i))  )))
+    (shove res (last lis))
+    (reverse res)))
+
+;; (dump (d-reductions-r '+ '(1 2 3 4))) ;; => '(10 9 7 4)
+;; (dump (d-reductions-r '* '(1 2 3 4))) ;; => '(24 24 12 4)
+
+(defun d-count (pred lis)
+  (let ((cnt 0))
+    (dolist (el lis)
+      (when (pred el) (setq cnt (+ cnt 1))))
+    cnt))
+
+;; (dump (d-count 'even? '(1 2 3 4 5))) ;; => 2
+
+(defun d-sum (lis)
+  (when (equal lis nil) (return 0))
+  (let ((sm 0))
+    (dolist (el lis)
+      (setq sm (+ sm el)))
+    sm))
+
+;; (dump (d-sum '())) ;; => 0
+;; (dump (d-sum '(1))) ;; => 1
+;; (dump (d-sum '(1 2 3 4))) ;; => 10
+
+(defun d-running-sum (lis)
+  (when (equal lis nil) (return '(0)))
+  (let ((sm (list 0)))
+    (dolist (el lis)
+      (push sm (+ (last sm) el)))
+    (tail sm)))
+
+;; (dump (d-running-sum '(1 2 3 4))) ;; => '(1 3 6 10)
+;; (dump (d-running-sum '(1))) ;; => '(1)
+;; (dump (d-running-sum '())) ;; Error
+
+(defun d-product (lis)
+  (when (equal lis nil) (return 1))
+  (let ((sm 1))
+    (dolist (el lis)
+      (setq sm (* sm el)))
+    sm))
+
+;; (dump (d-product '())) ;; => 1
+;; (dump (d-product '(1))) ;; => 1
+;; (dump (d-product '(1 2 3 4))) ;; => 24
+
+(defun d-running-product (lis)
+  (when (equal lis nil) (return '(1)))
+  (let ((sm (list 1)))
+    (dolist (el lis)
+      (push sm (* (last sm) el)))
+    (tail sm)))
+
+;; (dump (d-running-product '(1 2 3 4))) ;; => '(1 2 6 24)
+;; (dump (d-running-product '(1))) ;; => '(1)
+;; (dump (d-running-product '())) ;; Error
+
+(defun d-inits (lis)
+  (when (equal nil lis) (return '(nil)))
+  (let ((res (list nil)))
+    (dotimes (i (length lis))
+      (let ((in (list)))
+        (dotimes (j (+ 1 i)) (push in (nth lis j)) )
+        (push res in)))
+    res))
+
+;; (dump (d-inits '(1 2 3 4))) ;; => '(nil (1) (1 2) (1 2 3) (1 2 3 4))
+;; (dump (d-inits nil)) ;; => '(nil)
+;; (dump (d-inits '(1))) ;; => '(nil (1))
+
+(defun d-tails (lis)
+  (when (equal nil lis) (return '(nil)))
+  (let ((res (list nil))
+        (rev (reverse lis)))
+    (dotimes (i (length lis))
+      (let ((in (list)))
+        (dotimes (j (+ 1 i)) (push in (nth rev j)) )
+        (push res (reverse in))))
+    (reverse res)))
+
+;; (dump (d-tails '(1 2 3 4))) ;; => '((1 2 3 4) (2 3 4) (3 4) (4) nil)
+;; (dump (d-tails nil)) ;; => '(nil)
+;; (dump (d-tails '(1))) ;; => '((1) nil)
+
+
+(defun d-common-prefix (&rest l)
+  (when (== (length l) 1) (return (nth l 0)))
+  (let ((res (list))
+        (len (d-reduce min (mapcar length l))))
+    (dotimes (i len)
+      (let ((el (nth (nth l 0) i)))
+        (dolist (lis l)
+          (if (not (equal (nth lis i) el)) (return res)))
+        (push res el)))
+    res))
+
+;; (dump (d-common-prefix '(1))) ;; => '(1)
+;; (dump (d-common-prefix '(1 2) '(3 4) '(1 2))) ;; => nil
+;; (dump (d-common-prefix '(1 2) '(1 2 3) '(1 2 3 4))) ;; => '(1 2)
+
+(defun d-common-suffix (&rest lists)
+  (reverse (apply 'd-common-prefix (mapcar quote (mapcar reverse lists)))))
+
+;; (dump (d-common-suffix '(1))) ;; => '(1)
+;; (dump (d-common-suffix '(1 2) '(3 4) '(1 2))) ;; => nil
+;; (dump (d-common-suffix '(1 2 3 4) '(2 3 4) '(3 4))) ;; => '(3 4)
+
+
 (defun d-min (list))
 (defun d-min-by (comparator list))
 (defun d-max (list))
@@ -414,9 +468,6 @@
       (push res last-el)
       (setq last-el (fun last-el)))
     res))
-
-;; (dump (d-iterate (lambda (x) (+ x x)) 2 5)) ;; => '(2 4 8 16 32)
-
 (defun d-unfold (fun seed)
   (let ((res (list))
         (last-el (fun seed)))
@@ -424,8 +475,6 @@
       (push res (nth last-el 0))
       (setq last-el (fun (nth last-el 1))))
     res))
-
-;; (dump (d-unfold (lambda (x) (unless (== x 0) (list x (- x 1)))) 10)) ;; => '(10 9 8 7 6 5 4 3 2 1)
 
 (defun d-any? (pred list))
 (defun d-all? (pred list))
@@ -514,3 +563,73 @@
 (defun d-each-r-while (list pred fn))
 (defun d-dotimes (num fn))
 (defun d-doto (eval-initial-value &rest forms))
+
+;; (dump (d-map-when (lambda (x) (== (mod x 2) 0)) (lambda (x) (* x 2)) '(1 2 3 4 5 6 7 8)))
+;; (dump (d-map-first even? square '(1 2 3 4 5 6 7 8)))
+;; (dump (d-map-last even? square '(1 2 3 4 5 6 7 8)))
+;; (dump (d-map-indexed (lambda (index item) (- item index)) '(1 2 3 4))) ;; => '(1 1 1 1)
+;; (dump (d-annotate square '(1 2 3))) ;; => '((2 . 1) (3 . 2) (4 . 3))
+;; (dump (d-splice 'even? (lambda (x) (list x x)) '(1 2 3 4))) ;; => '(1 2 2 3 4 4)
+;; (dump (d-splice-list 'even? '(a b c) '(1 2 3 4))) ;; => '(1 a b c 2)
+;; (dump (d-mapcat (lambda (item) (list 0 item)) '(1 2 3))) ;; => '(0 1 0 2 0 3)
+;; (dump (d-copy '(1 2 3))) ;; => '(1 2 3)
+;; (dump (d-filter (lambda (num) (== 0 (mod num 2))) '(1 2 3 4))) ;; => '(2 4)
+;; (dump (d-remove (lambda (num) (== 0 (mod num 2))) '(1 2 3 4))) ;; => '(2 4)
+;; (dump (d-remove-first 'even? '(1 3 5 4 7 8 10))) ;; => '(1 3 5 7 8 10)
+;; (dump (d-remove-last 'even? '(1 3 5 4 7 8 10))) ;; => '(1 3 5 7 8 10)
+;; (dump (d-non-nil '(1 nil 2 nil nil 3 4 nil 5 nil))) ;; => '(1 2 3 4 5)
+;; (dump (d-slice '(1 2 3 4 5) 1)) ;; => '(2 3 4 5)
+;; (dump (d-slice '(1 2 3 4 5) 1 -2)) ;; => '(1 2 3)
+;; (dump (d-slice '(1 2 3 4 5 6 7 8 9) 1 -1 2)) ;; => '(2 4 6 8)
+;; (dump (d-take 3 '(1 2 3 4 5))) ;; => '(1 2 3)
+;; (dump (d-take 17 '(1 2 3 4 5))) ;; => '(1 2 3 4 5)
+;; (dump (d-take-last 3 '(1 2 3 4 5))) ;; => '(3 4 5)
+;; (dump (d-take-last 17 '(1 2 3 4 5))) ;; => '(1 2 3 4 5)
+;; (dump (d-take-last 1 '(1 2 3 4 5))) ;; => '(5)
+;; (dump (d-drop 3 '(1 2 3 4 5))) ;; => '(4 5)
+;; (dump (d-drop 17 '(1 2 3 4 5))) ;; => '()
+;; (dump (d-drop-last 3 '(1 2 3 4 5))) ;; => '(1 2)
+;; (dump (d-drop-last 17 '(1 2 3 4 5))) ;; => '()
+;; (dump (d-take-while 'even? '(1 2 3 4))) ;; => '()
+;; (dump (d-take-while 'even? '(2 4 5 6))) ;; => '(2 4)
+;; (dump (d-drop-while 'even? '(1 2 3 4))) ;; => '(1 2 3 4)
+;; (dump (d-drop-while 'even? '(2 4 5 6))) ;; => '(5 6)
+;; (dump (d-select-by-indices '(4 10 2 3 6) '("v" "e" "l" "o" "c" "i" "r" "a" "p" "t" "o" "r"))) ;; => '("c" "o" "l" "o" "r")
+;; (dump (d-select-by-indices '(2 1 0) '("a" "b" "c"))) ;; => '("c" "b" "a")
+;; (dump (d-select-by-indices '(0 1 2 0 1 3 3 1) '("f" "a" "r" "l"))) ;; => '("f" "a" "r" "f" "a" "l" "l" "a")
+;; (dump (d-select-columns '(0 2) '((1 2 3) (a b c) (:a :b :c)))) ;; => '((1 3) (a c) (:a :c))
+;; (dump (d-select-columns '(1) '((1 2 3) (a b c) (:a :b :c)))) ;; => '((2) (b) (:b))
+;; (dump (d-select-columns nil '((1 2 3) (a b c) (:a :b :c)))) ;; => '(nil nil nil)
+;; (dump (d-select-column 1 '((1 2 3) (a b c) (:a :b :c)))) ;; => '(2 b :b)
+;; (dump (d-keep (lambda (num) (when (> num 3) (* 10 num))) '(1 2 3 4 5 6))) ;; => '(40 50 60)
+;; (dump (d-concat '(1))) ;; => '(1)
+;; (dump (d-concat '(1) '(2))) ;; => '(1 2)
+;; (dump (d-concat '(1) '(2 3) '(4))) ;; => '(1 2 3 4)
+;; (dump (d-flatten '((1)))) ;; => '(1)
+;; (dump (d-flatten '((1 (2 3) (((4 (5)))))))) ;; => '(1 2 3 4 5)
+;; (dump (d-flatten '(1 2 (3 4)))) ;; => '(1 2 (3 . 4))
+;; (dump (d-replace 1 "1" '(1 2 3 4 3 2 1))) ;; => '("1" 2 3 4 3 2 "1")
+;; (dump (d-replace "foo" "bar" '("a" "nice" "foo" "sentence" "about" "foo"))) ;; => '("a" "nice" "bar" "sentence" "about" "bar")
+;; (dump (d-replace 1 2 nil)) ;; => nil
+;; (dump (d-replace-first 1 "1" '(1 2 3 4 3 2 1))) ;; => '("1" 2 3 4 3 2 1)
+;; (dump (d-replace-first "foo" "bar" '("a" "nice" "foo" "sentence" "about" "foo"))) ;; => '("a" "nice" "bar" "sentence" "about" "foo")
+;; (dump (d-replace-first 1 2 nil)) ;; => nil
+;; (dump (d-replace-last 1 "1" '(1 2 3 4 3 2 1))) ;; => '(1 2 3 4 3 2 "1")
+;; (dump (d-replace-last "foo" "bar" '("a" "nice" "foo" "sentence" "about" "foo"))) ;; => '("a" "nice" "foo" "sentence" "about" "bar")
+;; (dump (d-replace-last 1 2 nil)) ;; => nil
+;; (dump (d-insert-at 1 'x '(a b c))) ;; => '(a x b c)
+;; (dump (d-insert-at 12 'x '(a b c))) ;; => '(a b c x)
+;; (dump (d-replace-at 0 9 '(0 1 2 3 4 5))) ;; => '(9 1 2 3 4 5)
+;; (dump (d-replace-at 1 9 '(0 1 2 3 4 5))) ;; => '(0 9 2 3 4 5)
+;; (dump (d-replace-at 4 9 '(0 1 2 3 4 5))) ;; => '(0 1 2 3 9 5)
+;; (dump (d-update-at 0 (lambda (x) (+ x 9)) '(0 1 2 3 4 5))) ;; => '(9 1 2 3 4 5)
+;; (dump (d-update-at 1 (lambda (x) (+ x 8)) '(0 1 2 3 4 5))) ;; => '(0 9 2 3 4 5)
+;; (dump (d-remove-at 0 '("0" "1" "2" "3" "4" "5"))) ;; => '("1" "2" "3" "4" "5")
+;; (dump (d-remove-at 1 '("0" "1" "2" "3" "4" "5"))) ;; => '("0" "2" "3" "4" "5")
+;; (dump (d-remove-at 2 '("0" "1" "2" "3" "4" "5"))) ;; => '("0" "1" "3" "4" "5")
+;; (dump (d-remove-at-indices '(0) '("0" "1" "2" "3" "4" "5"))) ;; => '("1" "2" "3" "4" "5")
+;; (dump (d-remove-at-indices '(0 2 4) '("0" "1" "2" "3" "4" "5"))) ;; => '("1" "3" "5")
+;; (dump (d-remove-at-indices '(0 5) '("0" "1" "2" "3" "4" "5"))) ;; => '("1" "2" "3" "4")
+;; (dump (d-iterate (lambda (x) (+ x x)) 2 5)) ;; => '(2 4 8 16 32)
+;; (dump (d-unfold (lambda (x) (unless (== x 0) (list x (- x 1)))) 10)) ;; => '(10 9 8 7 6 5 4 3 2 1)
+;; (dump (d-map (lambda (x) (* x 2))'(1 2 3 4 5)))
