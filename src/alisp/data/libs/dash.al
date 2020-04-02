@@ -407,8 +407,25 @@
 (defun d-max-by (comparator list))
 
 
-(defun d-iterate (fun init n))
-(defun d-unfold (fun seed))
+(defun d-iterate (fun init n)
+  (let ((res (list))
+        (last-el init))
+    (dotimes (i n)
+      (push res last-el)
+      (setq last-el (fun last-el)))
+    res))
+
+;; (dump (d-iterate (lambda (x) (+ x x)) 2 5)) ;; => '(2 4 8 16 32)
+
+(defun d-unfold (fun seed)
+  (let ((res (list))
+        (last-el (fun seed)))
+    (while (not (equal last-el nil))
+      (push res (nth last-el 0))
+      (setq last-el (fun (nth last-el 1))))
+    res))
+
+;; (dump (d-unfold (lambda (x) (unless (== x 0) (list x (- x 1)))) 10)) ;; => '(10 9 8 7 6 5 4 3 2 1)
 
 (defun d-any? (pred list))
 (defun d-all? (pred list))
@@ -444,7 +461,6 @@
 (defun d-find-indices (pred list))
 (defun d-grade-up (comparator list))
 (defun d-grade-down (comparator list))
-
 
 (defun d-union (list list2))
 (defun d-difference (list list2))
