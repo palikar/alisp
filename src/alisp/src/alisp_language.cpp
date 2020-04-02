@@ -421,7 +421,7 @@ ALObjectPtr Fdefmacro(ALObjectPtr obj, env::Environment *env, eval::Evaluator *)
     return Qt;
 }
 
-ALObjectPtr Flambda(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
+ALObjectPtr Flambda(ALObjectPtr obj, env::Environment *env, eval::Evaluator *)
 {
     AL_CHECK(assert_min_size<1>(obj));
     AL_CHECK(assert_list(obj->i(0)));
@@ -434,6 +434,16 @@ ALObjectPtr Flambda(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
     auto new_lambda = make_object(obj->i(0), splice(obj, 1));
     new_lambda->set_function_flag();
     new_lambda->set_prop("--name--", make_string("lambda"));
+
+    ALObject::list_type closure_list;
+    for (const auto &scope : env->stack().current_frame())
+    {
+        for (const auto &[sym, val] : scope)
+        {
+            closure_list.push_back(make_object(make_string(sym), val));
+        }
+    }
+    new_lambda->set_prop("--closure--", make_list(closure_list));
 
     return new_lambda;
 }

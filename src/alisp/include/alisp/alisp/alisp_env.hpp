@@ -52,7 +52,6 @@ extern ALObjectPtr intern(std::string name);
 
 extern void update_prime(ALObjectPtr t_sym, ALObjectPtr t_val);
 
-
 namespace detail
 {
 
@@ -347,6 +346,8 @@ class Environment
 
     void defer_unwind() { ++m_unwind_defers; }
 
+    auto &stack() { return m_stack; }
+
     auto get_stack_trace() -> auto & { return m_stack_trace; }
 
 #endif
@@ -426,6 +427,15 @@ struct FunctionCall
     explicit FunctionCall(Environment &t_env, ALObjectPtr t_func) : m_env(t_env)
     {
         m_env.call_function();
+
+        // unload the closure here
+        if (t_func->prop_exists("--closure--"))
+        {
+            for (auto &el : *(t_func->get_prop("--closure--")))
+            {
+                t_env.put(el->i(0), el->i(1));
+            }
+        }
 
         if (t_func->prop_exists("--module--"))
         {
