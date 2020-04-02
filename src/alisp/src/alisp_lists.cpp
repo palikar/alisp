@@ -215,13 +215,13 @@ ALObjectPtr Fclear(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list;
 }
 
-ALObjectPtr Flist(ALObjectPtr obj, env::Environment *, eval::Evaluator *)
+ALObjectPtr Flist(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<0>(obj));
     ALObject::list_type new_list{};
     for (auto el : *obj)
     {
-        new_list.push_back(el);
+        new_list.push_back(eval->eval(el));
     }
     return make_list(new_list);
 }

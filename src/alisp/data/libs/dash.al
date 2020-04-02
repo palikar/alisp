@@ -10,6 +10,7 @@
   (* arg arg))
 
 
+
 (defun d-map (fn list)
   (mapcar fn list))
 
@@ -49,15 +50,79 @@
 ;; (dump (d-map-first even? square '(1 2 3 4 5 6 7 8)))
 ;; (dump (d-map-last even? square '(1 2 3 4 5 6 7 8)))
 
-(defun d-map-indexed (fn list))
-(defun d-annotate (fn list))
-(defun d-splice (pred fun list))
-(defun d-splice-list (pred new-list list))
-(defun d-mapcat (fn list))
-(defun d-copy (arg))
+(defun d-map-indexed (fn lis)
+  (let ((res (list)))
+    (dotimes (i (length lis))
+      (push res (fn i (nth lis i))))
+    res))
 
-(defun d-filter (pred list))
-(defun d-remove (pred list))
+;; (dump (d-map-indexed (lambda (index item) (- item index)) '(1 2 3 4))) ;; => '(1 1 1 1)
+
+
+(defun d-annotate (fn lis)
+  (let ((res (list)))
+    (dolist (el lis)
+      (push res (list (fn el) el)))
+    res))
+
+;; (dump (d-annotate square '(1 2 3))) ;; => '((2 . 1) (3 . 2) (4 . 3))
+
+(defun d-splice (pred fun lis)
+  (let ((res (list)))
+    (dolist (el lis)
+      (if (pred el)
+          (dolist (new-el (fun el))
+            (push res new-el))
+        (push res el)))
+    res))
+
+;; (dump (d-splice 'even? (lambda (x) (list x x)) '(1 2 3 4))) ;; => '(1 2 2 3 4 4)
+
+(defun d-splice-list (pred new-list lis)
+  (let ((res (list)))
+    (dolist (el lis)
+      (if (pred el)
+          (dolist (new-el new-list)
+            (push res new-el))
+        (push res el)))
+    res))
+
+;; (dump (d-splice-list 'even? '(a b c) '(1 2 3 4))) ;; => '(1 a b c 2)
+
+(defun d-mapcat (fn lis)
+  (let ((res (list)))
+    (dolist (el lis)
+      (dolist (new-el (fn el))
+        (push res new-el)))
+    res))
+
+;; (dump (d-mapcat (lambda (item) (list 0 item)) '(1 2 3))) ;; => '(0 1 0 2 0 3)
+
+(defun d-copy (arg)
+  (let ((res (list)))
+    (dolist (el arg)
+      (push res el))
+    res))
+
+;; (dump (d-copy '(1 2 3))) ;; => '(1 2 3)
+
+(defun d-filter (pred lis)
+  (filter pred lis))
+
+
+;; (dump (d-filter (lambda (num) (== 0 (mod num 2))) '(1 2 3 4))) ;; => '(2 4)
+
+(defun add-num (num)
+  (let ((a 5))
+    (lambda (x) (+ x num))))
+
+
+(defun d-remove (pred lis)
+  (filter (lambda (x) (not (pred x))) lis)
+  )
+
+(dump (d-remove (lambda (num) (== 0 (mod num 2))) '(1 2 3 4))) ;; => '(2 4)
+
 (defun d-remove-first (pred list))
 (defun d-remove-last (pred list))
 (defun d-remove-item (item list))
