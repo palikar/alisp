@@ -17,3 +17,12 @@
      (with-cout str ,@body)
      (stream-close str)
      (file-close file)))
+
+(defun even? (arg)
+  (== 0 (mod arg 2)))
+
+(defun odd? (arg)
+  (!= 0 (mod arg 2)))
+
+(defun square (arg)
+  (* arg arg))
