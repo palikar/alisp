@@ -196,6 +196,23 @@ ALObjectPtr Fnth(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list->i(static_cast<ALObject::list_type::size_type>(index->to_int()));
 }
 
+ALObjectPtr Ffind(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<2>(obj));
+    auto list    = eval->eval(obj->i(0));
+    auto element = eval->eval(obj->i(1));
+    AL_CHECK(assert_list(list));
+
+    auto ch = list->children();
+    auto it = std::find_if(ch.begin(), ch.end(), [&element](auto &el) { return equal(element, el); });
+    if (it == ch.end())
+    {
+        return Qnil;
+    }
+
+    return make_int(std::distance(ch.begin(), it));
+}
+
 // inplace
 ALObjectPtr Finsert(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {

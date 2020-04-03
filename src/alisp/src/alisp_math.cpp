@@ -276,7 +276,7 @@ ALObjectPtr Fpow(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
 
 ALObjectPtr Fmin(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    AL_CHECK(assert_min_size<2>(obj));
+    AL_CHECK(assert_min_size<1>(obj));
 
     auto eval_obj = eval_transform(eval, obj);
     AL_CHECK(assert_numbers(eval_obj));
@@ -312,7 +312,7 @@ ALObjectPtr Fmin(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
 ALObjectPtr Fmax(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    AL_CHECK(assert_min_size<2>(obj));
+    AL_CHECK(assert_min_size<1>(obj));
 
     auto eval_obj = eval_transform(eval, obj);
     AL_CHECK(assert_numbers(eval_obj));

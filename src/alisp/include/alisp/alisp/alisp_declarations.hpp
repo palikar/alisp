@@ -664,6 +664,7 @@ Example:
 )");
 
 DEFUN(insert, "insert", R"((insert LIST INDEX ELEMENT))");
+DEFUN(find, "find", R"((find LIST))");
 
 DEFUN(nth, "nth", R"((nth LIST INDEX)
 

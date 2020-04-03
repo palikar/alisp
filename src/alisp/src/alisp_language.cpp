@@ -582,6 +582,12 @@ ALObjectPtr Fdolist(ALObjectPtr obj, env::Environment *env, eval::Evaluator *evl
     auto bound_sym    = var_and_list->i(0);
     auto list         = evl->eval(var_and_list->i(1));
 
+    AL_CHECK(assert_symbol(bound_sym));
+    if (equal(list, Qnil))
+    {
+        return Qnil;
+    };
+
     env::detail::ScopePushPop spp{ *env };
 
     env->put(bound_sym, Qnil);
