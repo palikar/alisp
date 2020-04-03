@@ -28,7 +28,6 @@
 
 namespace alisp
 {
-
 inline auto module_init(std::string t_name)
 {
     return std::make_shared<env::Module>(std::move(t_name));

@@ -63,6 +63,11 @@ ALObjectPtr Environment::find(const ALObjectPtr t_sym)
         return m_active_module.get().root_scope().at(name);
     };
 
+    if (m_modules.at("--main--")->root_scope().count(name))
+    {
+        return m_modules.at("--main--")->root_scope().at(name);
+    };
+
     throw environment_error("\tUnbounded Symbol: " + name);
 }
 
