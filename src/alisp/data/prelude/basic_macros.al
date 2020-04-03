@@ -10,7 +10,6 @@
 (defmacro 1- (var)
   `(setq ,var (- ,var 1)))
 
-
 (defmacro std-redirect (file-str &rest body)
   `(let* ((file (file-open ,file-str))
           (str (stream :from-file file)))
@@ -26,3 +25,9 @@
 
 (defun square (arg)
   (* arg arg))
+
+(defun empty (lis)
+  (== 0 (length lis)))
+
+(defun nempty (lis)
+  (!= 0 (length lis)))

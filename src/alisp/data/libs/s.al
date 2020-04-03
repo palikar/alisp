@@ -302,23 +302,23 @@
 
 (defun s-upper-camel-case (s)
   (let ((words (s-split-words s)))
-    (s-join "" (mapcar 'string-capizalize words))))
+    (s-join "" (mapcar string-capizalize words))))
 
 (defun s-snake-case (s)
   (let ((words (s-split-words s)))
-    (s-join "_" (mapcar 'string-lower words))))
+    (s-join "_" (mapcar string-lower words))))
 
 (defun s-dashed-words (s)
   (let ((words (s-split-words s)))
-    (s-join "-" (mapcar 'string-lower words))))
+    (s-join "-" (mapcar string-lower words))))
 
 (defun s-capitalized-words (s)
   (let ((words (s-split-words s)))
-    (s-join " " (mapcar 's-capitalize words))))
+    (s-join " " (mapcar s-capitalize words))))
 
 (defun s-titleized-words (s)
   (let ((words (s-split-words s)))
-    (s-join " " (mapcar 's-titleize words))))
+    (s-join " " (mapcar s-titleize words))))
 
 (defun s-word-initials (s)
   (s-join "" (mapcar (lambda (ss) (string-substring ss 0 1)) (s-split-words s))))

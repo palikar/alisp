@@ -1,7 +1,7 @@
-(defmacro inc (var)
+(defmacro inc+ (var)
   `(setq ,var (+ ,var 1)))
 
-(defmacro 1+ (var)
+(defmacro 1++ (var)
   `(progn
      (inc ,var)
      (inc ,var)
@@ -15,8 +15,8 @@
 
 (defvar a 42)
 (println "Beginning: " a )
-(inc a)
-(1+ a)
+(inc+ a)
+(1++ a)
 (println "End: " a )
 
 (custom-when t

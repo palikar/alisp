@@ -9,14 +9,14 @@ GREEN='\033[0;32'
 NC='\033[0m'
 
 ALISP_EXE ?= ../build/bin/alisp
-ALISP_FLAGS=-Q
+ALISP_FLAGS=
 SHELL=/bin/sh
 
 basic_scripts=basic_bool.al basic_comments.al  basic_cond.al  basic_constant.al  basic_defun.al  basic_dump.al  basic_funcall.al  basic_if.al  basic_let.al  basic_loops.al  basic_mapc.al  basic_math.al  basic_predicates.al  basic_print.al  basic_progn.al  basic_quote.al  basic_set.al  basic_setq.al  basic_string_literals.al  basic_unless.al  basic_when.al basic_lambda.al
 
 example_scripts=arguments.al backquote.al big_example.al callstack_dump.al env_dump.al  gen_func_sym.al imports.al lists.al macros.al mathy.al parses.al ranges.al scope.al strings.al
 
-example_libs= base.al form.al functional.al loc.al procs.al rand.al regy.al s_examples.al time.al xml_test.al
+example_libs= base.al dash_examples.al form.al functional.al loc.al procs.al rand.al regy.al s_examples.al time.al xml_test.al
 
 
 all : basic examples libs
