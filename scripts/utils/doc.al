@@ -4,8 +4,10 @@
 (import 'platform)
 (import 'system)
 (import 'time)
-
 (import 'json)
+(import 's)
+
+(import 'dash)
 
 (defun heading-1 (name)
   "Creates a heading"
@@ -313,3 +315,9 @@
 
 (println "Generating module...: " "modules/time.md")
 (std-redirect (fileio.f-join root-dir "modules/time.md") (generate-module "Time" time))
+
+(println "Generating module...: " "modules/dash.md")
+(std-redirect (fileio.f-join root-dir "modules/dash.md") (generate-module "Dash" dash))
+
+(println "Generating module...: " "modules/s.md")
+(std-redirect (fileio.f-join root-dir "modules/s.md") (generate-module "S" s))

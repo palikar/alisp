@@ -18,6 +18,7 @@ target_link_libraries(alcpp
     ${READLINE_LIB})
 
 target_compile_definitions(alcpp PRIVATE AL_ROOT=\"${PROJECT_ROOT}\")
+target_compile_definitions(alcpp PRIVATE AL_BUILD=\"${PROJECT_BUILD}\")
 
 add_executable(alisp
     src/alisp.cpp

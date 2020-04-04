@@ -1,25 +1,25 @@
 ### Platform
 
-- **alisp-version-minor** : **
-
-- **compiler-name** : **
-
-- **alisp-version-major** : **
-
-- **max-call-depth** : **
-
-- **alisp-version** : **
-
 
 - **os** : **
 
-- **alisp-version-patch** : **
+- **alisp-version** : **
 
-- **build-info** : **
+- **alisp-version-minor** : **
 
 - **max-evaluation-depth** : **
+
+- **alisp-version-major** : **
+
+- **alisp-version-patch** : **
+
+- **max-call-depth** : **
+
+- **compiler-name** : **
 
 - **compiler-version** : **
 
 - **arch** : **
+
+- **build-info** : **
 

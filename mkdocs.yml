@@ -28,5 +28,7 @@ nav:
     - Platform : './modules/platform.md'
     - System : './modules/system.md'
     - Time : './modules/time.md'
+    - Dash : './modules/dash.md'
+    - S : './modules/s.md'
 
 theme: readthedocs

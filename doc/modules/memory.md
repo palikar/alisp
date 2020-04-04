@@ -1,23 +1,23 @@
 ### Memory
 
-- **buffer-fill** : **
+- **buffer-get** : **
 
 - **buffer-range-get** : **
 
+- **buffer-nth-set** : **
+
 - **buffer-nth-get** : **
 
-- **buffer-get** : **
+- **buffer-fill** : **
 
-- **buffer-allocate** : **
-
-- **buffer-set** : **
-
-- **buffer-nth-set** : **
+- **buffer-get-size** : **
 
 - **buffer-release** : **
 
-- **buffer-mmap** : **
+- **buffer-set** : **
 
-- **buffer-get-size** : **
+- **buffer-allocate** : **
+
+- **buffer-mmap** : **
 
 

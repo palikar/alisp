@@ -559,6 +559,8 @@ int main(int argc, char *argv[])
     outfile.close();
 
     const std::string project_root{ AL_ROOT };
+    const std::string project_build{ AL_BUILD };
+    
 
     std::stringstream compile_command;
 
@@ -568,7 +570,7 @@ int main(int argc, char *argv[])
     };
 
     const std::vector<std::string> includes = {
-        fmt::format("-I{}/build/src/include", project_root),
+        fmt::format("-I{}/src/include", project_build),
         fmt::format("-I{}/src/include", project_root),
         fmt::format("-I{}/libs/include", project_root),
         fmt::format("-I{}/src/applications/include", project_root),
@@ -594,7 +596,7 @@ int main(int argc, char *argv[])
     if (opts.com_module)
     {
         compile_command << "-fPIC ";
-    }
+     }
 
     for (auto &el : definitions)
     {
@@ -623,20 +625,17 @@ int main(int argc, char *argv[])
         "038baac88f4c7bfa972ce5adac1616bed8fe2ef4/lib",
         "/home/arnaud/.conan/data/fmt/6.0.0/bincrafters/stable/package/038baac88f4c7bfa972ce5adac1616bed8fe2ef4/lib/"
         "libfmtd.a",
-        fmt::format("{}/build/lib/libalisp_math.so", project_root),
-        fmt::format("{}/build/lib/libalisp_fileio.so", project_root),
-        fmt::format("{}/build/lib/libalisp_time.so", project_root),
-        fmt::format("{}/build/lib/libalisp_system.so", project_root),
-        fmt::format("{}/build/lib/libalisp_platform.so", project_root),
-        fmt::format("{}/build/lib/libalisp_memory.so", project_root),
-        fmt::format("{}/build/lib/libalisp_util.so", project_root),
-        fmt::format("{}/build/lib/libalisp_language.so", project_root),
-        fmt::format("{}/build/lib/libalisp_streams.so", project_root),
-        fmt::format("{}/build/lib/libalisp_management.so", project_root),
-        "-lreadline",
-        "-lstdc++fs",
-        "-pthread",
-        "-ldl"
+        fmt::format("{}/lib/libalisp_math.so", project_build),
+        fmt::format("{}/lib/libalisp_fileio.so", project_build),
+        fmt::format("{}/lib/libalisp_time.so", project_build),
+        fmt::format("{}/lib/libalisp_system.so", project_build),
+        fmt::format("{}/lib/libalisp_platform.so", project_build),
+        fmt::format("{}/lib/libalisp_memory.so", project_build),
+        fmt::format("{}/lib/libalisp_util.so", project_build),
+        fmt::format("{}/lib/libalisp_language.so", project_build),
+        fmt::format("{}/lib/libalisp_streams.so", project_build),
+        fmt::format("{}/lib/libalisp_management.so", project_build),
+        "-lreadline", "-lstdc++fs", "-pthread", "-ldl"
     };
 
     std::stringstream link_command;

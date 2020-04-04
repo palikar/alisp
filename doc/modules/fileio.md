@@ -4,105 +4,105 @@
 
 - **f-descendant-of** : **
 
-- **f-ancestor-of** : **
-
 - **f-child-of** : **
 
-- **f-parent-of** : **
+- **f-absolute** : **
 
-- **f-same** : **
+- **f-executable** : **
 
-- **f-join** : **
-
-- **f-filename** : **
-
-- **f-read-text** : **
-
-- **f-read-bytes** : **
-
-- **f-make-symlink** : **
-
-- **f-move** : **
-
-- **f-append-text** : **
-
-- **f-with-temp-file** : **
-
-- **f-mkdir** : **
-
-- **f-write-text** : **
-
-- **f-split** : **
-
-- **f-copy** : **
-
-- **f-touch** : **
-
-- **f-directories** : **
-
-- **f-file** : **
-
-- **f-long** : **
-
-- **f-hidden** : **
-
-- **f-entries** : **
-
-- **f-temp-file-name** : **
-
-- **f-no-ext** : **
+- **f-writable** : **
 
 - **f-symlink** : **
 
-- **f-append-bytes** : **
+- **f-file** : **
+
+- **f-exists** : **
+
+- **f-parent-of** : **
+
+- **f-long** : **
+
+- **f-short** : **
+
+- **f-hidden** : **
+
+- **f-readable** : **
+
+- **f-relative** : **
+
+- **f-base** : **
+
+- **f-swap-ext** : **
+
+- **f-write-bytes** : **
+
+- **f-move** : **
+
+- **f-join** : **
 
 - **f-prelative** : **
 
+- **f-expand-user** : **
+
+- **f-write-text** : **
+
+- **f-append-bytes** : **
+
+- **f-touch** : **
+
+- **f-read-text** : **
+
+- **f-entries** : **
+
+- **f-copy** : **
+
+- **f-filename** : **
+
+- **f-temp-file** : **
+
+- **f-temp-file-name** : **
+
+- **f-full** : **
+
+- **f-with-temp-file** : **
+
+- **f-same** : **
+
+- **f-common-parent** : **
+
+- **f-ancestor-of** : **
+
+- **f-directories** : **
+
+- **f-direcotry** : **
+
+- **f-make-symlink** : **
+
+- **f-is-root** : **
+
+- **f-delete** : **
+
+- **f-mkdir** : **
+
+- **f-canonical** : **
+
+- **f-ext** : **
+
+- **f-no-ext** : **
+
+- **f-root** : **
+
 - **f-glob** : **
+
+- **f-read-bytes** : **
+
+- **f-append-text** : **
+
+- **f-split** : **
 
 - **f-expand** : **
 
 - **f-dirname** : **
-
-- **f-common-parent** : **
-
-- **f-relative** : **
-
-- **f-temp-file** : **
-
-- **f-short** : **
-
-- **f-ext** : **
-
-- **f-swap-ext** : **
-
-- **f-expand-user** : **
-
-- **f-delete** : **
-
-- **f-base** : **
-
-- **f-canonical** : **
-
-- **f-root** : **
-
-- **f-full** : **
-
-- **f-exists** : **
-
-- **f-direcotry** : **
-
-- **f-write-bytes** : **
-
-- **f-readable** : **
-
-- **f-writable** : **
-
-- **f-is-root** : **
-
-- **f-executable** : **
-
-- **f-absolute** : **
 
 
 - **f-directory-separator** : **

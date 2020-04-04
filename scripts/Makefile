@@ -49,3 +49,4 @@ clean:
 	@rm -rf ./examples/*.output
 	@rm -rf ./libs/*.output
 	@rm -rf ./*.output
+	@rm -rf ./new_xml.xml
