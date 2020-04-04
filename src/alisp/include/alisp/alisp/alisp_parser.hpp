@@ -1121,8 +1121,7 @@ template<class Environment> class ALParser : public ParserBase
         m_input = input;
         depth   = 0;
 
-        if (*position == '#' && *(position + 1) == '!'
-            && position.line == 0 && position.col == 0)
+        if (*position == '#' && *(position + 1) == '!' && position.line == 0 && position.col == 0)
         {
             skip_line();
         }
