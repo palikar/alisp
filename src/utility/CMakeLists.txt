@@ -21,6 +21,9 @@ target_link_libraries(alisp_util
     fmt::fmt
     )
 
+if(NOT BUILD_SHARED_LIBS)
+    set_property(TARGET alisp_util PROPERTY POSITION_INDEPENDENT_CODE ON)
+endif()
 
 install(TARGETS ${PROJECT_NAME}_util
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/

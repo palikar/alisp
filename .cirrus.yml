@@ -14,7 +14,7 @@ task:
   - mkdir build
   - cd build
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan 
-  - cmake -D CMAKE_BUILD_TYPE:STRING=Release ..
+  - cmake -D CMAKE_BUILD_TYPE:STRING=Release -DBUILD_SHARED_LIBS=ON ..
   - VERBOSE=1 cmake --build . -- -j2
   test_script:
   - pwd
@@ -37,7 +37,7 @@ task:
   - mkdir build
   - cd build
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan 
-  - cmake -D CMAKE_BUILD_TYPE:STRING=Debug -DENABLE_TESTING=ON ..
+  - cmake -D CMAKE_BUILD_TYPE:STRING=Debug -DENABLE_TESTING=ON -DBUILD_SHARED_LIBS=ON .. 
   - VERBOSE=1 cmake --build . -- -j2
   test_script:
   - pwd

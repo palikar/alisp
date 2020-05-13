@@ -16,6 +16,10 @@ target_link_libraries(alisp_management
     fmt::fmt)
 
 
+if(NOT BUILD_SHARED_LIBS)
+    set_property(TARGET alisp_management PROPERTY POSITION_INDEPENDENT_CODE ON)
+endif()
+
 install(TARGETS alisp_management
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${alisp}/
     RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}

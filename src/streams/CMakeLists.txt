@@ -15,6 +15,9 @@ target_link_libraries(alisp_streams
     PUBLIC
     fmt::fmt)
 
+if(NOT BUILD_SHARED_LIBS)
+    set_property(TARGET alisp_streams PROPERTY POSITION_INDEPENDENT_CODE ON)
+endif()
 
 install(TARGETS alisp_streams
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${alisp}/
