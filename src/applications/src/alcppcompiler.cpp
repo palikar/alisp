@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <unordered_map>
 #include <string_view>
+#include <iomanip>
 
 #include <clipp.hpp>
 #include <fmt/format.h>

@@ -117,15 +117,15 @@ if (${FORCE_COLORED_OUTPUT})
         target_compile_options (project_options INTERFACE -fdiagnostics-color=always)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         target_compile_options (project_options INTERFACE -fcolor-diagnostics)
-
-        if(LIBCPP)
-            # target_compile_options(project_options INTERFACE -stdlib=libc++)
-        else()
-            target_link_libraries(project_options INTERFACE stdc++fs)
-        endif()
-        
     endif ()
 endif ()
+
+
+if(LIBCPP)
+    target_compile_options(project_options INTERFACE -stdlib=libc++)
+else()
+    target_link_libraries(project_options INTERFACE stdc++fs)
+endif()
 
 
 
@@ -158,25 +158,23 @@ if(ENABLE_CLANG_TIDY)
     endif()
 endif()
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-# if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-#     message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-#     file(DOWNLOAD  "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
-#         "${CMAKE_BINARY_DIR}/conan.cmake")
-# endif()
-# include(${CMAKE_BINARY_DIR}/conan.cmake)
-# conan_check(REQUIRED)
-# conan_cmake_run(
-#     CONANFILE
-#     conanfile.txt
-#     BASIC_SETUP
-#     CONAN_COMMAND
-#     ${CONAN_CMD}
-#     CMAKE_TARGETS
-#     BUILD
-#     missing)
-# include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-# conan_basic_setup()
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
@@ -446,12 +444,11 @@ if(ENABLE_TESTING)
         message(STATUS "Adding script test ${filename}")
 
         add_test(NAME script-test.${filename}
-            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp -I "${CMAKE_CURRENT_SOURCE_DIR}/src/alisp/data/libs/" -I "${CMAKE_CURRENT_BINARY_DIR}/lib/"  ${CMAKE_CURRENT_SOURCE_DIR}/tests/${filename}
+            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp -I "${CMAKE_CURRENT_SOURCE_DIR}/src/alisp/data/libs/" -I "${CMAKE_CURRENT_BINARY_DIR}/lib/" ${CMAKE_CURRENT_SOURCE_DIR}/tests/${filename}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     endforeach()
     
 endif()
-
 
 message("#########################################")
 message("##\t \t Summary \t       ##")
