@@ -33,13 +33,13 @@ void init_streams()
     AL_DEBUG("Initing the streams. Binding cout and cin"s);
 
     auto cout_stream = std::unique_ptr<streams::ALStream, std::function<void(streams::ALStream *)>>(
-      dynamic_cast<streams::ALStream *>(streams::CoutStream::get_instance()), [](streams::ALStream *) {});
+      static_cast<streams::ALStream *>(streams::CoutStream::get_instance()), [](streams::ALStream *) {});
 
     auto cerr_stream = std::unique_ptr<streams::ALStream, std::function<void(streams::ALStream *)>>(
-      dynamic_cast<streams::ALStream *>(streams::CerrStream ::get_instance()), [](streams::ALStream *) {});
+      static_cast<streams::ALStream *>(streams::CerrStream ::get_instance()), [](streams::ALStream *) {});
 
     auto cin_stream = std::unique_ptr<streams::ALStream, std::function<void(streams::ALStream *)>>(
-      dynamic_cast<streams::ALStream *>(streams::CinStream::get_instance()), [](streams::ALStream *) {});
+      static_cast<streams::ALStream *>(streams::CinStream::get_instance()), [](streams::ALStream *) {});
 
     cout_id = streams_registry.emplace_resource(std::move(cout_stream))->id;
     cerr_id = streams_registry.emplace_resource(std::move(cerr_stream))->id;
@@ -87,7 +87,7 @@ ALObjectPtr StreamsHelper::create_string_stream(ALObjectPtr t_string)
     streams::StringStream *new_stream = new streams::StringStream(t_string->to_string());
 
     auto string_stream = std::unique_ptr<streams::ALStream, std::function<void(streams::ALStream *)>>(
-      dynamic_cast<streams::ALStream *>(new_stream), [](streams::ALStream *ptr) { delete ptr; });
+      static_cast<streams::ALStream *>(new_stream), [](streams::ALStream *ptr) { delete ptr; });
 
     auto new_id = al::streams_registry.emplace_resource(std::move(string_stream))->id;
     AL_DEBUG("New string stream: "s += std::to_string(new_id));
@@ -99,7 +99,7 @@ ALObjectPtr StreamsHelper::create_file_stream(ALObjectPtr t_file)
     streams::FileStream *new_stream = new streams::FileStream(FileHelpers::get_file(t_file).m_file);
 
     auto file_stream = std::unique_ptr<streams::ALStream, std::function<void(streams::ALStream *)>>(
-      dynamic_cast<streams::ALStream *>(new_stream), [](streams::ALStream *ptr) { delete ptr; });
+      static_cast<streams::ALStream *>(new_stream), [](streams::ALStream *ptr) { delete ptr; });
 
     auto new_id = al::streams_registry.emplace_resource(std::move(file_stream))->id;
     AL_DEBUG("New file stream: "s += std::to_string(new_id));
