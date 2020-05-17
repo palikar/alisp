@@ -312,7 +312,7 @@ In certain situations you'll want to evaluate several forms at a place where a s
     42)              ; -> 42
 #+END_SRC
 ** Conditionals
-The basic conditional statement of alisp is the =if= form --  =(if COND THEN ELSE)=. If the form =COND= evaluates to something true, the *single* =THEN= form is evaluated. If =COND= evaluates to false, the =ELSE= form is evaluated. The ELSE part can be actually be a sequence of forms that will get evaluated. If you want to evaluate several forms in the THEN part, you'll have to use the =prog= form.
+The basic conditional statement of alisp is the =if= form --  =(if COND THEN ELSE)=. If the form =COND= evaluates to something true, the *single* =THEN= form is evaluated. If =COND= evaluates to false, the =ELSE= form is evaluated. The ELSE part can be actually be a sequence of forms that will get evaluated. If you want to evaluate several forms in the THEN part, you'll have to use the =progn= form.
 
 Example:
 #+BEGIN_SRC emacs-lisp :results none
@@ -371,6 +371,7 @@ Example:
 
 
 * Modules
+
 
 #+BEGIN_SRC emacs-lisp :results none
 (import 'math)

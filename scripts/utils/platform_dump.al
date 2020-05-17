@@ -1,4 +1,3 @@
-#!/usr/bin/env alisp
 (import 'platform :all)
 
 (print "The current Alisp is running on " os " and its version is " alisp-version ". The interpteter was compiled with " compiler-name " and the version of the compiler has been " compiler-version ". The architecture of the host machine is " arch ".\n")

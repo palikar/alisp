@@ -6,8 +6,9 @@
 (import 'time)
 (import 'json)
 (import 's)
-
 (import 'dash)
+
+                                        ; Markddown utils
 
 (defun heading-1 (name)
   "Creates a heading"
@@ -21,13 +22,13 @@
   "Creates a heading"
   (println "### " name))
 
-(defun warning (name)
+(defun warning (text)
   "Creates a warning"
-  (print "!!! Warning\n\t" name "\n"))
+  (print "!!! Warning\n\t" text "\n"))
 
-(defun tip (name)
+(defun tip (text)
   "Creates a not"
-  (print "!!! Tip\n\t" name "\n"))
+  (print "!!! Tip\n\t" text "\n"))
 
 (defun link (to text)
   "Creates a not"
@@ -56,132 +57,126 @@
 (defmacro expand-and-dump (syms)
   `(dump-doc-list ,@(eval syms)))
 
+
+
+
 (defun generate-basic-reference ()
-  
-  (defvar constructs-preamble "Basic fuctions that provide the backbone of the language. These include global and local variable definition, flow control structures and loops.")
-  (defvar language-constructs-list
-    '(import
-      modref
-      defun
-      eval
-      setq
-      set
-      setq
-      quote
-      function
-      lambda
-      if
-      while
-      dolist
-      cond
-      when
-      unless
-      let
-      let*
-      or
-      and
-      not
-      parse-int
-      parse-float
-      to-string
-      to-char
-      funcall
-      backquote
-      return
-      exit))
 
-  (defvar printing-preamble "Functions to interact with the stanard input and output.")
-  (defvar printing-list
-    '(print
-      println
-      eprint
-      eprintln
-      read-line))
-
-  (defvar lists-preamble "Functions to interact with the stanard input and output.")
-  (defvar lists-list
-    '(
-      length
-      cons
-      head
-      last
-      init
-      tail
-      nth
-      mapc
-      mapcar
-      push
-      delete
-      remove
-      range))
-
-  (defvar props-preamble "Functions for accessing the properties of objects.")
-  (defvar props-list '(prop-get prop-set prop-list))
-
-  (defvar predicates-preamble "Functions for type inspecting. These functions can be used to check whether an object is from a certain type.")
-  (defvar predicates-list '(pstring plist pint preal psym pfunction))
-
-  (defvar strings-preamble "Functions for basic string handling.")
-  (defvar strings-list
-    '(string-length
-      string-contains
-      string-endswith
-      string-startswith
-      string-length
-      string-capitalize
-      string-find
-      string-replace
-      string-replaceall
-      string-split
-      string-substring
-      string-splitlines
-      string-upper
-      string-lower
-      string-strip
-      string-join
-      char-isalpha
-      char-isdigit))
-
-  (defvar math-preamble "Functions that realise simple math operations.")
-  (defvar math-list '(+ - / * < <= > >= == != mod pow min max round))
-
-  (defvar alg-preamble "Several functions of basic algorithms for working with lists.")
-  (defvar alg-list '(slice sort sort zip filter any all))
-
-  
   (heading-1 "Basic builtin functions.")
 
-  (heading-2 "Language constructs")
-  (println "\n" constructs-preamble "\n")
-  (expand-and-dump language-constructs-list)
+  (let ((constructs-preamble "Basic fuctions that provide the backbone of the language. These include global and local variable definition, flow control structures and loops.")
+        (language-constructs-list
+         '(import
+           modref
+           defun
+           eval
+           setq
+           set
+           setq
+           quote
+           function
+           lambda
+           if
+           while
+           dolist
+           cond
+           when
+           unless
+           let
+           let*
+           or
+           and
+           not
+           parse-int
+           parse-float
+           to-string
+           to-char
+           funcall
+           backquote
+           return
+           exit)))
+    (heading-2 "Language constructs")
+    (println "\n" constructs-preamble "\n")
+    (expand-and-dump language-constructs-list))
 
-  (heading-2 "Printing")
-  (println "\n" printing-preamble "\n")
-  (expand-and-dump printing-list)
+  (let ((printing-preamble "Functions to interact with the stanard input and output.")
+        (printing-list
+         '(print
+           println
+           eprint
+           eprintln
+           read-line)))
+    (heading-2 "Printing")
+    (println "\n" printing-preamble "\n")
+    (expand-and-dump printing-list))
 
-  (heading-2 "Lists")
-  (println "\n" lists-preamble "\n")
-  (expand-and-dump lists-list)
+  (let ((lists-preamble "Functions to interact with the stanard input and output.")
+        (lists-list
+         '(
+           length
+           cons
+           head
+           last
+           init
+           tail
+           nth
+           mapc
+           mapcar
+           push
+           delete
+           remove
+           range))  )
+    (heading-2 "Lists")
+    (println "\n" lists-preamble "\n")
+    (expand-and-dump lists-list))
+  
+  (let ((props-preamble "Functions for accessing the properties of objects.")
+        (props-list '(prop-get prop-set prop-list)))
+    (heading-2 "Object Properties")
+    (println "\n" props-preamble "\n")
+    (expand-and-dump props-list))
 
-  (heading-2 "Object Properties")
-  (println "\n" props-preamble "\n")
-  (expand-and-dump props-list)
+  (let ((predicates-preamble "Functions for type inspecting. These functions can be used to check whether an object is from a certain type.")
+        (predicates-list '(pstring plist pint preal psym pfunction)))
+    (heading-2 "Object predicates")
+    (println "\n" predicates-preamble "\n")
+    (expand-and-dump predicates-list))
 
-  (heading-2 "Object predicates")
-  (println "\n" predicates-preamble "\n")
-  (expand-and-dump predicates-list)
+  (let ((strings-preamble "Functions for basic string handling.")
+        (strings-list
+         '(string-length
+           string-contains
+           string-endswith
+           string-startswith
+           string-length
+           string-capitalize
+           string-find
+           string-replace
+           string-replaceall
+           string-split
+           string-substring
+           string-splitlines
+           string-upper
+           string-lower
+           string-strip
+           string-join
+           char-isalpha
+           char-isdigit)))
+    (heading-2 "Strings")
+    (println "\n" strings-preamble "\n")
+    (expand-and-dump strings-list))
 
-  (heading-2 "Strings")
-  (println "\n" strings-preamble "\n")
-  (expand-and-dump strings-list)
+  (let ((math-preamble "Functions that realise simple math operations.")
+        (math-list '(+ - / * < <= > >= == != mod pow min max round)))
+    (heading-2 "Basic Math")
+    (println "\n" math-preamble "\n")
+    (expand-and-dump math-list))
 
-  (heading-2 "Basic Math")
-  (println "\n" math-preamble "\n")
-  (expand-and-dump math-list)
-
-  (heading-2 "Algorithms")
-  (println "\n" alg-preamble "\n")
-  (expand-and-dump alg-list)
+  (let ((alg-preamble "Several functions of basic algorithms for working with lists.")
+        (alg-list '(slice sort sort zip filter any all)))
+    (heading-2 "Algorithms")
+    (println "\n" alg-preamble "\n")
+    (expand-and-dump alg-list))
 
   )
 
@@ -265,6 +260,10 @@
       (print " - " (modref mod '--doc--))
       (line))))
 
+
+
+
+
 (defmacro generate-module (title module)
   (let* ((syms (symbols-list module))
          (len (length syms)))
@@ -281,10 +280,15 @@
           (dump-doc-list sym))))))
 
 
+
+
 (defvar root-dir
   (if (== 0 (length --argv--))
-      (exit 1)
+      (progn
+        (println "Usage: doc.al <root_dir>")
+        (exit 1))
     (fileio.f-canonical (nth --argv-- 0))))
+
 
 (println "Genrating basic...: " "basic_doc.md")
 (std-redirect (fileio.f-join root-dir "basic_doc.md") (generate-basic-reference))
