@@ -23,6 +23,7 @@
 #include <utility>
 
 #include "alisp/alisp/alisp_common.hpp"
+
 #include "alisp/management/registry.hpp"
 
 #include "alisp/utility/macros.hpp"

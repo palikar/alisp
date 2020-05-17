@@ -39,7 +39,15 @@ namespace alisp
 /* | |__| (_) | | | \__ \ |_| |  | |_| | (__| |_\__ \ */
 /*  \____\___/|_| |_|___/\__|_|   \__,_|\___|\__|___/ */
 
-DEFUN(make_symbol, "make_symbol", R"(make_symbol NAME)");
+DEFUN(make_symbol, "make-symbol", R"((make-symbol NAME)
+
+Return a new symbol with the name NAME.
+
+Example:
+```elisp
+(make-symbol "sym" )
+```
+");
 
 DEFUN(intern, "intern", R"(intern NAME)");
 
@@ -153,10 +161,16 @@ Evaluate the form `FORM`. The usual form for evaluation apply.
 )");
 
 
-DEFUN(eval_file, "eval-file", R"((eval-file STRING)
+DEFUN(eval_file, "eval-file", R"((eval-file FILE)
+
+Execute the file `FILE` as a alisp-script in the current
+environment. `FILE` should be a valid path
 )");
 
 DEFUN(eval_string, "eval-string", R"((eval-string STRING)
+
+Execute the string `STRING` as a alisp-statement in the current
+environment.
 )");
 
 DEFUN(setq, "setq", R"((setq SYMBOL VALUE [[SYMBOL VALUE] ... ])
@@ -308,7 +322,7 @@ Example:
 DEFUN(letx, "let*", R"((let* ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)
 
 Bind local variables and execute `BODY`. In contrast `let`, each
-variable can be used in the definition of the following variables. 
+variable can be used in the definition of the following variables.
 
 Example:
 ```elisp
@@ -428,5 +442,15 @@ DEFUN(sym_list, "symbols-list", R"((symbols-list [PACKAGE])
 Return a list the symbols that are defines in PACKAGE.
 )");
 
+
+DEFVAR(
+  Qlanguage_all,
+  Vlanguage_all,
+  "--language-all--",
+  make_sym_list({ "import",    "modref",   "defun",   "defconst",  "eval",   "setq",   "set",       "setq",
+                  "quote",     "function", "lambda",  "if",        "while",  "dolist", "cond",      "when",
+                  "unless",    "let",      "let*",    "or",        "and",    "not",    "parse-int", "parse-float",
+                  "to-string", "to-char",  "funcall", "backquote", "return", "exit",   "intern",    "make_symbol" }),
+  R"(Basic fuctions that provide the backbone of the language. These include global and local variable definition, flow control structures and loops.)");
 
 }  // namespace alisp

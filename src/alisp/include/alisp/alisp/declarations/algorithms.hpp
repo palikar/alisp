@@ -37,6 +37,12 @@ namespace alisp
 
 DEFUN(reverse, "reverse", R"((reverse LIST)
 
+Return a new list with the elements of LIST in revese order.
+
+Example:
+```elisp
+(reverse '(1 2 3 4 5)) 
+```
 )");
 
 DEFUN(slice, "slice", R"((slice LIST FROM TO)
@@ -85,6 +91,13 @@ DEFUN(all, "all", R"((all PREDICATE LIST)
 Return `t` if all elements in `LIST` fulfull the predicate
 `PREDICATE`. Return `nil` otherwise.
 )");
+
+
+DEFVAR(Qalg_all,
+       Valg_all,
+       "--alg-all--",
+       make_sym_list({ "all", "any", "filter", "zip", "sort", "slice", "reverse" }),
+       R"(Several functions of basic algorithms for working with lists.)");
 
 
 }  // namespace alisp

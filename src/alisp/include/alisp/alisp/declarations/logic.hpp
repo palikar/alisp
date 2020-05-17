@@ -52,4 +52,11 @@ Return `t` if FORM evaluate to a falsey value and `nil` otherwise.
 )");
 
 
+DEFVAR(Qlogic_all,
+       Vlogic_all,
+       "--logic-all--",
+       make_sym_list({ "or", "and", "not" }),
+       R"(Functions to combine boolean types.)");
+
+
 }  // namespace alisp

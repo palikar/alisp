@@ -21,10 +21,10 @@
 
 #include "alisp/alisp/alisp_env.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
-#include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_assertions.hpp"
 #include "alisp/alisp/alisp_factory.hpp"
 
+#include "alisp/alisp/declarations/constants.hpp"
 
 namespace alisp
 {

@@ -31,6 +31,9 @@
 #include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_prims.hpp"
 
+#include "alisp/alisp/declarations/math.hpp"
+#include "alisp/alisp/declarations/constants.hpp"
+
 namespace alisp
 {
 

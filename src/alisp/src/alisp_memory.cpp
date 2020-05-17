@@ -18,8 +18,8 @@
 
 #include "alisp/alisp/alisp_memory.hpp"
 #include "alisp/alisp/alisp_factory.hpp"
-#include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_object.hpp"
+#include "alisp/alisp/declarations/constants.hpp"
 
 #include <stdlib.h>
 

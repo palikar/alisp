@@ -30,9 +30,11 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_env.hpp"
 #include "alisp/alisp/alisp_pattern_matching.hpp"
-#include "alisp/alisp/alisp_declarations.hpp"
-#include "alisp/utility.hpp"
 
+#include "alisp/alisp/declarations/constants.hpp"
+#include "alisp/alisp/declarations/language_constructs.hpp"
+
+#include "alisp/utility.hpp"
 
 namespace alisp
 {

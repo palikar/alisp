@@ -177,4 +177,10 @@ Example:
 )");
 
 
+DEFVAR(Qmath_all,
+       Vmath_all,
+       "--math-all--",
+       make_sym_list({ "+", "-", "/", "*", "<", "<=", ">", ">=", "==", "!=", "mod", "pow", "min", "max", "round" }),
+       R"(Functions that realise simple math operations.)");
+
 }  // namespace alisp

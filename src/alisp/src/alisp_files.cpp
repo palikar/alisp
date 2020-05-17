@@ -1,9 +1,9 @@
+#include <functional>
+
 #include "alisp/alisp/alisp_files.hpp"
 #include "alisp/alisp/alisp_factory.hpp"
-#include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_object.hpp"
-
-#include <functional>
+#include "alisp/alisp/declarations/constants.hpp"
 
 namespace alisp
 {

@@ -85,4 +85,12 @@ Return `t` if FORM is a string and `nil` otherwise.
 )");
 
 
+DEFVAR(
+  Qpredicates_all,
+  Vpredicates_all,
+  "--predicates-all--",
+  make_sym_list({ "pstring", "plist", "pint", "preal", "psym", "pfunction" }),
+  R"(Functions for type inspecting. These functions can be used to check whether an object is from a certain type.)");
+
+
 }  // namespace alisp

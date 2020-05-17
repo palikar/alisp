@@ -80,4 +80,11 @@ pointer has reached to the end of the file and `nil` otherwise.
 )");
 
 
+DEFVAR(Qfiles_all,
+       Vfiles_all,
+       "--files-all--",
+       make_sym_list({ "file-open", "file-close", "file-read-line", "file-write-line", "file-has-more" }),
+       R"()");
+
+
 }  // namespace alisp

@@ -59,6 +59,22 @@ Example:
 ```
  
 
+- **defconst** : *(defconst NAME VALUE [DOC])*
+
+Define a new constant variable with a name `NAME` in the current
+module. `VALUE` is the initial value of the variable and `DOC` is an
+optional docstring. A variable *has* to be defines before used. A
+variable defined through `defconst` will live till the end of the
+program. If another part of the porgram tries to chang a constant
+variable, an error signal will be emitted.
+
+Example:
+```elisp
+(defconst new-var 42)
+```
+
+
+
 - **eval** : *(eval FORM)*
 
 Evaluate the form `FORM`. The usual form for evaluation apply.
@@ -196,7 +212,7 @@ Example:
 - **let*** : *(let* ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)*
 
 Bind local variables and execute `BODY`. In contrast `let`, each
-variable can be used in the definition of the following variables. 
+variable can be used in the definition of the following variables.
 
 Example:
 ```elisp
@@ -300,6 +316,10 @@ Exit the program. If `FORM` is given, its value will be the return
 code of the process. Otherwise the return code will be 0.
 
 
+- **intern** : *intern NAME*
+
+- **make_symbol** : *make_symbol NAME*
+
 ## Printing
 
 Functions to interact with the stanard input and output.
@@ -333,7 +353,7 @@ Read a single line form the standard input stream and return it.
 
 ## Lists
 
-Functions to interact with the stanard input and output.
+Functions to access the elements of lists as well to perform some basic modifications on lists.
 
 - **length** : *(length LIST)*
 
@@ -624,6 +644,53 @@ Check if the character CHAR is a letter.
 Check if the character CHAR is a digit.
 
 
+## Casting
+
+Functions for casting between types.
+
+- **parse-int** : *(parse-int STRING)*
+
+Return the int value represented by STRING.
+
+Example:
+```elisp
+(parse-int "12")
+```
+
+
+- **parse-float** : *(parse-float STRING)*
+
+Return the real value represented by STRING.
+
+Example:
+```elisp
+(parse-int "12.32")
+
+
+- **to-string** : *(to-string VALUE)*
+
+Convert VALUE to string
+
+Example:
+```elisp
+(to-string 42)
+(to-string 42.32)
+(to-string "string")
+```
+
+
+- **to-char** : *(to-char INT)*
+
+Convert INT to a character (ASCII encoding). INT must be a value in
+the range [0, 255].
+
+Example:
+```elisp
+(to-char 65)
+(to-char 97)
+```
+
+
 ## Basic Math
 
 Functions that realise simple math operations.
@@ -746,9 +813,67 @@ Example:
 ```
 
 
+## Logical operations
+
+Functions to combine boolean types.
+
+- **or** : *(or [[VALUE]...])*
+
+Return `t` if at least one of the arguments evaluates to a truthy
+value. The arguments are lazily evaluated.
+
+
+
+- **and** : *(and [[VALUE]...])*
+
+Return `t` if all of the arguments evaluates to a truthy
+value. The arguments are lazily evaluated.
+
+
+- **not** : *(not FORM)*
+
+Return `t` if FORM evaluate to a falsey value and `nil` otherwise. 
+
+
 ## Algorithms
 
 Several functions of basic algorithms for working with lists.
+
+- **all** : *(all PREDICATE LIST)*
+
+Return `t` if all elements in `LIST` fulfull the predicate
+`PREDICATE`. Return `nil` otherwise.
+
+
+- **any** : *(any PREDICATE LIST)*
+
+Return `t` if at leas one of the elements in `LIST` fulfull the
+predicate `PREDICATE`. Return `nil` otherwise.
+
+
+- **filter** : *(filter PREDICATE LIST)*
+
+Collect the elements of `LIST` that fullfil the predicate `PREDICATE`
+and return a new list of them.
+
+
+- **zip** : *(zip [[LIST] ...])*
+
+Take mutliple lists and build pairs of their elements at corresponding
+positions. The pairs are put into a new list and this list is
+returned.
+
+
+- **sort** : *(sort LIST)*
+
+Sort the elements of `LIST` in ascending order. This function will
+change LIST and won't generate a new object.
+
+Example:
+```elisp
+(sort '(20 12 2 43 56 10 68 30))
+```
+
 
 - **slice** : *(slice LIST FROM TO)*
 
@@ -761,50 +886,7 @@ Example:
 ```
 
 
-- **sort** : *(sort LIST)*
+- **reverse** : *(reverse LIST)*
 
-Sort the elements of `LIST` in ascending order. This function will
-change LIST and won't generate a new object.
-
-Example:
-```elisp
-(sort '(20 12 2 43 56 10 68 30))
-```
-
-
-- **sort** : *(sort LIST)*
-
-Sort the elements of `LIST` in ascending order. This function will
-change LIST and won't generate a new object.
-
-Example:
-```elisp
-(sort '(20 12 2 43 56 10 68 30))
-```
-
-
-- **zip** : *(zip [[LIST] ...])*
-
-Take mutliple lists and build pairs of their elements at corresponding
-positions. The pairs are put into a new list and this list is
-returned.
-
-
-- **filter** : *(filter PREDICATE LIST)*
-
-Collect the elements of `LIST` that fullfil the predicate `PREDICATE`
-and return a new list of them.
-
-
-- **any** : *(any PREDICATE LIST)*
-
-Return `t` if at leas one of the elements in `LIST` fulfull the
-predicate `PREDICATE`. Return `nil` otherwise.
-
-
-- **all** : *(all PREDICATE LIST)*
-
-Return `t` if all elements in `LIST` fulfull the predicate
-`PREDICATE`. Return `nil` otherwise.
 
 

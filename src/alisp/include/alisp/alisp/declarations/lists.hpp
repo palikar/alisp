@@ -229,4 +229,11 @@ Example:
 )");
 
 
+DEFVAR(Qprinting_all,
+       Vprinting_all,
+       "--printing-all--",
+       make_sym_list({ "print", "println", "eprint", "eprintln", "read-line" }),
+       R"(Functions to interact with the stanard input and output.)");
+
+
 }  // namespace alisp

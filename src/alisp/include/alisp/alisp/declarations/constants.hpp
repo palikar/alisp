@@ -32,17 +32,50 @@ namespace alisp
 /* | |__| (_) | | | \__ \ || (_| | | | | |_\__ \ */
 /*  \____\___/|_| |_|___/\__\__,_|_| |_|\__|___/ */
 
-DEFVAR(Qt, Vt, "t", Qt, R"()");
-DEFVAR(Qnil, Vnil, "nil", Qnil, R"()");
+DEFVAR(Qt, Vt, "t", Qt, R"(A self-evaluating object that represetns "false")");
+DEFVAR(Qnil, Vnil, "nil", Qnil, R"(A self-evaluating object that represetns "true")");
 
-DEFVAR(Qmodpaths, Vmodpaths, "--modpaths--", make_object(AL_EXTRA_MODPATHS, AL_EXTRA_MODPATHS), R"()");
-DEFVAR(Qcurrent_module, Vcurrent_module, "--module--", make_string(""), R"()");
-DEFVAR(Qcommand_line_args, Vcommand_line_args, "--argv--", make_list(), R"()");
-DEFVAR(Qlicense, Vlicense, "--al-license--", make_string(AL_LICENSE), R"()");
-DEFVAR(Qdebug_mode, Vdebug_mode, "--debug-mode--", Qt, R"()");
+DEFVAR(Qmodpaths,
+       Vmodpaths,
+       "--modpaths--",
+       make_object(AL_EXTRA_MODPATHS, AL_EXTRA_MODPATHS),
+       R"(A list of strings giving the paths where the interpreter will look when modules are loaded.)");
 
-DEFVAR(Qload_signal, Vload_signal, "load-signal", env::intern("load-signal"), R"()");
-DEFVAR(Qdefun_signal, Vdefun_signal, "defun-signal", env::intern("defun-signal"), R"()");
+DEFVAR(Qcurrent_module,
+       Vcurrent_module,
+       "--module--",
+       make_string(""),
+       R"(Internal value indicating the current module.)");
+
+DEFVAR(Qcommand_line_args,
+       Vcommand_line_args,
+       "--argv--",
+       make_list(),
+       R"(A list of the command line arguements passed to the script.)");
+
+DEFVAR(Qlicense,
+       Vlicense,
+       "--al-license--",
+       make_string(AL_LICENSE),
+       R"(A short string signifying the licence for the Alisp interpreter.)");
+
+DEFVAR(
+  Qdebug_mode,
+  Vdebug_mode,
+  "--debug-mode--",
+  Qt,
+  R"(If non-nil, the interprter has been started in a debug mode. In debug mode, assertions do not raise signal, even if the argument evaluates to something falsey.)");
+
+DEFVAR(Qload_signal,
+       Vload_signal,
+       "load-signal",
+       env::intern("load-signal"),
+       R"(Signal raised when a loading error occures)");
+DEFVAR(Qdefun_signal,
+       Vdefun_signal,
+       "defun-signal",
+       env::intern("defun-signal"),
+       R"(Signal raised when a function definition error occures)");
 
 DEFSYM(Qoptional, "&optional", R"(Used in an argument list to signify that the next arguments are optional.)");
 DEFSYM(Qrest,
@@ -54,5 +87,21 @@ DEFSYM(Qcomma_at,
        ",@",
        R"(Used by the backquote syntax in order to slice in a list inside of
 another list.)");
+
+
+DEFVAR(
+  Qconstants_all,
+  Vconstants_all,
+  "--constants-all--",
+  make_sym_list({
+    "t",
+    "nil",
+    "--modpaths--",
+    "--argv--",
+    "--al-license--",
+    "--debug-mode--",
+  }),
+  R"(Alisp has severeal built in variables that cannot be changed and provide certain information about the system.)");
+
 
 }  // namespace alisp

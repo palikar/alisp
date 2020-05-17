@@ -20,7 +20,7 @@
 #include "alisp/alisp/alisp_env.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_object.hpp"
-#include "alisp/alisp/alisp_declarations.hpp"
+#include "alisp/alisp/declarations/constants.hpp"
 
 
 namespace alisp

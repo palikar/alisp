@@ -95,4 +95,12 @@ Read a single character form the standard input stream and return it.
 )");
 
 
+DEFVAR(
+  Qlists_all,
+  Vlists_all,
+  "--lists-all--",
+  make_sym_list(
+    { "length", "cons", "head", "last", "init", "tail", "nth", "mapc", "mapcar", "push", "delete", "remove", "range" }),
+  R"(Functions to access the elements of lists as well to perform some basic modifications on lists.)");
+
 }  // namespace alisp

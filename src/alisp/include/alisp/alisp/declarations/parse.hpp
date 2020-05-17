@@ -78,4 +78,11 @@ Example:
 )");
 
 
+DEFVAR(Qcasts_all,
+       Vcasts_all,
+       "--casts-all--",
+       make_sym_list({ "parse-int", "parse-float", "to-string", "to-char" }),
+       R"(Functions for casting between types.)");
+
+
 }  // namespace alisp

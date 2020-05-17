@@ -138,4 +138,28 @@ Check if the character CHAR is a digit.
 )");
 
 
+DEFVAR(Qstrings_all,
+       Vstrings_all,
+       "--strings-all--",
+       make_sym_list({ "string-length",
+                       "string-contains",
+                       "string-endswith",
+                       "string-startswith",
+                       "string-length",
+                       "string-capitalize",
+                       "string-find",
+                       "string-replace",
+                       "string-replaceall",
+                       "string-split",
+                       "string-substring",
+                       "string-splitlines",
+                       "string-upper",
+                       "string-lower",
+                       "string-strip",
+                       "string-join",
+                       "char-isalpha",
+                       "char-isdigit" }),
+       R"(Functions for basic string handling.)");
+
+
 }  // namespace alisp

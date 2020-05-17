@@ -64,116 +64,62 @@
 
   (heading-1 "Basic builtin functions.")
 
-  (let ((constructs-preamble "Basic fuctions that provide the backbone of the language. These include global and local variable definition, flow control structures and loops.")
-        (language-constructs-list
-         '(import
-           modref
-           defun
-           eval
-           setq
-           set
-           setq
-           quote
-           function
-           lambda
-           if
-           while
-           dolist
-           cond
-           when
-           unless
-           let
-           let*
-           or
-           and
-           not
-           parse-int
-           parse-float
-           to-string
-           to-char
-           funcall
-           backquote
-           return
-           exit)))
+  (let ((constructs-preamble (prop-get --language-all-- "--doc--"))
+        (language-constructs-list --language-all--))
     (heading-2 "Language constructs")
     (println "\n" constructs-preamble "\n")
     (expand-and-dump language-constructs-list))
 
-  (let ((printing-preamble "Functions to interact with the stanard input and output.")
-        (printing-list
-         '(print
-           println
-           eprint
-           eprintln
-           read-line)))
+  (let ((printing-preamble (prop-get --printing-all-- "--doc--"))
+        (printing-list --printing-all--))
     (heading-2 "Printing")
     (println "\n" printing-preamble "\n")
     (expand-and-dump printing-list))
 
-  (let ((lists-preamble "Functions to interact with the stanard input and output.")
-        (lists-list
-         '(
-           length
-           cons
-           head
-           last
-           init
-           tail
-           nth
-           mapc
-           mapcar
-           push
-           delete
-           remove
-           range))  )
+  (let ((lists-preamble (prop-get --lists-all-- "--doc--"))
+        (lists-list --lists-all--))
     (heading-2 "Lists")
     (println "\n" lists-preamble "\n")
     (expand-and-dump lists-list))
   
-  (let ((props-preamble "Functions for accessing the properties of objects.")
-        (props-list '(prop-get prop-set prop-list)))
+  (let ((props-preamble (prop-get --props-all-- "--doc--"))
+        (props-list --props-all--))
     (heading-2 "Object Properties")
     (println "\n" props-preamble "\n")
     (expand-and-dump props-list))
 
-  (let ((predicates-preamble "Functions for type inspecting. These functions can be used to check whether an object is from a certain type.")
-        (predicates-list '(pstring plist pint preal psym pfunction)))
+  (let ((predicates-preamble (prop-get --predicates-all-- "--doc--"))
+        (predicates-list --predicates-all--))
     (heading-2 "Object predicates")
     (println "\n" predicates-preamble "\n")
     (expand-and-dump predicates-list))
 
-  (let ((strings-preamble "Functions for basic string handling.")
-        (strings-list
-         '(string-length
-           string-contains
-           string-endswith
-           string-startswith
-           string-length
-           string-capitalize
-           string-find
-           string-replace
-           string-replaceall
-           string-split
-           string-substring
-           string-splitlines
-           string-upper
-           string-lower
-           string-strip
-           string-join
-           char-isalpha
-           char-isdigit)))
+  (let ((strings-preamble (prop-get --strings-all-- "--doc--"))
+        (strings-list --strings-all--))
     (heading-2 "Strings")
     (println "\n" strings-preamble "\n")
     (expand-and-dump strings-list))
 
-  (let ((math-preamble "Functions that realise simple math operations.")
-        (math-list '(+ - / * < <= > >= == != mod pow min max round)))
+  (let ((casts-preamble (prop-get --casts-all-- "--doc--"))
+        (casts-list --casts-all--))
+    (heading-2 "Casting")
+    (println "\n" casts-preamble "\n")
+    (expand-and-dump casts-list))
+
+  (let ((math-preamble (prop-get --math-all-- "--doc--"))
+        (math-list --math-all--))
     (heading-2 "Basic Math")
     (println "\n" math-preamble "\n")
     (expand-and-dump math-list))
 
-  (let ((alg-preamble "Several functions of basic algorithms for working with lists.")
-        (alg-list '(slice sort sort zip filter any all)))
+  (let ((logic-preamble (prop-get --logic-all-- "--doc--"))
+        (logic-list --logic-all--))
+    (heading-2 "Logical operations")
+    (println "\n" logic-preamble "\n")
+    (expand-and-dump logic-list))
+
+  (let ((alg-preamble (prop-get --alg-all-- "--doc--"))
+        (alg-list --alg-all--))
     (heading-2 "Algorithms")
     (println "\n" alg-preamble "\n")
     (expand-and-dump alg-list))

@@ -195,6 +195,16 @@ inline auto make_list(std::vector<std::string> strs)
     return new_obj;
 }
 
+inline auto make_sym_list(std::vector<std::string> strs)
+{
+    auto new_obj = detail::ALObjectHelper::get(ALObject::list_type{});
+    for (auto &str : strs)
+    {
+        new_obj->children().push_back(make_symbol(str));
+    }
+    return new_obj;
+}
+
 inline auto make_list(ALObject::list_type elements)
 {
     return make_object(elements);
