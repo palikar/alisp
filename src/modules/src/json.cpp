@@ -271,8 +271,7 @@ struct JSONParser
                     case 'n': val += '\n'; break;
                     case 'r': val += '\r'; break;
                     case 't': val += '\t'; break;
-                    case 'u':
-                    {
+                    case 'u': {
                         val += "\\u";
                         for (size_t i = 1; i <= 4; ++i)
                         {

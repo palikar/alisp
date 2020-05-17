@@ -19,11 +19,12 @@
 #include <algorithm>
 #include <string>
 
-#include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_assertions.hpp"
 #include "alisp/alisp/alisp_pattern_matching.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_env.hpp"
+
+#include "alisp/alisp/declarations/parse.hpp"
 
 namespace alisp
 {

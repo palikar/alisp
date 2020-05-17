@@ -25,9 +25,10 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_exception.hpp"
-#include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_assertions.hpp"
 #include "alisp/alisp/alisp_loadable_modules.hpp"
+
+#include "alisp/alisp/declarations/language_constructs.hpp"
 
 #include "alisp/utility/files.hpp"
 #include "alisp/utility/macros.hpp"

@@ -348,8 +348,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
         switch (t_block.type)
         {
 
-            case 's':
-            {
+            case 's': {
                 if (!pstring(obj))
                 {
                     signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected string"s, dump(obj));
@@ -357,8 +356,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
                 return obj->to_string();
             }
 
-            case 'c':
-            {
+            case 'c': {
                 if (!obj->check_char_flag() and !obj->is_int())
                 {
                     signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected char"s, dump(obj));
@@ -367,8 +365,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             }
 
             case 'b':
-            case 'B':
-            {
+            case 'B': {
                 if (!pint(obj))
                 {
                     signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj));
@@ -378,8 +375,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             }
 
             case 'x':
-            case 'X':
-            {
+            case 'X': {
                 if (!pint(obj))
                 {
                     signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj));
@@ -388,8 +384,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
                        int_to_hex(obj->to_int());
             }
 
-            case 'o':
-            {
+            case 'o': {
                 if (!pint(obj))
                 {
                     signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj));
@@ -397,8 +392,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
                 return (std::string{ sign(obj) } += "0") += int_to_oct(obj->to_int());
             }
 
-            case 'd':
-            {
+            case 'd': {
                 if (!pint(obj))
                 {
                     signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj));
@@ -406,8 +400,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
                 return std::string{ sign(obj) } += std::to_string(obj->to_int());
             }
 
-            case 'n':
-            {
+            case 'n': {
                 if (!pint(obj))
                 {
                     signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected int"s, dump(obj));
@@ -424,8 +417,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             }
 
             case 'a':
-            case 'A':
-            {
+            case 'A': {
                 if (!preal(obj))
                 {
                     signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj));
@@ -441,8 +433,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             }
 
             case 'e':
-            case 'E':
-            {
+            case 'E': {
                 if (!preal(obj))
                 {
                     signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj));
@@ -458,8 +449,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             }
 
             case 'f':
-            case 'F':
-            {
+            case 'F': {
                 if (!preal(obj))
                 {
                     signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj));
@@ -475,8 +465,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
             }
 
             case 'g':
-            case 'G':
-            {
+            case 'G': {
                 if (!preal(obj))
                 {
                     signal(fmt_signal, "FMT ERROR: Invalid object"s, "Expected real"s, dump(obj));

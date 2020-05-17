@@ -24,8 +24,9 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_exception.hpp"
-#include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_assertions.hpp"
+
+#include "alisp/alisp/declarations/math.hpp"
 
 #include "alisp/utility/macros.hpp"
 #include "alisp/utility/math_utils.hpp"

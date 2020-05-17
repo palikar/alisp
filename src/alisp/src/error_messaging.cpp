@@ -109,12 +109,12 @@ void ThrowingMessanger::lexer_error(size_t char_num, size_t line_num, const std:
 void ThrowingMessanger::parser_error(const lexer::ALToken &  // token
                                      ,
                                      const std::string &  // msg
-                                     ) const
+) const
 {
 }
 
 void ThrowingMessanger::runtime_error(const std::string &  // msg
-                                      ) const
+) const
 {
 }
 

@@ -5,13 +5,13 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_exception.hpp"
-#include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_assertions.hpp"
 #include "alisp/alisp/alisp_pattern_matching.hpp"
 #include "alisp/alisp/alisp_files.hpp"
 
 #include "alisp/utility/macros.hpp"
 
+#include "alisp/alisp/declarations/files.hpp"
 
 namespace alisp
 {

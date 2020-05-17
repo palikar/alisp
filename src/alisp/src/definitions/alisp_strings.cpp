@@ -19,10 +19,11 @@
 #include <string>
 #include <cctype>
 
-#include "alisp/alisp/alisp_declarations.hpp"
 #include "alisp/alisp/alisp_assertions.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_env.hpp"
+
+#include "alisp/alisp/declarations/strings.hpp"
 
 #include "alisp/utility/string_utils.hpp"
 

@@ -27,6 +27,7 @@
 #include "alisp/alisp/alisp_assertions.hpp"
 #include "alisp/alisp/alisp_exception.hpp"
 
+
 #include "alisp/utility/macros.hpp"
 
 #include <fmt/format.h>

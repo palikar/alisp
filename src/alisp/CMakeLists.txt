@@ -79,21 +79,21 @@ add_library(alisp_language
     src/alisp_memory.cpp
     src/alisp_warnings.cpp
     src/alisp_loadable_modules.cpp
-    
-    src/alisp_eval_functions.cpp
-    src/alisp_stream_functions.cpp
-    src/alisp_file_functions.cpp
-    src/alisp_language.cpp
-    src/alisp_lists.cpp
-    src/alisp_logic.cpp
-    src/alisp_math.cpp
-    src/alisp_bits.cpp
-    src/alisp_predicates.cpp
-    src/alisp_printing.cpp
-    src/alisp_algorithms.cpp
-    src/alisp_strings.cpp
-    src/alisp_casts.cpp
-    src/alisp_props.cpp)
+
+    src/definitions/alisp_eval_functions.cpp
+    src/definitions/alisp_stream_functions.cpp
+    src/definitions/alisp_file_functions.cpp
+    src/definitions/alisp_language.cpp
+    src/definitions/alisp_lists.cpp
+    src/definitions/alisp_logic.cpp
+    src/definitions/alisp_math.cpp
+    src/definitions/alisp_bits.cpp
+    src/definitions/alisp_predicates.cpp
+    src/definitions/alisp_printing.cpp
+    src/definitions/alisp_algorithms.cpp
+    src/definitions/alisp_strings.cpp
+    src/definitions/alisp_casts.cpp
+    src/definitions/alisp_props.cpp)
 
 
 target_include_directories(alisp_language

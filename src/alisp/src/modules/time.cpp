@@ -62,20 +62,17 @@ ALObjectPtr Fnow(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
 
     switch (static_cast<int>(clock->to_int()))
     {
-        case SYSTEM_CLOCK:
-        {
+        case SYSTEM_CLOCK: {
             const auto time_now = al_seconds(ch::system_clock::now().time_since_epoch()).count();
             return make_real(time_now);
         }
 
-        case STEADY_CLOCK:
-        {
+        case STEADY_CLOCK: {
             const auto time_now = al_seconds(ch::steady_clock::now().time_since_epoch()).count();
             return make_real(time_now);
         }
 
-        case HIGH_RES_CLOCK:
-        {
+        case HIGH_RES_CLOCK: {
             const auto time_now = al_seconds(ch::high_resolution_clock::now().time_since_epoch()).count();
             return make_real(time_now);
         }
@@ -94,18 +91,15 @@ ALObjectPtr Fnow_ns(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
 
     switch (static_cast<int>(clock->to_int()))
     {
-        case SYSTEM_CLOCK:
-        {
+        case SYSTEM_CLOCK: {
             return make_int(ch::system_clock::now().time_since_epoch().count());
         }
 
-        case STEADY_CLOCK:
-        {
+        case STEADY_CLOCK: {
             return make_int(ch::steady_clock::now().time_since_epoch().count());
         }
 
-        case HIGH_RES_CLOCK:
-        {
+        case HIGH_RES_CLOCK: {
             return make_int(ch::high_resolution_clock::now().time_since_epoch().count());
         }
     }

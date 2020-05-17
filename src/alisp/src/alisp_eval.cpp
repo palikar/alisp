@@ -147,19 +147,16 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
         case ALObjectType::REAL_VALUE:
 
-        case ALObjectType::INT_VALUE:
-        {
+        case ALObjectType::INT_VALUE: {
             return obj;
         }
 
-        case ALObjectType::SYMBOL:
-        {
+        case ALObjectType::SYMBOL: {
             AL_DEBUG("Evaluating symbol: "s += dump(obj));
             return env.find(obj);
         }
 
-        case ALObjectType::LIST:
-        {
+        case ALObjectType::LIST: {
 
             auto func = [this, &obj]() {
                 if (pprime(obj))
@@ -265,8 +262,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
             break;
         }
 
-        default:
-        {
+        default: {
             eval_error("Unknown object typee");
         }
     }

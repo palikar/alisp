@@ -28,6 +28,8 @@
 
 #include "alisp/utility/macros.hpp"
 
+#include "alisp/alisp/declarations/language_constructs.hpp"
+
 
 namespace alisp
 {
