@@ -34,7 +34,7 @@ DepthTracker::~DepthTracker()
 }
 
 
-Position::Position(const char *t_pos, const char *t_end) noexcept : line(0), col(0), pos(t_pos), end(t_end), last_col(1)
+Position::Position(const char *t_pos, const char *t_end) noexcept : line(1), col(1), pos(t_pos), end(t_end), last_col(1)
 {
 }
 
