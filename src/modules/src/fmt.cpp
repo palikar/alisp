@@ -629,8 +629,10 @@ To note is that the `printf` and `fmt` functions in the `fmt` module use the sam
 
 )");
 
-    alisp::module_defun(fmt_ptr, "fmt", &fmt::Ffmt,
-    R"((fmt FORMAT_STRING [ARG]...)
+    alisp::module_defun(fmt_ptr,
+                        "fmt",
+                        &fmt::Ffmt,
+                        R"((fmt FORMAT_STRING [ARG]...)
 
 Return a string resulting from the formating FORMAT_STRING with the
 given arguments.
@@ -640,30 +642,38 @@ given arguments.
 ```
 )");
 
-    alisp::module_defun(fmt_ptr, "printf", &fmt::Fprintf,
-    R"((printf FORMAT_STRING [ARG]...)
+    alisp::module_defun(fmt_ptr,
+                        "printf",
+                        &fmt::Fprintf,
+                        R"((printf FORMAT_STRING [ARG]...)
 
 Print the string FORMAT_STRING formated with the given arguments on
 the standard output.
 
 )");
 
-    alisp::module_defun(fmt_ptr, "printfln", &fmt::Fprintfln,
-    R"((printf FORMAT_STRING [ARG]...)
+    alisp::module_defun(fmt_ptr,
+                        "printfln",
+                        &fmt::Fprintfln,
+                        R"((printf FORMAT_STRING [ARG]...)
 
 Print the string FORMAT_STRING formated with the given arguments on
 the standard output followed by a new line.
 )");
 
-    alisp::module_defun(fmt_ptr, "eprintf", &fmt::Feprintf,
-    R"((eprintf FORMAT_STRING [ARG]...)
+    alisp::module_defun(fmt_ptr,
+                        "eprintf",
+                        &fmt::Feprintf,
+                        R"((eprintf FORMAT_STRING [ARG]...)
 
 Print the string FORMAT_STRING formated with the given arguments on
 the standard error stream.
 )");
 
-    alisp::module_defun(fmt_ptr, "eprintfln", &fmt::Feprintfln,
-    R"((eprintfln FORMAT_STRING [ARG]...)
+    alisp::module_defun(fmt_ptr,
+                        "eprintfln",
+                        &fmt::Feprintfln,
+                        R"((eprintfln FORMAT_STRING [ARG]...)
 
 Print the string FORMAT_STRING formated with the given arguments on
 the standard error stream followed by a new line.

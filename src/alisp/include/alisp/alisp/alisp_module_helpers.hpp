@@ -50,7 +50,7 @@ inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_t
 {
     auto &new_fun = t_module->get_root().insert({ t_name, make_prime(fun, t_name) }).first->second;
     new_fun->set_function_flag();
-    
+
 #ifdef ENABLE_OBJECT_DOC
     new_fun->set_prop("--doc--", make_string(t_doc));
 #endif
@@ -79,7 +79,6 @@ inline void module_defconst(env::Module *t_module, std::string t_name, ALObjectP
 #endif
     new_var->set_prop("--module--", make_string(t_module->name()));
     new_var->set_prop("--name--", make_string(t_name));
-    
 }
 
 inline void module_doc(env::Module *t_module, std::string t_doc)
@@ -95,7 +94,7 @@ inline void module_sym_doc(env::Module *t_module, std::string t_sym_name, std::s
 }
 
 
-// Used by CPP-Transpiler 
+// Used by CPP-Transpiler
 
 
 inline void module_define_function(env::Module *t_module,

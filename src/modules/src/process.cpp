@@ -336,9 +336,8 @@ ALISP_EXPORT alisp::env::ModulePtr init_process(alisp::env::Environment *, alisp
     auto Mprocess = alisp::module_init("process");
     auto prop_ptr = Mprocess.get();
 
-    alisp::module_doc(
-      prop_ptr,
-      R"(The `process` module enables the starting and communicating with
+    alisp::module_doc(prop_ptr,
+                      R"(The `process` module enables the starting and communicating with
 external processes. It is similar to the `subprocess` module of
 pyhton. The module tries, in fact, to stay close the the api and
 privide similar functions for starting and communicating with external
@@ -349,17 +348,28 @@ library.
 
 )");
 
-    alisp::module_defconst(prop_ptr, "stdout", process::process_stdout,
-    R"(Symbol used to signify the standard output stream. It is used in some of the functions of the module. )");
+    alisp::module_defconst(
+      prop_ptr,
+      "stdout",
+      process::process_stdout,
+      R"(Symbol used to signify the standard output stream. It is used in some of the functions of the module. )");
 
-    alisp::module_defconst(prop_ptr, "stderr", process::process_stderr,
-    R"(Symbol used to signify the standard input stream. It is used in some of the functions of the module. )");
+    alisp::module_defconst(
+      prop_ptr,
+      "stderr",
+      process::process_stderr,
+      R"(Symbol used to signify the standard input stream. It is used in some of the functions of the module. )");
 
-    alisp::module_defconst(prop_ptr, "pipe", process::process_pipe,
-    R"(Symbol used to signify a link between the spawn process and the interpreter. It is used in some of the functions of the module. )");
+    alisp::module_defconst(
+      prop_ptr,
+      "pipe",
+      process::process_pipe,
+      R"(Symbol used to signify a link between the spawn process and the interpreter. It is used in some of the functions of the module. )");
 
-    alisp::module_defun(prop_ptr, "popen", &process::Fpopen,
-    R"((open COMMAND_PARTS OPTIONS )
+    alisp::module_defun(prop_ptr,
+                        "popen",
+                        &process::Fpopen,
+                        R"((open COMMAND_PARTS OPTIONS )
 
 Execute a process. `COMMAND_PARTS` must be a list of strings that will
 become the parts of the command that should be executed.
@@ -380,73 +390,94 @@ process. Possible options are:
 Return the new process as a resource object.
 )");
 
-    alisp::module_defun(prop_ptr, "start", &process::Fstart,
-    R"((start PROCESS)
+    alisp::module_defun(prop_ptr,
+                        "start",
+                        &process::Fstart,
+                        R"((start PROCESS)
 
 Start a process that has been created with `open`.
 )");
 
-    alisp::module_defun(prop_ptr, "pid", &process::Fpid,
-    R"((pid PROCESS)
+    alisp::module_defun(prop_ptr,
+                        "pid",
+                        &process::Fpid,
+                        R"((pid PROCESS)
 
 Return the process id of a process that has been created with `open`.
 )");
 
-    alisp::module_defun(prop_ptr, "wait", &process::Fwait,
-    R"((wait PROCESS)
+    alisp::module_defun(prop_ptr,
+                        "wait",
+                        &process::Fwait,
+                        R"((wait PROCESS)
 
 Block until a process has finished its execution.
 )");
 
-    alisp::module_defun(prop_ptr, "poll", &process::Fpoll,
-    R"((poll PROCESS)
+    alisp::module_defun(prop_ptr,
+                        "poll",
+                        &process::Fpoll,
+                        R"((poll PROCESS)
 
 )");
 
-    alisp::module_defun(prop_ptr, "kill", &process::Fkill,
-    R"((kill PROCESS [SIGNAL])
+    alisp::module_defun(prop_ptr,
+                        "kill",
+                        &process::Fkill,
+                        R"((kill PROCESS [SIGNAL])
 
 Send a signal (by default SIGKILL) to a running process.
 )");
 
-    alisp::module_defun(prop_ptr, "retcode", &process::Fretcode,
-    R"((retcode PROCESS)
+    alisp::module_defun(prop_ptr,
+                        "retcode",
+                        &process::Fretcode,
+                        R"((retcode PROCESS)
 
 Wait for a process to finish and return its return code.
 )");
 
 
-
-    alisp::module_defun(prop_ptr, "send", &process::Fsend,
-    R"((send PROCESS STRING)
+    alisp::module_defun(prop_ptr,
+                        "send",
+                        &process::Fsend,
+                        R"((send PROCESS STRING)
 
 Write a string to the standard input stream of a child process.
 )");
 
-    alisp::module_defun(prop_ptr, "communicate", &process::Fcommunicate,
-    R"((communicate PROCESS STRING)
+    alisp::module_defun(prop_ptr,
+                        "communicate",
+                        &process::Fcommunicate,
+                        R"((communicate PROCESS STRING)
 
 Write a string to the standard input stream of a child process. Return
 the contents of the standard output and standard error of the process.
 )");
 
-    alisp::module_defun(prop_ptr, "check-output", &process::Fcheck_output,
-    R"((check-output [COMMAND_PART]...)
+    alisp::module_defun(prop_ptr,
+                        "check-output",
+                        &process::Fcheck_output,
+                        R"((check-output [COMMAND_PART]...)
 
 Convenience function. Execute the command with the given parts and
 return the contents of the standard output of the process once its
 finished.
 )");
 
-    alisp::module_defun(prop_ptr, "check-output-bytes", &process::Fcheck_output_bytes,
-    R"((check-output [COMMAND_PART]...)
+    alisp::module_defun(prop_ptr,
+                        "check-output-bytes",
+                        &process::Fcheck_output_bytes,
+                        R"((check-output [COMMAND_PART]...)
 
 Convenience function. Execute the command with the given parts and
 return the contents of the standard output as a byte array.
 )");
 
-    alisp::module_defun(prop_ptr, "call", &process::Fcheck_output,
-    R"((check-output [COMMAND_PART]...)
+    alisp::module_defun(prop_ptr,
+                        "call",
+                        &process::Fcheck_output,
+                        R"((check-output [COMMAND_PART]...)
 
 Convenience function. Execute the command with the given parts and
 return the exit code of the process once its finished.

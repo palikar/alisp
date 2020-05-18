@@ -181,11 +181,13 @@ ALISP_EXPORT alisp::env::ModulePtr init_func(alisp::env::Environment *, alisp::e
     alisp::module_doc(fun_ptr, R"()");
 
 
-    alisp::module_defvar(fun_ptr, "_", func::placeholder_sym,
-    R"(Can be used as a placeholder object at certain places.)");
+    alisp::module_defvar(
+      fun_ptr, "_", func::placeholder_sym, R"(Can be used as a placeholder object at certain places.)");
 
-    alisp::module_defun(fun_ptr, "compose", &func::Fcompose,
-    R"((compose [FUNCTION]...)
+    alisp::module_defun(fun_ptr,
+                        "compose",
+                        &func::Fcompose,
+                        R"((compose [FUNCTION]...)
 
 Create a new function by composing several ones. The last function
 will be the innter most funciton in the composition.
@@ -200,9 +202,11 @@ is equivalent to `(lambda (x) ((lambda (x_2) (* 2 x_2) ) ((lambda (x_1) (* 3 x_1
 This measns that the last function will be evalued first and then the
 result of that will be used as input for the next function.
 )");
-    
-    alisp::module_defun(fun_ptr, "partial", &func::Fpartial,
-    R"((partial FUNCTION [ARGUMENT] ...)
+
+    alisp::module_defun(fun_ptr,
+                        "partial",
+                        &func::Fpartial,
+                        R"((partial FUNCTION [ARGUMENT] ...)
 
 Create a new function by partially applying arguments to a
 function. The return function can be called normally, either without
@@ -219,9 +223,11 @@ takes a single argument and adds 5 to it.
 
 
  )");
-    
-    alisp::module_defun(fun_ptr, "thread-last", &func::Fthread_last,
-    R"((thread-last FORMS)
+
+    alisp::module_defun(fun_ptr,
+                        "thread-last",
+                        &func::Fthread_last,
+                        R"((thread-last FORMS)
 
 Thread FORMS elements as the last argument of their successor.
 
@@ -236,9 +242,11 @@ Example:
 ```
 
 Is equivalent to: `(+ 40 (- (/ 25 (+ 20 5))))`)");
-    
-    alisp::module_defun(fun_ptr, "thread-first", &func::Fthread_first,
-    R"((thread-first FORMS)
+
+    alisp::module_defun(fun_ptr,
+                        "thread-first",
+                        &func::Fthread_first,
+                        R"((thread-first FORMS)
 
 Thread FORMS elements as the first argument of their successor.
 
@@ -252,12 +260,13 @@ Example:
       (+ 40))
 ```
 
-Is equivalent to: `(+ (- (/ (+ 5 20) 25)) 40)` )"
-    );
+Is equivalent to: `(+ (- (/ (+ 5 20) 25)) 40)` )");
 
-    
-    alisp::module_defun(fun_ptr, "reduce", &func::Freduce,
-    R"((reduce FUNCTION LIST)
+
+    alisp::module_defun(fun_ptr,
+                        "reduce",
+                        &func::Freduce,
+                        R"((reduce FUNCTION LIST)
 
 Apply function of two arguments cumulatively to the items of LIST,
 from left to right, so as to reduce the iterable to a single value.The
@@ -268,19 +277,23 @@ update value from the list.
 (reduce (lambda (x y) (+ x y)) '(1 2 3 4 5)) ; -> 15
 ```
  )");
-    
-    alisp::module_defun(fun_ptr, "identity", &func::Fidentity,
-    R"((identity ARG)
+
+    alisp::module_defun(fun_ptr,
+                        "identity",
+                        &func::Fidentity,
+                        R"((identity ARG)
 
 Return ARG unchanged.
 )");
-    
-    alisp::module_defun(fun_ptr, "ignore", &func::Fignore,
-    R"((ignore [ANY]...)
+
+    alisp::module_defun(fun_ptr,
+                        "ignore",
+                        &func::Fignore,
+                        R"((ignore [ANY]...)
 
 Return nil and ignore all of the given arguments.
 )");
-    
+
 
     return Mfunc;
 }

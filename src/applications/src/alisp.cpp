@@ -41,8 +41,8 @@ alisp::LanguageEngine *g_alisp_engine = nullptr;
 
 std::vector<std::string> alisp::prompt::get_completions(const std::string &t_word)
 {
-    
-    
+
+
     auto sym_vec = g_alisp_engine->get_symbols();
     for (auto &[name, _] : g_alisp_engine->get_modules())
     {

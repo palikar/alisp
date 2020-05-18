@@ -618,75 +618,99 @@ Example:
 ```
 )");
 
-    alisp::module_defun(base64_ptr, "base64-encode-string", &base64::Fbase64_encode_string,
-    R"((base64-encode-string STRING)
+    alisp::module_defun(base64_ptr,
+                        "base64-encode-string",
+                        &base64::Fbase64_encode_string,
+                        R"((base64-encode-string STRING)
 
 Return base64 encoded version of the string `STRING`.
 )");
 
-    alisp::module_defun(base64_ptr, "base64-encode-bytes", &base64::Fbase64_encode_bytes,
-    R"((base64-encode-bytes STRING)
+    alisp::module_defun(base64_ptr,
+                        "base64-encode-bytes",
+                        &base64::Fbase64_encode_bytes,
+                        R"((base64-encode-bytes STRING)
 
 Return the bytes of encoding the string `STRING` in base64.
 )");
 
-    alisp::module_defun(base64_ptr, "base64-decode-string", &base64::Fbase64_decode_string,
-    R"((base64-decode-string STRING)
+    alisp::module_defun(base64_ptr,
+                        "base64-decode-string",
+                        &base64::Fbase64_decode_string,
+                        R"((base64-decode-string STRING)
 
 Decode the base64 encoded string `STRING` and return the result as string.
 )");
 
-    alisp::module_defun(base64_ptr, "base64-decode-bytes", &base64::Fbase64_decode_bytes,
-    R"((base64-decode-bytes BYTES_LIST)
+    alisp::module_defun(base64_ptr,
+                        "base64-decode-bytes",
+                        &base64::Fbase64_decode_bytes,
+                        R"((base64-decode-bytes BYTES_LIST)
 
 Decode the base64 encoded bytes `BYTES_LIST` and return the result as string.
 )");
 
-    alisp::module_defun(base64_ptr, "base16-encode-string", &base64::Fbase16_encode_string,
-    R"((base16-encode-string STRING)
+    alisp::module_defun(base64_ptr,
+                        "base16-encode-string",
+                        &base64::Fbase16_encode_string,
+                        R"((base16-encode-string STRING)
 
 Return base16 encoded version of the string `STRING`.
 )");
 
-    alisp::module_defun(base64_ptr, "base16-encode-bytes", &base64::Fbase16_encode_bytes,
-    R"((base16-encode-string STRING)
+    alisp::module_defun(base64_ptr,
+                        "base16-encode-bytes",
+                        &base64::Fbase16_encode_bytes,
+                        R"((base16-encode-string STRING)
 
 Return the bytes of encoding the string `STRING` in base16.
 )");
 
-    alisp::module_defun(base64_ptr, "base16-decode-string", &base64::Fbase16_decode_string,
-    R"((base16-decode-string STRING)
+    alisp::module_defun(base64_ptr,
+                        "base16-decode-string",
+                        &base64::Fbase16_decode_string,
+                        R"((base16-decode-string STRING)
 
 Decode the base16 encoded string `STRING` and return the result as string.
 )");
 
-    alisp::module_defun(base64_ptr, "base16-decode-bytes", &base64::Fbase16_decode_bytes,
-    R"((base16-decode-bytes BYTES_LIST)
+    alisp::module_defun(base64_ptr,
+                        "base16-decode-bytes",
+                        &base64::Fbase16_decode_bytes,
+                        R"((base16-decode-bytes BYTES_LIST)
 
 Decode the base16 encoded bytes `BYTES_LIST` and return the result as string.
 )");
 
 
-    alisp::module_defun(base64_ptr, "base32-encode-string", &base64::Fbase32_encode_string,
-    R"((base32-encode-string STRING)
+    alisp::module_defun(base64_ptr,
+                        "base32-encode-string",
+                        &base64::Fbase32_encode_string,
+                        R"((base32-encode-string STRING)
 
 Return base32 encoded version of the string `STRING`.
 )");
 
-    alisp::module_defun(base64_ptr, "base32-encode-bytes", &base64::Fbase32_encode_bytes,
-    R"((base32-encode-bytes STRING)
+    alisp::module_defun(base64_ptr,
+                        "base32-encode-bytes",
+                        &base64::Fbase32_encode_bytes,
+                        R"((base32-encode-bytes STRING)
 
 Return the bytes of encoding the string `STRING` in base32.
 )");
 
-    alisp::module_defun(base64_ptr, "base32-decode-string", &base64::Fbase32_decode_string,
-    R"((base32-decode-string STRING)
+    alisp::module_defun(base64_ptr,
+                        "base32-decode-string",
+                        &base64::Fbase32_decode_string,
+                        R"((base32-decode-string STRING)
 
 Decode the base32 encoded string `STRING` and return the result as string.
 )");
 
-    alisp::module_defun(base64_ptr, "base32-decode-bytes", &base64::Fbase32_decode_bytes,
-    R"((base32-decode-bytes BYTES_LIST)
+    alisp::module_defun(base64_ptr,
+                        "base32-decode-bytes",
+                        &base64::Fbase32_decode_bytes,
+                        R"((base32-decode-bytes BYTES_LIST)
 Decode the base32 encoded bytes `BYTES_LIST` and return the result as string.
 )");
 
