@@ -63,20 +63,23 @@ DEFUN(dumpstack, "dumpstack", R"((dumpstack)
 
 Print a formatted version of the current state of the execution
 environment. This is where the stack frames and the scopes live.
-
 )");
+
 DEFUN(dumpcallstack, "dumpcallstack", R"((dumpcallstack)
 
 Print a formatted version of the current call stack on the standard
 output. This function is meant for debugging.
 )");
 
-DEFUN(dumpsystem, "dumpsystem", R"((dumpsystem))");
+DEFUN(dumpsystem, "dumpsystem", R"((dumpsystem)
+
+Print out the currenttly bounded symbols in the interpreter. This
+function is meant for debugging.
+)");
 
 DEFUN(dumplicense, "dumplicense", R"((dumplicense)
 
 Print the license of Alisp on the standard output.
-
 )");
 
 DEFUN(dumpcredits, "dumpcredits", R"((dumpcredits)

@@ -195,7 +195,7 @@
   (heading-2 "Builtin Modules")
   (line)
 
-  (let ( (modules '(fileio math memory platform system time))
+  (let ( (modules '(fileio math memory platform system time json dash s))
          (preamble "Builtin Modules are built into the Alisp interpreter and can be always imported. These modules are meant to provide common functionality like working with files, basic OS-operations, math functions, etc."))
     (println preamble)
     (line)

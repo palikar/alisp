@@ -33,11 +33,20 @@ namespace alisp
 /* |____/ \__|_|  |_|_| |_|\__, |___/ */
 /*                         |___/      */
 
-DEFUN(string_append, "string-append", R"((string-append STRING1 STRING2))");
+DEFUN(string_append, "string-append", R"((string-append STRING1 STRING2)
 
-DEFUN(string_prepend, "string-prepend", R"((string-prepend STRING1 STRING2))");
+Return a new string by concatenatig `STRING1` to `STRING2`.
+)");
 
-DEFUN(string_reverse, "string-reverse", R"((string-reverse STRING))");
+DEFUN(string_prepend, "string-prepend", R"((string-prepend STRING1 STRING2)
+
+Return a new string by prepending `STRING1` to `STRING2`.
+)");
+
+DEFUN(string_reverse, "string-reverse", R"((string-reverse STRING)
+
+Rerturn a new string with the elements of STRING in reverse order
+)");
 
 DEFUN(string_equals, "string-equals", R"((string-equals STRING1 STRING2)
 

@@ -50,7 +50,8 @@ Return the real value represented by STRING.
 
 Example:
 ```elisp
-(parse-int "12.32")
+(parse-float "12.32")
+```
 )");
 
 DEFUN(to_string, "to-string", R"((to-string VALUE)

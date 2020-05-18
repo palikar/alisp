@@ -1,3 +1,5 @@
+(defvar --doc-- "Dash helps you work with lists")
+
 (defun d-map (fn list)
   (mapcar fn list))
 

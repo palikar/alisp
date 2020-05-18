@@ -258,7 +258,8 @@ Return the real value represented by STRING.
 
 Example:
 ```elisp
-(parse-int "12.32")
+(parse-float "12.32")
+```
 
 
 - **to-string** : *(to-string VALUE)*
@@ -318,7 +319,15 @@ code of the process. Otherwise the return code will be 0.
 
 - **intern** : *intern NAME*
 
-- **make_symbol** : *make_symbol NAME*
+- **make-symbol** : *(make-symbol NAME)*
+
+Return a new symbol with the name NAME.
+
+Example:
+```elisp
+(make-symbol "sym")
+```
+
 
 ## Printing
 
@@ -664,7 +673,8 @@ Return the real value represented by STRING.
 
 Example:
 ```elisp
-(parse-int "12.32")
+(parse-float "12.32")
+```
 
 
 - **to-string** : *(to-string VALUE)*
@@ -888,5 +898,11 @@ Example:
 
 - **reverse** : *(reverse LIST)*
 
+Return a new list with the elements of LIST in revese order.
+
+Example:
+```elisp
+(reverse '(1 2 3 4 5)) 
+```
 
 

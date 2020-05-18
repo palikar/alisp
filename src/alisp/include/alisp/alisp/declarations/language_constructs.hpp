@@ -45,9 +45,9 @@ Return a new symbol with the name NAME.
 
 Example:
 ```elisp
-(make-symbol "sym" )
+(make-symbol "sym")
 ```
-");
+)");
 
 DEFUN(intern, "intern", R"(intern NAME)");
 
@@ -450,7 +450,7 @@ DEFVAR(
   make_sym_list({ "import",    "modref",   "defun",   "defconst",  "eval",   "setq",   "set",       "setq",
                   "quote",     "function", "lambda",  "if",        "while",  "dolist", "cond",      "when",
                   "unless",    "let",      "let*",    "or",        "and",    "not",    "parse-int", "parse-float",
-                  "to-string", "to-char",  "funcall", "backquote", "return", "exit",   "intern",    "make_symbol" }),
+                  "to-string", "to-char",  "funcall", "backquote", "return", "exit",   "intern",    "make-symbol" }),
   R"(Basic fuctions that provide the backbone of the language. These include global and local variable definition, flow control structures and loops.)");
 
 }  // namespace alisp
