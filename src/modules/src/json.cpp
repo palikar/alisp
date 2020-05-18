@@ -625,13 +625,32 @@ The resulting representaion can be handeld through some of the functions that th
 )");
 
 
-    alisp::module_defvar(json_ptr, "json-signal", json::json_signal);
+    alisp::module_defvar(json_ptr, "json-signal", json::json_signal,
+    R"(Signal raised when the json parser encounters an error.)"
+    );
+    
+    alisp::module_defun(json_ptr, "json-parse", &json::Fparse_json,
+    R"((json-parse STRING)
 
-    alisp::module_defun(json_ptr, "json-parse", &json::Fparse_json);
-    alisp::module_defun(json_ptr, "json-dump", &json::Fdump_json);
+Parse a json formated string and return a alist representation of the json)"
+    );
+    
+    alisp::module_defun(json_ptr, "json-dump", &json::Fdump_json,
+    R"((json-dump ALIST)
 
-    alisp::module_defun(json_ptr, "load-file", &json::Fload_file);
-    alisp::module_defun(json_ptr, "dump-file", &json::Fdump_file);
+Convert a alist to a json formated string. Return the formated string.
+)");
+
+    alisp::module_defun(json_ptr, "load-file", &json::Fload_file,
+    R"((load-file PATH)
+
+Parse the contents of a file as json and return a alist representation of the json.
+)");
+    alisp::module_defun(json_ptr, "dump-file", &json::Fdump_file,
+    R"((dump-file PATH ALIST)
+
+Save the a json formated string representation of `ALIST` in 
+)");
 
     return Mjson;
 }

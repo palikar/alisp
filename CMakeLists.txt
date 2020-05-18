@@ -105,7 +105,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         INTERFACE
         -Wmisleading-indentation
         -Wduplicated-cond
-        -Wduplicated-branches
+        # -Wduplicated-branches
         -Wlogical-op
         -Wuseless-cast
         )
