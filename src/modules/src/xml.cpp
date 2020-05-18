@@ -303,13 +303,37 @@ ALISP_EXPORT alisp::env::ModulePtr init_xml(alisp::env::Environment *, alisp::ev
 
     alisp::module_doc(
       xml_ptr,
-      R"(The `xml` module enables the handling of XML-formated data. I provides functionality for parsing and dumping s-expressions as XML.)");
+      R"(The `xml` module enables the handling of XML-formated data. It
+provides functionality for parsing and dumping s-expressions as XML.
 
-    alisp::module_defun(xml_ptr, "xml-parse", &xml::Fparse_xml);
-    alisp::module_defun(xml_ptr, "xml-dump", &xml::Fdump_xml);
+Internally `xml` uses the
+[tinyxml2](https://github.com/leethomason/tinyxml2) library.
 
-    alisp::module_defun(xml_ptr, "load-file", &xml::Fload_file);
-    alisp::module_defun(xml_ptr, "dump-file", &xml::Fdump_file);
+
+)");
+
+    alisp::module_defun(xml_ptr, "xml-parse", &xml::Fparse_xml,
+    R"(
+
+Parse a xml-formated string and return a alist representation of the xml)");
+
+    alisp::module_defun(xml_ptr, "xml-dump", &xml::Fdump_xml,
+    R"(
+Convert a alist to a xml-formated string. Return the formated string.
+)");
+
+    alisp::module_defun(xml_ptr, "load-file", &xml::Fload_file,
+    R"(
+
+Parse the contents of a file as xml and return a alist representation of the xml.
+)");
+    
+    alisp::module_defun(xml_ptr, "dump-file", &xml::Fdump_file,
+    R"(
+
+Save the xml-formated string representation of `ALIST` in the file pointed by `PATH`.
+)");
+    
 
     return Mxml;
 }

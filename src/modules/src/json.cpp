@@ -655,7 +655,7 @@ Parse the contents of a file as json and return a alist representation of the js
                         &json::Fdump_file,
                         R"((dump-file PATH ALIST)
 
-Save the a json formated string representation of `ALIST` in 
+Save the a json formated string representation of `ALIST` in the file pointed by `PATH`.
 )");
 
     return Mjson;
