@@ -34,4 +34,5 @@ will be represented throught the following s-expressions structure.
 The resulting representaion can be handeld through some of the functions that the module provides.
 
 
-* [dash](dash) - 
+* [dash](dash) - Dash helps you work with lists
+* [s](s) - S helps you work with strings

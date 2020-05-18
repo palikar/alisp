@@ -1,109 +1,109 @@
 ### Filio
 
-- **f-empty** : **
+**f-empty** : **
 
-- **f-descendant-of** : **
+**f-descendant-of** : **
 
-- **f-child-of** : **
+**f-child-of** : **
 
-- **f-absolute** : **
+**f-absolute** : **
 
-- **f-executable** : **
+**f-executable** : **
 
-- **f-writable** : **
+**f-writable** : **
 
-- **f-symlink** : **
+**f-symlink** : **
 
-- **f-file** : **
+**f-file** : **
 
-- **f-exists** : **
+**f-exists** : **
 
-- **f-parent-of** : **
+**f-parent-of** : **
 
-- **f-long** : **
+**f-long** : **
 
-- **f-short** : **
+**f-short** : **
 
-- **f-hidden** : **
+**f-hidden** : **
 
-- **f-readable** : **
+**f-readable** : **
 
-- **f-relative** : **
+**f-relative** : **
 
-- **f-base** : **
+**f-base** : **
 
-- **f-swap-ext** : **
+**f-swap-ext** : **
 
-- **f-write-bytes** : **
+**f-write-bytes** : **
 
-- **f-move** : **
+**f-move** : **
 
-- **f-join** : **
+**f-join** : **
 
-- **f-prelative** : **
+**f-prelative** : **
 
-- **f-expand-user** : **
+**f-expand-user** : **
 
-- **f-write-text** : **
+**f-write-text** : **
 
-- **f-append-bytes** : **
+**f-append-bytes** : **
 
-- **f-touch** : **
+**f-touch** : **
 
-- **f-read-text** : **
+**f-read-text** : **
 
-- **f-entries** : **
+**f-entries** : **
 
-- **f-copy** : **
+**f-copy** : **
 
-- **f-filename** : **
+**f-filename** : **
 
-- **f-temp-file** : **
+**f-temp-file** : **
 
-- **f-temp-file-name** : **
+**f-temp-file-name** : **
 
-- **f-full** : **
+**f-full** : **
 
-- **f-with-temp-file** : **
+**f-with-temp-file** : **
 
-- **f-same** : **
+**f-same** : **
 
-- **f-common-parent** : **
+**f-common-parent** : **
 
-- **f-ancestor-of** : **
+**f-ancestor-of** : **
 
-- **f-directories** : **
+**f-directories** : **
 
-- **f-direcotry** : **
+**f-direcotry** : **
 
-- **f-make-symlink** : **
+**f-make-symlink** : **
 
-- **f-is-root** : **
+**f-is-root** : **
 
-- **f-delete** : **
+**f-delete** : **
 
-- **f-mkdir** : **
+**f-mkdir** : **
 
-- **f-canonical** : **
+**f-canonical** : **
 
-- **f-ext** : **
+**f-ext** : **
 
-- **f-no-ext** : **
+**f-no-ext** : **
 
-- **f-root** : **
+**f-root** : **
 
-- **f-glob** : **
+**f-glob** : **
 
-- **f-read-bytes** : **
+**f-read-bytes** : **
 
-- **f-append-text** : **
+**f-append-text** : **
 
-- **f-split** : **
+**f-split** : **
 
-- **f-expand** : **
+**f-expand** : **
 
-- **f-dirname** : **
+**f-dirname** : **
 
 
-- **f-directory-separator** : **
+**f-directory-separator** : **
 

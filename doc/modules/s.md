@@ -1,134 +1,135 @@
 ### S
 
-- **s-word-initials** : **
+**s-word-initials** : **
 
-- **s-dashed-words** : **
+**s-dashed-words** : **
 
-- **s-upper-camel-case** : **
+**s-upper-camel-case** : **
 
-- **s-lower-camel-case** : **
+**s-lower-camel-case** : **
 
-- **s-slice-at** : **
+**s-split-words** : **
 
-- **s-repeat** : **
+**s-lines** : **
 
-- **s-lines** : **
+**s-concat** : **
 
-- **s-concat** : **
+**s-shared-start** : **
 
-- **s-shared-start** : **
+**s-numeric?** : **
 
-- **s-numeric?** : **
+**s-count-matches** : **
 
-- **s-count-matches** : **
+**s-chop-prefixes** : **
 
-- **s-chop-prefixes** : **
+**s-chop-suffix** : **
 
-- **s-chop-suffix** : **
+**s-left** : **
 
-- **s-left** : **
+**s-shared-end** : **
 
-- **s-match** : **
+**s-capitalized?** : **
 
-- **s-capitalized-words** : **
+**s-truncate** : **
 
-- **s-equals?** : **
+**s-trim** : **
 
-- **s--mapcar-head** : *Like MAPCAR, but applies a different function to the first element.*
+**s-snake-case** : **
 
-- **s-pad-right** : **
+**s-trim-right** : **
 
-- **s-titleized-words** : **
+**s-match** : **
 
-- **s-right** : **
+**s-capitalized-words** : **
 
-- **s-present?** : **
+**s-equals?** : **
 
-- **s-mixedcase?** : **
+**s--mapcar-head** : *Like MAPCAR, but applies a different function to the first element.*
 
-- **s-chomp** : **
+**s-pad-right** : **
 
-- **s-prepend** : **
+**s-titleized-words** : **
 
-- **s-match-strings-all** : **
+**s-right** : **
 
-- **s-center** : **
+**s-present?** : **
 
-- **s-downcase** : **
+**s-mixedcase?** : **
 
-- **s-trim** : **
+**s-chomp** : **
 
-- **s-snake-case** : **
+**s-prepend** : **
 
-- **s-trim-right** : **
+**s-match-strings-all** : **
 
-- **s-collapse-whitespace** : **
+**s-chop-prefix** : **
 
-- **s-shared-end** : **
+**s-blank?** : **
 
-- **s-capitalized?** : **
+**s-center** : **
 
-- **s-truncate** : **
+**s-downcase** : **
 
-- **s--times** : **
+**s-collapse-whitespace** : **
 
-- **s-word-wrap** : **
+**s-repeat** : **
 
-- **s-upcase** : **
+**s-slice-at** : **
 
-- **s-split-up-to** : **
+**s--times** : **
 
-- **s-append** : **
+**s-word-wrap** : **
 
-- **s-join** : **
+**s-upcase** : **
 
-- **s-chop-prefix** : **
+**s-split-up-to** : **
 
-- **s-blank?** : **
+**s-append** : **
 
-- **s--join-with-sep** : **
+**s-join** : **
 
-- **s-ends-with?** : **
+**s--join-with-sep** : **
 
-- **s-matches?** : **
+**s-ends-with?** : **
 
-- **s-starts-with?** : **
+**s-matches?** : **
 
-- **s-contains?** : **
+**s-starts-with?** : **
 
-- **list-concat** : **
+**s-contains?** : **
 
-- **s-lowercase?** : **
+**list-concat** : **
 
-- **s-uppercase?** : **
+**s-lowercase?** : **
 
-- **s-reverse** : **
+**s-uppercase?** : **
 
-- **s-replace-all** : **
+**s-reverse** : **
 
-- **s-chop-suffixes** : **
+**s-replace-all** : **
 
-- **s-trim-left** : **
+**s-chop-suffixes** : **
 
-- **s-split** : **
+**s-trim-left** : **
 
-- **s-capitalize** : **
+**s-split** : **
 
-- **s-titleize** : **
+**s-capitalize** : **
 
-- **s-with** : **
+**s-titleize** : **
 
-- **s-pad-left** : **
+**s-with** : **
 
-- **s-less?** : **
+**s-pad-left** : **
 
-- **s-presence** : **
+**s-less?** : **
 
-- **s-replace** : **
+**s-presence** : **
 
-- **s-index-of** : **
+**s-replace** : **
 
-- **s-wrap** : **
+**s-index-of** : **
 
-- **s-split-words** : **
+**s-wrap** : **
+
 

@@ -1,85 +1,85 @@
 ### Math
 
-- **cbrt** : **
+**cbrt** : **
 
-- **hypot** : **
+**hypot** : **
 
-- **fdim** : **
+**fdim** : **
 
-- **lgamma** : **
+**lgamma** : **
 
-- **pow** : **
+**pow** : **
 
-- **tgamma** : **
+**tgamma** : **
 
-- **erfc** : **
+**erfc** : **
 
-- **floor** : **
+**floor** : **
 
-- **asinh** : **
+**asinh** : **
 
-- **toradians** : **
+**toradians** : **
 
-- **sqrt** : **
+**sqrt** : **
 
-- **todegrees** : **
+**todegrees** : **
 
-- **isnan** : **
+**isnan** : **
 
-- **erf** : **
+**erf** : **
 
-- **ceil** : **
+**ceil** : **
 
-- **log** : **
+**log** : **
 
-- **sinh** : **
+**sinh** : **
 
-- **isinf** : **
+**isinf** : **
 
-- **cosh** : **
+**cosh** : **
 
-- **sin** : **
+**sin** : **
 
-- **asin** : **
+**asin** : **
 
-- **acosh** : **
+**acosh** : **
 
-- **tan** : **
+**tan** : **
 
-- **log2** : **
+**log2** : **
 
-- **exp2** : **
+**exp2** : **
 
-- **exp** : **
+**exp** : **
 
-- **expm1** : **
+**expm1** : **
 
-- **log1p** : **
+**log1p** : **
 
-- **atan** : **
+**atan** : **
 
-- **cos** : **
+**cos** : **
 
-- **log10** : **
+**log10** : **
 
-- **acos** : **
+**acos** : **
 
-- **tanh** : **
+**tanh** : **
 
-- **min-real** : **
+**min-real** : **
 
-- **inf-int** : **
+**inf-int** : **
 
-- **E** : **
+**E** : **
 
-- **min-int** : **
+**min-int** : **
 
-- **TAU** : **
+**TAU** : **
 
-- **PI** : **
+**PI** : **
 
-- **max-real** : **
+**max-real** : **
 
 
-- **max-int** : **
+**max-int** : **
 

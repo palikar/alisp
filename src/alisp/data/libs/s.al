@@ -1,5 +1,7 @@
 (import 're)
 
+(defvar --doc-- "S helps you work with strings")
+
 (defun s--mapcar-head (fn-head fn-rest l)
   "Like MAPCAR, but applies a different function to the first element."
   (if l

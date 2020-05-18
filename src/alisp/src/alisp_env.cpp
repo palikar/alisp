@@ -126,6 +126,7 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, 
     NameValidator::validate_object_name(name);
 
     AL_CHECK(if (scope.count(name)) { throw environment_error("Variable alredy exists: " + name); });
+    t_value->set_prop("--name--", make_string(name));
     t_value->set_prop("--module--", make_string(m_active_module.get().name()));
 
 #ifdef ENABLE_OBJECT_DOC

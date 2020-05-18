@@ -1,226 +1,227 @@
 ### Dash
 
-- **d-dotimes** : **
+**d-dotimes** : **
 
-- **d-each-r-while** : **
+**d-each-r-while** : **
 
-- **d-each-r** : **
+**d-each-r** : **
 
-- **d-each** : **
+**d-each** : **
 
-- **d-last-item** : **
+**d-last-item** : **
 
-- **d-fifth-item** : **
+**d-fifth-item** : **
 
-- **d-second-item** : **
+**d-second-item** : **
 
-- **d-first-item** : **
+**d-first-item** : **
 
-- **d-last** : **
+**d-last** : **
 
-- **d-some** : **
+**d-some** : **
 
-- **d-distinct** : **
+**d-distinct** : **
 
-- **d-permutations** : **
+**d-permutations** : **
 
-- **d-powerset** : **
+**d-powerset** : **
 
-- **d-fourth-item** : **
+**d-fourth-item** : **
 
-- **d-intersection** : **
+**d-intersection** : **
 
-- **d-difference** : **
+**d-difference** : **
 
-- **d-find-indices** : **
+**d-find-indices** : **
 
-- **d-elem-indices** : **
+**d-elem-indices** : **
 
-- **d-elem-index** : **
+**d-elem-index** : **
 
-- **d-third-item** : **
+**d-third-item** : **
 
-- **d-group-by** : **
+**d-group-by** : **
 
-- **d-partition-by-header** : **
+**d-partition-by-header** : **
 
-- **d-partition-by** : **
+**d-partition-by** : **
 
-- **d-partition-all** : **
+**d-partition-all** : **
 
-- **d-partition** : **
+**d-partition** : **
 
-- **d-split-on** : **
+**d-split-on** : **
 
-- **d-split-with** : **
+**d-split-with** : **
 
-- **d-is-infix?** : **
+**d-is-infix?** : **
 
-- **d-is-prefix?** : **
+**d-is-prefix?** : **
 
-- **d-same-items?** : **
+**d-same-items?** : **
 
-- **d-contains?** : **
+**d-contains?** : **
 
-- **d-split-at** : **
+**d-split-at** : **
 
-- **d-none?** : **
+**d-none?** : **
 
-- **d-any?** : **
+**d-any?** : **
 
-- **d-remove-first** : **
+**d-each-indexed** : **
 
-- **d-replace-first** : **
+**d-repeat** : **
 
-- **d-drop-while** : **
+**d-iterate** : **
 
-- **d-tails** : **
+**d-replace-first** : **
 
-- **d-union** : **
+**d-drop-while** : **
 
-- **d-select-column** : **
+**d-tails** : **
 
-- **d-select-by-indices** : **
+**d-union** : **
 
-- **d-non-nil** : **
+**d-select-column** : **
 
-- **d-remove-last** : **
+**d-select-by-indices** : **
 
-- **d-map** : **
+**d-non-nil** : **
 
-- **d-map-when** : **
+**d-remove-last** : **
 
-- **d-remove** : **
+**d-remove-first** : **
 
-- **d-split-when** : **
+**d-separate** : **
 
-- **d-concat** : **
+**d-running-product** : **
 
-- **d-list** : **
+**d-map-when** : **
 
-- **d-first** : **
+**d-map** : **
 
-- **d-common-prefix** : **
+**d-remove** : **
 
-- **d-slice** : **
+**d-split-when** : **
 
-- **d-take-while** : **
+**d-concat** : **
 
-- **d--partition-all-in-steps-reversed** : **
+**d-list** : **
 
-- **d-map-last** : **
+**d-first** : **
 
-- **d-is-suffix?** : **
+**d-common-prefix** : **
 
-- **d-select-columns** : **
+**d-slice** : **
 
-- **d-each-while** : **
+**d-take-while** : **
 
-- **d-remove-item** : **
+**d--partition-all-in-steps-reversed** : **
 
-- **d-annotate** : **
+**d-map-last** : **
 
-- **d-reduce-r** : **
+**d-is-suffix?** : **
 
-- **d-map-first** : **
+**d-select-columns** : **
 
-- **d-replace** : **
+**d-each-while** : **
 
-- **d-splice** : **
+**d-remove-item** : **
 
-- **d-reduce-r-from** : **
+**d-annotate** : **
 
-- **d-partition-in-steps** : **
+**d-reduce-r** : **
 
-- **d-mapcat** : **
+**d-map-first** : **
 
-- **d-filter** : **
+**d-replace** : **
 
-- **d-flatten** : **
+**d-splice** : **
 
-- **d-keep** : **
+**d-reduce-r-from** : **
 
-- **d-running-sum** : **
+**d-partition-in-steps** : **
 
-- **d-take-last** : **
+**d-mapcat** : **
 
-- **d-only-some?** : **
+**d-filter** : **
 
-- **d-product** : **
+**d-take-last** : **
 
-- **d-unfold** : **
+**d-only-some?** : **
 
-- **d-map-indexed** : **
+**d-product** : **
 
-- **d-splice-list** : **
+**d-unfold** : **
 
-- **d-find-index** : **
+**d-map-indexed** : **
 
-- **d-copy** : **
+**d-splice-list** : **
 
-- **d-inits** : **
+**d-find-index** : **
 
-- **d-min-by** : **
+**d-copy** : **
 
-- **d-insert-at** : **
+**d-inits** : **
 
-- **d-replace-at** : **
+**d-min-by** : **
 
-- **d-rotate** : **
+**d-flatten** : **
 
-- **d-count** : **
+**d-keep** : **
 
-- **d-butlast** : **
+**d-running-sum** : **
 
-- **d-remove-at** : **
+**d-insert-at** : **
 
-- **d-find-last-index** : **
+**d-replace-at** : **
 
-- **d-remove-at-indices** : **
+**d-rotate** : **
 
-- **d-partition-all-in-steps** : **
+**d-count** : **
 
-- **d-reduce-from** : **
+**d-butlast** : **
 
-- **d-reduce** : **
+**d-remove-at** : **
 
-- **d-all?** : **
+**d-find-last-index** : **
 
-- **d-drop** : **
+**d-remove-at-indices** : **
 
-- **d-reductions-from** : **
+**d-partition-all-in-steps** : **
 
-- **d-reductions-r-from** : **
+**d-reduce-from** : **
 
-- **d-take** : **
+**d-reduce** : **
 
-- **d-min** : **
+**d-all?** : **
 
-- **d-drop-last** : **
+**d-drop** : **
 
-- **d-reductions** : **
+**d-reductions-from** : **
 
-- **d-update-at** : **
+**d-reductions-r-from** : **
 
-- **d-sum** : **
+**d-take** : **
 
-- **d-separate** : **
+**d-min** : **
 
-- **d-running-product** : **
+**d-drop-last** : **
 
-- **d-common-suffix** : **
+**d-reductions** : **
 
-- **d-replace-last** : **
+**d-update-at** : **
 
-- **d-max** : **
+**d-sum** : **
 
-- **d-reductions-r** : **
+**d-common-suffix** : **
 
-- **d-max-by** : **
+**d-replace-last** : **
 
-- **d-each-indexed** : **
+**d-max** : **
 
-- **d-repeat** : **
+**d-reductions-r** : **
 
-- **d-iterate** : **
+**d-max-by** : **
+
 

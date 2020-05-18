@@ -1,39 +1,39 @@
 ### Time
 
-- **t-s** : **
+**t-s** : **
 
-- **t-hr** : **
+**t-hr** : **
 
-- **t-ms** : **
+**t-ms** : **
 
-- **t-ns** : **
+**t-ns** : **
 
-- **t-clock-time-ns** : **
+**t-clock-time-ns** : **
 
-- **t-clock-time** : **
+**t-clock-time** : **
 
-- **t-localtime** : **
+**t-localtime** : **
 
-- **t-sleep** : **
+**t-sleep** : **
 
-- **t-gmtime** : **
+**t-gmtime** : **
 
-- **t-mktime** : **
+**t-mktime** : **
 
-- **t-ctime** : **
+**t-ctime** : **
 
-- **t-time** : **
+**t-time** : **
 
-- **t-process-time** : **
+**t-process-time** : **
 
-- **t-strftime** : **
+**t-strftime** : **
 
 
-- **system-clock** : **
+**system-clock** : **
 
-- **high-res-clock** : **
+**high-res-clock** : **
 
-- **steady-clock** : **
+**steady-clock** : **
 
-- **clocks-pre-second** : **
+**clocks-pre-second** : **
 

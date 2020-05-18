@@ -43,10 +43,9 @@
   (print "**" name "**"))
 
 (defun dump-doc-list (&rest sym)
-  (dolist (el sym)    
+  (dolist (el sym)
     (let ((name (prop-get el "--name--" )))
       (when (not (string-startswith name "--"))
-        (print "- ")
         (bold name)
         (print " : ")
         (let ((lines (string-splitlines (prop-get el "--doc--" ))))

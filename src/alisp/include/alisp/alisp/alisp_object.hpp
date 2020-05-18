@@ -590,6 +590,17 @@ struct NameValidator
         }
     }
 
+    template<typename T> static bool is_special_symbol(const T &t_s) noexcept
+    {
+
+        switch (hash::hash(t_s))
+        {
+            case hash::hash("--doc--"):
+            case hash::hash("--all--"): return true;
+            default: return false;
+        }
+    }
+
     template<typename T> static bool valid_object_name(const T &t_name) noexcept
     {
         return utility::starts_with(t_name, "--");
@@ -597,6 +608,11 @@ struct NameValidator
 
     template<typename T> static void validate_object_name(const T &t_name)
     {
+        if (is_special_symbol(t_name))
+        {
+            return;
+        }
+
         if (is_reserved_word(t_name))
         {
             throw illegal_name_error(t_name, "This is a reserved keyword.");

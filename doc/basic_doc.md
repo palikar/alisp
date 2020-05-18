@@ -3,7 +3,7 @@
 
 Basic fuctions that provide the backbone of the language. These include global and local variable definition, flow control structures and loops.
 
-- **import** : *(import MODULE [:file file] [:all] [( [(SYM MAPPED)]... )])*
+**import** : *(import MODULE [:file file] [:all] [( [(SYM MAPPED)]... )])*
 
 Import the module MODULE. MODULE should be a symbol and the imported
 module should be in a file with the name of this symbol. The file
@@ -23,7 +23,7 @@ Example:
 ```
 
 
-- **modref** : *(modref MODUE [[MODUE] ...] SYMBOL [[symbol] ...] )*
+**modref** : *(modref MODUE [[MODUE] ...] SYMBOL [[symbol] ...] )*
 
 Refrence a symbol in another module. The function can also be used to
 reference symbols from submodules. That is, if a module imports
@@ -44,7 +44,7 @@ The last argument of `modref` must be the symbol name. The previous
 arguments should module names.
 
 
-- **defun** : *(defun NAME (ARGLIST) [DOC] [BODY])*
+**defun** : *(defun NAME (ARGLIST) [DOC] [BODY])*
 
 Define a new functions with a name `NAME` in the current
 module. `ARGLIST` should be a valid argument list definition. `DOC` is
@@ -59,7 +59,7 @@ Example:
 ```
  
 
-- **defconst** : *(defconst NAME VALUE [DOC])*
+**defconst** : *(defconst NAME VALUE [DOC])*
 
 Define a new constant variable with a name `NAME` in the current
 module. `VALUE` is the initial value of the variable and `DOC` is an
@@ -75,12 +75,12 @@ Example:
 
 
 
-- **eval** : *(eval FORM)*
+**eval** : *(eval FORM)*
 
 Evaluate the form `FORM`. The usual form for evaluation apply.
 
 
-- **setq** : *(setq SYMBOL VALUE [[SYMBOL VALUE] ... ])*
+**setq** : *(setq SYMBOL VALUE [[SYMBOL VALUE] ... ])*
 
 Set the value of the variable pointed by `SYMBOL` to
 `VALUE`. `SYMBOL` will not be evaluated. `setq` can also be used to
@@ -94,7 +94,7 @@ Example:
 ```
 
 
-- **set** : *((set FORM VALUE))*
+**set** : *((set FORM VALUE))*
 
 Set the value of the variable pointed by `FORM` to `VALUE`. `FORM`
 will be evaluated and should return a symbol. `setq` can also be used
@@ -108,7 +108,7 @@ Example:
 ```
 
 
-- **setq** : *(setq SYMBOL VALUE [[SYMBOL VALUE] ... ])*
+**setq** : *(setq SYMBOL VALUE [[SYMBOL VALUE] ... ])*
 
 Set the value of the variable pointed by `SYMBOL` to
 `VALUE`. `SYMBOL` will not be evaluated. `setq` can also be used to
@@ -122,38 +122,38 @@ Example:
 ```
 
 
-- **quote** : *(quote FORM)*
+**quote** : *(quote FORM)*
 
 Return `FORM`, without evaluating it. `(quote x)` yields ‘x’. `x is a
 syntactic sugar for this function.
 
 
-- **function** : *(funtion OBJECT)*
+**function** : *(funtion OBJECT)*
 
 Return `OBJECT`, without evaluating it but setting its function flag
 to true. `function` should be used to quote lambdas and other
 callables.
 
 
-- **lambda** : *(lambda (ARGLIST) BODY)*
+**lambda** : *(lambda (ARGLIST) BODY)*
 
 
 
 
-- **if** : *(if CONDITION THEN ELSE)*
+**if** : *(if CONDITION THEN ELSE)*
 
 Evaluate `CONDITION` and if its value is *truthy*, evaluate and return
 the value of `THEN`. Otherwise evaluate and return the value of
 `ELSE`.
 
 
-- **while** : *(while CONDITION BODY)*
+**while** : *(while CONDITION BODY)*
 
 Evaluate `BODY` as long as `CONDITION` evaluates to a value that is
 *truthy*. `while` returns `nil`.
 
 
-- **dolist** : *(dolist (SYMBOL LIST) BODY)*
+**dolist** : *(dolist (SYMBOL LIST) BODY)*
 
 Evaluate `BODY` for each symbol in `LIST` while bonding the respective
 element to `SYMBOL`.
@@ -166,7 +166,7 @@ Example:
 
 
 
-- **cond** : *(cond [ ( [CODITION BODY] ) ... ])*
+**cond** : *(cond [ ( [CODITION BODY] ) ... ])*
 
 Chooses what to evaluate among an arbitrary number of
 alternatives. Each clause must a list. The first element of each list
@@ -182,17 +182,17 @@ Example:
 ```
 
 
-- **when** : *(when CONDITION BODY)*
+**when** : *(when CONDITION BODY)*
 
 Evaluate `BODY` if `CONDITION` evaluates to *truthy* value.
 
 
-- **unless** : *(unless CONDITION BODY)*
+**unless** : *(unless CONDITION BODY)*
 
 Evaluate `BODY` if `CONDITION` evaluates to *falsey* value.
 
 
-- **let** : *(let ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)*
+**let** : *(let ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)*
 
 Bind local variables and execute `BODY`. The second argument is a list
 of forms like `(VARIABLE VALUE)`. Each `VALUE` will be evaluated and
@@ -209,7 +209,7 @@ Example:
 ```
 
 
-- **let*** : *(let* ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)*
+**let*** : *(let* ([[VAR]...] [[(VAR VALUE)] ...] ) BODY)*
 
 Bind local variables and execute `BODY`. In contrast `let`, each
 variable can be used in the definition of the following variables.
@@ -224,25 +224,25 @@ Example:
 ```
 
 
-- **or** : *(or [[VALUE]...])*
+**or** : *(or [[VALUE]...])*
 
 Return `t` if at least one of the arguments evaluates to a truthy
 value. The arguments are lazily evaluated.
 
 
 
-- **and** : *(and [[VALUE]...])*
+**and** : *(and [[VALUE]...])*
 
 Return `t` if all of the arguments evaluates to a truthy
 value. The arguments are lazily evaluated.
 
 
-- **not** : *(not FORM)*
+**not** : *(not FORM)*
 
 Return `t` if FORM evaluate to a falsey value and `nil` otherwise. 
 
 
-- **parse-int** : *(parse-int STRING)*
+**parse-int** : *(parse-int STRING)*
 
 Return the int value represented by STRING.
 
@@ -252,7 +252,7 @@ Example:
 ```
 
 
-- **parse-float** : *(parse-float STRING)*
+**parse-float** : *(parse-float STRING)*
 
 Return the real value represented by STRING.
 
@@ -262,7 +262,7 @@ Example:
 ```
 
 
-- **to-string** : *(to-string VALUE)*
+**to-string** : *(to-string VALUE)*
 
 Convert VALUE to string
 
@@ -274,7 +274,7 @@ Example:
 ```
 
 
-- **to-char** : *(to-char INT)*
+**to-char** : *(to-char INT)*
 
 Convert INT to a character (ASCII encoding). INT must be a value in
 the range [0, 255].
@@ -286,13 +286,13 @@ Example:
 ```
 
 
-- **funcall** : *(funcall SYMBOL LIST)*
+**funcall** : *(funcall SYMBOL LIST)*
 
 Call the function pointed by `SYMBOL` and pass the symbols in `LIST`
 as arguments.
 
 
-- **backquote** : *(backquote LIST)*
+**backquote** : *(backquote LIST)*
 
 Backquote the list `LIST`. `LIST is syntactic sugar for this function.
 
@@ -303,7 +303,7 @@ Example:
 ```
 
 
-- **return** : *(return [FROM])*
+**return** : *(return [FROM])*
 
 Return an optional value from a function. If `FROM` is given, it will
 be evaluated and its value will be the return value of the
@@ -311,15 +311,15 @@ function. Otherwise `nil` is the returned value.
 
 
 
-- **exit** : *(exit [FORM])*
+**exit** : *(exit [FORM])*
 
 Exit the program. If `FORM` is given, its value will be the return
 code of the process. Otherwise the return code will be 0.
 
 
-- **intern** : *intern NAME*
+**intern** : *intern NAME*
 
-- **make-symbol** : *(make-symbol NAME)*
+**make-symbol** : *(make-symbol NAME)*
 
 Return a new symbol with the name NAME.
 
@@ -333,29 +333,29 @@ Example:
 
 Functions to interact with the stanard input and output.
 
-- **print** : *(print FORM [[FORM] ...])*
+**print** : *(print FORM [[FORM] ...])*
 
 Print the value of VALUE of form on the standard output stream.
 
 
-- **println** : *(println VALUE [[VALUE] ...])*
+**println** : *(println VALUE [[VALUE] ...])*
 
 Print the value of VALUE of form on the standard output stream and put a new
 line character.
 
 
-- **eprint** : *(eprint VALUE [[VALUE] ...])*
+**eprint** : *(eprint VALUE [[VALUE] ...])*
 
 Print the value of VALUE of form on the standard error stream.
 
 
-- **eprintln** : *(eprintln VALUE [[VALUE] ...])*
+**eprintln** : *(eprintln VALUE [[VALUE] ...])*
 
 Print the value of VALUE of form on the standard error stream and put a new
 line character.
 
 
-- **read-line** : *(read-line)*
+**read-line** : *(read-line)*
 
 Read a single line form the standard input stream and return it.
 
@@ -364,7 +364,7 @@ Read a single line form the standard input stream and return it.
 
 Functions to access the elements of lists as well to perform some basic modifications on lists.
 
-- **length** : *(length LIST)*
+**length** : *(length LIST)*
 
 Return the number of elements in LIST.
 
@@ -374,7 +374,7 @@ Example:
 ```
 
 
-- **cons** : *(cons LIST)*
+**cons** : *(cons LIST)*
 
 Return a sublist of LIST with all of its elements but the first one.
 
@@ -384,7 +384,7 @@ Example:
 ```
 
 
-- **head** : *(head LIST)*
+**head** : *(head LIST)*
 
 Return the fist element of the list LIST.
 
@@ -394,7 +394,7 @@ Example:
 ```
 
 
-- **last** : *(last LIST)*
+**last** : *(last LIST)*
 
 Return the last element of the list LIST.
 
@@ -404,7 +404,7 @@ Example:
 ```
 
 
-- **init** : *(init LIST)*
+**init** : *(init LIST)*
 
 Return a sublist of LIST with all of its elements but the last one.
 
@@ -414,7 +414,7 @@ Example:
 ```
 
 
-- **tail** : *(tail LIST)*
+**tail** : *(tail LIST)*
 
 Return a sublist of LIST with all of its elements but the first one.
 
@@ -424,7 +424,7 @@ Example:
 ```
 
 
-- **nth** : *(nth LIST INDEX)*
+**nth** : *(nth LIST INDEX)*
 
 Return the element of LIST that is at position INDEX.
 
@@ -434,7 +434,7 @@ Example:
 ```
 
 
-- **mapc** : *(mapc FUNCTION LIST)*
+**mapc** : *(mapc FUNCTION LIST)*
 
 Call FUNCTION for each element of LIST. The element is passed as an
 argument to the function. `mapc` return `t` and its executed only for side effects.
@@ -446,7 +446,7 @@ Example:
 ```
 
 
-- **mapcar** : *(mapcar FUNCTION LIST)*
+**mapcar** : *(mapcar FUNCTION LIST)*
 
 
 Call FUNCTION for each element of LIST while collecting the results of
@@ -458,7 +458,7 @@ Example:
 ```
 
 
-- **push** : *(push LIST ELEMENT)*
+**push** : *(push LIST ELEMENT)*
 
 Add ELEMENT to the end of the LIST. This function changes the LIST
 rather than to create a new one.
@@ -469,7 +469,7 @@ Example:
 ```
 
 
-- **delete** : *(delete LIST ELEMENT)*
+**delete** : *(delete LIST ELEMENT)*
 
 Remove an element from LIST that is equal (with `equal`) to
 ELEMENT. This function operates inplace, so list is changed and no new
@@ -480,7 +480,7 @@ Example:
 ```
 
 
-- **remove** : *(remove LIST ELEMENT)*
+**remove** : *(remove LIST ELEMENT)*
 
 Remove an element from LIST that is equal (with `equal`) to
 ELEMENT. This function __does not__ operate inplace, so a new list is
@@ -493,7 +493,7 @@ Example:
 
 
 
-- **range** : *(range FROM TO STEP)*
+**range** : *(range FROM TO STEP)*
 
 Generate the range of numbers [FROM, TO) with a step STEP. All of
 the arguments must be ints.
@@ -508,17 +508,17 @@ Example:
 
 Functions for accessing the properties of objects.
 
-- **prop-get** : *(prop-get SYM PROPERTY)*
+**prop-get** : *(prop-get SYM PROPERTY)*
 
 Return the property with name PROPERTY of SYM.
 
 
-- **prop-set** : *(prop-set SYM PROPERTY VALUE)*
+**prop-set** : *(prop-set SYM PROPERTY VALUE)*
 
 Set the property with name PROPERTY of SYM to VALUE.
 
 
-- **prop-list** : *(prop-list SYM)*
+**prop-list** : *(prop-list SYM)*
 
 Return a list with all of the properties of SYM.
 
@@ -527,32 +527,32 @@ Return a list with all of the properties of SYM.
 
 Functions for type inspecting. These functions can be used to check whether an object is from a certain type.
 
-- **pstring** : *(pstring FORM)*
+**pstring** : *(pstring FORM)*
 
 Return `t` if FORM is a string and `nil` otherwise.
 
 
-- **plist** : *(plist FORM)*
+**plist** : *(plist FORM)*
 
 Return `t` if FORM is a list and `nil` otherwise.
 
 
-- **pint** : *(pint FORM)*
+**pint** : *(pint FORM)*
 
 Return `t` if FORM is a integer value and `nil` otherwise.
 
 
-- **preal** : *(preal FORM)*
+**preal** : *(preal FORM)*
 
 Return `t` if FORM is a real value and `nil` otherwise.
 
 
-- **psym** : *(psym FORM)*
+**psym** : *(psym FORM)*
 
 Return `t` if FORM is a symbol and `nil` otherwise.
 
 
-- **pfunction** : *(pfunction FORM)*
+**pfunction** : *(pfunction FORM)*
 
 Return `t` if FORM is a function and `nil` otherwise.
 
@@ -561,94 +561,94 @@ Return `t` if FORM is a function and `nil` otherwise.
 
 Functions for basic string handling.
 
-- **string-length** : *(string-length STRING)*
+**string-length** : *(string-length STRING)*
 
 Return the length of the provided string.
 
 
-- **string-contains** : *(string-contains STRING SUBSTRING)*
+**string-contains** : *(string-contains STRING SUBSTRING)*
 
 Return `t` if `STRING` contains `SUBSTRING` as a substring. Return `nil` otherwise.
 
 
-- **string-endswith** : *(string-contains STRING SUFFIX)*
+**string-endswith** : *(string-contains STRING SUFFIX)*
 
 Return `t` if `STRING` ends with `SUFFIX`. Return `nil` otherwise.
 
 
-- **string-startswith** : *(string-contains STRING PREFIX)*
+**string-startswith** : *(string-contains STRING PREFIX)*
 
 Return `t` if `STRING` starts with `PREFIX`. Return `nil` otherwise.
 
 
-- **string-length** : *(string-length STRING)*
+**string-length** : *(string-length STRING)*
 
 Return the length of the provided string.
 
 
-- **string-capitalize** : *(string-capitalize STRING)*
+**string-capitalize** : *(string-capitalize STRING)*
 
 Capitalized the first letter of the provided string.
 
 
-- **string-find** : *(string-find STRING SUBSTRING)*
+**string-find** : *(string-find STRING SUBSTRING)*
 
 Return the first index where `SUBSTRING` is contained in `STRINGE`.
 
 
-- **string-replace** : *(string-replace STRING SUBSTRING NEWSTRING)*
+**string-replace** : *(string-replace STRING SUBSTRING NEWSTRING)*
 
 Replace one occurrence of `SUBSTRING` in STRING with `NEWSTRING`. The
 new string is returned.
 
 
-- **string-replaceall** : *(string-replaceall STRING SUBSTRING NEWSTRING)*
+**string-replaceall** : *(string-replaceall STRING SUBSTRING NEWSTRING)*
 
 Replace all occurrences of `SUBSTRING` in STRING with `NEWSTRING`. The
 new string is returned.
 
 
-- **string-split** : *(string-split STRING DELIMETER)*
+**string-split** : *(string-split STRING DELIMETER)*
 
 Split `STRING` based on `DELIMETER` and return a list of the parts.
 
 
-- **string-substring** : *(string-substring STRING FROM TO)*
+**string-substring** : *(string-substring STRING FROM TO)*
 
 Return a new string that is the subsection [`FROM`, `TO`) of `STRING`.
 
 
-- **string-splitlines** : *(string-splitlines STRING)*
+**string-splitlines** : *(string-splitlines STRING)*
 
 Split `STRING` based on `\n` and return a list of the lines.
 
 
-- **string-upper** : *(string-upper STRING)*
+**string-upper** : *(string-upper STRING)*
 
 Capitalize every letter of `STRING`.
 
 
-- **string-lower** : *(string-lower STRING)*
+**string-lower** : *(string-lower STRING)*
 
 Lower every letter of `STRING`.
 
 
-- **string-strip** : *(string-strip STRING)*
+**string-strip** : *(string-strip STRING)*
 
 Remove and trailing or preceding whitespace of string.
 
 
-- **string-join** : *(string-join STRING [[STRING] ...])*
+**string-join** : *(string-join STRING [[STRING] ...])*
 
 Concatenate the provided string to a new string.
 
 
-- **char-isalpha** : *(char-isalpha CHAR)*
+**char-isalpha** : *(char-isalpha CHAR)*
 
 Check if the character CHAR is a letter.
 
 
-- **char-isdigit** : *(char-isdigit CHAR)*
+**char-isdigit** : *(char-isdigit CHAR)*
 
 Check if the character CHAR is a digit.
 
@@ -657,7 +657,7 @@ Check if the character CHAR is a digit.
 
 Functions for casting between types.
 
-- **parse-int** : *(parse-int STRING)*
+**parse-int** : *(parse-int STRING)*
 
 Return the int value represented by STRING.
 
@@ -667,7 +667,7 @@ Example:
 ```
 
 
-- **parse-float** : *(parse-float STRING)*
+**parse-float** : *(parse-float STRING)*
 
 Return the real value represented by STRING.
 
@@ -677,7 +677,7 @@ Example:
 ```
 
 
-- **to-string** : *(to-string VALUE)*
+**to-string** : *(to-string VALUE)*
 
 Convert VALUE to string
 
@@ -689,7 +689,7 @@ Example:
 ```
 
 
-- **to-char** : *(to-char INT)*
+**to-char** : *(to-char INT)*
 
 Convert INT to a character (ASCII encoding). INT must be a value in
 the range [0, 255].
@@ -705,7 +705,7 @@ Example:
 
 Functions that realise simple math operations.
 
-- **+** : *(+ [[VALUE]...])*
+**+** : *(+ [[VALUE]...])*
 
 Retrun the sum of the values of all the provided arguments. 
 
@@ -715,7 +715,7 @@ Example:
 ```
 
 
-- **-** : *(- [[VALUE]...])*
+**-** : *(- [[VALUE]...])*
 
 Subsract the values of the folloring arguments from the value of the
 first argument.
@@ -726,7 +726,7 @@ Example:
 ```
 
 
-- **/** : *(/ [[VALUE]...])(- [[VALUE]...])*
+**/** : *(/ [[VALUE]...])(- [[VALUE]...])*
 
 Devide the value of the first argument to the values of the following
 arguements.
@@ -737,7 +737,7 @@ Example:
 ```
 
 
-- ***** : *(* [[VALUE]...])*
+***** : *(* [[VALUE]...])*
 
 Retrun the product of the values of all the provided arguments. 
 
@@ -747,53 +747,53 @@ Example:
 ```
 
 
-- **<** : *(< VALUE1 VALUE2)*
+**<** : *(< VALUE1 VALUE2)*
 
 Return `t` if `VALUE1` is less in value than `VALUE2`. Return `nil`
 otherwise.
 
 
-- **<=** : *(<= VALUE1 VALUE2)*
+**<=** : *(<= VALUE1 VALUE2)*
 
 Return `t` if `VALUE1` is less or equal in value than `VALUE2`. Return `nil`
 otherwise.
 
 
-- **>** : *(> VALUE1 VALUE2)*
+**>** : *(> VALUE1 VALUE2)*
 
 Return `t` if `VALUE1` is grater in value than `VALUE2`. Return `nil`
 otherwise.
 
 
-- **>=** : *(>= VALUE1 VALUE2)*
+**>=** : *(>= VALUE1 VALUE2)*
 
 Return `t` if `VALUE1` is grater or equal in value than `VALUE2`. Return `nil`
 otherwise.
 
 
-- **==** : *(== VALUE1 VALUE2)*
+**==** : *(== VALUE1 VALUE2)*
 
 Return `t` if `VALUE1` is equal in value than `VALUE2`. Return `nil`
 otherwise.
 
 
-- **!=** : *(!= VALUE1 VALUE2)*
+**!=** : *(!= VALUE1 VALUE2)*
 
 Return `t` if `VALUE1` is not equal in value than `VALUE2`. Return `nil`
 otherwise.
 
 
-- **mod** : *(mod VALUE1 VALUE2)*
+**mod** : *(mod VALUE1 VALUE2)*
 
 Return the remainder by devision of `VALUE1` to `VALUE2`
 
 
-- **pow** : *(pow VALUE1 VALUE2)*
+**pow** : *(pow VALUE1 VALUE2)*
 
 Return `VALUE1` to the power of `VALUE2`.
 
 
-- **min** : *(min [[VALUE]...])*
+**min** : *(min [[VALUE]...])*
 
 Evaluate the provided arguemnts and return the minimum value.
 
@@ -803,7 +803,7 @@ Example:
 ```
 
 
-- **max** : *(max [[VALUE]...])*
+**max** : *(max [[VALUE]...])*
 
 Evaluate the provided arguemnts and return the maximum value.
 
@@ -813,7 +813,7 @@ Example:
 ```
 
 
-- **round** : *(round VALUE PLACE)*
+**round** : *(round VALUE PLACE)*
 
 Round the real value `VALUE` to the `PALCE`-th decimal place.
 
@@ -827,20 +827,20 @@ Example:
 
 Functions to combine boolean types.
 
-- **or** : *(or [[VALUE]...])*
+**or** : *(or [[VALUE]...])*
 
 Return `t` if at least one of the arguments evaluates to a truthy
 value. The arguments are lazily evaluated.
 
 
 
-- **and** : *(and [[VALUE]...])*
+**and** : *(and [[VALUE]...])*
 
 Return `t` if all of the arguments evaluates to a truthy
 value. The arguments are lazily evaluated.
 
 
-- **not** : *(not FORM)*
+**not** : *(not FORM)*
 
 Return `t` if FORM evaluate to a falsey value and `nil` otherwise. 
 
@@ -849,32 +849,32 @@ Return `t` if FORM evaluate to a falsey value and `nil` otherwise.
 
 Several functions of basic algorithms for working with lists.
 
-- **all** : *(all PREDICATE LIST)*
+**all** : *(all PREDICATE LIST)*
 
 Return `t` if all elements in `LIST` fulfull the predicate
 `PREDICATE`. Return `nil` otherwise.
 
 
-- **any** : *(any PREDICATE LIST)*
+**any** : *(any PREDICATE LIST)*
 
 Return `t` if at leas one of the elements in `LIST` fulfull the
 predicate `PREDICATE`. Return `nil` otherwise.
 
 
-- **filter** : *(filter PREDICATE LIST)*
+**filter** : *(filter PREDICATE LIST)*
 
 Collect the elements of `LIST` that fullfil the predicate `PREDICATE`
 and return a new list of them.
 
 
-- **zip** : *(zip [[LIST] ...])*
+**zip** : *(zip [[LIST] ...])*
 
 Take mutliple lists and build pairs of their elements at corresponding
 positions. The pairs are put into a new list and this list is
 returned.
 
 
-- **sort** : *(sort LIST)*
+**sort** : *(sort LIST)*
 
 Sort the elements of `LIST` in ascending order. This function will
 change LIST and won't generate a new object.
@@ -885,7 +885,7 @@ Example:
 ```
 
 
-- **slice** : *(slice LIST FROM TO)*
+**slice** : *(slice LIST FROM TO)*
 
 Select a subsection of the list `LIST` and return a new list with the
 elements of the subsection.
@@ -896,7 +896,7 @@ Example:
 ```
 
 
-- **reverse** : *(reverse LIST)*
+**reverse** : *(reverse LIST)*
 
 Return a new list with the elements of LIST in revese order.
 
