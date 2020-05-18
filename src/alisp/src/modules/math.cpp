@@ -106,52 +106,144 @@ env::ModulePtr init_math(env::Environment *, eval::Evaluator *)
                R"(The `math` provides more complicated math functions. Often these
 function are just wrappers around the standard C++ functions)");
 
-    module_defvar(math_ptr, "PI", make_double(detail::PI));
-    module_defvar(math_ptr, "E", make_double(detail::E));
-    module_defvar(math_ptr, "TAU", make_double(detail::TAU));
+    module_defvar(math_ptr, "PI", make_double(detail::PI),
+    R"(The value of Pi (3.14159265....))");
 
-    module_defvar(math_ptr, "max-int", make_int(detail::AL_MAX_INT));
-    module_defvar(math_ptr, "min-int", make_int(detail::AL_MIN_INT));
-    module_defvar(math_ptr, "inf-int", make_int(detail::AL_INF_INT));
-    module_defvar(math_ptr, "max-real", make_real(detail::AL_MAX_REAL));
-    module_defvar(math_ptr, "min-real", make_real(detail::AL_MIN_REAL));
+    module_defvar(math_ptr, "E", make_double(detail::E),
+    R"(The value of E (2.71828...))");
+    
+    module_defvar(math_ptr, "TAU", make_double(detail::TAU),
+    R"(The value of Tau (2xPi))");
+    
 
-    module_defun(math_ptr, "isinf", &detail::Fisinf);
-    module_defun(math_ptr, "isnan", &detail::Fisnan);
+    module_defvar(math_ptr, "max-int", make_int(detail::AL_MAX_INT),
+    R"(The maximal value that an integer can take.)");
+    
+    module_defvar(math_ptr, "min-int", make_int(detail::AL_MIN_INT),
+    R"(The min value that an integer can take.)");
+    
+    module_defvar(math_ptr, "inf-int", make_int(detail::AL_INF_INT),
+    R"(Value used to represent infinity)");
+    
+    module_defvar(math_ptr, "max-real", make_real(detail::AL_MAX_REAL),
+    R"(The maximal value that a real number can take.)");
+    
+    module_defvar(math_ptr, "min-real", make_real(detail::AL_MIN_REAL),
+    R"(The minimal value that a real number can take.)");
+    
 
-    module_defun(math_ptr, "todegrees", &detail::Ftodegrees);
-    module_defun(math_ptr, "toradians", &detail::Ftoradians);
+    module_defun(math_ptr, "isinf", &detail::Fisinf,
+    R"((isinf VALUE)
 
-    module_defun(math_ptr, "exp", &detail::Fexp);
-    module_defun(math_ptr, "exp2", &detail::Fexp2);
-    module_defun(math_ptr, "expm1", &detail::Fexpm1);
-    module_defun(math_ptr, "log", &detail::Flog);
-    module_defun(math_ptr, "log10", &detail::Flog10);
-    module_defun(math_ptr, "log2", &detail::Flog2);
-    module_defun(math_ptr, "log1p", &detail::Flog1p);
-    module_defun(math_ptr, "sin", &detail::Fsin);
-    module_defun(math_ptr, "cos", &detail::Fcos);
-    module_defun(math_ptr, "tan", &detail::Ftan);
-    module_defun(math_ptr, "asin", &detail::Fasin);
-    module_defun(math_ptr, "acos", &detail::Facos);
-    module_defun(math_ptr, "atan", &detail::Fatan);
-    module_defun(math_ptr, "sinh", &detail::Fsinh);
-    module_defun(math_ptr, "cosh", &detail::Fcosh);
-    module_defun(math_ptr, "tanh", &detail::Ftanh);
-    module_defun(math_ptr, "asinh", &detail::Fasinh);
-    module_defun(math_ptr, "acosh", &detail::Facosh);
-    module_defun(math_ptr, "ceil", &detail::Fceil);
-    module_defun(math_ptr, "floor", &detail::Ffloor);
-    module_defun(math_ptr, "erf", &detail::Ferf);
-    module_defun(math_ptr, "erfc", &detail::Ferfc);
-    module_defun(math_ptr, "tgamma", &detail::Ftgamma);
-    module_defun(math_ptr, "lgamma", &detail::Flgamma);
-    module_defun(math_ptr, "fdim", &detail::Ffdim);
-    module_defun(math_ptr, "pow", &detail::Fpow);
-    module_defun(math_ptr, "hypot", &detail::Fhypot);
+Return `t` if `VALUE` is infinity and `nil` otherwise.
+)");
+    
+    module_defun(math_ptr, "isnan", &detail::Fisnan,
+    R"((isnan VALUE)
 
-    module_defun(math_ptr, "cbrt", &detail::Fcbrt);
-    module_defun(math_ptr, "sqrt", &detail::Fsqrt);
+Return `t` if `VALUE` is not a number and `nil` otherwise.
+)");
+    
+
+    module_defun(math_ptr, "todegrees", &detail::Ftodegrees,
+    R"((todegrees VALUE)
+
+)");
+    
+    module_defun(math_ptr, "toradians", &detail::Ftoradians,
+    R"((toradians VALUE)
+
+)");
+    
+
+    module_defun(math_ptr, "exp", &detail::Fexp,
+    R"()");
+    
+    module_defun(math_ptr, "exp2", &detail::Fexp2,
+    R"()");
+    
+    module_defun(math_ptr, "expm1", &detail::Fexpm1,
+    R"()");
+    
+    module_defun(math_ptr, "log", &detail::Flog,
+    R"()");
+    
+    module_defun(math_ptr, "log10", &detail::Flog10,
+    R"()");
+    
+    module_defun(math_ptr, "log2", &detail::Flog2,
+    R"()");
+    
+    module_defun(math_ptr, "log1p", &detail::Flog1p,
+    R"()");
+    
+    module_defun(math_ptr, "sin", &detail::Fsin,
+    R"()");
+    
+    module_defun(math_ptr, "cos", &detail::Fcos,
+    R"()");
+    
+    module_defun(math_ptr, "tan", &detail::Ftan,
+    R"()");
+    
+    module_defun(math_ptr, "asin", &detail::Fasin,
+    R"()");
+    
+    module_defun(math_ptr, "acos", &detail::Facos,
+    R"()");
+    
+    module_defun(math_ptr, "atan", &detail::Fatan,
+    R"()");
+    
+    module_defun(math_ptr, "sinh", &detail::Fsinh,
+    R"()");
+    
+    module_defun(math_ptr, "cosh", &detail::Fcosh,
+    R"()");
+    
+    module_defun(math_ptr, "tanh", &detail::Ftanh,
+    R"()");
+    
+    module_defun(math_ptr, "asinh", &detail::Fasinh,
+    R"()");
+    
+    module_defun(math_ptr, "acosh", &detail::Facosh,
+    R"()");
+    
+    module_defun(math_ptr, "ceil", &detail::Fceil,
+    R"()");
+    
+    module_defun(math_ptr, "floor", &detail::Ffloor,
+    R"()");
+    
+    module_defun(math_ptr, "erf", &detail::Ferf,
+    R"()");
+    
+    module_defun(math_ptr, "erfc", &detail::Ferfc,
+    R"()");
+    
+    module_defun(math_ptr, "tgamma", &detail::Ftgamma,
+    R"()");
+    
+    module_defun(math_ptr, "lgamma", &detail::Flgamma,
+    R"()");
+    
+    module_defun(math_ptr, "fdim", &detail::Ffdim,
+    R"()");
+    
+    module_defun(math_ptr, "pow", &detail::Fpow,
+    R"()");
+    
+    module_defun(math_ptr, "hypot", &detail::Fhypot,
+    R"()");
+    
+
+    module_defun(math_ptr, "cbrt", &detail::Fcbrt,
+    R"()");
+    
+    module_defun(math_ptr, "sqrt", &detail::Fsqrt,
+    R"()");
+    
 
     return Mmath;
 }
