@@ -59,7 +59,6 @@ static constexpr size_t SHELL     = 9;
 
 using opts = std::tuple<bufsize, defer_spawn, close_fds, session_leader, cwd, environment, input, output, error, shell>;
 
-// inline management::Registry<subprocess::Buffer, 0x05> buffer_registry;
 inline management::Registry<std::unique_ptr<subprocess::Popen>, 0x06> proc_registry;
 
 template<typename Args, typename Opts, size_t... I>
@@ -339,30 +338,121 @@ ALISP_EXPORT alisp::env::ModulePtr init_process(alisp::env::Environment *, alisp
 
     alisp::module_doc(
       prop_ptr,
-      R"(The `process` module enables the starting and communicating with external processes. It is similar to the `subprocess` module of pyhton.  )");
+      R"(The `process` module enables the starting and communicating with
+external processes. It is similar to the `subprocess` module of
+pyhton. The module tries, in fact, to stay close the the api and
+privide similar functions for starting and communicating with external
+processes.
 
-    alisp::module_defconst(prop_ptr, "stdout", process::process_stdout);
-    alisp::module_defconst(prop_ptr, "stderr", process::process_stderr);
-    alisp::module_defconst(prop_ptr, "pipe", process::process_pipe);
+Internaly `process` uses the [cpp-subprocess](https://github.com/arun11299/cpp-subprocess)
+library.
 
-    alisp::module_defun(prop_ptr, "popen", &process::Fpopen);
-    alisp::module_defun(prop_ptr, "start", &process::Fstart);
-    alisp::module_defun(prop_ptr, "pid", &process::Fpid);
-    alisp::module_defun(prop_ptr, "wait", &process::Fwait);
-    alisp::module_defun(prop_ptr, "poll", &process::Fpoll);
-    alisp::module_defun(prop_ptr, "kill", &process::Fkill);
-    alisp::module_defun(prop_ptr, "retcode", &process::Fretcode);
+)");
+
+    alisp::module_defconst(prop_ptr, "stdout", process::process_stdout,
+    R"(Symbol used to signify the standard output stream. It is used in some of the functions of the module. )");
+
+    alisp::module_defconst(prop_ptr, "stderr", process::process_stderr,
+    R"(Symbol used to signify the standard input stream. It is used in some of the functions of the module. )");
+
+    alisp::module_defconst(prop_ptr, "pipe", process::process_pipe,
+    R"(Symbol used to signify a link between the spawn process and the interpreter. It is used in some of the functions of the module. )");
+
+    alisp::module_defun(prop_ptr, "popen", &process::Fpopen,
+    R"((open COMMAND_PARTS OPTIONS )
+
+Execute a process. `COMMAND_PARTS` must be a list of strings that will
+become the parts of the command that should be executed.
+
+`OPTIONS` is also a list with options on how to execute the
+process. Possible options are:
+
+  * `:defer` - if present, don't start the process immediately but only when the `start` function is called.
+  * `:buff-size` - the buffer size of the stdin/stdout/stderr streams of the child process. Default value is 0.
+  * `:close-fds` - if present, close all file descriptors when the child process is spawned.
+  * `:cwd` - the working directory where the process should be executed.
+  * `:shell` - if present, spawn the process in a sub-shell.
+  * `:env` - a list of pairs `(VAR VALUE)`. For the spawned process, the env variable `VAR` will be set to `VALUE`.
+  * `:input` - specify the input channel fot the child process. This can be `pipe`\`stdout`\`stderr` or a file name.
+  * `:output` - specify the output channel fot the child process. This can be `pipe`\`stdout`\`stderr` or a file name.
+  * `:error` - specify the error channel fot the child process. This can be `pipe`\`stdout`\`stderr` or a file name.
+
+Return the new process as a resource object.
+)");
+
+    alisp::module_defun(prop_ptr, "start", &process::Fstart,
+    R"((start PROCESS)
+
+Start a process that has been created with `open`.
+)");
+
+    alisp::module_defun(prop_ptr, "pid", &process::Fpid,
+    R"((pid PROCESS)
+
+Return the process id of a process that has been created with `open`.
+)");
+
+    alisp::module_defun(prop_ptr, "wait", &process::Fwait,
+    R"((wait PROCESS)
+
+Block until a process has finished its execution.
+)");
+
+    alisp::module_defun(prop_ptr, "poll", &process::Fpoll,
+    R"((poll PROCESS)
+
+)");
+
+    alisp::module_defun(prop_ptr, "kill", &process::Fkill,
+    R"((kill PROCESS [SIGNAL])
+
+Send a signal (by default SIGKILL) to a running process.
+)");
+
+    alisp::module_defun(prop_ptr, "retcode", &process::Fretcode,
+    R"((retcode PROCESS)
+
+Wait for a process to finish and return its return code.
+)");
 
 
-    alisp::module_defun(prop_ptr, "send", &process::Fsend);
-    alisp::module_defun(prop_ptr, "communicate", &process::Fcommunicate);
 
-    alisp::module_defun(prop_ptr, "check-output", &process::Fcheck_output);
-    alisp::module_defun(prop_ptr, "check-output-bytes", &process::Fcheck_output_bytes);
+    alisp::module_defun(prop_ptr, "send", &process::Fsend,
+    R"((send PROCESS STRING)
 
-    alisp::module_defun(prop_ptr, "call", &process::Fcheck_output);
+Write a string to the standard input stream of a child process.
+)");
 
-    alisp::module_defun(prop_ptr, "pipeline", &process::Fcheck_output);
+    alisp::module_defun(prop_ptr, "communicate", &process::Fcommunicate,
+    R"((communicate PROCESS STRING)
+
+Write a string to the standard input stream of a child process. Return
+the contents of the standard output and standard error of the process.
+)");
+
+    alisp::module_defun(prop_ptr, "check-output", &process::Fcheck_output,
+    R"((check-output [COMMAND_PART]...)
+
+Convenience function. Execute the command with the given parts and
+return the contents of the standard output of the process once its
+finished.
+)");
+
+    alisp::module_defun(prop_ptr, "check-output-bytes", &process::Fcheck_output_bytes,
+    R"((check-output [COMMAND_PART]...)
+
+Convenience function. Execute the command with the given parts and
+return the contents of the standard output as a byte array.
+)");
+
+    alisp::module_defun(prop_ptr, "call", &process::Fcheck_output,
+    R"((check-output [COMMAND_PART]...)
+
+Convenience function. Execute the command with the given parts and
+return the exit code of the process once its finished.
+)");
+
+    // alisp::module_defun(prop_ptr, "pipeline", &process::Fcheck_output);
 
     return Mprocess;
 }
