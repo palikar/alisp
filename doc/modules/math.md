@@ -66,20 +66,20 @@
 
 **tanh** : **
 
-**min-real** : **
+**min-real** : *The minimal value that a real number can take.*
 
-**inf-int** : **
+**inf-int** : *Value used to represent infinity*
 
-**E** : **
+**E** : *The value of E (2.71828...)*
 
-**min-int** : **
+**min-int** : *The min value that an integer can take.*
 
-**TAU** : **
+**TAU** : *The value of Tau (2xPi)*
 
-**PI** : **
+**PI** : *The value of Pi (3.14159265....)*
 
-**max-real** : **
+**max-real** : *The maximal value that a real number can take.*
 
 
-**max-int** : **
+**max-int** : *The maximal value that an integer can take.*
 

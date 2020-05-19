@@ -106,144 +106,284 @@ env::ModulePtr init_math(env::Environment *, eval::Evaluator *)
                R"(The `math` provides more complicated math functions. Often these
 function are just wrappers around the standard C++ functions)");
 
-    module_defvar(math_ptr, "PI", make_double(detail::PI),
-    R"(The value of Pi (3.14159265....))");
+    module_defvar(math_ptr, "PI", make_double(detail::PI), R"(The value of Pi (3.14159265....))");
 
-    module_defvar(math_ptr, "E", make_double(detail::E),
-    R"(The value of E (2.71828...))");
-    
-    module_defvar(math_ptr, "TAU", make_double(detail::TAU),
-    R"(The value of Tau (2xPi))");
-    
+    module_defvar(math_ptr, "E", make_double(detail::E), R"(The value of E (2.71828...))");
 
-    module_defvar(math_ptr, "max-int", make_int(detail::AL_MAX_INT),
-    R"(The maximal value that an integer can take.)");
-    
-    module_defvar(math_ptr, "min-int", make_int(detail::AL_MIN_INT),
-    R"(The min value that an integer can take.)");
-    
-    module_defvar(math_ptr, "inf-int", make_int(detail::AL_INF_INT),
-    R"(Value used to represent infinity)");
-    
-    module_defvar(math_ptr, "max-real", make_real(detail::AL_MAX_REAL),
-    R"(The maximal value that a real number can take.)");
-    
-    module_defvar(math_ptr, "min-real", make_real(detail::AL_MIN_REAL),
-    R"(The minimal value that a real number can take.)");
-    
+    module_defvar(math_ptr, "TAU", make_double(detail::TAU), R"(The value of Tau (2xPi))");
 
-    module_defun(math_ptr, "isinf", &detail::Fisinf,
-    R"((isinf VALUE)
+
+    module_defvar(math_ptr, "max-int", make_int(detail::AL_MAX_INT), R"(The maximal value that an integer can take.)");
+
+    module_defvar(math_ptr, "min-int", make_int(detail::AL_MIN_INT), R"(The min value that an integer can take.)");
+
+    module_defvar(math_ptr, "inf-int", make_int(detail::AL_INF_INT), R"(Value used to represent infinity)");
+
+    module_defvar(
+      math_ptr, "max-real", make_real(detail::AL_MAX_REAL), R"(The maximal value that a real number can take.)");
+
+    module_defvar(
+      math_ptr, "min-real", make_real(detail::AL_MIN_REAL), R"(The minimal value that a real number can take.)");
+
+
+    module_defun(math_ptr,
+                 "isinf",
+                 &detail::Fisinf,
+                 R"((isinf VALUE)
 
 Return `t` if `VALUE` is infinity and `nil` otherwise.
 )");
-    
-    module_defun(math_ptr, "isnan", &detail::Fisnan,
-    R"((isnan VALUE)
+
+    module_defun(math_ptr,
+                 "isnan",
+                 &detail::Fisnan,
+                 R"((isnan VALUE)
 
 Return `t` if `VALUE` is not a number and `nil` otherwise.
 )");
-    
 
-    module_defun(math_ptr, "todegrees", &detail::Ftodegrees,
-    R"((todegrees VALUE)
 
+    module_defun(math_ptr,
+                 "todegrees",
+                 &detail::Ftodegrees,
+                 R"((todegrees VALUE)
+
+Return the `VALUE`(given in radians) in degrees.
 )");
-    
-    module_defun(math_ptr, "toradians", &detail::Ftoradians,
-    R"((toradians VALUE)
 
+    module_defun(math_ptr,
+                 "toradians",
+                 &detail::Ftoradians,
+                 R"((toradians VALUE)
+
+Return the `VALUE`(given in degrees) in radians.
 )");
-    
 
-    module_defun(math_ptr, "exp", &detail::Fexp,
-    R"()");
-    
-    module_defun(math_ptr, "exp2", &detail::Fexp2,
-    R"()");
-    
-    module_defun(math_ptr, "expm1", &detail::Fexpm1,
-    R"()");
-    
-    module_defun(math_ptr, "log", &detail::Flog,
-    R"()");
-    
-    module_defun(math_ptr, "log10", &detail::Flog10,
-    R"()");
-    
-    module_defun(math_ptr, "log2", &detail::Flog2,
-    R"()");
-    
-    module_defun(math_ptr, "log1p", &detail::Flog1p,
-    R"()");
-    
-    module_defun(math_ptr, "sin", &detail::Fsin,
-    R"()");
-    
-    module_defun(math_ptr, "cos", &detail::Fcos,
-    R"()");
-    
-    module_defun(math_ptr, "tan", &detail::Ftan,
-    R"()");
-    
-    module_defun(math_ptr, "asin", &detail::Fasin,
-    R"()");
-    
-    module_defun(math_ptr, "acos", &detail::Facos,
-    R"()");
-    
-    module_defun(math_ptr, "atan", &detail::Fatan,
-    R"()");
-    
-    module_defun(math_ptr, "sinh", &detail::Fsinh,
-    R"()");
-    
-    module_defun(math_ptr, "cosh", &detail::Fcosh,
-    R"()");
-    
-    module_defun(math_ptr, "tanh", &detail::Ftanh,
-    R"()");
-    
-    module_defun(math_ptr, "asinh", &detail::Fasinh,
-    R"()");
-    
-    module_defun(math_ptr, "acosh", &detail::Facosh,
-    R"()");
-    
-    module_defun(math_ptr, "ceil", &detail::Fceil,
-    R"()");
-    
-    module_defun(math_ptr, "floor", &detail::Ffloor,
-    R"()");
-    
-    module_defun(math_ptr, "erf", &detail::Ferf,
-    R"()");
-    
-    module_defun(math_ptr, "erfc", &detail::Ferfc,
-    R"()");
-    
-    module_defun(math_ptr, "tgamma", &detail::Ftgamma,
-    R"()");
-    
-    module_defun(math_ptr, "lgamma", &detail::Flgamma,
-    R"()");
-    
-    module_defun(math_ptr, "fdim", &detail::Ffdim,
-    R"()");
-    
-    module_defun(math_ptr, "pow", &detail::Fpow,
-    R"()");
-    
-    module_defun(math_ptr, "hypot", &detail::Fhypot,
-    R"()");
-    
 
-    module_defun(math_ptr, "cbrt", &detail::Fcbrt,
-    R"()");
-    
-    module_defun(math_ptr, "sqrt", &detail::Fsqrt,
-    R"()");
-    
+    module_defun(math_ptr,
+                 "exp",
+                 &detail::Fexp,
+                 R"((exp VALUE)
+
+Compute exponential function.
+)");
+
+    module_defun(math_ptr,
+                 "exp2",
+                 &detail::Fexp2,
+                 R"((exp2 VALUE)
+
+Compute binary exponential function
+)");
+
+    module_defun(math_ptr,
+                 "expm1",
+                 &detail::Fexpm1,
+                 R"((expm1 VALUE)
+
+Return e raised to the given power, minus one 
+)");
+
+    module_defun(math_ptr,
+                 "log",
+                 &detail::Flog,
+                 R"((log VALUE)
+
+Compute natural (base e) logarithm.
+)");
+
+    module_defun(math_ptr,
+                 "log10",
+                 &detail::Flog10,
+                 R"((log10 VALUE)
+
+Compute common (base 10) logarithm.
+)");
+
+    module_defun(math_ptr,
+                 "log2",
+                 &detail::Flog2,
+                 R"((log2 VALUE)
+
+Base 2 logarithm of the given number.
+)");
+
+    module_defun(math_ptr, "log1p", &detail::Flog1p, R"((log1p VALUE))");
+
+    module_defun(math_ptr,
+                 "sin",
+                 &detail::Fsin,
+                 R"((sin VALUE)
+
+natural logarithm (to base e) of 1 plus the given number
+)");
+
+    module_defun(math_ptr,
+                 "cos",
+                 &detail::Fcos,
+                 R"((cos VALUE)
+
+Compute cosine.
+ )");
+
+    module_defun(math_ptr,
+                 "tan",
+                 &detail::Ftan,
+                 R"((tan VALUE)
+
+Compute tangent.
+)");
+
+    module_defun(math_ptr,
+                 "asin",
+                 &detail::Fasin,
+                 R"((asin VALUE)
+
+Compute arc sine.
+)");
+
+    module_defun(math_ptr,
+                 "acos",
+                 &detail::Facos,
+                 R"((acos VALUE)
+
+Compute arc cosine.
+)");
+
+    module_defun(math_ptr,
+                 "atan",
+                 &detail::Fatan,
+                 R"((atan VALUE)
+Compute arc tangent.
+)");
+
+    module_defun(math_ptr,
+                 "sinh",
+                 &detail::Fsinh,
+                 R"((sinh VALUE)
+
+Compute hyperbolic sine.
+)");
+
+    module_defun(math_ptr,
+                 "cosh",
+                 &detail::Fcosh,
+                 R"((cosh VALUE)
+
+Compute hyperbolic cosine.
+)");
+
+    module_defun(math_ptr,
+                 "tanh",
+                 &detail::Ftanh,
+                 R"((tanh VALUE)
+
+Compute hyperbolic tangent.
+)");
+
+    module_defun(math_ptr,
+                 "asinh",
+                 &detail::Fasinh,
+                 R"((asinh VALUE)
+
+Compute the inverse hyperbolic sine.
+)");
+
+    module_defun(math_ptr,
+                 "acosh",
+                 &detail::Facosh,
+                 R"((acosh VALUE)
+
+Compute the inverse hyperbolic cosine.
+)");
+
+    module_defun(math_ptr,
+                 "ceil",
+                 &detail::Fceil,
+                 R"((ceil VALUE)
+
+Return the nearest integer not less than the given value.
+)");
+
+    module_defun(math_ptr,
+                 "floor",
+                 &detail::Ffloor,
+                 R"((floor VALUE)
+
+Return the nearest integer not greater than the given value.
+)");
+
+    module_defun(math_ptr,
+                 "erf",
+                 &detail::Ferf,
+                 R"((erf VALUE)
+
+Compute the error function.)");
+
+    module_defun(math_ptr,
+                 "erfc",
+                 &detail::Ferfc,
+                 R"((erfc VALUE)
+
+Compute the complementary error function.
+)");
+
+    module_defun(math_ptr,
+                 "tgamma",
+                 &detail::Ftgamma,
+                 R"((tgamma VALUE)
+
+Compute the gamma function.
+)");
+
+    module_defun(math_ptr,
+                 "lgamma",
+                 &detail::Flgamma,
+                 R"((lgamma VALUE)
+
+Compute the natural logarithm of the gamma function.
+)");
+
+    module_defun(math_ptr,
+                 "fdim",
+                 &detail::Ffdim,
+                 R"((fdim VALUE)
+
+Compute positive difference of two floating point values.
+)");
+
+    module_defun(math_ptr,
+                 "pow",
+                 &detail::Fpow,
+                 R"((pow VALUE)
+
+Raise a number to the given power.
+)");
+
+    module_defun(math_ptr,
+                 "sqrt",
+                 &detail::Fsqrt,
+                 R"((sqrt VALUE)
+
+Compute square root.
+)");
+
+    module_defun(math_ptr,
+                 "cbrt",
+                 &detail::Fcbrt,
+                 R"((cbrt VALUE)
+
+Compute cubic root.
+)");
+
+    module_defun(math_ptr,
+                 "hypot",
+                 &detail::Fhypot,
+                 R"((hypot VALUE)
+
+Compute square root of the sum of the squares of two given numbers.
+)");
+
 
     return Mmath;
 }
