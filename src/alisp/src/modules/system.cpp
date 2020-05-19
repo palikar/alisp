@@ -122,14 +122,52 @@ env::ModulePtr init_system(env::Environment *, eval::Evaluator *)
                "The `os` modules allows you to access common OS functions "
                "through Alisp.");
 
-    module_defvar(sys_ptr, "env-vars", detail::get_evnvars());
 
-    module_defun(sys_ptr, "get-env", &detail::Fget_env);
-    module_defun(sys_ptr, "check-env", &detail::Fcheck_env);
-    module_defun(sys_ptr, "set-env", &detail::Fset_env);
-    module_defun(sys_ptr, "list-env", &detail::Flist_env);
-    module_defun(sys_ptr, "chwd", &detail::Fchwd);
-    module_defun(sys_ptr, "sys", &detail::Fsystem);
+    module_defvar(sys_ptr, "env-vars", detail::get_evnvars(),
+    R"(
+
+A list of pairs of the form `(VAR VALUE)` where `VAR` is an
+envoronment variable and `VALUE` is its value. The list contain all of
+the currently bounded environment variables.
+)");
+    
+
+    module_defun(sys_ptr, "get-env", &detail::Fget_env,
+    R"((get-env VAR)
+
+Return the value of the environment variable `VAR` if avaialble. Return `nil` otherwise.
+)");
+    
+    module_defun(sys_ptr, "check-env", &detail::Fcheck_env,
+    R"((check-env VAR)
+
+Return the `t` if the environment variable `VAR` is defined. Return `nil` otherwise.
+)");
+    
+    module_defun(sys_ptr, "set-env", &detail::Fset_env,
+    R"((set-env VAR VALUE)
+
+Set the value of the environment variable `VAR` to `VALUE`
+)");
+    
+    module_defun(sys_ptr, "list-env", &detail::Flist_env,
+    R"(
+
+Return the value of `env-vars`.
+)");
+    
+    module_defun(sys_ptr, "chwd", &detail::Fchwd,
+    R"((chwd PATH)
+
+Change the currnt working directory to `PATH`.
+)");
+    
+    module_defun(sys_ptr, "sys", &detail::Fsystem,
+    R"((sys COMMAND)
+
+Execute the command `COMMAND` in a shell of the host system.
+)");
+    
 
     return Msystem;
 }
