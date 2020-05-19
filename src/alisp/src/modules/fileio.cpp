@@ -953,62 +953,328 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
 
     module_doc(
       fio_ptr,
-      R"(The `fileio` moudule provides utilities for working with file paths, files, directories and some basic IO functions.)");
+      R"(The `fileio` moudule provides utilities for working with file paths,
+files, directories and some basic IO functions.)");
 
-    module_defvar(fio_ptr, "f-directory-separator", make_string(detail::separator));
+    module_defvar(fio_ptr, "f-directory-separator", make_string(detail::separator),
+    R"()");
 
-    module_defun(fio_ptr, "f-with-temp-file", &detail::Fwith_temp_file);
-    module_defun(fio_ptr, "f-temp-file-name", &detail::Ftemp_file_name);
-    module_defun(fio_ptr, "f-temp-file", &detail::Ftemp_file);
-    module_defun(fio_ptr, "f-expand-user", &detail::Fexpand_user);
-    module_defun(fio_ptr, "f-root", &detail::Froot);
-    module_defun(fio_ptr, "f-directories", &detail::Fdirectories);
-    module_defun(fio_ptr, "f-entries", &detail::Fentries);
-    module_defun(fio_ptr, "f-glob", &detail::Fglob);
-    module_defun(fio_ptr, "f-touch", &detail::Ftouch);
-    module_defun(fio_ptr, "f-copy", &detail::Fcopy);
-    module_defun(fio_ptr, "f-move", &detail::Fmove);
-    module_defun(fio_ptr, "f-make-symlink", &detail::Fmake_symlink);
-    module_defun(fio_ptr, "f-delete", &detail::Fdelete);
-    module_defun(fio_ptr, "f-mkdir", &detail::Fmkdir);
-    module_defun(fio_ptr, "f-read-bytes", &detail::Fread_bytes);
-    module_defun(fio_ptr, "f-read-text", &detail::Fread_text);
-    module_defun(fio_ptr, "f-write-text", &detail::Fwrite_text);
-    module_defun(fio_ptr, "f-write-bytes", &detail::Fwrite_bytes);
-    module_defun(fio_ptr, "f-append-text", &detail::Fappend_text);
-    module_defun(fio_ptr, "f-append-bytes", &detail::Fappend_bytes);
-    module_defun(fio_ptr, "f-join", &detail::Fjoin);
-    module_defun(fio_ptr, "f-split", &detail::Fsplit);
-    module_defun(fio_ptr, "f-expand", &detail::Fexpand);
-    module_defun(fio_ptr, "f-filename", &detail::Ffilename);
-    module_defun(fio_ptr, "f-dirname", &detail::Fdirname);
-    module_defun(fio_ptr, "f-common-parent", &detail::Fcommon_parent);
-    module_defun(fio_ptr, "f-ext", &detail::Fext);
-    module_defun(fio_ptr, "f-no-ext", &detail::Fno_ext);
-    module_defun(fio_ptr, "f-swap-ext", &detail::Fswap_ext);
-    module_defun(fio_ptr, "f-base", &detail::Fbase);
-    module_defun(fio_ptr, "f-relative", &detail::Frelative);
-    module_defun(fio_ptr, "f-short", &detail::Fshort);
-    module_defun(fio_ptr, "f-long", &detail::Flong);
-    module_defun(fio_ptr, "f-canonical", &detail::Fcanonical);
-    module_defun(fio_ptr, "f-full", &detail::Ffull);
-    module_defun(fio_ptr, "f-exists", &detail::Fexists);
-    module_defun(fio_ptr, "f-direcotry", &detail::Fdirecotry);
-    module_defun(fio_ptr, "f-file", &detail::Ffile);
-    module_defun(fio_ptr, "f-symlink", &detail::Fsymlink);
-    module_defun(fio_ptr, "f-readable", &detail::Freadable);
-    module_defun(fio_ptr, "f-writable", &detail::Fwritable);
-    module_defun(fio_ptr, "f-executable", &detail::Fexecutable);
-    module_defun(fio_ptr, "f-absolute", &detail::Fabsolute);
-    module_defun(fio_ptr, "f-prelative", &detail::Fprelative);
-    module_defun(fio_ptr, "f-is-root", &detail::Fis_root);
-    module_defun(fio_ptr, "f-same", &detail::Fsame);
-    module_defun(fio_ptr, "f-parent-of", &detail::Fparent_of);
-    module_defun(fio_ptr, "f-child-of", &detail::Fchild_of);
-    module_defun(fio_ptr, "f-ancestor-of", &detail::Fancestor_of);
-    module_defun(fio_ptr, "f-descendant-of", &detail::Fdescendant_of);
-    module_defun(fio_ptr, "f-hidden", &detail::Fhidden);
-    module_defun(fio_ptr, "f-empty", &detail::Fempty);
+    module_defun(fio_ptr, "f-with-temp-file", &detail::Fwith_temp_file,
+    R"((f-with-temp-file PATH)
+
+)");
+    
+    module_defun(fio_ptr, "f-temp-file-name", &detail::Ftemp_file_name,
+    R"((f-temp-file-name PATH)
+
+Return a path to a temporary file. The file is not created but the
+path will be valid for a temporary file.
+)");
+    
+    module_defun(fio_ptr, "f-temp-file", &detail::Ftemp_file,
+    R"((f-temp-file PATH)
+
+Return a resource object ot a temporary file. The file is created and
+the object can be used for writing to the file.
+)");
+    
+    module_defun(fio_ptr, "f-expand-user", &detail::Fexpand_user,
+    R"((f-expand-user PATH)
+
+For unix systems, expand `~` to the location of the home directory of
+the current user.
+)");
+    
+    module_defun(fio_ptr, "f-root", &detail::Froot,
+    R"((f-root)
+
+Return absolute root.
+)");
+    
+    module_defun(fio_ptr, "f-directories", &detail::Fdirectories,
+    R"((f-directories PATH)
+
+Find all directories in `PATH`.
+)");
+    
+    module_defun(fio_ptr, "f-entries", &detail::Fentries,
+    R"((f-entries PATH)
+
+Find all files and directories in `PATH`.
+)");
+    
+    module_defun(fio_ptr, "f-glob", &detail::Fglob,
+    R"((f-glob PATTERN PATH)
+
+Find `PATTERN` in `PATH`.
+)");
+    
+    module_defun(fio_ptr, "f-touch", &detail::Ftouch,
+    R"((f-touch PATH)
+
+Update `PATH` last modification date or create if it does not exist.
+)");
+    
+    module_defun(fio_ptr, "f-copy", &detail::Fcopy,
+    R"((f-copy FROM TO)
+
+Copy file or directory `FROM` to `TO`.
+)");
+    
+    module_defun(fio_ptr, "f-move", &detail::Fmove,
+    R"((f-move FROM TO)
+
+Move or rename `FROM` to `TO`.
+)");
+    
+    module_defun(fio_ptr, "f-make-symlink", &detail::Fmake_symlink,
+    R"((f-make-symlink SOURCE PATH)
+
+Create a symlink to `SOURCE` from `PATH`.
+)");
+    
+    module_defun(fio_ptr, "f-delete", &detail::Fdelete,
+    R"((f-delete PATH)
+
+Delete `PATH`, which can be file or directory.
+)");
+    
+    module_defun(fio_ptr, "f-mkdir", &detail::Fmkdir,
+    R"((f-mkdir DIR)
+
+Create the directory `DIR`.
+)");
+    
+    module_defun(fio_ptr, "f-read-bytes", &detail::Fread_bytes,
+    R"((f-read-bytes PATH)
+
+Read binary data from `PATH`. Return the binary data as byte array.
+)");
+    
+    module_defun(fio_ptr, "f-read-text", &detail::Fread_text,
+    R"((f-read-text PATH)
+
+Read the text from the file `PATH` and return the contatns as a string.
+)");
+    
+    module_defun(fio_ptr, "f-write-text", &detail::Fwrite_text,
+    R"((f-write-text PATH TEXT)
+
+Write `TEXT` to the file pointed by `PATH`. Previous content is erased.
+)");
+    
+    module_defun(fio_ptr, "f-write-bytes", &detail::Fwrite_bytes,
+    R"((f-write-bytes PATH BYTES)
+
+Write the bytes `BYTES` to the file pointed by `PATH`. Previous content is erased.
+)");
+    
+    module_defun(fio_ptr, "f-append-text", &detail::Fappend_text,
+    R"((f-append-text PATH TEXT)
+
+Append `TEXT` to the file pointed by `PATH`. This function does not
+erase the prevous contents of the file.  )");
+    
+    module_defun(fio_ptr, "f-append-bytes", &detail::Fappend_bytes,
+    R"((f-append-bytes PATH BYTES)
+
+Append the bytes `BYTES` to the file pointed by `PATH`. This function does not
+erase the prevous contents of the file.
+)");
+    
+    module_defun(fio_ptr, "f-join", &detail::Fjoin,
+    R"((f-join [ARGS] ...)
+
+Join `ARGS` to a single path.
+)");
+    
+    module_defun(fio_ptr, "f-split", &detail::Fsplit,
+    R"((f-split PATH)
+
+Split `PATH` and return list containing parts.
+)");
+    
+    module_defun(fio_ptr, "f-expand", &detail::Fexpand,
+    R"((f-expand PATH DIR)
+
+Expand `PATH` relative to `DIR`.
+)");
+    
+    module_defun(fio_ptr, "f-filename", &detail::Ffilename,
+    R"((f-filename PATH)
+
+Return the name of `PATH`.
+)");
+    
+    module_defun(fio_ptr, "f-dirname", &detail::Fdirname,
+    R"((f-dirname PATH)
+
+Return the parent directory to `PATH`.
+)");
+    
+    module_defun(fio_ptr, "f-common-parent", &detail::Fcommon_parent,
+    R"((f-common-parent [PATHS] ...)
+
+Return the deepest common parent directory of `PATHS`.
+)");
+    
+    module_defun(fio_ptr, "f-ext", &detail::Fext,
+    R"((f-ext PATH)
+
+)");
+    
+    module_defun(fio_ptr, "f-no-ext", &detail::Fno_ext,
+    R"((f-no-ext PATH)
+
+)");
+    
+    module_defun(fio_ptr, "f-swap-ext", &detail::Fswap_ext,
+    R"((f-swap-ext PATH)
+
+Return the file extension of `PATH`. The extension, in a file name, is
+the part that follows the last ’.’, excluding version numbers and
+backup suffixes.
+)");
+    
+    module_defun(fio_ptr, "f-base", &detail::Fbase,
+    R"((f-base PATH)
+
+Return the name of `PATH`, excluding the extension of file.
+)");
+    
+    module_defun(fio_ptr, "f-relative", &detail::Frelative,
+    R"((f-relative PATH)
+
+)");
+    
+    module_defun(fio_ptr, "f-short", &detail::Fshort,
+    R"((f-short PATH)
+
+Return abbrev of `PATH`.
+)");
+    
+    module_defun(fio_ptr, "f-long", &detail::Flong,
+    R"((f-long PATH)
+
+Return long version of `PATH`.
+)");
+    
+    module_defun(fio_ptr, "f-canonical", &detail::Fcanonical,
+    R"((f-canonical PATH)
+
+Return the canonical name of `PATH`.
+)");
+    
+    module_defun(fio_ptr, "f-full", &detail::Ffull,
+    R"((f-full PATH)
+
+Return absolute path to `PATH`, with ending slash.
+)");
+    
+    module_defun(fio_ptr, "f-exists", &detail::Fexists,
+    R"((f-exists PATH)
+
+Return `t` if `PATH` exists, `nil` otherwise.
+)");
+    
+    module_defun(fio_ptr, "f-direcotry", &detail::Fdirecotry,
+    R"((f-direcotry PATH)
+
+Return `t` if `PATH` is directory, `nil` otherwise.
+)");
+    
+    module_defun(fio_ptr, "f-file", &detail::Ffile,
+    R"((f-file PATH)
+
+Return `t` if `PATH` is `nil`, false otherwise.
+)");
+    
+    module_defun(fio_ptr, "f-symlink", &detail::Fsymlink,
+    R"((f-symlink PATH)
+
+Return `t` if `PATH` is symlink, `nil` otherwise.
+)");
+    
+    module_defun(fio_ptr, "f-readable", &detail::Freadable,
+    R"((f-readable PATH)
+
+Return `t` if `PATH` is readable, `nil` otherwise.
+)");
+    
+    module_defun(fio_ptr, "f-writable", &detail::Fwritable,
+    R"((f-writable PATH)
+
+Return `t` if `PATH` is writable, `nil` otherwise.
+)");
+    
+    module_defun(fio_ptr, "f-executable", &detail::Fexecutable,
+    R"((f-executable PATH)
+
+Return `t` if `PATH` is executable, `nil` otherwise.
+)");
+    
+    module_defun(fio_ptr, "f-absolute", &detail::Fabsolute,
+    R"((f-absolute PATH)
+
+Return `t` if `PATH` is absolute, `nil` otherwise.
+)");
+    
+    module_defun(fio_ptr, "f-prelative", &detail::Fprelative,
+    R"((f-prelative PATH)
+
+Return `t` if `PATH` is relative, `nil` otherwise.
+)");
+    
+    module_defun(fio_ptr, "f-is-root", &detail::Fis_root,
+    R"((f-is-root PATH)
+
+Return `t` if `PATH` is root directory, `nil` otherwise.
+)");
+    
+    module_defun(fio_ptr, "f-same", &detail::Fsame,
+    R"((f-same PATH1 PATH2)
+
+Return `t` if `PATH1` and `PATH2` are references to same file.
+)");
+    
+    module_defun(fio_ptr, "f-parent-of", &detail::Fparent_of,
+    R"((f-parent-of PATH1 PATH2)
+
+Return t if `PATH1` is parent of `PATH2`.
+)");
+    
+    module_defun(fio_ptr, "f-child-of", &detail::Fchild_of,
+    R"((f-child-of PATH1 PATH2)
+
+Return t if `PATH1` is child of `PATH2`.
+)");
+    
+    module_defun(fio_ptr, "f-ancestor-of", &detail::Fancestor_of,
+    R"((f-ancestor-of PATH1 PATH2)
+
+Return `t` if `PATH1` is ancestor of `PATH2`.
+)");
+    
+    module_defun(fio_ptr, "f-descendant-of", &detail::Fdescendant_of,
+    R"((f-descendant-of PATH)
+
+Return `t` if `PATH1` is desendant of `PATH2`.
+)");
+    
+    module_defun(fio_ptr, "f-hidden", &detail::Fhidden,
+    R"((f-hidden PATH)
+
+Return `t` if `PATH` is hidden, `nil` otherwise.
+)");
+    
+    module_defun(fio_ptr, "f-empty", &detail::Fempty,
+    R"((f-empty PATH)
+
+If `PATH` is a file, return `t` if the file in `PATH` is empty, `nil`
+otherwise. If `PATH` is directory, return `t` if directory has no files,
+`nil` otherwise.
+)");
+    
 
     return Mfileio;
 }
