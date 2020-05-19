@@ -192,16 +192,70 @@ env::ModulePtr init_memory(env::Environment *, eval::Evaluator *)
                R"(The `memory` modules provides utilities for working with raw memory
 buffers. Memory buffers are just places in memory that are filled with bytes.)");
 
-    module_defun(mem_ptr, "buffer-allocate", &detail::Fallocate_buffer);
-    module_defun(mem_ptr, "buffer-release", &detail::Frelease_buffer);
-    module_defun(mem_ptr, "buffer-mmap", &detail::Fmmap);
-    module_defun(mem_ptr, "buffer-get-size", &detail::Fget_size);
-    module_defun(mem_ptr, "buffer-nth-get", &detail::Fget_nth_byte);
-    module_defun(mem_ptr, "buffer-nth-set", &detail::Fset_nth_byte);
-    module_defun(mem_ptr, "buffer-range-get", &detail::Fget_range);
-    module_defun(mem_ptr, "buffer-fill", &detail::Ffill_bytes);
-    module_defun(mem_ptr, "buffer-set", &detail::Fset_bytes);
-    module_defun(mem_ptr, "buffer-get", &detail::Fget_bytes);
+    module_defun(mem_ptr, "buffer-allocate", &detail::Fallocate_buffer,
+    R"((buffer-allocate SIZE)
+
+Allocate a buffer of size `SIZE` and return a resource object for the
+newly created buffer. The buffer can then be used with other function
+for reading and writing bytes to it.
+
+)");
+    
+    module_defun(mem_ptr, "buffer-release", &detail::Frelease_buffer,
+    R"((buffer-release BUFFER)
+
+Deallocate `BUFFER` (resource object) and free the used memory.
+)");
+    
+    module_defun(mem_ptr, "buffer-mmap", &detail::Fmmap,
+    R"((buffer-mmap BUFFER-SOURCE BUFFER-DEST SIZE)
+
+Copy `SIZE` bytes of `BUFFER-SOURCE` to `BUFFER-DEST`.
+)");
+    
+    module_defun(mem_ptr, "buffer-size", &detail::Fget_size,
+    R"((buffer-get-size BUFFER)
+
+Return the size of the given buffer.
+)");
+    
+    module_defun(mem_ptr, "buffer-nth-get", &detail::Fget_nth_byte,
+    R"((buffer-nth-get BUFFER INDEX)
+
+Return the value of the `BUFFER` at the given index.
+)");
+    
+    module_defun(mem_ptr, "buffer-nth-set", &detail::Fset_nth_byte,
+    R"((buffer-nth-set BUFFER INDEX VALUE)
+
+Set the value of the `BUFFER` at the given index to `VALUE`.
+)");
+    
+    module_defun(mem_ptr, "buffer-range-get", &detail::Fget_range,
+    R"((buffer-range-get BUFFER START INDEX)
+
+Return part of a buffer as byte array. The returned bytes are in the
+range [`START`, `INDEX`)
+)");
+    
+    module_defun(mem_ptr, "buffer-fill", &detail::Ffill_bytes,
+    R"((buffer-fill BUFFER VALUE)
+
+Fill the entirety of a buffer with `VALUE`.
+)");
+    
+    module_defun(mem_ptr, "buffer-set", &detail::Fset_bytes,
+    R"((buffer-set BUFFER BYTE-ARRAY)
+
+Set the contents of a `BUFFER` to the values in the given byte array.
+)");
+    
+    module_defun(mem_ptr, "buffer-get", &detail::Fget_bytes,
+    R"((buffer-get BUFFER)
+
+Return the contents of a buffer as a byte array.
+)");
+    
 
     return Mmemory;
 }

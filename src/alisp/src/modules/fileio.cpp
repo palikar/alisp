@@ -259,9 +259,17 @@ ALObjectPtr Fdelete(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
 
-    bool val = fs::remove(path->to_string());
+    if (std::size(*t_obj) > 1 and is_truthy(eval->eval(t_obj->i(1))))
+    {
 
-    return val ? Qt : Qnil;
+        bool val = fs::remove_all(path->to_string());
+        return val ? Qt : Qnil;
+    }
+    else
+    {
+        bool val = fs::remove(path->to_string());
+        return val ? Qt : Qnil;
+    }
 }
 
 ALObjectPtr Fmkdir(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -963,8 +971,10 @@ String containing the native symbol to separate directories and files
 in a path. On unix systems this is forward-slash and on Windows backslash.)");
 
     module_defun(fio_ptr, "f-with-temp-file", &detail::Fwith_temp_file,
-    R"((f-with-temp-file PATH)
+    R"((f-with-temp-file FILE-SYM BODY)
 
+Bind `FILE-SYM` and execute the forms in `BODY`. `FILE-SYM` will point
+to a valid file resource of a temporary file.
 )");
     
     module_defun(fio_ptr, "f-temp-file-name", &detail::Ftemp_file_name,

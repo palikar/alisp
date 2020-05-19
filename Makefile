@@ -17,7 +17,7 @@ build:
 	@make -j8 -C $(BUILD_DEBUG_DIR)
 
 count_line:
-	@cloc CMakeLists.txt ./src ./scripts/ --force-lang=lisp,al | sed -e 's/Lisp /ALisp/'
+	@cloc CMakeLists.txt ./src ./scripts/ ./tests/ --force-lang=lisp,al | sed -e 's/Lisp /ALisp/'
 
 format_project:
 	@echo "Fromating the source directory..."
