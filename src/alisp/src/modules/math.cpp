@@ -181,7 +181,7 @@ Compute binary exponential function
                  &detail::Fexpm1,
                  R"((expm1 VALUE)
 
-Return e raised to the given power, minus one 
+Return e raised to the given power, minus one
 )");
 
     module_defun(math_ptr,

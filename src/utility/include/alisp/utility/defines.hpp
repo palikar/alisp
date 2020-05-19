@@ -63,7 +63,7 @@ inline constexpr auto ALISP_OS_NAME   = "freebsd";
 #elif __unix || __unix__
 inline constexpr auto ALISP_OS_NAME   = "unix";
 #else
-inline constexpr auto ALISP_OS_NAME = "unknow";
+inline constexpr auto ALISP_OS_NAME = "unknown";
 #endif
 
 
@@ -78,7 +78,7 @@ inline constexpr auto ALISP_ARCH_NAME = "power64pc";
 #elif __aarch64__
 inline constexpr auto ALISP_ARCH_NAME = "aarch64";
 #else
-inline constexpr auto ALISP_ARCH_NAME = "unknow";
+inline constexpr auto ALISP_ARCH_NAME = "unknown";
 #endif
 
 
