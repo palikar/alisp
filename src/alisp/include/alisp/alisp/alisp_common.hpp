@@ -388,7 +388,17 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         return nullptr;
     }
 
-    void set_prop(const std::string &t_name, ALObjectPtr t_value) { m_props.insert({ t_name, std::move(t_value) }); }
+    void set_prop(const std::string &t_name, ALObjectPtr t_value)
+    {
+        if (m_props.count(t_name) > 0)
+        {
+            m_props.at(t_name) = std::move(t_value);
+        }
+        else
+        {
+            m_props.insert({ t_name, std::move(t_value) });
+        }
+    }
 
     bool prop_exists(const std::string &t_name) { return m_props.count(t_name) != 0; }
 
