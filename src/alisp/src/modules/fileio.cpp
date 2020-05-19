@@ -957,7 +957,10 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
 files, directories and some basic IO functions.)");
 
     module_defvar(fio_ptr, "f-directory-separator", make_string(detail::separator),
-    R"()");
+    R"(
+
+String containing the native symbol to separate directories and files
+in a path. On unix systems this is forward-slash and on Windows backslash.)");
 
     module_defun(fio_ptr, "f-with-temp-file", &detail::Fwith_temp_file,
     R"((f-with-temp-file PATH)
