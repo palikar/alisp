@@ -178,7 +178,9 @@ ALISP_EXPORT alisp::env::ModulePtr init_func(alisp::env::Environment *, alisp::e
     auto Mfunc   = alisp::module_init("func");
     auto fun_ptr = Mfunc.get();
 
-    alisp::module_doc(fun_ptr, R"()");
+    alisp::module_doc(fun_ptr, R"( The `func` modules provides support for working with higher order
+functions. It aims to bring more "functional" features to alisp.
+)");
 
 
     alisp::module_defvar(

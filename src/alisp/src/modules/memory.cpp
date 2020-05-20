@@ -190,7 +190,8 @@ env::ModulePtr init_memory(env::Environment *, eval::Evaluator *)
 
     module_doc(mem_ptr,
                R"(The `memory` modules provides utilities for working with raw memory
-buffers. Memory buffers are just places in memory that are filled with bytes.)");
+buffers. Memory buffers are just places in memory that are filled with bytes.
+)");
 
     module_defun(mem_ptr,
                  "buffer-allocate",
@@ -200,7 +201,6 @@ buffers. Memory buffers are just places in memory that are filled with bytes.)")
 Allocate a buffer of size `SIZE` and return a resource object for the
 newly created buffer. The buffer can then be used with other function
 for reading and writing bytes to it.
-
 )");
 
     module_defun(mem_ptr,

@@ -961,7 +961,8 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
 
     module_doc(fio_ptr,
                R"(The `fileio` moudule provides utilities for working with file paths,
-files, directories and some basic IO functions.)");
+files, directories and some basic IO functions.
+)");
 
     module_defvar(fio_ptr,
                   "f-directory-separator",

@@ -126,9 +126,7 @@ env::ModulePtr init_system(env::Environment *, eval::Evaluator *)
     module_defvar(sys_ptr,
                   "env-vars",
                   detail::get_evnvars(),
-                  R"(
-
-A list of pairs of the form `(VAR VALUE)` where `VAR` is an
+                  R"(A list of pairs of the form `(VAR VALUE)` where `VAR` is an
 envoronment variable and `VALUE` is its value. The list contain all of
 the currently bounded environment variables.
 )");
@@ -161,10 +159,7 @@ Set the value of the environment variable `VAR` to `VALUE`
     module_defun(sys_ptr,
                  "list-env",
                  &detail::Flist_env,
-                 R"(
-
-Return the value of `env-vars`.
-)");
+                 R"( Return the value of `env-vars`.)");
 
     module_defun(sys_ptr,
                  "chwd",

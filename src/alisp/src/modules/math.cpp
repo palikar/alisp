@@ -104,7 +104,8 @@ env::ModulePtr init_math(env::Environment *, eval::Evaluator *)
 
     module_doc(math_ptr,
                R"(The `math` provides more complicated math functions. Often these
-function are just wrappers around the standard C++ functions)");
+function are just wrappers around the standard C++ functions.
+)");
 
     module_defvar(math_ptr, "PI", make_double(detail::PI), R"(The value of Pi (3.14159265....))");
 
