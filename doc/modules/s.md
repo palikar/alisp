@@ -1,5 +1,9 @@
 ### S
 
+#### Description
+
+S helps you work with strings#### Functions
+
 **s-word-initials** : **
 
 **s-dashed-words** : **
@@ -131,5 +135,7 @@
 **s-index-of** : **
 
 **s-wrap** : **
+
+#### Constants
 
 

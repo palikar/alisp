@@ -1,5 +1,10 @@
 ### Time
 
+#### Description
+
+The `time` module provides utility functions for working with time
+and dates.#### Functions
+
 **t-s** : **
 
 **t-hr** : **
@@ -28,12 +33,14 @@
 
 **t-strftime** : **
 
+#### Constants
 
-**system-clock** : **
 
-**high-res-clock** : **
+**system-clock** : 
 
-**steady-clock** : **
+**high-res-clock** : 
 
-**clocks-pre-second** : **
+**steady-clock** : 
+
+**clocks-pre-second** : 
 

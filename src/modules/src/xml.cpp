@@ -314,21 +314,21 @@ Internally `xml` uses the
     alisp::module_defun(xml_ptr,
                         "xml-parse",
                         &xml::Fparse_xml,
-                        R"(
+                        R"((xml-parse STRING)
 
 Parse a xml-formated string and return a alist representation of the xml)");
 
     alisp::module_defun(xml_ptr,
                         "xml-dump",
                         &xml::Fdump_xml,
-                        R"(
+                        R"((xml-parse ALIST)
 Convert a alist to a xml-formated string. Return the formated string.
 )");
 
     alisp::module_defun(xml_ptr,
                         "load-file",
                         &xml::Fload_file,
-                        R"(
+                        R"((load-file FILE)
 
 Parse the contents of a file as xml and return a alist representation of the xml.
 )");
@@ -336,7 +336,7 @@ Parse the contents of a file as xml and return a alist representation of the xml
     alisp::module_defun(xml_ptr,
                         "dump-file",
                         &xml::Fdump_file,
-                        R"(
+                        R"((dump-file FILE ALIST)
 
 Save the xml-formated string representation of `ALIST` in the file pointed by `PATH`.
 )");

@@ -28,7 +28,16 @@ nav:
     - Platform : './modules/platform.md'
     - System : './modules/system.md'
     - Time : './modules/time.md'
-    # - Dash : './modules/dash.md'
-    # - S : './modules/s.md'
+    - Dash : './modules/dash.md'
+    - S : './modules/s.md'
+    - Base64 : './modules/base64.md'
+    - Fmt : './modules/fmt.md'
+    - Func : './modules/func.md'
+    - Json : './modules/json.md'
+    - XML : './modules/xml.md'
+    - Locale : './modules/locale.md'
+    - Process : './modules/process.md'
+    - Random : './modules/random.md'
+    - Re : './modules/re.md'
 
 theme: readthedocs

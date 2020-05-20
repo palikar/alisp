@@ -711,6 +711,7 @@ Decode the base32 encoded string `STRING` and return the result as string.
                         "base32-decode-bytes",
                         &base64::Fbase32_decode_bytes,
                         R"((base32-decode-bytes BYTES_LIST)
+
 Decode the base32 encoded bytes `BYTES_LIST` and return the result as string.
 )");
 

@@ -8,6 +8,17 @@
 (import 's)
 (import 'dash)
 
+(import 'base64)
+(import 'fmt)
+(import 'func)
+(import 'http)
+(import 'json)
+(import 'xml)
+(import 'locale)
+(import 'process)
+(import 'random)
+(import 're)
+
                                         ; Markddown utils
 
 (defun heading-1 (name)
@@ -21,6 +32,10 @@
 (defun heading-3 (name)
   "Creates a heading"
   (println "### " name))
+
+(defun heading-4 (name)
+  "Creates a heading"
+  (println "#### " name))
 
 (defun warning (text)
   "Creates a warning"
@@ -42,6 +57,7 @@
 (defun bold (name)
   (print "**" name "**"))
 
+
 (defun dump-doc-list (&rest sym)
   (dolist (el sym)
     (let ((name (prop-get el "--name--" )))
@@ -49,9 +65,19 @@
         (bold name)
         (print " : ")
         (let ((lines (string-splitlines (prop-get el "--doc--" ))))
-          when (print "*" (nth lines 0) "*" "\n")
+          (print "*" (nth lines 0) "*" "\n")
           (mapc println (tail lines)))))
     (print "\n")))
+
+(defun dump-doc-list-var (&rest sym)
+  (dolist (el sym)
+    (let ((name (prop-get el "--name--" )))
+      (when (not (string-startswith name "--"))
+        (bold name)
+        (print " : ")
+        (print (prop-get el "--doc--" ))))
+    (print "\n")))
+
 
 (defmacro expand-and-dump (syms)
   `(dump-doc-list ,@(eval syms)))
@@ -193,8 +219,8 @@
 (defun generate-modules-index ()
   (heading-2 "Builtin Modules")
   (line)
-
-  (let ( (modules '(fileio math memory platform system time json dash s))
+  (let ( (modules '(fileio math memory platform system time json
+                           base64 fmt func json xml locale process re dash s))
          (preamble "Builtin Modules are built into the Alisp interpreter and can be always imported. These modules are meant to provide common functionality like working with files, basic OS-operations, math functions, etc."))
     (println preamble)
     (line)
@@ -202,7 +228,6 @@
     (dolist (mod modules)
       (print "* ")
       (link (string-join "" (to-string mod) "") (to-string mod))
-      (print " - " (modref mod '--doc--))
       (line))))
 
 
@@ -214,15 +239,22 @@
          (len (length syms)))
     (heading-3 title)
     (line)
+    (heading-4 "Description")
+    (line)
+    (print (modref module '--doc--))
+    (heading-4 "Functions")
+    (line)
     (dolist (i (range 0 len))
       (let ((sym (modref module (nth syms i))))
         (when (pfunction sym)
           (dump-doc-list sym))))
 
+    (heading-4 "Constants")
     (dolist (i (range 0 len))
       (let ((sym (modref module (nth syms i))))
-        (when (or (pint sym) (pstring sym) (preal sym))
-          (dump-doc-list sym))))))
+        (when (or (pint sym) (pstring sym) (preal sym) (psym sym))
+          (dump-doc-list-var sym)
+          (line))))))
 
 
 
@@ -234,7 +266,7 @@
         (exit 1))
     (fileio.f-canonical (nth --argv-- 0))))
 
-
+;; Basic language documentation
 (println "Genrating basic...: " "basic_doc.md")
 (std-redirect (fileio.f-join root-dir "basic_doc.md") (generate-basic-reference))
 
@@ -244,9 +276,14 @@
 (println "Genrating files...: " "files_doc.md")
 (std-redirect (fileio.f-join root-dir "files_doc.md") (generate-files-reference))
 
+
+
+;; Index page for the modules
 (println "Generating modules index...: " "modules/index.md")
 (std-redirect (fileio.f-join root-dir "modules/index.md") (generate-modules-index))
 
+
+;; Index page for the modules
 (println "Generating module...: " "modules/fileio.md")
 (std-redirect (fileio.f-join root-dir "modules/fileio.md") (generate-module "Filio" fileio))
 
@@ -270,3 +307,30 @@
 
 (println "Generating module...: " "modules/s.md")
 (std-redirect (fileio.f-join root-dir "modules/s.md") (generate-module "S" s))
+
+(println "Generating module...: " "modules/base64.md")
+(std-redirect (fileio.f-join root-dir "modules/base64.md") (generate-module "Base64" base64))
+
+(println "Generating module...: " "modules/fmt.md")
+(std-redirect (fileio.f-join root-dir "modules/fmt.md") (generate-module "Fmt" fmt))
+
+(println "Generating module...: " "modules/func.md")
+(std-redirect (fileio.f-join root-dir "modules/func.md") (generate-module "Func" func))
+
+(println "Generating module...: " "modules/json.md")
+(std-redirect (fileio.f-join root-dir "modules/json.md") (generate-module "Json" json))
+
+(println "Generating module...: " "modules/xml.md")
+(std-redirect (fileio.f-join root-dir "modules/xml.md") (generate-module "XML" xml))
+
+(println "Generating module...: " "modules/locale.md")
+(std-redirect (fileio.f-join root-dir "modules/locale.md") (generate-module "Locale" locale))
+
+(println "Generating module...: " "modules/process.md")
+(std-redirect (fileio.f-join root-dir "modules/process.md") (generate-module "Process" process))
+
+(println "Generating module...: " "modules/random.md")
+(std-redirect (fileio.f-join root-dir "modules/random.md") (generate-module "Random" random))
+
+(println "Generating module...: " "modules/re.md")
+(std-redirect (fileio.f-join root-dir "modules/re.md") (generate-module "re" re))

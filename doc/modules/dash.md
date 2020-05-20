@@ -1,5 +1,9 @@
 ### Dash
 
+#### Description
+
+Dash helps you work with lists#### Functions
+
 **d-dotimes** : **
 
 **d-each-r-while** : **
@@ -223,5 +227,7 @@
 **d-reductions-r** : **
 
 **d-max-by** : **
+
+#### Constants
 
 
