@@ -543,41 +543,224 @@ ALISP_EXPORT alisp::env::ModulePtr init_locale(alisp::env::Environment *, alisp:
     auto Mlocale = alisp::module_init("locale");
     auto loc_ptr = Mlocale.get();
 
-    alisp::module_doc(loc_ptr, R"()");
+    alisp::module_doc(loc_ptr, R"(The `locale` module provides support for dealing with POSIX
+locales. This allows developers to handle culture specific issues in
+an application.
 
-    alisp::module_defun(loc_ptr, "locale", &loc::Flocale);
-    alisp::module_defun(loc_ptr, "locale-name", &loc::Flocale_name);
-    alisp::module_defun(loc_ptr, "set-locale", &loc::Fset_default_locale);
-    alisp::module_defun(loc_ptr, "set-preffered-locale", &loc::Fset_preffered);
-    alisp::module_defun(loc_ptr, "reset-locale", &loc::Freset_locale);
+Internally the module uses the standard C++ library and proves
+"sensible" access to the underlying functions.
 
-    alisp::module_defun(loc_ptr, "isgraph", &loc::Fisgraph);
-    alisp::module_defun(loc_ptr, "isprint", &loc::Fisprint);
-    alisp::module_defun(loc_ptr, "isalnum", &loc::Fisalnum);
-    alisp::module_defun(loc_ptr, "isxdigit", &loc::Fisxdigit);
-    alisp::module_defun(loc_ptr, "ispunct", &loc::Fispunct);
-    alisp::module_defun(loc_ptr, "isdigit", &loc::Fisdigit);
-    alisp::module_defun(loc_ptr, "isalpha", &loc::Fisalpha);
-    alisp::module_defun(loc_ptr, "islower", &loc::Fislower);
-    alisp::module_defun(loc_ptr, "isupper", &loc::Fisupper);
-    alisp::module_defun(loc_ptr, "iscntrl", &loc::Fiscntrl);
-    alisp::module_defun(loc_ptr, "isblank", &loc::Fisblank);
-    alisp::module_defun(loc_ptr, "isspace", &loc::Fisspace);
+Locales can be created through the `locale` function with a name such
+as `en_US.utf8` or 'en_GB.utf8'. You can execute `locale -a` in a
+terminal to see all of the locales that the host system supports. A
+valid locale id is any one of the these locales.
 
-    alisp::module_defun(loc_ptr, "put-time", &loc::Fput_time);
+)");
 
-    alisp::module_defun(loc_ptr, "put-money", &loc::Fput_money);
-    alisp::module_defun(loc_ptr, "money-decimal-point", &loc::Fmoney_decimal_point);
-    alisp::module_defun(loc_ptr, "money-thousand-sep", &loc::Fmoney_thousand_sep);
-    alisp::module_defun(loc_ptr, "money-symobl", &loc::Fmoney_symobl);
-    alisp::module_defun(loc_ptr, "money-negative-sign", &loc::Fmoney_negative_sign);
-    alisp::module_defun(loc_ptr, "money-positive-sign", &loc::Fmoney_positive_sign);
-    alisp::module_defun(loc_ptr, "num-decimal-point", &loc::Fnum_decimal_point);
+    alisp::module_defun(loc_ptr, "locale", &loc::Flocale,
+    R"((locale ID)
 
-    alisp::module_defun(loc_ptr, "put-num", &loc::Fput_num);
-    alisp::module_defun(loc_ptr, "num-thousand-sep", &loc::Fnum_thousand_sep);
-    alisp::module_defun(loc_ptr, "num-false-name", &loc::Fnum_false_name);
-    alisp::module_defun(loc_ptr, "num-true-name", &loc::Fnum_true_name);
+Create a new locale with the given id as s tring and return a resource
+object for it.
+)");
+
+    alisp::module_defun(loc_ptr, "locale-name", &loc::Flocale_name,
+    R"((locale-name [LOCALE]
+
+Return the name of the global default locale. If `LOCALE` is given,
+return its name.
+))");
+
+    alisp::module_defun(loc_ptr, "set-locale", &loc::Fset_default_locale,
+    R"((set-locale LOCALE)
+
+Change the current global default locale to `LOCALE`.
+)");
+
+    alisp::module_defun(loc_ptr, "set-preffered-locale", &loc::Fset_preffered,
+    R"((set-preffered-locale)
+
+Set the global locale to the preffered (according to the host system) locale.
+)");
+
+    alisp::module_defun(loc_ptr, "reset-locale", &loc::Freset_locale,
+    R"((reset-locale)
+
+Reset the global locate to the default locale.
+)");
+
+
+    alisp::module_defun(loc_ptr, "isgraph", &loc::Fisgraph,
+    R"((isgraph CHAR [LOCALE])
+
+Check if `CHAR` is a graphical character according to the default
+locale or to `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "isprint", &loc::Fisprint,
+    R"((isprint CHAR [LOCALE])
+
+Check if `CHAR` is a printable character according to the default
+locale or to `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "isalnum", &loc::Fisalnum,
+    R"((isalnum CHAR [LOCALE])
+
+Check if `CHAR` is alpha-numerical character according to the default
+locale or to `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "isxdigit", &loc::Fisxdigit,
+    R"((isxdigit CHAR [LOCALE])
+
+Check if `CHAR` is a hexdecimal digit character according to the default
+locale or to `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "ispunct", &loc::Fispunct,
+    R"((ispunct CHAR [LOCALE])
+
+Check if `CHAR` is a punctuation character according to the default
+locale or to `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "isdigit", &loc::Fisdigit,
+    R"((isdigit CHAR [LOCALE])
+
+Check if `CHAR` is a digit character according to the default
+locale or to `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "isalpha", &loc::Fisalpha,
+    R"((isalpha CHAR [LOCALE])
+
+Check if `CHAR` is a graphical character according to the default
+locale or to `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "islower", &loc::Fislower,
+    R"((islower CHAR [LOCALE])
+
+Check if `CHAR` is a lower case character according to the default
+locale or to `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "isupper", &loc::Fisupper,
+    R"((isupper CHAR [LOCALE])
+
+Check if `CHAR` is a upper case character according to the default
+locale or to `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "iscntrl", &loc::Fiscntrl,
+    R"((iscntrl CHAR [LOCALE])
+
+Check if `CHAR` is a control character according to the default
+locale or to `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "isblank", &loc::Fisblank,
+    R"((isblank CHAR [LOCALE])
+
+Check if `CHAR` is a blank character according to the default
+locale or to `LOCALE` if given.)");
+
+    alisp::module_defun(loc_ptr, "isspace", &loc::Fisspace,
+    R"((isspace CHAR [LOCALE])
+
+Check if `CHAR` is a space character according to the default
+locale or to `LOCALE` if given.
+)");
+
+
+    alisp::module_defun(loc_ptr, "put-time", &loc::Fput_time,
+    R"((put-time TIME FORMAT-STRING [LOCALE])
+
+Return a fromated string of `FORMAT-STRING` with `TIME` acording to
+the global locale or `LOCALE` if given.
+)");
+
+
+    alisp::module_defun(loc_ptr, "put-num", &loc::Fput_num,
+    R"((put-num NUMBER [LOCALE])
+
+Return a textural representation of `NUMBER` as a number according to
+the global locale or `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "put-money", &loc::Fput_money,
+    R"((put-money NUMBER [LOCALE])
+
+Return a textural representation of `NUMBER` as currency according to
+the global locale or `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "money-decimal-point", &loc::Fmoney_decimal_point,
+    R"((money-decimal-point [LOCALE])
+
+Return the character used for deciaml point in money strings as used
+by the global locale or the `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "money-thousand-sep", &loc::Fmoney_thousand_sep,
+    R"((money-thousand-sep [LOCALE])
+
+Return the character used for deciaml point in money strings as used
+by the global locale or the `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "money-symobl", &loc::Fmoney_symobl,
+    R"((money-symbol [LOCALE])
+
+Return the character used to represent the local currrency accrding by
+the global locale or the `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "money-negative-sign", &loc::Fmoney_negative_sign,
+    R"((money-negative-sign [LOCALE])
+
+Return the character used to represent negative amount of money
+accrding by the global locale or the `LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "money-positive-sign", &loc::Fmoney_positive_sign,
+    R"((money-positive-sign [LOCALE])
+
+Return the character used to represent positive amount of money
+accrding by the global locale or the `LOCALE` if given.
+ )");
+
+    alisp::module_defun(loc_ptr, "num-decimal-point", &loc::Fnum_decimal_point,
+    R"((num-decimal-point [LOCALE])
+
+Return the character used for decimal point in textural representation
+of real numbers according to the global locale or the `LOCALE` if
+given.
+)");
+
+    alisp::module_defun(loc_ptr, "num-thousand-sep", &loc::Fnum_thousand_sep,
+    R"((num-thousand-sep [LOCALE])
+
+Return the character used to separate the thousands in the textual
+representation of real numbers according to the global locale or the
+`LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "num-false-name", &loc::Fnum_false_name,
+    R"((num-false-name [LOCALE])
+
+Return the string used to represent `false` according to the global locale or the
+`LOCALE` if given.
+)");
+
+    alisp::module_defun(loc_ptr, "num-true-name", &loc::Fnum_true_name,
+    R"((num-true-name [LOCALE])
+
+Return the string used to represent `true` according to the global locale or the
+`LOCALE` if given.
+)");
+
 
     return Mlocale;
 }
