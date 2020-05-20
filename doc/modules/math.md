@@ -3,7 +3,9 @@
 #### Description
 
 The `math` provides more complicated math functions. Often these
-function are just wrappers around the standard C++ functions#### Functions
+function are just wrappers around the standard C++ functions.
+
+#### Functions
 
 **hypot** : *(hypot VALUE)*
 

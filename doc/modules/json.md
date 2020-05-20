@@ -4,13 +4,13 @@
 
 The `json` module can be used to parse and handle json-formated text. It can transoform JSON to an equvalent representation through s-expressions.
 
-The s-exp representation that this module uses for an dict-like strucure is (plist)[https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node108.html]. A dictonary with keys and values can be viewed as a list of values like `(:key-1 "value-1" :key-2 "value-2")`. For example, this json snippet:
+The s-exp representation that this module uses for an dict-like strucure is [plist](https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node108.html). A dictonary with keys and values can be viewed as a list of values like `(:key-1 "value-1" :key-2 "value-2")`. For example, this json snippet:
 ```json
 {
-"key-1" : "value-1",
-"key-2" : 42,
-"key-3" : [42 ,42],
-"key-4" : ["42" , "42"]
+  "key-1" : "value-1",
+  "key-2" : 42,
+  "key-3" : [42 ,42],
+  "key-4" : ["42" , "42"]
 }
 ```
 
@@ -21,6 +21,7 @@ will be represented throught the following s-expressions structure.
 ```
 
 The resulting representaion can be handeld through some of the functions that the module provides.
+
 
 #### Functions
 

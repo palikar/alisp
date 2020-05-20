@@ -13,6 +13,7 @@ In most cases you can simply use `{}` for a replacement field. For further detai
 
 To note is that the `printf` and `fmt` functions in the `fmt` module use the same syntax.
 
+
 #### Functions
 
 **eprintfln** : *(eprintfln FORMAT_STRING [ARG]...)*

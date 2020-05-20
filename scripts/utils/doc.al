@@ -5,8 +5,12 @@
 (import 'system)
 (import 'time)
 (import 'json)
+
 (import 's)
 (import 'dash)
+(import 'stack)
+(import 'queue)
+(import 'setc)
 
 (import 'base64)
 (import 'fmt)
@@ -219,8 +223,9 @@
 (defun generate-modules-index ()
   (heading-2 "Builtin Modules")
   (line)
-  (let ( (modules '(fileio math memory platform system time json
-                           base64 fmt func json xml locale process re dash s))
+  (let ( (modules '(fileio math memory platform system time
+                           json base64 fmt func json xml locale process
+                           re dash s stack queue setc))
          (preamble "Builtin Modules are built into the Alisp interpreter and can be always imported. These modules are meant to provide common functionality like working with files, basic OS-operations, math functions, etc."))
     (println preamble)
     (line)
@@ -241,7 +246,10 @@
     (line)
     (heading-4 "Description")
     (line)
-    (print (modref module '--doc--))
+    (when (contains (symbols-list module) '--doc--)
+      (print (modref module '--doc--)))
+    
+    (line)
     (heading-4 "Functions")
     (line)
     (dolist (i (range 0 len))
@@ -302,11 +310,6 @@
 (println "Generating module...: " "modules/time.md")
 (std-redirect (fileio.f-join root-dir "modules/time.md") (generate-module "Time" time))
 
-(println "Generating module...: " "modules/dash.md")
-(std-redirect (fileio.f-join root-dir "modules/dash.md") (generate-module "Dash" dash))
-
-(println "Generating module...: " "modules/s.md")
-(std-redirect (fileio.f-join root-dir "modules/s.md") (generate-module "S" s))
 
 (println "Generating module...: " "modules/base64.md")
 (std-redirect (fileio.f-join root-dir "modules/base64.md") (generate-module "Base64" base64))
@@ -334,3 +337,20 @@
 
 (println "Generating module...: " "modules/re.md")
 (std-redirect (fileio.f-join root-dir "modules/re.md") (generate-module "re" re))
+
+
+
+(println "Generating module...: " "modules/dash.md")
+(std-redirect (fileio.f-join root-dir "modules/dash.md") (generate-module "Dash" dash))
+
+(println "Generating module...: " "modules/s.md")
+(std-redirect (fileio.f-join root-dir "modules/s.md") (generate-module "S" s))
+
+(println "Generating module...: " "modules/stack.md")
+(std-redirect (fileio.f-join root-dir "modules/stack.md") (generate-module "Stack" stack))
+
+(println "Generating module...: " "modules/queue.md")
+(std-redirect (fileio.f-join root-dir "modules/queue.md") (generate-module "Queue" queue))
+
+(println "Generating module...: " "modules/setc.md")
+(std-redirect (fileio.f-join root-dir "modules/setc.md") (generate-module "Setc" setc))

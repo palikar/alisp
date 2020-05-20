@@ -13,6 +13,7 @@ one of several standards.
 
 The symbols starting with `re-match-` modify the matching process, the
 symbols starting with `re-regex-` modify the building of a regex.
+
 #### Functions
 
 **re-replace** : *(re-replace [REGEX|STRING] STRING REPLACEMENT [MATCH_FLAGS])*

@@ -2,7 +2,8 @@
 
 #### Description
 
-Dash helps you work with lists#### Functions
+Dash helps you work with lists
+#### Functions
 
 **d-dotimes** : **
 

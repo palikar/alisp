@@ -2,7 +2,8 @@
 
 #### Description
 
-S helps you work with strings#### Functions
+S helps you work with strings
+#### Functions
 
 **s-word-initials** : **
 

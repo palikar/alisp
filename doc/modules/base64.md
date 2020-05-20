@@ -13,9 +13,11 @@ Example:
 (mapc println (base64-decode-bytes (base64-encode-bytes '(97 98 99))))
 (mapc println (base16-decode-bytes (base16-encode-bytes '(97 98 99))))
 ```
+
 #### Functions
 
 **base32-decode-bytes** : *(base32-decode-bytes BYTES_LIST)*
+
 Decode the base32 encoded bytes `BYTES_LIST` and return the result as string.
 
 

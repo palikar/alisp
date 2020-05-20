@@ -2,17 +2,15 @@
 
 #### Description
 
-The `os` modules allows you to access common OS functions through Alisp.#### Functions
+The `os` modules allows you to access common OS functions through Alisp.
+#### Functions
 
 **chwd** : *(chwd PATH)*
 
 Change the currnt working directory to `PATH`.
 
 
-**list-env** : **
-
-Return the value of `env-vars`.
-
+**list-env** : * Return the value of `env-vars`.*
 
 **check-env** : *(check-env VAR)*
 

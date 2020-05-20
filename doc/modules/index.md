@@ -19,3 +19,6 @@ Builtin Modules are built into the Alisp interpreter and can be always imported.
 * [re](re)
 * [dash](dash)
 * [s](s)
+* [stack](stack)
+* [queue](queue)
+* [setc](setc)

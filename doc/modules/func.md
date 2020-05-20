@@ -2,6 +2,9 @@
 
 #### Description
 
+ The `func` modules provides support for working with higher order
+functions. It aims to bring more "functional" features to alisp.
+
 #### Functions
 
 **identity** : *(identity ARG)*

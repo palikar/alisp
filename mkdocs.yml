@@ -28,8 +28,6 @@ nav:
     - Platform : './modules/platform.md'
     - System : './modules/system.md'
     - Time : './modules/time.md'
-    - Dash : './modules/dash.md'
-    - S : './modules/s.md'
     - Base64 : './modules/base64.md'
     - Fmt : './modules/fmt.md'
     - Func : './modules/func.md'
@@ -39,5 +37,11 @@ nav:
     - Process : './modules/process.md'
     - Random : './modules/random.md'
     - Re : './modules/re.md'
+      
+    - Stack : './modules/stack.md'
+    - Queue : './modules/queue.md'
+    - Setc : './modules/setc.md'
+    - Dash : './modules/dash.md'
+    - S : './modules/s.md'
 
 theme: readthedocs

@@ -3,7 +3,9 @@
 #### Description
 
 The `memory` modules provides utilities for working with raw memory
-buffers. Memory buffers are just places in memory that are filled with bytes.#### Functions
+buffers. Memory buffers are just places in memory that are filled with bytes.
+
+#### Functions
 
 **buffer-get** : *(buffer-get BUFFER)*
 
@@ -51,7 +53,6 @@ Set the contents of a `BUFFER` to the values in the given byte array.
 Allocate a buffer of size `SIZE` and return a resource object for the
 newly created buffer. The buffer can then be used with other function
 for reading and writing bytes to it.
-
 
 
 **buffer-mmap** : *(buffer-mmap BUFFER-SOURCE BUFFER-DEST SIZE)*

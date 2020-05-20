@@ -3,7 +3,9 @@
 #### Description
 
 The `fileio` moudule provides utilities for working with file paths,
-files, directories and some basic IO functions.#### Functions
+files, directories and some basic IO functions.
+
+#### Functions
 
 **f-empty** : *(f-empty PATH)*
 
