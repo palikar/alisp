@@ -17,6 +17,8 @@
 
 #include "alisp/alisp/alisp_asyncs.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
+#include <chrono>
+
 
 
 namespace alisp
@@ -25,22 +27,24 @@ namespace alisp
 namespace async
 {
 
+
 AsyncS::AsyncS(eval::Evaluator *t_eval) : m_eval(t_eval)
 {
     m_event_loop = std::thread(&AsyncS::event_loop, this);
+    running = 1;
     // m_event_loop.detach();
 }
 
 void AsyncS::event_loop()
 {
-    std::unique_lock<std::mutex> lk(m);
+    using namespace std::chrono_literals;
+    std::unique_lock<std::mutex> el_lock{event_loop_mutex};
     while (running)
     {
-        cv.wait(lk);
+        event_loop_cv.wait_for(el_lock, 100ms);
 
         if (!m_event_queue.empty())
         {
-            // on a different thread!
             ++asyncs;
             execute(std::move(m_event_queue.back()));
             m_event_queue.pop();
@@ -49,38 +53,52 @@ void AsyncS::event_loop()
         if (m_callback_queue.empty() and m_event_queue.empty() and asyncs == 0)
         {
             running = 0;
+            break;
         }
 
-        lk.unlock();
     }
+
     m_eval->reset_async_flag();
+    m_eval->callback_cv.notify_all();
 }
 
 void AsyncS::execute(detail::Callback call)
 {
     call();
+    std::lock_guard<std::mutex> guard(queue_mutex);
     m_callback_queue.push(432);
-    m_eval->callback_cv.notify_all();
     --asyncs;
+    m_eval->callback_cv.notify_all();
 }
 
 void AsyncS::eval_callback(detail::Callback)
 {
 
-
-    std::cout << "submiting to the eval"
-              << "\n";
-    // submit to main thread here
 }
 
 void AsyncS::submit(detail::Callback t_callback)
 {
-    std::lock_guard<std::mutex> lk(m);
-    running = 1;
+    std::lock_guard<std::mutex> guard{event_loop_mutex};
     m_event_queue.push(std::move(t_callback));
-    std::cout << "submiting"
-              << "\n";
-    cv.notify_all();
+    m_eval->set_async_flag();
+    event_loop_cv.notify_one();
+}
+
+
+bool AsyncS::has_callback()
+{
+    std::lock_guard<std::mutex> guard(queue_mutex);
+    const auto value = !m_callback_queue.empty();
+    return value;
+}
+
+int AsyncS::next_callback()
+{
+    std::lock_guard<std::mutex> guard(queue_mutex);
+    auto value = m_callback_queue.back();
+    m_callback_queue.pop();
+    event_loop_cv.notify_all();
+    return value;
 }
 
 void AsyncS::end()
@@ -89,7 +107,7 @@ void AsyncS::end()
     {
         m_event_loop.join();
     }
-    
+
 }
 
 }  // namespace async

@@ -14,7 +14,7 @@
  You should have received a copy of the GNU General Public License along
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
-
+#include <unistd.h>
 
 #include <algorithm>
 #include <filesystem>
@@ -953,9 +953,11 @@ ALObjectPtr Fset_timeout(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
     AL_CHECK(assert_size<2>(obj));
 
     eval->async().submit([](){
+        std::cout << "sleeping" << "\n";
+        std::this_thread::sleep_for(std::chrono::seconds(2));
         std::cout << "this from callback" << "\n";
     });
-
+    
     return Qt;
 }
 

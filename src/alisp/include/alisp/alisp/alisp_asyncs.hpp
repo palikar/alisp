@@ -98,8 +98,9 @@ class AsyncS
 
     std::atomic_int asyncs{0};
 
-    mutable std::mutex m;
-    mutable std::condition_variable cv;
+    mutable std::mutex event_loop_mutex;
+    mutable std::mutex queue_mutex;
+    mutable std::condition_variable event_loop_cv;
 
 
     void event_loop();
@@ -116,20 +117,9 @@ class AsyncS
 
     void end();
 
-    bool has_callback()
-    {
-        std::lock_guard<std::mutex> guard(m);
-        const auto value = m_callback_queue.empty();
-        return value;
-    }
+    bool has_callback();
     
-    int next_callback()
-    {
-        std::lock_guard<std::mutex> guard(m);
-        auto value = m_callback_queue.back();
-        cv.notify_all();
-        return value;
-    }
+    int next_callback();    
 };
 
 }
