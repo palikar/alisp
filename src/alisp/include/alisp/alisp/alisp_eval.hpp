@@ -22,6 +22,7 @@
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_exception.hpp"
+#include "alisp/alisp/alisp_asyncs.hpp"
 
 namespace alisp
 {
@@ -44,19 +45,29 @@ class Evaluator
     size_t m_catching_depth;
     parser::ParserBase *m_parser;
 
+    async::AsyncS m_async;
+
     int m_signal;
-    std::uint_fast32_t m_status_flags;
+
+    std::atomic_uint_fast32_t m_status_flags;
 
     std::string m_current_file;
 
     static constexpr std::uint32_t SIGINT_FLAG            = 0x0001;
     static constexpr std::uint32_t ACTIVE_EVALUATION_FLAG = 0x0002;
     static constexpr std::uint32_t SIGTERM_FLAG           = 0x0004;
+    static constexpr std::uint32_t ASYNC_FLAG             = 0x0008;
 
 
   public:
-    Evaluator(env::Environment &env_, parser::ParserBase *t_parser);
 
+    std::mutex callback_m;
+    std::condition_variable callback_cv;
+    
+    Evaluator(env::Environment &env_, parser::ParserBase *t_parser);
+    ~Evaluator();
+
+    
     void eval_file(const std::string &t_file);
     void eval_string(std::string &t_eval);
 
@@ -80,8 +91,16 @@ class Evaluator
     void set_evaluation_flag();
     void reset_evaluation_flag();
 
+    void set_async_flag();
+    void reset_async_flag();
+    bool is_async_pending();
+
+    void dispatch_callbacks();
+
     void set_current_file(std::string t_tile);
     const std::string &get_current_file();
+
+    async::AsyncS& async() { return m_async; }
 
     friend detail::EvalDepthTrack;
     friend detail::CatchTrack;

@@ -948,5 +948,16 @@ ALObjectPtr Fintern(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return env::intern(name->to_string());
 }
 
+ALObjectPtr Fset_timeout(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<2>(obj));
+
+    eval->async().submit([](){
+        std::cout << "this from callback" << "\n";
+    });
+
+    return Qt;
+}
+
 
 }  // namespace alisp

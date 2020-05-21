@@ -79,6 +79,7 @@ add_library(alisp_language
     src/alisp_memory.cpp
     src/alisp_warnings.cpp
     src/alisp_loadable_modules.cpp
+    src/alisp_asyncs.cpp
 
     src/definitions/alisp_eval_functions.cpp
     src/definitions/alisp_stream_functions.cpp

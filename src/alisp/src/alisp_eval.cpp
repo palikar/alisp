@@ -48,8 +48,13 @@ void Evaluator::end_evaluation()
 }
 
 Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser)
-  : env(env_), m_eval_depth(0), m_catching_depth(0), m_parser(t_parser), m_status_flags(0)
+    : env(env_), m_eval_depth(0), m_catching_depth(0), m_parser(t_parser), m_async(this), m_status_flags(0)
 {
+}
+
+Evaluator::~Evaluator()
+{
+    m_async.end();
 }
 
 void Evaluator::put_argument(ALObjectPtr param, ALObjectPtr arg)
@@ -226,6 +231,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
                     return eval_function(func, eval_ptr);
                 }
+                
             }
             catch (al_continue &)
             {
@@ -389,6 +395,30 @@ void Evaluator::set_evaluation_flag()
 void Evaluator::reset_evaluation_flag()
 {
     m_status_flags &= ~ACTIVE_EVALUATION_FLAG;
+}
+
+void Evaluator::set_async_flag()
+{
+    m_status_flags |= ASYNC_FLAG;
+}
+
+void Evaluator::reset_async_flag()
+{
+    m_status_flags &= ~ASYNC_FLAG;
+}
+
+bool Evaluator::is_async_pending()
+{
+    return (m_status_flags & ASYNC_FLAG) > 0; 
+}
+
+void Evaluator::dispatch_callbacks()
+{
+    while (m_async.has_callback())
+    {
+        auto v = m_async.next_callback();
+        std::cout << "executing in main thread: " << v << "\n";
+    }
 }
 
 void Evaluator::check_status()
