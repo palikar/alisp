@@ -94,7 +94,9 @@ add_library(alisp_language
     src/definitions/alisp_algorithms.cpp
     src/definitions/alisp_strings.cpp
     src/definitions/alisp_casts.cpp
-    src/definitions/alisp_props.cpp)
+    src/definitions/alisp_props.cpp
+    src/definitions/alisp_async.cpp
+    )
 
 
 target_include_directories(alisp_language

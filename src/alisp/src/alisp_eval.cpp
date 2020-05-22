@@ -416,8 +416,10 @@ void Evaluator::dispatch_callbacks()
 {
     while (m_async.has_callback())
     {
-        m_async.next_callback();
+        auto [func, args] = m_async.next_callback();
+        handle_lambda(func, args);
     }
+    m_async.spin_loop();
 }
 
 void Evaluator::check_status()

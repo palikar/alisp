@@ -22,7 +22,6 @@
 #include "alisp/alisp/alisp_factory.hpp"
 #include "alisp/alisp/alisp_env.hpp"
 
-
 namespace alisp
 {
 
@@ -452,14 +451,6 @@ DEFVAR(
                   "unless",    "let",      "let*",    "or",        "and",    "not",    "parse-int", "parse-float",
                   "to-string", "to-char",  "funcall", "backquote", "return", "exit",   "intern",    "make-symbol" }),
   R"(Basic fuctions that provide the backbone of the language. These include global and local variable definition, flow control structures and loops.)");
-
-
-
-DEFUN(set_timeout, "set-timeout", R"((set-timeout CALLBACK SECONDS)
-Execute `CALLBACK` after `SECONDS`.
-)");
-
-
 
 
 }  // namespace alisp

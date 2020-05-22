@@ -17,6 +17,7 @@
 
 #include "alisp/alisp/alisp_asyncs.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
+#include "alisp/alisp/alisp_factory.hpp"
 
 #include <chrono>
 
@@ -30,141 +31,172 @@ namespace async
 {
 
 
-AsyncS::AsyncS(eval::Evaluator *t_eval) : m_eval(t_eval)// , m_thread_pool(2)
+AsyncS::AsyncS(eval::Evaluator *t_eval) : m_eval(t_eval)
 {
-    m_event_loop = std::thread(&AsyncS::event_loop, this);
     m_running = 1;
 
-    
-    for (size_t i = 0; i < POOL_SIZE; ++i) {
-        
-        auto la = [&](){
-            std::unique_lock<std::mutex> th_lock(pool_mutex);
+#ifdef SINGLE_THREAD_EVENT_LOOP
+    m_event_loop = std::thread(&AsyncS::event_loop, this);
 
-            while(m_running == 1)
-            {
-                pool_cv.wait(th_lock);
-
-                if (m_running == 0)
-                {
-                    break;
-                }
-
-                {
-                    std::unique_lock<std::mutex> lock{event_queue_mute, std::defer_lock};
-                    lock.lock();
-                    if (!m_event_queue.empty())
-                    {
-                        auto call = std::move(m_event_queue.back());
-                        m_event_queue.pop();
-                        lock.unlock();
-                        
-                        call();
-                        m_callback_queue.push(432);
-                        --m_asyncs;
-                        m_eval->callback_cv.notify_all();
-                    }
-                    else
-                    {
-                        lock.unlock();
-                    }
-                }
-                
-            }
-            
-        };
-        
-        pool[i] = std::thread(la);
+#else
+    for (size_t i = 0; i < POOL_SIZE; ++i)
+    {
+        pool[i] = std::thread(&AsyncS::event_loop_thread, this);
     }
-
+    
+#endif
     
 }
 
+#ifdef SINGLE_THREAD_EVENT_LOOP
+
 void AsyncS::event_loop()
 {
+    
     using namespace std::chrono_literals;
     std::unique_lock<std::mutex> el_lock{event_loop_mutex, std::defer_lock};
     while (m_running)
     {
-        event_loop_cv.wait_for(el_lock, 100ms);
+        event_loop_cv.wait(el_lock);
 
         if (m_running == 0)
         {
             break;
         }
 
-        if (!m_event_queue.empty())
+        while (!m_event_queue.empty())
         {
-
-            for (size_t i = 0; i < m_event_queue.size(); ++i)
-            {
-                if (m_asyncs < 3) {
-                    ++m_asyncs;
-                    pool_cv.notify_one();
-                }
-
-            }
-            
-            // execute(std::move(m_event_queue.back()));
-            // m_event_queue.pop();
+            execute_event(std::move(m_event_queue.front()));
+            ++m_asyncs;
+            m_event_queue.pop();
         }
         
         
         if (m_callback_queue.empty() and m_event_queue.empty() and m_asyncs == 0)
         {
             m_running = 0;
+            m_eval->reset_async_flag();
+            m_eval->callback_cv.notify_all();
+            return;
+        }
+    }
+    
+}
+
+#else
+
+void AsyncS::event_loop_thread()
+{
+    using namespace std::chrono_literals;
+    std::unique_lock<std::mutex> th_lock(pool_mutex);
+
+    while(m_running == 1)
+    {
+        pool_cv.wait(th_lock);
+
+        if (m_running == 0)
+        {
             break;
         }
 
+        std::unique_lock<std::mutex> lock{event_queue_mutex};
+        if (!m_event_queue.empty())
+        {
+            auto call = std::move(m_event_queue.front());
+            m_event_queue.pop();
+            lock.unlock();
+                        
+            ++m_asyncs;
+            execute_event(std::move(call));
+            
+        }
+        else
+        {
+            lock.unlock();
+        }
+
+        if (m_running == 1 and m_callback_queue.empty() and m_event_queue.empty() and m_asyncs == 0)
+        {
+            m_running = 0;
+            m_eval->reset_async_flag();
+            pool_cv.notify_all();
+            m_eval->callback_cv.notify_all();
+            break;
+        }
+                
     }
 
-    m_eval->reset_async_flag();
-    m_eval->callback_cv.notify_all();
 }
+    
+#endif
 
-void AsyncS::execute(detail::Callback call)
+void AsyncS::execute_event(detail::Callback call)
 {
 
-    std::thread tr(&AsyncS::execute_in_thread, this, std::move(call));
+    std::thread tr([&, call = std::move(call)]{
+        call(this);
+        --m_asyncs;
+        m_eval->callback_cv.notify_all();       
+    });
+    
     tr.detach();
 }
 
-
-void AsyncS::execute_in_thread(detail::Callback call)
+void AsyncS::submit_event(detail::Callback t_callback)
 {
-    call.ptr_.get()->call();
-    m_callback_queue.push(432);
-    --m_asyncs;
+    {
+        
+#ifdef SINGLE_THREAD_EVENT_LOOP
+        std::lock_guard<std::mutex> guard{event_loop_mutex};
+#else
+        std::lock_guard<std::mutex> guard{event_queue_mutex};
+#endif
+        m_event_queue.push(std::move(t_callback));
+        
+        m_eval->set_async_flag();    
+    }
+    
+#ifdef SINGLE_THREAD_EVENT_LOOP
+    event_loop_cv.notify_one();
+#else
+    pool_cv.notify_one();
+#endif
+}
+
+void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args)
+{
+    
+    {
+        std::lock_guard<std::mutex> guard(callback_queue_mutex);
+        if (args == nullptr) {
+            m_callback_queue.push({function, make_list()});
+        }else{
+            m_callback_queue.push({function, args});
+        }            
+    }
+    
     m_eval->callback_cv.notify_all();
 }
 
-
-    
-void AsyncS::eval_callback(detail::Callback)
+void AsyncS::spin_loop()
 {
-
-}
-
-void AsyncS::submit(detail::Callback t_callback)
-{
-    std::lock_guard<std::mutex> guard{event_loop_mutex};
-    m_event_queue.push(std::move(t_callback));
-    m_eval->set_async_flag();
+#ifdef SINGLE_THREAD_EVENT_LOOP
     event_loop_cv.notify_one();
+#else
+    pool_cv.notify_all();
+#endif
 }
-
 
 bool AsyncS::has_callback()
 {
-    std::lock_guard<std::mutex> guard(queue_mutex);
-    const auto value = !m_callback_queue.empty();
-    return value;
+    std::lock_guard<std::mutex> guard(callback_queue_mutex);
+    return !m_callback_queue.empty();
 }
 
-int AsyncS::next_callback()
+AsyncS::callback_type AsyncS::next_callback()
 {
-    std::lock_guard<std::mutex> guard(queue_mutex);
-    auto value = m_callback_queue.back();
+    std::lock_guard<std::mutex> guard(callback_queue_mutex);
+    auto value = m_callback_queue.front();
     m_callback_queue.pop();
     event_loop_cv.notify_all();
     return value;
@@ -173,12 +205,14 @@ int AsyncS::next_callback()
 void AsyncS::end()
 {
     m_running = 0;
-    pool_cv.notify_all();
+    
+#ifdef SINGLE_THREAD_EVENT_LOOP
     if (m_event_loop.joinable())
     {
         m_event_loop.join();
     }
-    
+#else
+    pool_cv.notify_all();
     for (size_t i = 0; i < 3; ++i)
     {
         if (pool[i].joinable())
@@ -186,6 +220,7 @@ void AsyncS::end()
             pool[i].join();
         }
     }
+#endif
 
 
 }
