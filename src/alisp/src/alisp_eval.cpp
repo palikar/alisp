@@ -414,11 +414,9 @@ bool Evaluator::is_async_pending()
 
 void Evaluator::dispatch_callbacks()
 {
-    std::cout << "dispatching callbacks now!" << "\n";
     while (m_async.has_callback())
     {
-        auto v = m_async.next_callback();
-        std::cout << "executing in main thread: " << v << "\n";
+        m_async.next_callback();
     }
 }
 

@@ -155,7 +155,6 @@ std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_pa
         auto file_content = utility::load_file(t_path);
         do_eval(file_content, t_path);
 
-        
         while(m_evaluator.is_async_pending())
         {
             std::unique_lock<std::mutex> lock(m_evaluator.callback_m);

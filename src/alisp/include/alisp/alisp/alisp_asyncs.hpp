@@ -31,6 +31,7 @@
 #include <utility>
 #include <queue>
 
+#include <ctpl.h>
 
 
 namespace alisp
@@ -88,24 +89,37 @@ struct Callback
 
 class AsyncS
 {
+  public:
+    static constexpr size_t POOL_SIZE = 3;
+    
   private:
     eval::Evaluator *m_eval;
 
     std::queue<detail::Callback> m_event_queue;
     std::queue<int> m_callback_queue;
     std::thread m_event_loop;
-    std::atomic_int running;
+    std::atomic_int m_running;
 
-    std::atomic_int asyncs{0};
+    std::atomic_int m_asyncs{0};
+
+    // ctpl::thread_pool m_thread_pool;
 
     mutable std::mutex event_loop_mutex;
     mutable std::mutex queue_mutex;
     mutable std::condition_variable event_loop_cv;
 
+    mutable std::mutex pool_mutex;
+    mutable std::condition_variable pool_cv;
+    
+    mutable std::mutex event_queue_mute;
+
+    std::thread pool[3];
 
     void event_loop();
 
     void execute(detail::Callback call);
+
+    void execute_in_thread(detail::Callback call);
 
     void eval_callback(detail::Callback);
 
