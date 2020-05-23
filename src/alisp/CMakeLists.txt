@@ -64,6 +64,10 @@ if(DISABLE_RUN_TIME_CHECKS)
     target_compile_definitions(language_options INTERFACE DISABLE_CHECKS)
 endif(DISABLE_RUN_TIME_CHECKS)
 
+if(ENABLE_MTEL)
+    target_compile_definitions(language_options INTERFACE MULTI_THREAD_EVENT_LOOP)
+endif(ENABLE_MTEL)
+
 
 add_library(alisp_language
     

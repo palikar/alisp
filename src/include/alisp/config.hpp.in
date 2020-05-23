@@ -73,6 +73,11 @@ inline constexpr auto ENV_VAR_NODEBUG = "ALNODEBUG";
 inline constexpr auto ENV_VAR_OPTIMIZE = "ALOPTIMIZE";
 inline constexpr auto PROMPT_HISTORY_FILE = ".alisp_history";
 
+#ifdef MULTI_THREAD_EVENT_LOOP
+inline constexpr bool al_mtel = true;
+#else
+inline constexpr bool al_mtel = false;
+#endif
 
 inline constexpr auto ENV_VAR_HELP = R"( 
         ALPATH: A list of direcotries where the alisp interpreter

@@ -16,6 +16,7 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 #pragma once
 
+#include "alisp/config.hpp"
 #include "alisp/alisp/alisp_common.hpp"
 
 #include <iostream>
@@ -31,7 +32,6 @@
 #include <utility>
 #include <queue>
 
-#define SINGLE_THREAD_EVENT_LOOP 1
 
 namespace alisp
 {
@@ -47,14 +47,6 @@ namespace async
 class AsyncS;
 namespace detail
 {
-
-template<typename T>
-void pop_front(std::vector<T> &v)
-{
-    if (v.size() > 0) {
-        v.erase(v.begin());
-    }
-}
 
 struct AbstractCallback
 {
@@ -106,7 +98,7 @@ class AsyncS
     mutable std::mutex callback_queue_mutex;
 
 
-#ifdef SINGLE_THREAD_EVENT_LOOP
+#ifndef MULTI_THREAD_EVENT_LOOP
     
     mutable std::mutex event_loop_mutex;
     mutable std::condition_variable event_loop_cv;

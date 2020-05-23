@@ -20,6 +20,7 @@
 #include "alisp/config.hpp"
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_asyncs.hpp"
+#include "alisp/alisp/declarations/language_constructs.hpp"
 
 
 namespace alisp

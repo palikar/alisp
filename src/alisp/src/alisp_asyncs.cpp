@@ -35,7 +35,7 @@ AsyncS::AsyncS(eval::Evaluator *t_eval) : m_eval(t_eval)
 {
     m_running = 1;
 
-#ifdef SINGLE_THREAD_EVENT_LOOP
+#ifndef MULTI_THREAD_EVENT_LOOP
     m_event_loop = std::thread(&AsyncS::event_loop, this);
 
 #else
@@ -48,7 +48,7 @@ AsyncS::AsyncS(eval::Evaluator *t_eval) : m_eval(t_eval)
     
 }
 
-#ifdef SINGLE_THREAD_EVENT_LOOP
+#ifndef MULTI_THREAD_EVENT_LOOP
 
 void AsyncS::event_loop()
 {
@@ -146,7 +146,7 @@ void AsyncS::submit_event(detail::Callback t_callback)
 {
     {
         
-#ifdef SINGLE_THREAD_EVENT_LOOP
+#ifndef MULTI_THREAD_EVENT_LOOP
         std::lock_guard<std::mutex> guard{event_loop_mutex};
 #else
         std::lock_guard<std::mutex> guard{event_queue_mutex};
@@ -156,7 +156,7 @@ void AsyncS::submit_event(detail::Callback t_callback)
         m_eval->set_async_flag();    
     }
     
-#ifdef SINGLE_THREAD_EVENT_LOOP
+#ifndef MULTI_THREAD_EVENT_LOOP
     event_loop_cv.notify_one();
 #else
     pool_cv.notify_one();
@@ -180,7 +180,7 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args)
 
 void AsyncS::spin_loop()
 {
-#ifdef SINGLE_THREAD_EVENT_LOOP
+#ifndef MULTI_THREAD_EVENT_LOOP
     event_loop_cv.notify_one();
 #else
     pool_cv.notify_all();
@@ -206,11 +206,12 @@ void AsyncS::end()
 {
     m_running = 0;
     
-#ifdef SINGLE_THREAD_EVENT_LOOP
+#ifndef MULTI_THREAD_EVENT_LOOP
     if (m_event_loop.joinable())
     {
         m_event_loop.join();
     }
+
 #else
     pool_cv.notify_all();
     for (size_t i = 0; i < 3; ++i)
@@ -220,6 +221,7 @@ void AsyncS::end()
             pool[i].join();
         }
     }
+    
 #endif
 
 

@@ -42,6 +42,7 @@ option(ENABLE_LINE_TRACE "Enable line tracing for each list object" TRUE)
 option(ENABLE_OBJECT_DOC "Enable adding documentaion for each objet" TRUE)
 option(ENABLE_LTO "Enable Link Time Optimization" FALSE)
 option(DISABLE_RUN_TIME_CHECKS "Disables the majority of assertions that happen at runtime" FALSE)
+option(ENABLE_MTEL "Enable mutlte threaded event loop." FALSE )
 
 set(TIME_CHECK_SAMPLES 10 CACHE STRING "How many time to perform the timing check") 
 
