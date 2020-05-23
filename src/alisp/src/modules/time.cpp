@@ -290,64 +290,84 @@ The module provides access to several internal clocks of the C++
 standard library.
 )");
 
-    module_defconst(time_ptr, "system-clock", make_int(details::SYSTEM_CLOCK),
-    R"(Integer representing the system-wide real time wall clock.
+    module_defconst(time_ptr,
+                    "system-clock",
+                    make_int(details::SYSTEM_CLOCK),
+                    R"(Integer representing the system-wide real time wall clock.
 )");
 
-    module_defconst(time_ptr, "steady-clock", make_int(details::STEADY_CLOCK),
-    R"(Integer representing a monotonic clock. The time points of this clock
+    module_defconst(time_ptr,
+                    "steady-clock",
+                    make_int(details::STEADY_CLOCK),
+                    R"(Integer representing a monotonic clock. The time points of this clock
 cannot decrease as physical time moves forward and the time between
 ticks of this clock is constant.
 )");
 
-    module_defconst(time_ptr, "high-res-clock", make_int(details::HIGH_RES_CLOCK),
-    R"(Integer representing a clock with the smallest tick period provided
+    module_defconst(time_ptr,
+                    "high-res-clock",
+                    make_int(details::HIGH_RES_CLOCK),
+                    R"(Integer representing a clock with the smallest tick period provided
 by the implementation.
 )");
 
 
-    module_defconst(time_ptr, "clocks-pre-second", make_int(details::clocks_per_sec),
-    R"(Number of clock ticks per second. Clock ticks are units of time of a
+    module_defconst(time_ptr,
+                    "clocks-pre-second",
+                    make_int(details::clocks_per_sec),
+                    R"(Number of clock ticks per second. Clock ticks are units of time of a
 constant but system-specific length.)");
 
 
-    module_defun(time_ptr, "t-time", &details::Ftime,
-    R"((t-time)
+    module_defun(time_ptr,
+                 "t-time",
+                 &details::Ftime,
+                 R"((t-time)
 
 Return the current calendar time in seconds.
 )");
 
-    module_defun(time_ptr, "t-ctime", &details::Fctime,
-    R"((t-ctime [TIME])
+    module_defun(time_ptr,
+                 "t-ctime",
+                 &details::Fctime,
+                 R"((t-ctime [TIME])
 
 Return a textural representation of the current time. If `TIME` is
 given, use this time to construct the string.
 )");
 
-    module_defun(time_ptr, "t-gmtime", &details::Fgmtime,
-    R"((t-gmtime TIME)
+    module_defun(time_ptr,
+                 "t-gmtime",
+                 &details::Fgmtime,
+                 R"((t-gmtime TIME)
 
 Return a list of the form (seconds, minutes, hours month day, month,
 year, week day, year day, leap year) representing the time `TIME` as a GM time.
 )");
 
-    module_defun(time_ptr, "t-localtime", &details::Flocaltime,
-    R"((t-localtime TIME)
+    module_defun(time_ptr,
+                 "t-localtime",
+                 &details::Flocaltime,
+                 R"((t-localtime TIME)
 
 Return a list of the form (seconds, minutes, hours month day, month,
 year, week day, year day, leap year) representing the time `TIME` as a local time.
 )");
 
-    module_defun(time_ptr, "t-mktime", &details::Fmktime,
-    R"((t-mktime TIME-LIST)
+    module_defun(time_ptr,
+                 "t-mktime",
+                 &details::Fmktime,
+                 R"((t-mktime TIME-LIST)
 
 Convert a time list of the form (seconds, minutes, hours month day,
 month, year, week day, year day, leap year) to time (seconds) since
 the beginning of the epoch. The values in the time list are permitted
 to be outside their normal ranges.  )");
 
-    module_defun(time_ptr, "t-process-time", &details::Fclock,
-    R"((t-process-time)
+    module_defun(time_ptr,
+                 "t-process-time",
+                 &details::Fclock,
+                 R"((t-process-time)
 
 Returns the approximate processor time used by the process since the
 beginning of an implementation-defined era related to the program's
@@ -355,8 +375,10 @@ execution. To convert result value to seconds divide it by
 `clocks-pre-second`.
  )");
 
-    module_defun(time_ptr, "t-strftime", &details::Fstrftime,
-    R"((t-strftime FORMAT-STRING TIME-LIST)
+    module_defun(time_ptr,
+                 "t-strftime",
+                 &details::Fstrftime,
+                 R"((t-strftime FORMAT-STRING TIME-LIST)
 
 Return the restulting string by formating `FROMAT-STRING` with the
 time list `TIME-LIST`. The ruls for formating are the same as in the
@@ -364,8 +386,10 @@ time list `TIME-LIST`. The ruls for formating are the same as in the
 The time list is of the form as by the `t-mktime` and `t-gmtime` functions.
 )");
 
-    module_defun(time_ptr, "t-clock-time", &details::Fnow,
-    R"((t-clock-time CLOCK)
+    module_defun(time_ptr,
+                 "t-clock-time",
+                 &details::Fnow,
+                 R"((t-clock-time CLOCK)
 
 Return the current time in seconds as a real number according to the
 given clock. `CLOCK` can be:
@@ -374,41 +398,53 @@ given clock. `CLOCK` can be:
 * high-res-clock
  )");
 
-    module_defun(time_ptr, "t-clock-time-ns", &details::Fnow_ns,
-    R"(Return the current time in nanoseconds as a real number according to
+    module_defun(time_ptr,
+                 "t-clock-time-ns",
+                 &details::Fnow_ns,
+                 R"(Return the current time in nanoseconds as a real number according to
 the given clock. `CLOCK` can be:
 * system-clock
 * steady-clock
 * high-res-clock)");
 
 
-    module_defun(time_ptr, "t-ns", &details::Fns,
-    R"((t-ns TIME)
+    module_defun(time_ptr,
+                 "t-ns",
+                 &details::Fns,
+                 R"((t-ns TIME)
 
 Convert `TIME` in nanoseconds to seconds as as real number.
 )");
 
-    module_defun(time_ptr, "t-ms", &details::Fms,
-    R"((t-ms TIME)
+    module_defun(time_ptr,
+                 "t-ms",
+                 &details::Fms,
+                 R"((t-ms TIME)
 
 Convert `TIME` in miliseconds to seconds as as real number.
 )");
 
-    module_defun(time_ptr, "t-s", &details::Fs,
-    R"((t-s TIME)
+    module_defun(time_ptr,
+                 "t-s",
+                 &details::Fs,
+                 R"((t-s TIME)
 
 Convert `TIME` in seconds to seconds as as real number.
 )");
 
-    module_defun(time_ptr, "t-hr", &details::Fhr,
-    R"((t-hr TIME)
+    module_defun(time_ptr,
+                 "t-hr",
+                 &details::Fhr,
+                 R"((t-hr TIME)
 
 Convert `TIME` in hours to seconds as as real number.
 )");
 
 
-    module_defun(time_ptr, "t-sleep", &details::Fsleep,
-    R"((t-sleep TIME)
+    module_defun(time_ptr,
+                 "t-sleep",
+                 &details::Fsleep,
+                 R"((t-sleep TIME)
 
 Block the current thread for `TIME` miliseconds.
 )");

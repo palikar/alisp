@@ -33,20 +33,18 @@ struct set_timeout
     size_t milliseconds;
     ALObjectPtr callback;
 
-    set_timeout(size_t t_miliseconds, ALObjectPtr t_callback):
-        milliseconds(t_miliseconds), callback(std::move(t_callback))
-    {}
+    set_timeout(size_t t_miliseconds, ALObjectPtr t_callback)
+      : milliseconds(t_miliseconds), callback(std::move(t_callback))
+    {
+    }
 
-    ALObjectPtr operator()(async::AsyncS* async) const
+    ALObjectPtr operator()(async::AsyncS *async) const
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
         async->submit_callback(callback);
         return Qt;
     }
-    
 };
 
 
-
-
-}
+}  // namespace alisp

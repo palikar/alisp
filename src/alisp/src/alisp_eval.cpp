@@ -48,7 +48,7 @@ void Evaluator::end_evaluation()
 }
 
 Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser)
-    : env(env_), m_eval_depth(0), m_catching_depth(0), m_parser(t_parser), m_async(this), m_status_flags(0)
+  : env(env_), m_eval_depth(0), m_catching_depth(0), m_parser(t_parser), m_async(this), m_status_flags(0)
 {
 }
 
@@ -231,7 +231,6 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
 
                     return eval_function(func, eval_ptr);
                 }
-                
             }
             catch (al_continue &)
             {
@@ -409,7 +408,7 @@ void Evaluator::reset_async_flag()
 
 bool Evaluator::is_async_pending()
 {
-    return (m_status_flags & ASYNC_FLAG) > 0; 
+    return (m_status_flags & ASYNC_FLAG) > 0;
 }
 
 void Evaluator::dispatch_callbacks()

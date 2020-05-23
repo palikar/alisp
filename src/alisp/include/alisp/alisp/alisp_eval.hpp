@@ -57,17 +57,17 @@ class Evaluator
     static constexpr std::uint32_t ACTIVE_EVALUATION_FLAG = 0x0002;
     static constexpr std::uint32_t SIGTERM_FLAG           = 0x0004;
     static constexpr std::uint32_t ASYNC_FLAG             = 0x0008;
+    static constexpr std::uint32_t INTERACTIVE_FLAG       = 0x0010;
 
 
   public:
-
     std::mutex callback_m;
     std::condition_variable callback_cv;
-    
+
     Evaluator(env::Environment &env_, parser::ParserBase *t_parser);
     ~Evaluator();
 
-    
+
     void eval_file(const std::string &t_file);
     void eval_string(std::string &t_eval);
 
@@ -95,12 +95,16 @@ class Evaluator
     void reset_async_flag();
     bool is_async_pending();
 
+    void inline set_interactive_flag() { m_status_flags |= INTERACTIVE_FLAG; }
+    void inline reset_interactive_flag() { m_status_flags &= ~INTERACTIVE_FLAG; }
+    bool inline is_interactive() { return (m_status_flags & INTERACTIVE_FLAG) > 0; }
+
     void dispatch_callbacks();
 
     void set_current_file(std::string t_tile);
     const std::string &get_current_file();
 
-    async::AsyncS& async() { return m_async; }
+    async::AsyncS &async() { return m_async; }
 
     friend detail::EvalDepthTrack;
     friend detail::CatchTrack;

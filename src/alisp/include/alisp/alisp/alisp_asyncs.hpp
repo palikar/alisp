@@ -51,14 +51,13 @@ namespace detail
 struct AbstractCallback
 {
     virtual ALObjectPtr call(AsyncS *async) const = 0;
-    virtual ~AbstractCallback() = default;
+    virtual ~AbstractCallback()                   = default;
 };
 
-template<class T>
-struct WrappingCallback : AbstractCallback
+template<class T> struct WrappingCallback : AbstractCallback
 {
     T cb_;
-    explicit WrappingCallback(T && cb) : cb_(std::move(cb)) {}
+    explicit WrappingCallback(T &&cb) : cb_(std::move(cb)) {}
     ALObjectPtr call(AsyncS *async) const override { return cb_(async); }
 };
 
@@ -66,25 +65,20 @@ struct Callback
 {
     std::unique_ptr<AbstractCallback> ptr_;
 
-    template<class T>
-    Callback(T t) {
-        ptr_ = std::make_unique<WrappingCallback<T>>(std::move(t));
-    }
+    template<class T> Callback(T t) { ptr_ = std::make_unique<WrappingCallback<T>>(std::move(t)); }
 
-    ALObjectPtr operator()(AsyncS *async) const {
-        return ptr_->call(async);
-    }
+    ALObjectPtr operator()(AsyncS *async) const { return ptr_->call(async); }
 };
 
 
-}
+}  // namespace detail
 
 class AsyncS
 {
   public:
     static constexpr size_t POOL_SIZE = 3;
-    using callback_type = std::pair<ALObjectPtr, ALObjectPtr>;
-    
+    using callback_type               = std::pair<ALObjectPtr, ALObjectPtr>;
+
   private:
     eval::Evaluator *m_eval;
 
@@ -93,32 +87,31 @@ class AsyncS
     std::thread m_event_loop;
     std::atomic_int m_running;
 
-    std::atomic_int m_asyncs{0};
+    std::atomic_int m_asyncs{ 0 };
 
     mutable std::mutex callback_queue_mutex;
 
 
 #ifndef MULTI_THREAD_EVENT_LOOP
-    
+
     mutable std::mutex event_loop_mutex;
     mutable std::condition_variable event_loop_cv;
-    
+
     void event_loop();
 #else
 
     std::thread pool[POOL_SIZE];
-    
+
     mutable std::mutex pool_mutex;
     mutable std::condition_variable pool_cv;
     mutable std::mutex event_queue_mutex;
-    
+
     void event_loop_thread();
 #endif
 
     void execute_event(detail::Callback call);
 
   public:
-
     AsyncS(eval::Evaluator *t_eval);
 
     void submit_event(detail::Callback t_callback);
@@ -130,28 +123,25 @@ class AsyncS
     void end();
 
     bool has_callback();
-    
-    callback_type next_callback();    
+
+    callback_type next_callback();
 };
 
 
-
-template<typename T, typename ... Args>
-auto dispatch(AsyncS &async, Args && ...  args)
+template<typename T, typename... Args> auto dispatch(AsyncS &async, Args &&... args)
 {
-    if constexpr(T::managed)
+    if constexpr (T::managed)
     {
-        T event_object{std::forward<decltype(args)>(args) ... };
-        async.submit_event(detail::Callback{std::move(event_object)});
+        T event_object{ std::forward<decltype(args)>(args)... };
+        async.submit_event(detail::Callback{ std::move(event_object) });
     }
     else
     {
-        T event_object{std::forward<decltype(args)>(args) ... };
+        T event_object{ std::forward<decltype(args)>(args)... };
         return event_object(async);
     }
-    
 }
 
-}
+}  // namespace async
 
 }  // namespace alisp

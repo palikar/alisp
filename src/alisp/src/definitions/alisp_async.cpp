@@ -29,19 +29,18 @@ namespace alisp
 {
 
 
-
 ALObjectPtr Fset_timeout(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
     auto time = eval->eval(obj->i(1));
+    auto fun  = eval->eval(obj->i(0));
     AL_CHECK(assert_int(time));
-    
-    async::dispatch<set_timeout>(eval->async(), static_cast<size_t>(time->to_int()), eval->eval(obj->i(0)));
+    AL_CHECK(assert_function(fun));
+
+    async::dispatch<set_timeout>(eval->async(), static_cast<size_t>(time->to_int()), fun);
 
     return Qt;
-    
 }
 
 
-
-}
+}  // namespace alisp
