@@ -18,6 +18,7 @@
 #include "alisp/alisp/alisp_asyncs.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_factory.hpp"
+#include "alisp/utility/macros.hpp"
 
 #include <chrono>
 
@@ -29,17 +30,31 @@ namespace async
 {
 
 
-AsyncS::AsyncS(eval::Evaluator *t_eval) : m_eval(t_eval)
+AsyncS::AsyncS(eval::Evaluator *t_eval, bool defer_init) : m_eval(t_eval), m_flags(0)
 {
-    m_running = 1;
+    AL_BIT_OFF(m_flags, INIT_FLAG);
+
+    if (!defer_init)
+    {
+        init();
+    }
+}
+
+void AsyncS::init()
+{
+
+    AL_BIT_ON(m_flags, RUNNING_FLAG);
+    AL_BIT_ON(m_flags, INIT_FLAG);
 
 #ifndef MULTI_THREAD_EVENT_LOOP
     m_event_loop = std::thread(&AsyncS::event_loop, this);
 
 #else
+    std::thread pool[POOL_SIZE];
     for (size_t i = 0; i < POOL_SIZE; ++i)
     {
         pool[i] = std::thread(&AsyncS::event_loop_thread, this);
+        pool[i].detach();
     }
 
 #endif
@@ -52,11 +67,11 @@ void AsyncS::event_loop()
 
     using namespace std::chrono_literals;
     std::unique_lock<std::mutex> el_lock{ event_loop_mutex, std::defer_lock };
-    while (m_running)
+    while (AL_BIT_CHECK(m_flags, RUNNING_FLAG))
     {
         event_loop_cv.wait(el_lock);
 
-        if (m_running == 0)
+        if (!AL_BIT_CHECK(m_flags, RUNNING_FLAG))
         {
             return;
         }
@@ -71,7 +86,7 @@ void AsyncS::event_loop()
 
         if (m_callback_queue.empty() and m_event_queue.empty() and m_asyncs == 0 and !m_eval->is_interactive())
         {
-            m_running = 0;
+            AL_BIT_OFF(m_flags, RUNNING_FLAG);
             m_eval->reset_async_flag();
             m_eval->callback_cv.notify_all();
             return;
@@ -86,11 +101,11 @@ void AsyncS::event_loop_thread()
     using namespace std::chrono_literals;
     std::unique_lock<std::mutex> th_lock(pool_mutex);
 
-    while (m_running == 1)
+    while (AL_BIT_CHECK(m_flags, RUNNING_FLAG))
     {
         pool_cv.wait(th_lock);
 
-        if (m_running == 0)
+        if (!AL_BIT_CHECK(m_flags, RUNNING_FLAG))
         {
             break;
         }
@@ -111,11 +126,11 @@ void AsyncS::event_loop_thread()
         }
 
 
-        if (m_running == 1 and m_callback_queue.empty() and m_event_queue.empty() and m_asyncs == 0
+        if (AL_BIT_CHECK(m_flags, RUNNING_FLAG) and m_callback_queue.empty() and m_event_queue.empty() and m_asyncs == 0
             and !m_eval->is_interactive())
         {
 
-            m_running = 0;
+            AL_BIT_OFF(m_flags, RUNNING_FLAG);
             m_eval->reset_async_flag();
             pool_cv.notify_all();
             m_eval->callback_cv.notify_all();
@@ -141,6 +156,12 @@ void AsyncS::execute_event(detail::Callback call)
 
 void AsyncS::submit_event(detail::Callback t_callback)
 {
+
+    if (!AL_BIT_CHECK(m_flags, INIT_FLAG))
+    {
+        init();
+    }
+
     {
 
 #ifndef MULTI_THREAD_EVENT_LOOP
@@ -218,7 +239,7 @@ AsyncS::callback_type AsyncS::next_callback()
 
 void AsyncS::end()
 {
-    m_running = 0;
+    AL_BIT_OFF(m_flags, RUNNING_FLAG);
     spin_loop();
 
 #ifndef MULTI_THREAD_EVENT_LOOP

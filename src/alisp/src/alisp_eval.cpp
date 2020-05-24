@@ -47,8 +47,8 @@ void Evaluator::end_evaluation()
     --m_eval_depth;
 }
 
-Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser)
-  : env(env_), m_eval_depth(0), m_catching_depth(0), m_parser(t_parser), m_async(this), m_status_flags(0)
+Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser, bool t_defer_el)
+  : env(env_), m_eval_depth(0), m_catching_depth(0), m_parser(t_parser), m_async(this, t_defer_el), m_status_flags(0)
 {
 }
 
@@ -368,47 +368,22 @@ void Evaluator::handle_signal(int t_c)
     {
         AL_DEBUG("Handling a SIGINT"s);
 
-        if ((m_status_flags & ACTIVE_EVALUATION_FLAG) == 0)
+        if (!AL_BIT_CHECK(m_status_flags, ACTIVE_EVALUATION_FLAG))
         {
             throw interrupt_error();
             return;
         }
 
         m_signal = t_c;
-        m_status_flags |= SIGINT_FLAG;
+        AL_BIT_ON(m_status_flags, SIGINT_FLAG);
     }
     else if (t_c == SIGTERM)
     {
         AL_DEBUG("Handling a SIGTERM"s);
 
         m_signal = t_c;
-        m_status_flags |= SIGTERM_FLAG;
+        AL_BIT_ON(m_status_flags, SIGTERM_FLAG);
     }
-}
-
-void Evaluator::set_evaluation_flag()
-{
-    m_status_flags |= ACTIVE_EVALUATION_FLAG;
-}
-
-void Evaluator::reset_evaluation_flag()
-{
-    m_status_flags &= ~ACTIVE_EVALUATION_FLAG;
-}
-
-void Evaluator::set_async_flag()
-{
-    m_status_flags |= ASYNC_FLAG;
-}
-
-void Evaluator::reset_async_flag()
-{
-    m_status_flags &= ~ASYNC_FLAG;
-}
-
-bool Evaluator::is_async_pending()
-{
-    return (m_status_flags & ASYNC_FLAG) > 0;
 }
 
 void Evaluator::dispatch_callbacks()
@@ -423,15 +398,15 @@ void Evaluator::dispatch_callbacks()
 
 void Evaluator::check_status()
 {
-    if ((m_status_flags & SIGTERM_FLAG) > 0)
+    if (AL_BIT_CHECK(m_status_flags, SIGTERM_FLAG))
     {
-        m_status_flags &= ~SIGINT_FLAG;
+        AL_BIT_OFF(m_status_flags, SIGTERM_FLAG);
         throw al_exit(1);
     }
 
-    if ((m_status_flags & SIGINT_FLAG) > 0)
+    if (AL_BIT_CHECK(m_status_flags, SIGINT_FLAG))
     {
-        m_status_flags &= ~SIGINT_FLAG;
+        AL_BIT_OFF(m_status_flags, SIGINT_FLAG);
         throw interrupt_error();
     }
 }

@@ -64,7 +64,7 @@ class Evaluator
     std::mutex callback_m;
     std::condition_variable callback_cv;
 
-    Evaluator(env::Environment &env_, parser::ParserBase *t_parser);
+    Evaluator(env::Environment &env_, parser::ParserBase *t_parser, bool t_defer_el = false);
     ~Evaluator();
 
 
@@ -88,12 +88,13 @@ class Evaluator
     void handle_signal(int t_c);
 
     void check_status();
-    void set_evaluation_flag();
-    void reset_evaluation_flag();
 
-    void set_async_flag();
-    void reset_async_flag();
-    bool is_async_pending();
+    void inline set_evaluation_flag() { m_status_flags |= ACTIVE_EVALUATION_FLAG; }
+    void inline reset_evaluation_flag() { m_status_flags &= ~ACTIVE_EVALUATION_FLAG; }
+
+    void inline set_async_flag() { m_status_flags |= ASYNC_FLAG; }
+    void inline reset_async_flag() { m_status_flags &= ~ASYNC_FLAG; }
+    bool inline is_async_pending() { return (m_status_flags & ASYNC_FLAG) > 0; }
 
     void inline set_interactive_flag() { m_status_flags |= INTERACTIVE_FLAG; }
     void inline reset_interactive_flag() { m_status_flags &= ~INTERACTIVE_FLAG; }

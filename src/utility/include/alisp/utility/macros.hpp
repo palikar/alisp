@@ -53,3 +53,16 @@
 #else
 #define ALISP_HERE(message) (void)0
 #endif
+
+#define AL_BIT(bit) (1 << bit)
+#define AL_BIT_ON(field, bit) \
+    do                        \
+    {                         \
+        field |= bit;         \
+    } while (false)
+#define AL_BIT_OFF(field, bit) \
+    do                         \
+    {                          \
+        field &= ~bit;         \
+    } while (false)
+#define AL_BIT_CHECK(field, bit) ((field & bit) > 0)

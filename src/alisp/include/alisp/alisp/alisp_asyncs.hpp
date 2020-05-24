@@ -79,13 +79,18 @@ class AsyncS
     static constexpr size_t POOL_SIZE = 3;
     using callback_type               = std::pair<ALObjectPtr, ALObjectPtr>;
 
+    static constexpr std::uint32_t RUNNING_FLAG     = 0x0001;
+    static constexpr std::uint32_t EL_SPINNING_FLAG = 0x0002;
+    static constexpr std::uint32_t INIT_FLAG        = 0x0004;
+
+
   private:
     eval::Evaluator *m_eval;
 
     std::queue<detail::Callback> m_event_queue;
     std::queue<callback_type> m_callback_queue;
     std::thread m_event_loop;
-    std::atomic_int m_running;
+    std::atomic_uint32_t m_flags;
 
     std::atomic_int m_asyncs{ 0 };
 
@@ -111,8 +116,10 @@ class AsyncS
 
     void execute_event(detail::Callback call);
 
+    void init();
+
   public:
-    AsyncS(eval::Evaluator *t_eval);
+    AsyncS(eval::Evaluator *t_eval, bool defer_init = false);
 
     void submit_event(detail::Callback t_callback);
 
@@ -125,11 +132,14 @@ class AsyncS
     bool has_callback();
 
     callback_type next_callback();
+
+    inline std::uint32_t status_flags() { return m_flags; }
 };
 
 
 template<typename T, typename... Args> auto dispatch(AsyncS &async, Args &&... args)
 {
+
     if constexpr (T::managed)
     {
         T event_object{ std::forward<decltype(args)>(args)... };
