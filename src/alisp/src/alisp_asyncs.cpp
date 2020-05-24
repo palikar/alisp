@@ -161,26 +161,35 @@ void AsyncS::submit_event(detail::Callback t_callback)
 void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args)
 {
 
-    std::lock_guard<std::mutex>(m_eval->callback_m);
-    if (args == nullptr)
+    if (m_eval->is_interactive())
     {
-        m_eval->handle_lambda(function, make_list());
+
+        std::lock_guard<std::mutex>(m_eval->callback_m);
+        if (args == nullptr)
+        {
+            m_eval->handle_lambda(function, make_list());
+        }
+        else
+        {
+            m_eval->handle_lambda(function, args);
+        }
     }
     else
     {
-        m_eval->handle_lambda(function, args);
+
+        {
+            std::lock_guard<std::mutex> guard(callback_queue_mutex);
+            if (args == nullptr)
+            {
+                m_callback_queue.push({ function, make_list() });
+            }
+            else
+            {
+                m_callback_queue.push({ function, args });
+            }
+        }
+        m_eval->callback_cv.notify_all();
     }
-
-    // {
-    //     std::lock_guard<std::mutex> guard(callback_queue_mutex);
-    //     if (args == nullptr) {
-    //         m_callback_queue.push({function, make_list()});
-    //     }else{
-    //         m_callback_queue.push({function, args});
-    //     }
-    // }
-
-    // m_eval->callback_cv.notify_all();
 }
 
 void AsyncS::spin_loop()

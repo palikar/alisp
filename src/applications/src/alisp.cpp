@@ -1,5 +1,5 @@
 /*   Alisp - the alisp interpreted language
-    Copyright (C) 2020 Stanislav Arnaudov
+     Copyright (C) 2020 Stanislav Arnaudov
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -247,6 +247,12 @@ int main(int argc, char *argv[])
     sigaction(SIGTERM, &sa, NULL);
 
 
+    if (opts.interactive)
+    {
+        alisp_engine.interactive();
+    }
+
+
     if (!opts.input.empty())
     {
         auto file_path = std::filesystem::path{ opts.input };
@@ -270,6 +276,7 @@ int main(int argc, char *argv[])
         {
             return val;
         }
+
         if (opts.interactive)
         {
             return interactive(alisp_engine);
@@ -285,10 +292,12 @@ int main(int argc, char *argv[])
         {
             return val;
         }
+
         if (opts.interactive)
         {
             return interactive(alisp_engine);
         }
+
         return val;
     }
 
