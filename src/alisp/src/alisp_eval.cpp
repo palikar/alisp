@@ -50,6 +50,8 @@ void Evaluator::end_evaluation()
 Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser, bool t_defer_el)
   : env(env_), m_eval_depth(0), m_catching_depth(0), m_parser(t_parser), m_async(this, t_defer_el), m_status_flags(0)
 {
+
+    m_lock = std::unique_lock<std::mutex>(callback_m, std::defer_lock);
 }
 
 Evaluator::~Evaluator()
@@ -416,6 +418,16 @@ void Evaluator::set_current_file(std::string t_tile)
     m_current_file = std::move(t_tile);
 }
 
+void Evaluator::lock_evaluation()
+{
+    m_lock.lock();
+}
+
+void Evaluator::unlock_evaluation()
+{
+    m_lock.unlock();
+}
+
 const std::string &Evaluator::get_current_file()
 {
     return m_current_file;
@@ -445,6 +457,16 @@ detail::CatchTrack::CatchTrack(Evaluator &t_eval) : m_eval(t_eval)
 detail::CatchTrack::~CatchTrack()
 {
     --m_eval.m_catching_depth;
+}
+
+detail::EvaluationLock::EvaluationLock(Evaluator &t_eval) : m_eval(t_eval)
+{
+    t_eval.lock_evaluation();
+}
+
+detail::EvaluationLock::~EvaluationLock()
+{
+    m_eval.unlock_evaluation();
 }
 
 }  // namespace eval

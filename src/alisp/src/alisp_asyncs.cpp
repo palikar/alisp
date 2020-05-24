@@ -185,7 +185,8 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args)
     if (m_eval->is_interactive())
     {
 
-        std::lock_guard<std::mutex>(m_eval->callback_m);
+        // std::lock_guard<std::mutex>(m_eval->callback_m);
+        eval::detail::EvaluationLock lock{ *m_eval };
         if (args == nullptr)
         {
             m_eval->handle_lambda(function, make_list());

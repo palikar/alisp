@@ -62,6 +62,7 @@ class Evaluator
 
   public:
     std::mutex callback_m;
+    std::unique_lock<std::mutex> m_lock;
     std::condition_variable callback_cv;
 
     Evaluator(env::Environment &env_, parser::ParserBase *t_parser, bool t_defer_el = false);
@@ -88,6 +89,11 @@ class Evaluator
     void handle_signal(int t_c);
 
     void check_status();
+
+    void lock_evaluation();
+    void unlock_evaluation();
+
+    inline std::unique_lock<std::mutex> &lock() { return m_lock; }
 
     void inline set_evaluation_flag() { m_status_flags |= ACTIVE_EVALUATION_FLAG; }
     void inline reset_evaluation_flag() { m_status_flags &= ~ACTIVE_EVALUATION_FLAG; }
@@ -136,6 +142,18 @@ class CatchTrack
     ~CatchTrack();
 
     ALISP_RAII_OBJECT(CatchTrack);
+
+  private:
+    Evaluator &m_eval;
+};
+
+class EvaluationLock
+{
+  public:
+    explicit EvaluationLock(Evaluator &t_eval);
+    ~EvaluationLock();
+
+    ALISP_RAII_OBJECT(EvaluationLock);
 
   private:
     Evaluator &m_eval;

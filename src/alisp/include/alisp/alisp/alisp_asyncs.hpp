@@ -44,7 +44,16 @@ class Evaluator;
 namespace async
 {
 
+
+struct Future
+{
+    ALObjectPtr value;
+    ALObjectPtr resolved;
+    ALObjectPtr res_id;
+};
+
 class AsyncS;
+
 namespace detail
 {
 
@@ -64,6 +73,8 @@ template<class T> struct WrappingCallback : AbstractCallback
 struct Callback
 {
     std::unique_ptr<AbstractCallback> ptr_;
+
+    Future *future;
 
     template<class T> Callback(T t) { ptr_ = std::make_unique<WrappingCallback<T>>(std::move(t)); }
 
@@ -144,6 +155,8 @@ template<typename T, typename... Args> auto dispatch(AsyncS &async, Args &&... a
     {
         T event_object{ std::forward<decltype(args)>(args)... };
         async.submit_event(detail::Callback{ std::move(event_object) });
+
+        return event_object.future();
     }
     else
     {

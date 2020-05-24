@@ -111,7 +111,7 @@ std::pair<bool, int> LanguageEngine::eval_statement(std::string &command, bool e
     {
         AL_DEBUG("Evaluating statement: "s += command);
 
-        std::lock_guard<std::mutex>(m_evaluator.callback_m);
+        eval::detail::EvaluationLock lock{ m_evaluator };
         do_eval(command, "__EVAL__", true);
 
         return { true, 0 };
@@ -159,16 +159,15 @@ std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_pa
     try
     {
         {
-            std::lock_guard<std::mutex>(m_evaluator.callback_m);
+            eval::detail::EvaluationLock lock{ m_evaluator };
             auto file_content = utility::load_file(t_path);
             do_eval(file_content, t_path);
         }
 
-
         while (m_evaluator.is_async_pending())
         {
-            std::unique_lock<std::mutex> lock(m_evaluator.callback_m);
-            m_evaluator.callback_cv.wait(lock);
+            // std::unique_lock<std::mutex> lock(m_evaluator.callback_m);
+            m_evaluator.callback_cv.wait(m_evaluator.lock());
 
             if (!m_evaluator.is_interactive())
             {

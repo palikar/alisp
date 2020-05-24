@@ -43,4 +43,21 @@ ALObjectPtr Fset_timeout(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
 }
 
 
+ALObjectPtr Fawait(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(obj));
+    auto future = eval->eval(obj->i(1));
+    AL_CHECK(assert_int(future));
+
+    // eval->unlock_evaluation();
+    eval->callback_cv.wait(eval->lock(), [&] {
+        // check if future is resoveld
+        // return eval->async().future(future).resolved == Qt;
+    });
+    // return eval->async().future(future).value;
+
+    return Qt;
+}
+
+
 }  // namespace alisp

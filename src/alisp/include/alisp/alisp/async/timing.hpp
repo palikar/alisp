@@ -20,7 +20,7 @@
 #include "alisp/config.hpp"
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_asyncs.hpp"
-#include "alisp/alisp/declarations/language_constructs.hpp"
+#include "alisp/alisp/declarations/constants.hpp"
 
 
 namespace alisp
@@ -29,12 +29,14 @@ namespace alisp
 
 struct set_timeout
 {
-    static constexpr bool managed = true;
+    static constexpr bool managed    = true;
+    static constexpr bool has_future = false;
     size_t milliseconds;
     ALObjectPtr callback;
 
     set_timeout(size_t t_miliseconds, ALObjectPtr t_callback)
       : milliseconds(t_miliseconds), callback(std::move(t_callback))
+
     {
     }
 
@@ -42,6 +44,26 @@ struct set_timeout
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
         async->submit_callback(callback);
+        return Qt;
+    }
+};
+
+struct future_int
+{
+    static constexpr bool managed    = true;
+    static constexpr bool has_future = true;
+
+    int value;
+    async::Future future;
+
+    future_int(int t_value) : value(t_value), future{ Qnil, Qnil, Qt } {}
+
+
+    ALObjectPtr operator()(async::AsyncS *async) const
+    {
+
+        // async->submit_callback();
+
         return Qt;
     }
 };
