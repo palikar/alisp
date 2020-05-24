@@ -98,7 +98,7 @@ class LanguageEngine
                    std::vector<std::string> t_warnings      = {})
       : m_environment()
       , m_parser(std::make_unique<parser::ALParser<env::Environment>>(m_environment))
-      , m_evaluator(m_environment, m_parser.get())
+      , m_evaluator(m_environment, m_parser.get(), utility::env_bool(ENV_VAR_DEFER_EL))
       , m_settings(std::move(t_setting))
       , m_argv(std::move(t_cla))
       , m_imports(std::move(t_extra_imports))

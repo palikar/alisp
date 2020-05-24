@@ -71,6 +71,8 @@ inline constexpr auto ENV_VAR_MODPATHS = "ALPATH";
 inline constexpr auto ENV_VAR_RC = "ALISPRC";
 inline constexpr auto ENV_VAR_NODEBUG = "ALNODEBUG";
 inline constexpr auto ENV_VAR_OPTIMIZE = "ALOPTIMIZE";
+inline constexpr auto ENV_VAR_DEFER_EL = "ALDEFEREL";
+
 inline constexpr auto PROMPT_HISTORY_FILE = ".alisp_history";
 
 #ifdef MULTI_THREAD_EVENT_LOOP
@@ -88,6 +90,13 @@ on startup and not ~/.alisprc .
 
         ALNODEBUG: If set, the interpreter will be staxrted without
 debug mode and all of the assertions will be disabled.
+
+        ALDEFEREL: If set, the threads of the internal event loop will
+not be started on start up of the interpreter but deferred till the
+first function call that needs the event loop. This can lower the
+startup time and increase the time cost of the first functin that
+needs the event loop.
+
 )";
 
 inline constexpr auto AL_LICENSE = "GPLv2";
