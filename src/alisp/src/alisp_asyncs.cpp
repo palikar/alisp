@@ -46,8 +46,7 @@ void AsyncS::init()
 {
 
     AL_BIT_ON(m_flags, RUNNING_FLAG);
-    AL_BIT_ON(m_flags, INIT_FLAG);
-
+    
 #ifndef MULTI_THREAD_EVENT_LOOP
     m_event_loop = std::thread(&AsyncS::event_loop, this);
 
@@ -56,10 +55,15 @@ void AsyncS::init()
     for (size_t i = 0; i < POOL_SIZE; ++i)
     {
         pool[i] = std::thread(&AsyncS::event_loop_thread, this);
-        pool[i].detach();
+        // pool[i].detach();
     }
-
 #endif
+
+    while(!AL_BIT_CHECK(m_flags, INIT_FLAG)){
+        
+    }
+    
+    
 }
 
 #ifndef MULTI_THREAD_EVENT_LOOP
@@ -69,8 +73,10 @@ void AsyncS::event_loop()
 
     using namespace std::chrono_literals;
     std::unique_lock<std::mutex> el_lock{ event_loop_mutex, std::defer_lock };
+    AL_BIT_ON(m_flags, INIT_FLAG);
     while (AL_BIT_CHECK(m_flags, RUNNING_FLAG))
     {
+        
         event_loop_cv.wait(el_lock);
 
         if (!AL_BIT_CHECK(m_flags, RUNNING_FLAG))
@@ -168,6 +174,7 @@ void AsyncS::submit_event(event_type t_callback)
         init();
     }
 
+
     {
 
 #ifndef MULTI_THREAD_EVENT_LOOP
@@ -188,6 +195,11 @@ void AsyncS::submit_event(event_type t_callback)
 void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::function<void(ALObjectPtr)> internal)
 {
 
+    if (!AL_BIT_CHECK(m_flags, INIT_FLAG))
+    {
+        init();
+    }
+    
     if (m_eval->is_interactive())
     {
 
@@ -232,6 +244,12 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::functi
 
 uint32_t AsyncS::new_future()
 {
+    
+    if (!AL_BIT_CHECK(m_flags, INIT_FLAG))
+    {
+        init();
+    }
+    
     std::lock_guard<std::mutex> lock(future_mutex);
     const auto id = futures.emplace_resource(Qnil, Qnil, Qnil, Qnil, Qnil)->id;
 

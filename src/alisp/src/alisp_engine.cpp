@@ -167,6 +167,7 @@ std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_pa
         while (m_evaluator.is_async_pending())
         {
             // std::unique_lock<std::mutex> lock(m_evaluator.callback_m);
+            m_evaluator.async().spin_loop();
             m_evaluator.callback_cv.wait(m_evaluator.lock());
 
             if (!m_evaluator.is_interactive())
