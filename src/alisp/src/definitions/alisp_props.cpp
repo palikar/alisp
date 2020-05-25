@@ -92,4 +92,20 @@ ALObjectPtr Fprop_list(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
     return make_object(props);
 }
 
+
+ALObjectPtr Fprop_remove(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<2>(obj));
+
+    auto target = eval->eval(obj->i(0));
+
+    auto prop = eval->eval(obj->i(1));
+    AL_CHECK(assert_string(prop));
+    
+    const auto &prop_name = prop->to_string();
+    const auto removed = target->props().erase(prop_name);
+
+    return removed > 0 ? Qt : Qnil;
+}
+
 }  // namespace alisp

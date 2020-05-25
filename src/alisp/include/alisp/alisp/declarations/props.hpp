@@ -39,6 +39,12 @@ DEFUN(prop_get, "prop-get", R"((prop-get SYM PROPERTY)
 Return the property with name PROPERTY of SYM.
 )");
 
+
+DEFUN(prop_remove, "prop-remove", R"((prop-remove SYM PROPERTY)
+
+Remove `PROPERTY` from the list of properties of `SYM`.
+)");
+
 DEFUN(prop_set, "prop-set", R"((prop-set SYM PROPERTY VALUE)
 
 Set the property with name PROPERTY of SYM to VALUE.
@@ -58,8 +64,8 @@ Return a list with all of the properties of SYM.
 DEFVAR(Qprops_all,
        Vprops_all,
        "--props-all--",
-       make_sym_list({ "prop-get", "prop-set", "prop-list" }),
-       R"(Functions for accessing the properties of objects.)");
+make_sym_list({ "prop-get", "prop-set", "prop-remove", "prop-list"}),
+R"(Functions for accessing the properties of objects.)");
 
 
 }  // namespace alisp
