@@ -101,9 +101,10 @@ struct async_action
     {
 
         async->submit_callback(g_action, nullptr, [callback = std::move(g_callback), async=async, future=g_future](auto value){
-
+            
             if(future != 0)
             {
+                        
                 async->submit_future(future, value);
             }
             
@@ -113,6 +114,8 @@ struct async_action
             }
             
         });
+
+        
         
         return Qt;
     }

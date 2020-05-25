@@ -423,12 +423,14 @@ void Evaluator::set_current_file(std::string t_tile)
 
 void Evaluator::lock_evaluation()
 {
-    m_lock.lock();
+    // m_lock.lock();
+    callback_m.lock();
 }
 
 void Evaluator::unlock_evaluation()
 {
-    m_lock.unlock();
+    // m_lock.unlock();
+    callback_m.unlock();
 }
 
 const std::string &Evaluator::get_current_file()

@@ -22,6 +22,7 @@
 #include "alisp/alisp/alisp_assertions.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_env.hpp"
+#include "alisp/alisp/alisp_asyncs.hpp"
 
 #include "alisp/alisp/async/timing.hpp"
 
@@ -50,15 +51,19 @@ ALObjectPtr Ffuture_int(ALObjectPtr obj, env::Environment *, eval::Evaluator *ev
     return async::dispatch<future_int>(eval->async(), 32);
 }
 
-
 ALObjectPtr Ffuture_await(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto future = eval->eval(obj->i(0));
     AL_CHECK(assert_int(future));
 
-    eval->futures_cv.wait(eval->lock(),
-                          [&] { return is_truthy(eval->async().future(object_to_resource(future)).resolved); });
+
+    {
+        async::Await await{eval->async()};
+        
+        eval->futures_cv.wait(eval->lock(),
+        [&] { return is_truthy(eval->async().future(object_to_resource(future)).resolved); });        
+    }
 
     return eval->async().future(object_to_resource(future)).value;
 }
@@ -71,7 +76,6 @@ ALObjectPtr Ffuture_resolved(ALObjectPtr obj, env::Environment *, eval::Evaluato
 
     return eval->async().future(object_to_resource(future)).resolved;
 }
-
 
 ALObjectPtr Ffuture_then(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
@@ -115,13 +119,18 @@ ALObjectPtr Ffuture_then(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
 
 ALObjectPtr Fasync_start(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
-    AL_CHECK(assert_size<2>(obj));
+    AL_CHECK(assert_min_size<1>(obj));
+    AL_CHECK(assert_max_size<2>(obj));
 
     auto action = eval->eval(obj->i(0));
-    auto callback = eval->eval(obj->i(1));
-    
     AL_CHECK(assert_function(action));
-    AL_CHECK(assert_function(callback));
+    
+    auto callback = Qnil;
+    if (std::size(*obj) > 1)
+    {
+        callback = eval->eval(obj->i(1));
+        AL_CHECK(assert_function(callback));
+    }
 
     return async::dispatch<async_action>(eval->async(), std::move(action), std::move(callback));
 }

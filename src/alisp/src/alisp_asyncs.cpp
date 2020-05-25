@@ -46,7 +46,7 @@ void AsyncS::init()
 {
 
     AL_BIT_ON(m_flags, RUNNING_FLAG);
-    
+
 #ifndef MULTI_THREAD_EVENT_LOOP
     m_event_loop = std::thread(&AsyncS::event_loop, this);
 
@@ -60,10 +60,10 @@ void AsyncS::init()
 #endif
 
     while(!AL_BIT_CHECK(m_flags, INIT_FLAG)){
-        
+
     }
-    
-    
+
+
 }
 
 #ifndef MULTI_THREAD_EVENT_LOOP
@@ -76,7 +76,7 @@ void AsyncS::event_loop()
     AL_BIT_ON(m_flags, INIT_FLAG);
     while (AL_BIT_CHECK(m_flags, RUNNING_FLAG))
     {
-        
+
         event_loop_cv.wait(el_lock);
 
         if (!AL_BIT_CHECK(m_flags, RUNNING_FLAG))
@@ -91,18 +91,30 @@ void AsyncS::event_loop()
             m_event_queue.pop();
         }
 
+        if(!m_callback_queue.empty() and AL_BIT_CHECK(m_flags, AWAIT_FLAG))
+        {
+            execute_callback(std::move(m_callback_queue.front()));
+            m_callback_queue.pop();
+            continue;
+        }
+
         if (!m_callback_queue.empty())
         {
             m_eval->callback_cv.notify_all();
+            continue;
         }
 
-        if (m_callback_queue.empty() and m_event_queue.empty() and m_asyncs == 0 and !m_eval->is_interactive())
+        if (m_callback_queue.empty() and m_event_queue.empty()
+        and m_asyncs == 0 and !m_eval->is_interactive() and !AL_BIT_CHECK(m_flags, AWAIT_FLAG))
         {
             AL_BIT_OFF(m_flags, RUNNING_FLAG);
             m_eval->reset_async_flag();
             m_eval->callback_cv.notify_all();
             return;
         }
+
+
+
     }
 }
 
@@ -166,6 +178,34 @@ void AsyncS::execute_event(event_type call)
     tr.detach();
 }
 
+void AsyncS::execute_callback(callback_type call)
+{
+    auto& function = call.function;
+    auto& args = call.arguments;
+    auto& internal = call.internal;
+
+    auto res = [&] {
+        eval::detail::EvaluationLock lock{ *m_eval };
+        if (args == nullptr)
+        {
+            return m_eval->handle_lambda(function, make_list());
+        }
+        else
+        {
+            return m_eval->handle_lambda(function, args);
+        }
+
+    }();
+
+    if(internal)
+    {
+        internal(res);
+    }
+
+    spin_loop();
+
+}
+
 void AsyncS::submit_event(event_type t_callback)
 {
 
@@ -199,34 +239,13 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::functi
     {
         init();
     }
-    
-    if (m_eval->is_interactive())
+
+    if (m_eval->is_interactive() or AL_BIT_CHECK(m_flags, AWAIT_FLAG))
     {
-
-        // std::lock_guard<std::mutex>(m_eval->callback_m);
-        eval::detail::EvaluationLock lock{ *m_eval };
-        auto res = [&]{
-            
-            if (args == nullptr)
-            {
-                return m_eval->handle_lambda(function, make_list());
-            }
-            else
-            {
-                return m_eval->handle_lambda(function, args);
-            }
-            
-        }();
-
-        if(internal)
-        {
-            internal(res);
-        }
-        
+        execute_callback({function, args, internal});
     }
     else
     {
-
         {
             std::lock_guard<std::mutex> guard(callback_queue_mutex);
             if (args == nullptr)
@@ -238,18 +257,22 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::functi
                 m_callback_queue.push({ function, args });
             }
         }
+
         m_eval->callback_cv.notify_all();
+        spin_loop();
     }
+
+
 }
 
 uint32_t AsyncS::new_future()
 {
-    
+
     if (!AL_BIT_CHECK(m_flags, INIT_FLAG))
     {
         init();
     }
-    
+
     std::lock_guard<std::mutex> lock(future_mutex);
     const auto id = futures.emplace_resource(Qnil, Qnil, Qnil, Qnil, Qnil)->id;
 
@@ -341,6 +364,17 @@ void AsyncS::end()
     }
 
 #endif
+}
+
+Await::Await(AsyncS& t_async) : m_async(t_async)
+{
+    m_async.start_await();
+    m_async.spin_loop();
+}
+
+Await::~Await()
+{
+    m_async.end_await();
 }
 
 }  // namespace async

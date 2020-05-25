@@ -110,6 +110,7 @@ class AsyncS
     static constexpr std::uint32_t RUNNING_FLAG     = 0x0001;
     static constexpr std::uint32_t EL_SPINNING_FLAG = 0x0002;
     static constexpr std::uint32_t INIT_FLAG        = 0x0004;
+    static constexpr std::uint32_t AWAIT_FLAG       = 0x0008;
 
     inline static management::Registry<Future, 0x05> futures{};
 
@@ -147,6 +148,8 @@ class AsyncS
 
     void execute_event(event_type call);
 
+    void execute_callback(callback_type call);
+
     void init();
 
   public:
@@ -171,8 +174,12 @@ class AsyncS
     bool has_callback();
 
     callback_type next_callback();
-
+    
     inline std::uint32_t status_flags() { return m_flags; }
+
+    inline void start_await() { AL_BIT_ON(m_flags, AWAIT_FLAG); }
+    
+    inline void end_await() { AL_BIT_OFF(m_flags, AWAIT_FLAG); }
 };
 
 
@@ -202,6 +209,19 @@ template<typename T, typename... Args> auto dispatch(AsyncS &async, Args &&... a
         return event_object(&async);
     }
 }
+
+class Await
+{
+  public:
+    explicit Await(AsyncS& t_async);
+    ~Await();
+
+    ALISP_RAII_OBJECT(Await);
+
+  private:
+    AsyncS& m_async;
+};
+
 
 }  // namespace async
 
