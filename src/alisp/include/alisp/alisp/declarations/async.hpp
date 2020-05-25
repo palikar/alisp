@@ -42,6 +42,9 @@ Block the main thread till `FUTURE` is complete.
 )");
 
 DEFUN(future_then, "future-then", R"((future-then FUTURE SUCCESS REJECT)
+)");
+
+DEFUN(async_start, "async-start", R"((async-start)
 
 )");
 

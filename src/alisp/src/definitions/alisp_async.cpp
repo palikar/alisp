@@ -113,14 +113,18 @@ ALObjectPtr Ffuture_then(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
     return Qt;
 }
 
-// ALObjectPtr Ffuture_poll(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
-// {
-//     AL_CHECK(assert_size<1>(obj));
-//     auto future = eval->eval(obj->i(0));
-//     AL_CHECK(assert_int(future));
+ALObjectPtr Fasync_start(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<2>(obj));
 
-//     return eval->async().future(object_to_resource(future)).resolved;
-// }
+    auto action = eval->eval(obj->i(0));
+    auto callback = eval->eval(obj->i(1));
+    
+    AL_CHECK(assert_function(action));
+    AL_CHECK(assert_function(callback));
+
+    return async::dispatch<async_action>(eval->async(), std::move(action), std::move(callback));
+}
 
 
 }  // namespace alisp

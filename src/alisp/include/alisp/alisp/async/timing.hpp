@@ -72,5 +72,51 @@ struct future_int
     }
 };
 
+struct async_action
+{
+
+    static constexpr bool managed    = true;
+    static constexpr bool has_future = true;
+    
+    ALObjectPtr g_action;
+    ALObjectPtr g_callback;
+    uint32_t g_future{0};
+        
+    async_action(ALObjectPtr action, ALObjectPtr callback) :
+        g_action(std::move(action)), g_callback(std::move(callback))
+    {}
+
+    ALObjectPtr future(async::AsyncS *async)
+    {
+        if (pfunction(g_callback))
+        {
+            return Qt;
+        }
+        
+        g_future = async->new_future();
+        return resource_to_object(g_future);
+    }
+
+    ALObjectPtr operator()(async::AsyncS *async) const
+    {
+
+        async->submit_callback(g_action, nullptr, [callback = std::move(g_callback), async=async, future=g_future](auto value){
+
+            if(future != 0)
+            {
+                async->submit_future(future, value);
+            }
+            
+            if (pfunction(callback))
+            {
+                async->submit_callback(callback, make_list(value));
+            }
+            
+        });
+        
+        return Qt;
+    }
+};
+
 
 }  // namespace alisp

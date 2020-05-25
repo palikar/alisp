@@ -79,17 +79,24 @@ template<class T> struct WrappingCallback : AbstractCallback
     ALObjectPtr call(AsyncS *async) const override { return cb_(async); }
 };
 
-struct Callback
+struct EventObject
 {
     std::unique_ptr<AbstractCallback> ptr_;
 
     Future *future;
 
-    template<class T> Callback(T t) { ptr_ = std::make_unique<WrappingCallback<T>>(std::move(t)); }
+    template<class T> EventObject(T t) { ptr_ = std::make_unique<WrappingCallback<T>>(std::move(t)); }
 
     ALObjectPtr operator()(AsyncS *async) const { return ptr_->call(async); }
 };
 
+struct CallbackObject
+{
+    ALObjectPtr function;
+    ALObjectPtr arguments;
+
+    std::function<void(ALObjectPtr)> internal{};
+};
 
 }  // namespace detail
 
@@ -97,7 +104,8 @@ class AsyncS
 {
   public:
     static constexpr size_t POOL_SIZE = 3;
-    using callback_type               = std::pair<ALObjectPtr, ALObjectPtr>;
+    using callback_type               = detail::CallbackObject;
+    using event_type                  = detail::EventObject;
 
     static constexpr std::uint32_t RUNNING_FLAG     = 0x0001;
     static constexpr std::uint32_t EL_SPINNING_FLAG = 0x0002;
@@ -108,7 +116,7 @@ class AsyncS
   private:
     eval::Evaluator *m_eval;
 
-    std::queue<detail::Callback> m_event_queue;
+    std::queue<event_type> m_event_queue;
     std::queue<callback_type> m_callback_queue;
     std::thread m_event_loop;
     std::atomic_uint32_t m_flags;
@@ -137,16 +145,16 @@ class AsyncS
     void event_loop_thread();
 #endif
 
-    void execute_event(detail::Callback call);
+    void execute_event(event_type call);
 
     void init();
 
   public:
     AsyncS(eval::Evaluator *t_eval, bool defer_init = false);
 
-    void submit_event(detail::Callback t_callback);
+    void submit_event(event_type t_event);
 
-    void submit_callback(ALObjectPtr function, ALObjectPtr args = nullptr);
+    void submit_callback(ALObjectPtr function, ALObjectPtr args = nullptr, std::function<void(ALObjectPtr)> internal = {});
 
     uint32_t new_future();
 
@@ -179,12 +187,12 @@ template<typename T, typename... Args> auto dispatch(AsyncS &async, Args &&... a
         if constexpr (T::has_future)
         {
             auto fut = event_object.future(&async);
-            async.submit_event(detail::Callback{ std::move(event_object) });
+            async.submit_event(detail::EventObject{ std::move(event_object) });
             return fut;
         }
         else
         {
-            async.submit_event(detail::Callback{ std::move(event_object) });
+            async.submit_event(detail::EventObject{ std::move(event_object) });
             return Qt;
         }
     }

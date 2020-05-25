@@ -147,7 +147,7 @@ void AsyncS::event_loop_thread()
 
 #endif
 
-void AsyncS::execute_event(detail::Callback call)
+void AsyncS::execute_event(event_type call)
 {
 
     std::thread tr([&, call = std::move(call)] {
@@ -160,7 +160,7 @@ void AsyncS::execute_event(detail::Callback call)
     tr.detach();
 }
 
-void AsyncS::submit_event(detail::Callback t_callback)
+void AsyncS::submit_event(event_type t_callback)
 {
 
     if (!AL_BIT_CHECK(m_flags, INIT_FLAG))
@@ -185,7 +185,7 @@ void AsyncS::submit_event(detail::Callback t_callback)
     spin_loop();
 }
 
-void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args)
+void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::function<void(ALObjectPtr)> internal)
 {
 
     if (m_eval->is_interactive())
@@ -193,14 +193,24 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args)
 
         // std::lock_guard<std::mutex>(m_eval->callback_m);
         eval::detail::EvaluationLock lock{ *m_eval };
-        if (args == nullptr)
+        auto res = [&]{
+            
+            if (args == nullptr)
+            {
+                return m_eval->handle_lambda(function, make_list());
+            }
+            else
+            {
+                return m_eval->handle_lambda(function, args);
+            }
+            
+        }();
+
+        if(internal)
         {
-            m_eval->handle_lambda(function, make_list());
+            internal(res);
         }
-        else
-        {
-            m_eval->handle_lambda(function, args);
-        }
+        
     }
     else
     {
@@ -209,7 +219,7 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args)
             std::lock_guard<std::mutex> guard(callback_queue_mutex);
             if (args == nullptr)
             {
-                m_callback_queue.push({ function, make_list() });
+                m_callback_queue.push({ function, make_list(), internal });
             }
             else
             {
@@ -286,10 +296,10 @@ bool AsyncS::has_callback()
 AsyncS::callback_type AsyncS::next_callback()
 {
     std::lock_guard<std::mutex> guard(callback_queue_mutex);
-    auto value = m_callback_queue.front();
+    auto callback = std::move(m_callback_queue.front());
     m_callback_queue.pop();
     event_loop_cv.notify_all();
-    return value;
+    return callback;
 }
 
 void AsyncS::end()
