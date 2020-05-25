@@ -21,7 +21,7 @@
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_asyncs.hpp"
 #include "alisp/alisp/declarations/constants.hpp"
-
+#include "alisp/alisp/alisp_object.hpp"
 
 namespace alisp
 {
@@ -53,17 +53,21 @@ struct future_int
     static constexpr bool managed    = true;
     static constexpr bool has_future = true;
 
-    int value;
-    async::Future future;
+    int g_value;
+    uint32_t g_future;
 
-    future_int(int t_value) : value(t_value), future{ Qnil, Qnil, Qt } {}
+    future_int(int t_value) : g_value(t_value), g_future(0) {}
 
+    ALObjectPtr future(async::AsyncS *async)
+    {
+        g_future = async->new_future();
+        return resource_to_object(g_future);
+    }
 
     ALObjectPtr operator()(async::AsyncS *async) const
     {
-
-        // async->submit_callback();
-
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+        async->submit_future(g_future, make_int(g_value));
         return Qt;
     }
 };

@@ -43,21 +43,84 @@ ALObjectPtr Fset_timeout(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
 }
 
 
-ALObjectPtr Fawait(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffuture_int(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<0>(obj));
+
+    return async::dispatch<future_int>(eval->async(), 32);
+}
+
+
+ALObjectPtr Ffuture_await(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto future = eval->eval(obj->i(1));
+    auto future = eval->eval(obj->i(0));
     AL_CHECK(assert_int(future));
 
-    // eval->unlock_evaluation();
-    eval->callback_cv.wait(eval->lock(), [&] {
-        // check if future is resoveld
-        // return eval->async().future(future).resolved == Qt;
-    });
-    // return eval->async().future(future).value;
+    eval->futures_cv.wait(eval->lock(),
+                          [&] { return is_truthy(eval->async().future(object_to_resource(future)).resolved); });
+
+    return eval->async().future(object_to_resource(future)).value;
+}
+
+ALObjectPtr Ffuture_resolved(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(obj));
+    auto future = eval->eval(obj->i(0));
+    AL_CHECK(assert_int(future));
+
+    return eval->async().future(object_to_resource(future)).resolved;
+}
+
+
+ALObjectPtr Ffuture_then(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_min_size<2>(obj));
+    AL_CHECK(assert_max_size<3>(obj));
+
+    auto future           = eval->eval(obj->i(0));
+    auto success_callback = eval->eval(obj->i(1));
+    AL_CHECK(assert_int(future));
+    AL_CHECK(assert_function(success_callback));
+
+    auto reject_callback = Qnil;
+    if (std::size(*obj) > 2)
+    {
+        reject_callback = eval->eval(obj->i(2));
+        AL_CHECK(assert_function(reject_callback));
+    }
+
+    auto &fut = eval->async().future(object_to_resource(future));
+
+    if (is_truthy(fut.resolved))
+    {
+
+        if (is_truthy(fut.success_state))
+        {
+            eval->handle_lambda(fut.success_callback, make_list(fut.value));
+        }
+        else
+        {
+            eval->handle_lambda(fut.reject_callback, make_list(fut.value));
+        }
+    }
+    else
+    {
+        fut.success_callback = success_callback;
+        fut.reject_callback  = reject_callback;
+    }
 
     return Qt;
 }
+
+// ALObjectPtr Ffuture_poll(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+// {
+//     AL_CHECK(assert_size<1>(obj));
+//     auto future = eval->eval(obj->i(0));
+//     AL_CHECK(assert_int(future));
+
+//     return eval->async().future(object_to_resource(future)).resolved;
+// }
 
 
 }  // namespace alisp

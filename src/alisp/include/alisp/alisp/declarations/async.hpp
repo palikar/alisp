@@ -31,5 +31,21 @@ DEFUN(set_timeout, "set-timeout", R"((set-timeout CALLBACK MILLISECONDS)
 Execute `CALLBACK` after `SECONDS`.
 )");
 
+DEFUN(future_int, "future-int", R"((future-int)
 
-}
+Simple future int.
+)");
+
+DEFUN(future_await, "future-await", R"((future-await FUTURE)
+
+Block the main thread till `FUTURE` is complete.
+)");
+
+DEFUN(future_then, "future-then", R"((future-then FUTURE SUCCESS REJECT)
+
+)");
+
+// DEFUN(future_poll, "future-poll", R"((future-poll FUTURE)
+// )");
+
+}  // namespace alisp

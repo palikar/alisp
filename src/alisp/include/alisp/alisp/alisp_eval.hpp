@@ -64,6 +64,7 @@ class Evaluator
     std::mutex callback_m;
     std::unique_lock<std::mutex> m_lock;
     std::condition_variable callback_cv;
+    std::condition_variable futures_cv;
 
     Evaluator(env::Environment &env_, parser::ParserBase *t_parser, bool t_defer_el = false);
     ~Evaluator();

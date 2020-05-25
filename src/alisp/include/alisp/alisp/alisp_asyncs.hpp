@@ -17,7 +17,11 @@
 #pragma once
 
 #include "alisp/config.hpp"
+
 #include "alisp/alisp/alisp_common.hpp"
+#include "alisp/alisp/declarations/constants.hpp"
+
+#include "alisp/management/registry.hpp"
 
 #include <iostream>
 #include <vector>
@@ -49,7 +53,12 @@ struct Future
 {
     ALObjectPtr value;
     ALObjectPtr resolved;
-    ALObjectPtr res_id;
+
+    ALObjectPtr success_state;
+
+    // callbacks
+    ALObjectPtr success_callback;
+    ALObjectPtr reject_callback;
 };
 
 class AsyncS;
@@ -94,6 +103,7 @@ class AsyncS
     static constexpr std::uint32_t EL_SPINNING_FLAG = 0x0002;
     static constexpr std::uint32_t INIT_FLAG        = 0x0004;
 
+    inline static management::Registry<Future, 0x05> futures{};
 
   private:
     eval::Evaluator *m_eval;
@@ -103,9 +113,11 @@ class AsyncS
     std::thread m_event_loop;
     std::atomic_uint32_t m_flags;
 
+
     std::atomic_int m_asyncs{ 0 };
 
     mutable std::mutex callback_queue_mutex;
+    mutable std::mutex future_mutex;
 
 
 #ifndef MULTI_THREAD_EVENT_LOOP
@@ -136,6 +148,14 @@ class AsyncS
 
     void submit_callback(ALObjectPtr function, ALObjectPtr args = nullptr);
 
+    uint32_t new_future();
+
+    void submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good = true);
+
+    inline Future &future(uint32_t t_id) { return futures[t_id]; }
+
+    ALObjectPtr future_resolved(uint32_t t_id);
+
     void spin_loop();
 
     void end();
@@ -154,14 +174,24 @@ template<typename T, typename... Args> auto dispatch(AsyncS &async, Args &&... a
     if constexpr (T::managed)
     {
         T event_object{ std::forward<decltype(args)>(args)... };
-        async.submit_event(detail::Callback{ std::move(event_object) });
 
-        return event_object.future();
+
+        if constexpr (T::has_future)
+        {
+            auto fut = event_object.future(&async);
+            async.submit_event(detail::Callback{ std::move(event_object) });
+            return fut;
+        }
+        else
+        {
+            async.submit_event(detail::Callback{ std::move(event_object) });
+            return Qt;
+        }
     }
     else
     {
         T event_object{ std::forward<decltype(args)>(args)... };
-        return event_object(async);
+        return event_object(&async);
     }
 }
 

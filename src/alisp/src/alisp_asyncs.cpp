@@ -19,6 +19,8 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_factory.hpp"
 #include "alisp/utility/macros.hpp"
+#include "alisp/alisp/alisp_object.hpp"
+#include "alisp/alisp/declarations/constants.hpp"
 
 #include <chrono>
 
@@ -83,6 +85,10 @@ void AsyncS::event_loop()
             m_event_queue.pop();
         }
 
+        if (!m_callback_queue.empty())
+        {
+            m_eval->callback_cv.notify_all();
+        }
 
         if (m_callback_queue.empty() and m_event_queue.empty() and m_asyncs == 0 and !m_eval->is_interactive())
         {
@@ -212,6 +218,54 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args)
         }
         m_eval->callback_cv.notify_all();
     }
+}
+
+uint32_t AsyncS::new_future()
+{
+    std::lock_guard<std::mutex> lock(future_mutex);
+    const auto id = futures.emplace_resource(Qnil, Qnil, Qnil, Qnil, Qnil)->id;
+
+    return id;
+}
+
+void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
+{
+    std::lock_guard<std::mutex> lock(future_mutex);
+
+    if (!futures.belong(t_id))
+    {
+        return;
+    }
+
+    auto &fut = futures[t_id];
+
+    fut.value         = t_value;
+    fut.success_state = t_good ? Qt : Qnil;
+    fut.resolved      = Qt;
+
+    m_eval->futures_cv.notify_all();
+
+    if (pfunction(fut.success_callback))
+    {
+        submit_callback(fut.success_callback, make_list(t_value));
+    }
+
+    if (pfunction(fut.reject_callback))
+    {
+        submit_callback(fut.reject_callback, make_list(t_value));
+    }
+}
+
+ALObjectPtr AsyncS::future_resolved(uint32_t t_id)
+{
+    std::lock_guard<std::mutex> lock(future_mutex);
+
+    if (!futures.belong(t_id))
+    {
+        return Qnil;
+    }
+
+    return futures[t_id].resolved;
 }
 
 void AsyncS::spin_loop()
