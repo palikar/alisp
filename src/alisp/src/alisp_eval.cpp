@@ -47,9 +47,16 @@ void Evaluator::end_evaluation()
     --m_eval_depth;
 }
 
-Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser)
-  : env(env_), m_eval_depth(0), m_catching_depth(0), m_parser(t_parser), m_status_flags(0)
+Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser, bool t_defer_el)
+  : env(env_), m_eval_depth(0), m_catching_depth(0), m_parser(t_parser), m_async(this, t_defer_el), m_status_flags(0)
 {
+
+    m_lock = std::unique_lock<std::mutex>(callback_m, std::defer_lock);
+}
+
+Evaluator::~Evaluator()
+{
+    m_async.end();
 }
 
 void Evaluator::put_argument(ALObjectPtr param, ALObjectPtr arg)
@@ -363,45 +370,45 @@ void Evaluator::handle_signal(int t_c)
     {
         AL_DEBUG("Handling a SIGINT"s);
 
-        if ((m_status_flags & ACTIVE_EVALUATION_FLAG) == 0)
+        if (!AL_BIT_CHECK(m_status_flags, ACTIVE_EVALUATION_FLAG))
         {
             throw interrupt_error();
             return;
         }
 
         m_signal = t_c;
-        m_status_flags |= SIGINT_FLAG;
+        AL_BIT_ON(m_status_flags, SIGINT_FLAG);
     }
     else if (t_c == SIGTERM)
     {
         AL_DEBUG("Handling a SIGTERM"s);
 
         m_signal = t_c;
-        m_status_flags |= SIGTERM_FLAG;
+        AL_BIT_ON(m_status_flags, SIGTERM_FLAG);
     }
 }
 
-void Evaluator::set_evaluation_flag()
+void Evaluator::dispatch_callbacks()
 {
-    m_status_flags |= ACTIVE_EVALUATION_FLAG;
-}
-
-void Evaluator::reset_evaluation_flag()
-{
-    m_status_flags &= ~ACTIVE_EVALUATION_FLAG;
+    while (m_async.has_callback())
+    {
+        auto [func, args] = m_async.next_callback();
+        handle_lambda(func, args);
+    }
+    m_async.spin_loop();
 }
 
 void Evaluator::check_status()
 {
-    if ((m_status_flags & SIGTERM_FLAG) > 0)
+    if (AL_BIT_CHECK(m_status_flags, SIGTERM_FLAG))
     {
-        m_status_flags &= ~SIGINT_FLAG;
+        AL_BIT_OFF(m_status_flags, SIGTERM_FLAG);
         throw al_exit(1);
     }
 
-    if ((m_status_flags & SIGINT_FLAG) > 0)
+    if (AL_BIT_CHECK(m_status_flags, SIGINT_FLAG))
     {
-        m_status_flags &= ~SIGINT_FLAG;
+        AL_BIT_OFF(m_status_flags, SIGINT_FLAG);
         throw interrupt_error();
     }
 }
@@ -409,6 +416,16 @@ void Evaluator::check_status()
 void Evaluator::set_current_file(std::string t_tile)
 {
     m_current_file = std::move(t_tile);
+}
+
+void Evaluator::lock_evaluation()
+{
+    m_lock.lock();
+}
+
+void Evaluator::unlock_evaluation()
+{
+    m_lock.unlock();
 }
 
 const std::string &Evaluator::get_current_file()
@@ -440,6 +457,16 @@ detail::CatchTrack::CatchTrack(Evaluator &t_eval) : m_eval(t_eval)
 detail::CatchTrack::~CatchTrack()
 {
     --m_eval.m_catching_depth;
+}
+
+detail::EvaluationLock::EvaluationLock(Evaluator &t_eval) : m_eval(t_eval)
+{
+    t_eval.lock_evaluation();
+}
+
+detail::EvaluationLock::~EvaluationLock()
+{
+    m_eval.unlock_evaluation();
 }
 
 }  // namespace eval

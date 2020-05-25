@@ -156,10 +156,7 @@ Return the `t` if the environment variable `VAR` is defined. Return `nil` otherw
 Set the value of the environment variable `VAR` to `VALUE`
 )");
 
-    module_defun(sys_ptr,
-                 "list-env",
-                 &detail::Flist_env,
-                 R"( Return the value of `env-vars`.)");
+    module_defun(sys_ptr, "list-env", &detail::Flist_env, R"( Return the value of `env-vars`.)");
 
     module_defun(sys_ptr,
                  "chwd",

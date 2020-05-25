@@ -14,7 +14,7 @@
  You should have received a copy of the GNU General Public License along
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
-
+#include <unistd.h>
 
 #include <algorithm>
 #include <filesystem>
@@ -34,6 +34,7 @@
 #include "alisp/utility/macros.hpp"
 #include "alisp/utility/hash.hpp"
 
+#include "alisp/alisp/async/timing.hpp"
 
 namespace alisp
 {
@@ -947,6 +948,5 @@ ALObjectPtr Fintern(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 
     return env::intern(name->to_string());
 }
-
 
 }  // namespace alisp

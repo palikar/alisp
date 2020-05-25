@@ -64,6 +64,13 @@ If set, the the inteprter will evaluate this file on startup and not ~/.alisprc.
 .TP
 .BR ALNODEBUG:
 If set, the interpreter will be started without debug mode and all of the assertions will be disabled.
+.TP
+.BR ALDEFEREL:
+If set, the threads of the internal event loop will
+not be started on start up of the interpreter but deferred till the
+first function call that needs the event loop. This can lower the
+startup time and increase the time cost of the first functin that
+needs the event loop.
 
 .SH Resources
 .BR Repository:

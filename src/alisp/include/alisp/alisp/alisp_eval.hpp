@@ -22,6 +22,7 @@
 
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_exception.hpp"
+#include "alisp/alisp/alisp_asyncs.hpp"
 
 namespace alisp
 {
@@ -44,18 +45,30 @@ class Evaluator
     size_t m_catching_depth;
     parser::ParserBase *m_parser;
 
+    async::AsyncS m_async;
+
     int m_signal;
-    std::uint_fast32_t m_status_flags;
+
+    std::atomic_uint_fast32_t m_status_flags;
 
     std::string m_current_file;
 
     static constexpr std::uint32_t SIGINT_FLAG            = 0x0001;
     static constexpr std::uint32_t ACTIVE_EVALUATION_FLAG = 0x0002;
     static constexpr std::uint32_t SIGTERM_FLAG           = 0x0004;
+    static constexpr std::uint32_t ASYNC_FLAG             = 0x0008;
+    static constexpr std::uint32_t INTERACTIVE_FLAG       = 0x0010;
 
 
   public:
-    Evaluator(env::Environment &env_, parser::ParserBase *t_parser);
+    std::mutex callback_m;
+    std::unique_lock<std::mutex> m_lock;
+    std::condition_variable callback_cv;
+    std::condition_variable futures_cv;
+
+    Evaluator(env::Environment &env_, parser::ParserBase *t_parser, bool t_defer_el = false);
+    ~Evaluator();
+
 
     void eval_file(const std::string &t_file);
     void eval_string(std::string &t_eval);
@@ -77,11 +90,29 @@ class Evaluator
     void handle_signal(int t_c);
 
     void check_status();
-    void set_evaluation_flag();
-    void reset_evaluation_flag();
+
+    void lock_evaluation();
+    void unlock_evaluation();
+
+    inline std::unique_lock<std::mutex> &lock() { return m_lock; }
+
+    void inline set_evaluation_flag() { m_status_flags |= ACTIVE_EVALUATION_FLAG; }
+    void inline reset_evaluation_flag() { m_status_flags &= ~ACTIVE_EVALUATION_FLAG; }
+
+    void inline set_async_flag() { m_status_flags |= ASYNC_FLAG; }
+    void inline reset_async_flag() { m_status_flags &= ~ASYNC_FLAG; }
+    bool inline is_async_pending() { return (m_status_flags & ASYNC_FLAG) > 0; }
+
+    void inline set_interactive_flag() { m_status_flags |= INTERACTIVE_FLAG; }
+    void inline reset_interactive_flag() { m_status_flags &= ~INTERACTIVE_FLAG; }
+    bool inline is_interactive() { return (m_status_flags & INTERACTIVE_FLAG) > 0; }
+
+    void dispatch_callbacks();
 
     void set_current_file(std::string t_tile);
     const std::string &get_current_file();
+
+    async::AsyncS &async() { return m_async; }
 
     friend detail::EvalDepthTrack;
     friend detail::CatchTrack;
@@ -112,6 +143,18 @@ class CatchTrack
     ~CatchTrack();
 
     ALISP_RAII_OBJECT(CatchTrack);
+
+  private:
+    Evaluator &m_eval;
+};
+
+class EvaluationLock
+{
+  public:
+    explicit EvaluationLock(Evaluator &t_eval);
+    ~EvaluationLock();
+
+    ALISP_RAII_OBJECT(EvaluationLock);
 
   private:
     Evaluator &m_eval;

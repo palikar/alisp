@@ -64,6 +64,10 @@ if(DISABLE_RUN_TIME_CHECKS)
     target_compile_definitions(language_options INTERFACE DISABLE_CHECKS)
 endif(DISABLE_RUN_TIME_CHECKS)
 
+if(ENABLE_MTEL)
+    target_compile_definitions(language_options INTERFACE MULTI_THREAD_EVENT_LOOP)
+endif(ENABLE_MTEL)
+
 
 add_library(alisp_language
     
@@ -79,6 +83,7 @@ add_library(alisp_language
     src/alisp_memory.cpp
     src/alisp_warnings.cpp
     src/alisp_loadable_modules.cpp
+    src/alisp_asyncs.cpp
 
     src/definitions/alisp_eval_functions.cpp
     src/definitions/alisp_stream_functions.cpp
@@ -93,7 +98,9 @@ add_library(alisp_language
     src/definitions/alisp_algorithms.cpp
     src/definitions/alisp_strings.cpp
     src/definitions/alisp_casts.cpp
-    src/definitions/alisp_props.cpp)
+    src/definitions/alisp_props.cpp
+    src/definitions/alisp_async.cpp
+    )
 
 
 target_include_directories(alisp_language

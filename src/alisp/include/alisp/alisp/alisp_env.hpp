@@ -28,7 +28,6 @@
 #include "alisp/alisp/alisp_common.hpp"
 #include "alisp/alisp/alisp_macros.hpp"
 #include "alisp/alisp/alisp_exception.hpp"
-#include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_modules.hpp"
 #include "alisp/alisp/alisp_loadable_modules.hpp"
 #include "alisp/alisp/alisp_warnings.hpp"

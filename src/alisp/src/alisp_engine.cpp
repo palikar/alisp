@@ -110,7 +110,10 @@ std::pair<bool, int> LanguageEngine::eval_statement(std::string &command, bool e
     try
     {
         AL_DEBUG("Evaluating statement: "s += command);
+
+        eval::detail::EvaluationLock lock{ m_evaluator };
         do_eval(command, "__EVAL__", true);
+
         return { true, 0 };
     }
     catch (al_exit &ex)
@@ -135,6 +138,9 @@ std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_pa
 {
     AL_DEBUG("Evaluating file: "s += t_path);
     m_evaluator.set_current_file(t_path);
+
+    m_evaluator.reset_evaluation_flag();
+
     namespace fs = std::filesystem;
     if (insert_mod_path)
     {
@@ -152,8 +158,22 @@ std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_pa
 
     try
     {
-        auto file_content = utility::load_file(t_path);
-        do_eval(file_content, t_path);
+        {
+            eval::detail::EvaluationLock lock{ m_evaluator };
+            auto file_content = utility::load_file(t_path);
+            do_eval(file_content, t_path);
+        }
+
+        while (m_evaluator.is_async_pending())
+        {
+            // std::unique_lock<std::mutex> lock(m_evaluator.callback_m);
+            m_evaluator.callback_cv.wait(m_evaluator.lock());
+
+            if (!m_evaluator.is_interactive())
+            {
+                m_evaluator.dispatch_callbacks();
+            }
+        }
     }
     catch (al_exit &ex)
     {
@@ -195,6 +215,7 @@ std::pair<bool, int> LanguageEngine::eval_objs(std::vector<ALObjectPtr> t_objs)
 void LanguageEngine::interactive()
 {
     Vmodpaths->children().push_back(make_string(utility::env_string("PWD")));
+    m_evaluator.set_interactive_flag();
 }
 
 }  // namespace alisp
