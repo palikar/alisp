@@ -20,7 +20,11 @@
 (defun ht-select-keys (table keys))
 
 
-(defun ht-get (table key &optional default))
+(defun ht-get (table key &optional default)
+  (ht--assert table)
+  (unless (prop-exists table key)
+    (return default))
+  (prop-get table key))
 
 (defun ht-keys (table))
 
@@ -44,7 +48,10 @@
 
 (defun ht-update (table-1 table-2))
 
-(defun ht-remove (table key))
+(defun ht-remove (table key)
+  (ht--assert table)
+  (when (prop-remove table key)
+    (delete table key)))
 
 (defun ht-clear (table))
 
@@ -72,3 +79,7 @@
 (ht-set h "sym" 42)
 (dump (prop-list h))
 (dump h)
+(dump (ht-get h "sym"))
+(ht-remove h "sym")
+(dump h)
+(dump (prop-list h))
