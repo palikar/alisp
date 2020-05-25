@@ -30,7 +30,8 @@ macro(add_module NAME SRC)
             alisp_streams)
         
     endif()
-    
+
+    target_link_libraries(alisp_language PUBLIC ${NAME})
 
     install(TARGETS ${NAME} 
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
@@ -99,7 +100,7 @@ add_library(alisp_language
     src/definitions/alisp_strings.cpp
     src/definitions/alisp_casts.cpp
     src/definitions/alisp_props.cpp
-    src/definitions/alisp_async.cpp
+
     )
 
 
@@ -135,14 +136,8 @@ if(NOT DISABLE_DEFAULT_MODULES)
     add_module(alisp_system src/modules/system.cpp)
     add_module(alisp_platform src/modules/platform.cpp)
     add_module(alisp_memory src/modules/memory.cpp)
-
-    target_link_libraries(alisp_language PUBLIC alisp_fileio)
-    target_link_libraries(alisp_language PUBLIC alisp_math)
-    target_link_libraries(alisp_language PUBLIC alisp_time)
-    target_link_libraries(alisp_language PUBLIC alisp_system)
-    target_link_libraries(alisp_language PUBLIC alisp_platform)
-    target_link_libraries(alisp_language PUBLIC alisp_memory)
-
+    add_module(alisp_async src/modules/async.cpp)
+    
     target_compile_definitions(alisp_language PUBLIC LINK_MODULES)
     
 endif()
