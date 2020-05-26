@@ -392,8 +392,11 @@ void Evaluator::dispatch_callbacks()
 {
     while (m_async.has_callback())
     {
-        auto [func, args] = m_async.next_callback();
-        handle_lambda(func, args);
+        auto [func, args, internal] = m_async.next_callback();
+        auto res = handle_lambda(func, args);
+        if(internal){
+            internal(res);
+        }
     }
     m_async.spin_loop();
 }
@@ -420,12 +423,14 @@ void Evaluator::set_current_file(std::string t_tile)
 
 void Evaluator::lock_evaluation()
 {
-    m_lock.lock();
+    // m_lock.lock();
+    callback_m.lock();
 }
 
 void Evaluator::unlock_evaluation()
 {
-    m_lock.unlock();
+    // m_lock.unlock();
+    callback_m.unlock();
 }
 
 const std::string &Evaluator::get_current_file()

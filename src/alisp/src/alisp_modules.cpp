@@ -32,6 +32,7 @@ extern env::ModulePtr init_math(env::Environment *, eval::Evaluator *);
 extern env::ModulePtr init_time(env::Environment *, eval::Evaluator *);
 extern env::ModulePtr init_platform(env::Environment *, eval::Evaluator *);
 extern env::ModulePtr init_memory(env::Environment *, eval::Evaluator *);
+extern env::ModulePtr init_async(env::Environment *, eval::Evaluator *);
 
 #endif
 
@@ -49,6 +50,7 @@ void init_modules()
     Environment::g_builtin_modules.insert({ "time", ModuleImport{ &init_time } });
     Environment::g_builtin_modules.insert({ "platform", ModuleImport{ &init_platform } });
     Environment::g_builtin_modules.insert({ "memory", ModuleImport{ &init_memory } });
+    Environment::g_builtin_modules.insert({ "async", ModuleImport{ &init_async } });
 
 #endif
 }
