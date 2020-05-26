@@ -953,6 +953,12 @@ ALObjectPtr Fnull(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto sym = AL_EVAL(obj, eval, 0);
+
+    if (plist(sym))
+    {
+        return AL_BOOL(sym->children().empty());
+        
+    }
     
     return AL_BOOL(equal(sym, Qnil));
 }

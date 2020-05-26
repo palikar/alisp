@@ -491,11 +491,11 @@ struct MacroCall
   public:
     explicit MacroCall(Environment &t_env) : m_env(t_env) {
         m_env.new_scope();
-        m_env.call_function();
+        // m_env.call_function();
     }
     ~MacroCall() {
         m_env.destroy_scope();
-        m_env.finish_function();
+        // m_env.finish_function();
     }
 
     ALISP_RAII_OBJECT(MacroCall);
