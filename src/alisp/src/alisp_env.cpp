@@ -104,7 +104,7 @@ void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
     auto &scope = m_stack.current_scope();
     auto name   = t_sym->to_string();
 
-    NameValidator::validate_object_name(name);
+    // NameValidator::validate_object_name(name);
 
     if (scope.count(name))
     {

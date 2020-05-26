@@ -949,4 +949,12 @@ ALObjectPtr Fintern(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return env::intern(name->to_string());
 }
 
+ALObjectPtr Fnull(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(obj));
+    auto sym = AL_EVAL(obj, eval, 0);
+    
+    return AL_BOOL(equal(sym, Qnil));
+}
+
 }  // namespace alisp

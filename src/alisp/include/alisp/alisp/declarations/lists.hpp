@@ -78,6 +78,16 @@ Example:
 ```
 )");
 
+DEFUN(cdr, "cdr", R"((cdr LIST)
+
+Return a sublist of LIST with all of its elements but the first one.
+
+Example:
+```elisp
+(cdr '(1 2 3 4 5))
+```
+)");
+
 DEFUN(head, "head", R"((head LIST)
 
 Return the fist element of the list LIST.

@@ -116,6 +116,14 @@ ALObjectPtr Fcons(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return splice(list, 1);
 }
 
+ALObjectPtr Fcdr(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(obj));
+    auto list = eval->eval(obj->i(0));
+    AL_CHECK(assert_list(list));
+    return splice(list, 1);
+}
+
 ALObjectPtr Fhead(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
 {
     return Fcar(obj, env, eval);

@@ -436,6 +436,12 @@ Return `t` if `FORM1`a and `FORM2` have the same value. Return `nil`
 otherwise.
 )");
 
+
+DEFUN(null, "null", R"((null SYM)
+
+Return `t` if `SYM` is `nil` and `t` otherwise.
+)");
+
 DEFUN(sym_list, "symbols-list", R"((symbols-list [PACKAGE])
 
 Return a list the symbols that are defines in PACKAGE.
@@ -446,10 +452,11 @@ DEFVAR(
   Qlanguage_all,
   Vlanguage_all,
   "--language-all--",
-  make_sym_list({ "import",    "modref",   "defun",   "defconst",  "eval",   "setq",   "set",       "setq",
-                  "quote",     "function", "lambda",  "if",        "while",  "dolist", "cond",      "when",
-                  "unless",    "let",      "let*",    "or",        "and",    "not",    "parse-int", "parse-float",
-                  "to-string", "to-char",  "funcall", "backquote", "return", "exit",   "intern",    "make-symbol" }),
+  make_sym_list({ "import", "modref",    "defun",       "defconst",    "eval",    "setq",    "set",
+                  "setq",   "quote",     "function",    "lambda",      "if",      "while",   "dolist",
+                  "cond",   "when",      "unless",      "let",         "let*",    "or",      "and",
+                  "not",    "parse-int", "parse-float", "to-string",   "to-char", "funcall", "backquote",
+                  "return", "exit",      "intern",      "make-symbol", "null" }),
   R"(Basic fuctions that provide the backbone of the language. These include global and local variable definition, flow control structures and loops.)");
 
 

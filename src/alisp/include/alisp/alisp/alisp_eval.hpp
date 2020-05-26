@@ -127,10 +127,7 @@ class EvalDepthTrack
     explicit EvalDepthTrack(Evaluator &t_eval);
     ~EvalDepthTrack();
 
-    EvalDepthTrack(EvalDepthTrack &&) = default;
-    EvalDepthTrack &operator=(EvalDepthTrack &&) = default;
-    EvalDepthTrack(const EvalDepthTrack &)       = delete;
-    EvalDepthTrack &operator=(const EvalDepthTrack &) = delete;
+    ALISP_RAII_OBJECT(EvalDepthTrack);
 
   private:
     Evaluator &m_eval;
