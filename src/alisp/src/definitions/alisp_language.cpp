@@ -957,9 +957,8 @@ ALObjectPtr Fnull(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     if (plist(sym))
     {
         return AL_BOOL(sym->children().empty());
-        
     }
-    
+
     return AL_BOOL(equal(sym, Qnil));
 }
 

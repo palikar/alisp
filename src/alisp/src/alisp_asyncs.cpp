@@ -59,11 +59,9 @@ void AsyncS::init()
     }
 #endif
 
-    while(!AL_BIT_CHECK(m_flags, INIT_FLAG)){
-
+    while (!AL_BIT_CHECK(m_flags, INIT_FLAG))
+    {
     }
-
-
 }
 
 #ifndef MULTI_THREAD_EVENT_LOOP
@@ -91,7 +89,7 @@ void AsyncS::event_loop()
             m_event_queue.pop();
         }
 
-        if(!m_callback_queue.empty() and AL_BIT_CHECK(m_flags, AWAIT_FLAG))
+        if (!m_callback_queue.empty() and AL_BIT_CHECK(m_flags, AWAIT_FLAG))
         {
             execute_callback(std::move(m_callback_queue.front()));
             m_callback_queue.pop();
@@ -104,17 +102,14 @@ void AsyncS::event_loop()
             continue;
         }
 
-        if (m_callback_queue.empty() and m_event_queue.empty()
-        and m_asyncs == 0 and !m_eval->is_interactive() and !AL_BIT_CHECK(m_flags, AWAIT_FLAG))
+        if (m_callback_queue.empty() and m_event_queue.empty() and m_asyncs == 0 and !m_eval->is_interactive()
+            and !AL_BIT_CHECK(m_flags, AWAIT_FLAG))
         {
             AL_BIT_OFF(m_flags, RUNNING_FLAG);
             m_eval->reset_async_flag();
             m_eval->callback_cv.notify_all();
             return;
         }
-
-
-
     }
 }
 
@@ -180,9 +175,9 @@ void AsyncS::execute_event(event_type call)
 
 void AsyncS::execute_callback(callback_type call)
 {
-    auto& function = call.function;
-    auto& args = call.arguments;
-    auto& internal = call.internal;
+    auto &function = call.function;
+    auto &args     = call.arguments;
+    auto &internal = call.internal;
 
     auto res = [&] {
         eval::detail::EvaluationLock lock{ *m_eval };
@@ -194,16 +189,14 @@ void AsyncS::execute_callback(callback_type call)
         {
             return m_eval->handle_lambda(function, args);
         }
-
     }();
 
-    if(internal)
+    if (internal)
     {
         internal(res);
     }
 
     spin_loop();
-
 }
 
 void AsyncS::submit_event(event_type t_callback)
@@ -242,7 +235,7 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::functi
 
     if (m_eval->is_interactive() or AL_BIT_CHECK(m_flags, AWAIT_FLAG))
     {
-        execute_callback({function, args, internal});
+        execute_callback({ function, args, internal });
     }
     else
     {
@@ -261,8 +254,6 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::functi
         m_eval->callback_cv.notify_all();
         spin_loop();
     }
-
-
 }
 
 uint32_t AsyncS::new_future()
@@ -366,7 +357,7 @@ void AsyncS::end()
 #endif
 }
 
-Await::Await(AsyncS& t_async) : m_async(t_async)
+Await::Await(AsyncS &t_async) : m_async(t_async)
 {
     m_async.start_await();
     m_async.spin_loop();

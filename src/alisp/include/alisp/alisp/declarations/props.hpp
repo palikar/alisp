@@ -64,8 +64,8 @@ Return a list with all of the properties of SYM.
 DEFVAR(Qprops_all,
        Vprops_all,
        "--props-all--",
-make_sym_list({ "prop-get", "prop-set", "prop-remove", "prop-list"}),
-R"(Functions for accessing the properties of objects.)");
+       make_sym_list({ "prop-get", "prop-set", "prop-remove", "prop-list" }),
+       R"(Functions for accessing the properties of objects.)");
 
 
 }  // namespace alisp

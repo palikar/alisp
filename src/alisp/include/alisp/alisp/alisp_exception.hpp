@@ -245,7 +245,8 @@ struct illegal_name_error : public al_exception
     static std::string format(const std::string &t_why, const std::string &t_name)
     {
         std::ostringstream ss;
-        ss << "\"" << t_name << "\"" << " is not a valid symbol error.\n\t" << t_why << '\n';
+        ss << "\"" << t_name << "\""
+           << " is not a valid symbol error.\n\t" << t_why << '\n';
         return ss.str();
     }
 };

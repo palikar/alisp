@@ -489,11 +489,13 @@ struct ScopePushPop
 struct MacroCall
 {
   public:
-    explicit MacroCall(Environment &t_env) : m_env(t_env) {
+    explicit MacroCall(Environment &t_env) : m_env(t_env)
+    {
         m_env.new_scope();
         // m_env.call_function();
     }
-    ~MacroCall() {
+    ~MacroCall()
+    {
         m_env.destroy_scope();
         // m_env.finish_function();
     }

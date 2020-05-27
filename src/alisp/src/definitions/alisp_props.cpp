@@ -101,9 +101,9 @@ ALObjectPtr Fprop_remove(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
 
     auto prop = eval->eval(obj->i(1));
     AL_CHECK(assert_string(prop));
-    
+
     const auto &prop_name = prop->to_string();
-    const auto removed = target->props().erase(prop_name);
+    const auto removed    = target->props().erase(prop_name);
 
     return removed > 0 ? Qt : Qnil;
 }

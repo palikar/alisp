@@ -157,7 +157,8 @@ class AsyncS
 
     void submit_event(event_type t_event);
 
-    void submit_callback(ALObjectPtr function, ALObjectPtr args = nullptr, std::function<void(ALObjectPtr)> internal = {});
+    void
+      submit_callback(ALObjectPtr function, ALObjectPtr args = nullptr, std::function<void(ALObjectPtr)> internal = {});
 
     uint32_t new_future();
 
@@ -174,11 +175,11 @@ class AsyncS
     bool has_callback();
 
     callback_type next_callback();
-    
+
     inline std::uint32_t status_flags() { return m_flags; }
 
     inline void start_await() { AL_BIT_ON(m_flags, AWAIT_FLAG); }
-    
+
     inline void end_await() { AL_BIT_OFF(m_flags, AWAIT_FLAG); }
 };
 
@@ -213,13 +214,13 @@ template<typename T, typename... Args> auto dispatch(AsyncS &async, Args &&... a
 class Await
 {
   public:
-    explicit Await(AsyncS& t_async);
+    explicit Await(AsyncS &t_async);
     ~Await();
 
     ALISP_RAII_OBJECT(Await);
 
   private:
-    AsyncS& m_async;
+    AsyncS &m_async;
 };
 
 

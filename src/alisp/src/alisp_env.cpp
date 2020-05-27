@@ -90,8 +90,7 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
     if (m_active_module.get().root_scope().count(name))
     {
         auto &sym = m_active_module.get().root_scope().at(name);
-        AL_CHECK(
-          if (sym->check_const_flag()) { throw environment_error("Trying to change a const symbol: " + name); });
+        AL_CHECK(if (sym->check_const_flag()) { throw environment_error("Trying to change a const symbol: " + name); });
         sym = t_value;
         return;
     };

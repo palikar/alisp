@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
         AL_DEBUG("Interactive: "s + std::to_string(opts.interactive));
         AL_DEBUG("Help: "s + std::to_string(opts.show_help));
         AL_DEBUG("Version: "s + std::to_string(opts.version));
-        
+
         for (auto &it : opts.args)
         {
             AL_DEBUG("Arg: "s += it);
@@ -232,7 +232,6 @@ int main(int argc, char *argv[])
             AL_DEBUG("Warning: "s += it);
         }
     }
-    
 
 
     std::vector<alisp::EngineSettings> settings;
@@ -265,53 +264,53 @@ int main(int argc, char *argv[])
 
     if (!opts.input.empty())
     {
-    auto file_path = std::filesystem::path{ opts.input };
+        auto file_path = std::filesystem::path{ opts.input };
 
-    if (!std::filesystem::is_regular_file(file_path))
-    {
-        if (file_path.string()[0] == '-')
+        if (!std::filesystem::is_regular_file(file_path))
         {
-            std::cout << "Can\'t interpter input: " << file_path.string() << "\n";
-            std::cout << "Usage:" << clipp::usage_lines(cli, "alisp") << "\n";
-            return 1;
+            if (file_path.string()[0] == '-')
+            {
+                std::cout << "Can\'t interpter input: " << file_path.string() << "\n";
+                std::cout << "Usage:" << clipp::usage_lines(cli, "alisp") << "\n";
+                return 1;
+            }
+
+            std::cerr << '\"' << file_path << "\" is not a file."
+                      << "\n";
+            return 0;
         }
 
-        std::cerr << '\"' << file_path << "\" is not a file."
-                  << "\n";
+        auto [succ, val] = alisp_engine.eval_file(file_path);
+        if (!succ)
+        {
+            return val;
+        }
+
+        if (opts.interactive)
+        {
+            return interactive(alisp_engine);
+        }
+
         return 0;
     }
 
-    auto [succ, val] = alisp_engine.eval_file(file_path);
-    if (!succ)
+    if (!opts.eval.empty())
     {
+        auto [succ, val] = alisp_engine.eval_statement(opts.eval);
+        if (!succ)
+        {
+            return val;
+        }
+
+        if (opts.interactive)
+        {
+            return interactive(alisp_engine);
+        }
+
         return val;
     }
 
-    if (opts.interactive)
-    {
-        return interactive(alisp_engine);
-    }
-
-    return 0;
-}
-
-if (!opts.eval.empty())
-{
-    auto [succ, val] = alisp_engine.eval_statement(opts.eval);
-    if (!succ)
-    {
-        return val;
-    }
-
-    if (opts.interactive)
-    {
-        return interactive(alisp_engine);
-    }
-
-    return val;
-}
-
-return interactive(alisp_engine);
+    return interactive(alisp_engine);
 }
 
 int interactive(alisp::LanguageEngine &alisp_engine)

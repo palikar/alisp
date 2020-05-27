@@ -36,7 +36,7 @@ ALObjectPtr Fasync_start(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
 
     auto action = eval->eval(obj->i(0));
     AL_CHECK(assert_function(action));
-    
+
     auto callback = Qnil;
     if (std::size(*obj) > 1)
     {
@@ -55,10 +55,10 @@ ALObjectPtr Fasync_await(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
 
 
     {
-        async::Await await{eval->async()};
-        
+        async::Await await{ eval->async() };
+
         eval->futures_cv.wait(eval->lock(),
-        [&] { return is_truthy(eval->async().future(object_to_resource(future)).resolved); });        
+                              [&] { return is_truthy(eval->async().future(object_to_resource(future)).resolved); });
     }
 
     return eval->async().future(object_to_resource(future)).value;
@@ -78,7 +78,7 @@ ALObjectPtr Fasync_then(ALObjectPtr obj, env::Environment *, eval::Evaluator *ev
     if (std::size(*obj) > 2)
     {
         reject_callback = eval->eval(obj->i(2));
-        if(!pfunction(reject_callback))
+        if (!pfunction(reject_callback))
         {
             reject_callback = Qnil;
         }
@@ -113,7 +113,7 @@ ALObjectPtr Fasync_ready(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
 
     auto future = eval->eval(obj->i(0));
     AL_CHECK(assert_int(future));
-    
+
     return eval->async().future(object_to_resource(future)).resolved;
 }
 
@@ -123,7 +123,7 @@ ALObjectPtr Fasync_state(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
 
     auto future = eval->eval(obj->i(0));
     AL_CHECK(assert_int(future));
-    
+
     return eval->async().future(object_to_resource(future)).success_state;
 }
 
@@ -145,43 +145,52 @@ ALObjectPtr Ftimeout(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 env::ModulePtr init_async(env::Environment *, eval::Evaluator *)
 {
 
-    auto Masync = module_init("async");
+    auto Masync    = module_init("async");
     auto async_ptr = Masync.get();
 
-    module_defun(async_ptr, "timeout", &detail::Ftimeout,
-    R"((set-timeout CALLBACK MILLISECONDS)
+    module_defun(async_ptr,
+                 "timeout",
+                 &detail::Ftimeout,
+                 R"((set-timeout CALLBACK MILLISECONDS)
 
 Execute `CALLBACK` after `SECONDS`.
 )");
 
     module_defun(async_ptr, "async-start", &detail::Fasync_start);
-    
-    module_defun(async_ptr, "async-then", &detail::Fasync_then,
-    R"((future-then FUTURE SUCCESS REJECT)
+
+    module_defun(async_ptr,
+                 "async-then",
+                 &detail::Fasync_then,
+                 R"((future-then FUTURE SUCCESS REJECT)
 
 )");
-    
-    module_defun(async_ptr, "async-await", &detail::Fasync_await,
-    R"((future-await FUTURE)
+
+    module_defun(async_ptr,
+                 "async-await",
+                 &detail::Fasync_await,
+                 R"((future-await FUTURE)
 
 Block the main thread till `FUTURE` is complete and return return the
 value of the future.
 )");
-    
-    module_defun(async_ptr, "async-ready", &detail::Fasync_ready,
-    R"((async-ready FUTURE)
+
+    module_defun(async_ptr,
+                 "async-ready",
+                 &detail::Fasync_ready,
+                 R"((async-ready FUTURE)
 
 )");
-    
-    module_defun(async_ptr, "async-state", &detail::Fasync_state,
-    R"((async-state FUTURE)
+
+    module_defun(async_ptr,
+                 "async-state",
+                 &detail::Fasync_state,
+                 R"((async-state FUTURE)
 
 )");
-    
+
 
     return Masync;
 }
 
 
 }  // namespace alisp
-
