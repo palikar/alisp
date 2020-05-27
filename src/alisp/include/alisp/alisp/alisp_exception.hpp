@@ -245,7 +245,7 @@ struct illegal_name_error : public al_exception
     static std::string format(const std::string &t_why, const std::string &t_name)
     {
         std::ostringstream ss;
-        ss << "Invalid name error for \"" << t_name << "\"\t" << t_why << '\n';
+        ss << "\"" << t_name << "\"" << " is not a valid symbol error.\n\t" << t_why << '\n';
         return ss.str();
     }
 };
@@ -372,6 +372,11 @@ template<bool should_exit = false> void handle_errors_lippincott()
     catch (interrupt_error &p_exc)
     {
         std::cout << rang::fg::red << "Interrupt Exception." << rang::fg::reset;
+    }
+    catch (illegal_name_error &p_exc)
+    {
+        std::cout << rang::fg::red << "Illegal name error:.\n" << rang::fg::reset;
+        std::cout << '\t' << p_exc.what() << "\n";
     }
 
     if constexpr (should_exit)
