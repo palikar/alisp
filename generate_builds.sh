@@ -16,7 +16,7 @@ while IFS= read -r line; do
     cd "${FOLDER}" || exit
     echo "Building ${FOLDER}"
     eval "${CMAKE_ENV} cmake .. ${CMAKE_ARGS} &> cmake_output.txt"
-    make "${MAKE_ARGS}" &> make_output.txt
+    make ${MAKE_ARGS} &> make_output.txt
     cd - &> /dev/null || exit
 
 done < "${DIR}/${BUILDS_FILE}"

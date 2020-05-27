@@ -58,7 +58,6 @@ script:
   - cmake  $CMAKE_OPTS ..
   - VERBOSE=1 cmake --build . -- -j2
   - make test
-  - make valgrind_checks
   - if [ "${COVERAGE}" = "1" ]; then make alisp_coverage_xml && bash <(curl -s https://codecov.io/bash)  -f alisp_coverage_xml.xml -t 09845e6b-3f0a-47ad-843b-aa13c58aa4b5 ; fi
  
   
