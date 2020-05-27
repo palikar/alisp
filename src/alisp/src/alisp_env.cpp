@@ -68,7 +68,7 @@ ALObjectPtr Environment::find(const ALObjectPtr t_sym)
         return m_modules.at("--main--")->root_scope().at(name);
     };
 
-    throw environment_error("\tUnbounded Symbol: " + name);
+    throw environment_error("Unbounded Symbol: " + name);
 }
 
 void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
@@ -81,7 +81,7 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
         {
             auto &sym = scope.at(name);
             AL_CHECK(
-              if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); });
+              if (sym->check_const_flag()) { throw environment_error("Trying to change a const symbol: " + name); });
             sym = t_value;
             return;
         };
@@ -91,12 +91,12 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
     {
         auto &sym = m_active_module.get().root_scope().at(name);
         AL_CHECK(
-          if (sym->check_const_flag()) { throw environment_error("\tTrying to change a const symbol: " + name); });
+          if (sym->check_const_flag()) { throw environment_error("Trying to change a const symbol: " + name); });
         sym = t_value;
         return;
     };
 
-    throw environment_error("\tUnbounded Symbol: " + name);
+    throw environment_error("Unbounded Symbol: " + name);
 }
 
 void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
