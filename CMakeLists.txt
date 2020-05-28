@@ -17,7 +17,6 @@ include(FindUnixCommands)
 #######################################################################
 
 
-option(ONLY_COVERAGE "Build only tests necessary for coverage" FALSE)
 option(LIBCPP "Build with libc++" FALSE)
 option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" FALSE)
 option(ENABLE_ASAN "Enable address sanitizer" FALSE)
@@ -25,7 +24,6 @@ option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" FALSE)
 option(ENABLE_TESTING "Enable the building of the test" FALSE)
 option(ENABLE_CLANG_TIDY "Enable testing with clang-tidy" FALSE)
 option(ENABLE_CPPCHECK "Enable testing with cppcheck" FALSE)
-option(SIMPLE_BUILD "Build the project as minimally as possible" FALSE)
 option(BUILD_DOC "Build the project's documentation" FALSE)
 option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
 option(ELF_HASHING "Use elf as a hashing function" FALSE)
@@ -68,7 +66,7 @@ if (ENABLE_LTO)
     set(LINKER_FLAGS "${LINKER_FLAGS} -flto")
 endif()
 
-if(ONLY_COVERAGE OR ENABLE_COVERAGE)
+if(ENABLE_COVERAGE)
     target_compile_options(project_options INTERFACE --coverage -O0 -g)
     target_link_libraries(project_options INTERFACE --coverage)
 endif()
@@ -183,7 +181,7 @@ if(ENABLE_TESTING)
     include(Catch)
     enable_testing()
     
-    if(ONLY_COVERAGE OR ENABLE_COVERAGE)
+    if(ENABLE_COVERAGE)
 
         include(CodeCoverage)
 
