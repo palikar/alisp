@@ -38,6 +38,17 @@ namespace alisp
 namespace env
 {
 
+Environment::Environment()
+    : m_modules{ { "--main--", std::make_shared<Module>("--main--") } }
+    , m_active_module({ *m_modules.at("--main--").get() })
+    , m_call_depth(0)
+{}
+
+Environment::~Environment()
+{
+    g_symbol_table.clear();
+}
+
 ALObjectPtr Environment::find(const ALObjectPtr t_sym)
 {
 
@@ -242,6 +253,56 @@ void Environment::load_module(eval::Evaluator *eval, const std::string t_file, c
     }
 }
 
+void Environment::import_root_scope(const std::string &t_from, const std::string &t_to)
+{
+
+    AL_DEBUG("Importing module symbols: "s += t_from + " -> " + t_to);
+    auto &from_root = m_modules.at(t_from)->get_root();
+    auto &to_root   = m_modules.at(t_to)->get_root();
+
+    if (from_root.empty())
+    {
+        warn::warn_import("Importing an empty root scope.");
+    }
+
+    for (auto &[name, sym] : from_root)
+    {
+        AL_DEBUG("Adding a symbol: "s += name);
+        if (!sym->prop_exists("--module--"))
+        {
+            continue;
+        }
+        if (sym->get_prop("--module--")->to_string().compare(t_from) == 0)
+        {
+            to_root.insert({ name, sym });
+        }
+    }
+
+    // m_modules.at(t_to)->get_root() = m_modules.at(t_from)->get_root();
+}
+
+Module *Environment::get_module(const std::string &t_name)
+{
+    auto mod = m_modules.find(t_name);
+    if (mod != std::end(m_modules))
+    {
+        return mod->second.get();
+    };
+    warn::warn_env("Referencing non existen module:"s += t_name);
+    return nullptr;
+}
+
+void Environment::alias_module(const std::string &t_name, const std::string &t_alias)
+{
+    if (m_modules.find(t_name) == m_modules.end())
+    {
+        AL_CHECK(warn::warn_env("Referencing non existen module:"s += t_name););
+        return;
+    }
+    AL_DEBUG("Aliasing a module: "s += t_name + " -> " + t_alias);
+    m_active_module.get().add_module(m_modules.at(t_name), t_alias);
+}
+
 void Environment::defer_callback(std::function<void()> t_callback)
 {
     if (m_stack.current_frame().size() == 1)
@@ -250,6 +311,21 @@ void Environment::defer_callback(std::function<void()> t_callback)
     }
     m_deferred_calls.emplace_back(m_stack.stacks.size(), m_stack.current_frame().size(), t_callback);
 }
+
+void Environment::define_module(const std::string t_name, const std::string)
+{
+    AL_DEBUG("Creating a new module: "s += t_name);
+    auto new_mod = std::make_shared<Module>(t_name);
+    m_modules.insert({ std::move(t_name), new_mod });
+}
+
+void Environment::define_module(const std::string t_name, ModulePtr t_mod)
+{
+    AL_DEBUG("Adding a new module: "s += t_name);
+    m_modules.insert({ std::move(t_name), std::move(t_mod) });
+}
+
+bool Environment::module_loaded(const std::string &t_module_name) { return m_modules.count(t_module_name) != 0; }
 
 void Environment::resolve_callbacks()
 {
@@ -384,6 +460,82 @@ void Environment::callstack_dump() const
     }
     cout << format("+{:-^48}+", "") << '\n';
 #endif
+}
+
+namespace detail
+{
+
+
+FunctionCall::FunctionCall(Environment &t_env, ALObjectPtr t_func) : m_env(t_env)
+{
+    m_env.call_function();
+
+    // unload the closure here
+    if (t_func->prop_exists("--closure--"))
+    {
+        for (auto &el : *(t_func->get_prop("--closure--")))
+        {
+            t_env.put(el->i(0), el->i(1));
+        }
+    }
+
+    if (t_func->prop_exists("--module--"))
+    {
+        auto func_module = t_func->get_prop("--module--")->to_string();
+        if (m_env.current_module().compare(func_module) != 0)
+        {
+            m_prev_mod = m_env.current_module();
+            t_env.activate_module(func_module);
+        }
+
+        return;
+    }
+
+    warn::warn_env("Calling a function without --module-- property.");
+}
+
+FunctionCall::~FunctionCall()
+{
+    if (!m_prev_mod.empty())
+    {
+        m_env.activate_module(m_prev_mod);
+    }
+    m_env.finish_function();
+}
+
+ScopePushPop::ScopePushPop(Environment &t_env) : m_env(t_env)
+{
+    m_env.new_scope();
+}
+
+ScopePushPop::~ScopePushPop()
+{
+    m_env.resolve_callbacks();
+    m_env.destroy_scope();
+}
+
+MacroCall::MacroCall(Environment &t_env) : m_env(t_env)
+{
+    m_env.new_scope();
+}
+
+MacroCall::~MacroCall()
+{
+    m_env.destroy_scope();
+        
+}
+
+ModuleChange::ModuleChange(Environment &t_env, const std::string &t_module) : m_env(t_env), m_prev_mod(m_env.current_module())
+{
+
+    m_env.activate_module(t_module);
+}
+
+ModuleChange::~ModuleChange()
+{
+    m_env.activate_module(m_prev_mod);
+}
+
 }
 
 }  // namespace env
