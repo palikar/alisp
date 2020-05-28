@@ -15,39 +15,34 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-
 #pragma once
 
-#include <vector>
-#include <string>
 #include <sstream>
-#include <iostream>
-#include <string>
-#include <optional>
 
 #include <clipp.hpp>
 #include <fmt/format.h>
 
-namespace alisp::prompt
+namespace fmt
 {
-inline char rl_brackets_compl[30] = "\"(\": \"\\C-v()\\e[D\"";
-inline char rl_quote_compl[30]    = "\"\\\"\": \"\\C-v\\\"\\C-v\\\"\\e[D\"";
 
-class SaveHistory
+template<> struct formatter<clipp::man_page>
 {
-  public:
-    SaveHistory() = default;
-    ~SaveHistory();
-    SaveHistory(SaveHistory &&) = default;
-    SaveHistory &operator=(SaveHistory &&) = default;
-    SaveHistory(const SaveHistory &)       = delete;
-    SaveHistory &operator=(const SaveHistory &) = delete;
+    constexpr auto parse(format_parse_context &ctx)
+    {
+        auto it = ctx.begin();
+
+        return it;
+    }
+
+    // Formats the point p using the parsed format specification (presentation)
+    // stored in this formatter.
+    template<typename FormatContext> auto format(const clipp::man_page &p, FormatContext &ctx)
+    {
+
+        std::stringstream ss;
+        ss << p;
+        return format_to(ctx.out(), "{}", ss.str());
+    }
 };
 
-static std::string history_file;
-void init(std::string history_file = "");
-std::optional<std::string> repl(const std::string &prompt);
-
-extern std::vector<std::string> get_completions(const std::string &);
-
-}  // namespace alisp::prompt
+}  // namespace fmt

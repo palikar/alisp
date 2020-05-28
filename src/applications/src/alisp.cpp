@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "alisp/config.hpp"
 #include "alisp/utility.hpp"
 #include "alisp/applications/prompt.hpp"
+#include "alisp/applications/fmt_formating.hpp"
 #include "alisp/alisp/alisp_engine.hpp"
 
 using namespace std::string_literals;
@@ -186,31 +187,36 @@ int main(int argc, char *argv[])
 
     if (res.any_bad_repeat() or res.any_blocked() or res.any_conflict())
     {
-        std::cout << "Usage:\n" << clipp::usage_lines(cli, "alisp", fmt) << "\n";
+        fmt::print("Usage: {}\n", clipp::usage_lines(cli, "alisp", fmt).str());
         return 1;
     }
 
 
     if (opts.show_help)
     {
-        std::cout << clipp::make_man_page(cli, "alisp", fmt)
-                       .prepend_section("DESCRIPTION", "The alisp programming language.")
-                       .append_section("ENVIRONMENT VARIABLES", ENV_VAR_HELP)
-                       .append_section("LICENSE", std::string("\t").append(AL_LICENSE));
+        const auto help_page = clipp::make_man_page(cli, "alisp", fmt)
+                                 .prepend_section("DESCRIPTION", "The alisp programming language.")
+                                 .append_section("ENVIRONMENT VARIABLES", ENV_VAR_HELP)
+                                 .append_section("LICENSE", std::string("\t").append(AL_LICENSE));
+        // std::stringstream ss;
+        // ss << help_page;
+        fmt::print("{}\n", help_page);
+        // fmt::print("{}\n", ss.str());
+
         return 0;
     }
 
     if (opts.version)
     {
-        std::cout << alisp::get_build_info();
+        fmt::print("{}\n", alisp::get_build_info());
         return 0;
     }
 
     alisp::logging::init_logging(opts.debug_logging);
 
-    
+
 #ifdef DEUBG_LOGGING
-    
+
     if (opts.debug_logging)
     {
 
@@ -235,7 +241,7 @@ int main(int argc, char *argv[])
             AL_DEBUG("Warning: "s += it);
         }
     }
-    
+
 #endif
 
 
@@ -252,7 +258,7 @@ int main(int argc, char *argv[])
         settings, std::move(opts.args), std::move(opts.includes), std::move(opts.warnings)
     };
     g_alisp_engine = &alisp_engine;
-    
+
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
     sa.sa_handler = got_signal;
@@ -275,12 +281,12 @@ int main(int argc, char *argv[])
         {
             if (file_path.string()[0] == '-')
             {
-                fmt::print("Can\'t interpter input: {}\n", file_path);
-                fmt::print("Usage: {}\n", clipp::usage_lines(cli, "alisp"));
+                fmt::print("Can\'t interpter input: {}\n", file_path.string());
+                fmt::print("Usage: {}\n", clipp::usage_lines(cli, "alisp").str());
                 return 1;
             }
 
-            fmt::print("\"{}\" is not a file\n", file_path);
+            fmt::print("\"{}\" is not a file\n", file_path.string());
             return 0;
         }
 

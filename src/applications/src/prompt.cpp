@@ -20,6 +20,7 @@
 
 #include "alisp/applications/prompt.hpp"
 
+
 #ifdef READLINE_AVAILABLE
 #include <readline/readline.h>
 #include <readline/history.h>
