@@ -208,6 +208,9 @@ int main(int argc, char *argv[])
 
     alisp::logging::init_logging(opts.debug_logging);
 
+    
+#ifdef DEUBG_LOGGING
+    
     if (opts.debug_logging)
     {
 
@@ -232,6 +235,8 @@ int main(int argc, char *argv[])
             AL_DEBUG("Warning: "s += it);
         }
     }
+    
+#endif
 
 
     std::vector<alisp::EngineSettings> settings;
@@ -247,7 +252,7 @@ int main(int argc, char *argv[])
         settings, std::move(opts.args), std::move(opts.includes), std::move(opts.warnings)
     };
     g_alisp_engine = &alisp_engine;
-
+    
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
     sa.sa_handler = got_signal;
@@ -270,13 +275,12 @@ int main(int argc, char *argv[])
         {
             if (file_path.string()[0] == '-')
             {
-                std::cout << "Can\'t interpter input: " << file_path.string() << "\n";
-                std::cout << "Usage:" << clipp::usage_lines(cli, "alisp") << "\n";
+                fmt::print("Can\'t interpter input: {}\n", file_path);
+                fmt::print("Usage: {}\n", clipp::usage_lines(cli, "alisp"));
                 return 1;
             }
 
-            std::cerr << '\"' << file_path << "\" is not a file."
-                      << "\n";
+            fmt::print("\"{}\" is not a file\n", file_path);
             return 0;
         }
 
@@ -330,7 +334,7 @@ int interactive(alisp::LanguageEngine &alisp_engine)
 
     alisp::prompt::SaveHistory hist;
 
-    std::cout << alisp::get_build_info();
+    fmt::print("{}", alisp::get_build_info());
 
     while (true)
     {
@@ -339,7 +343,7 @@ int interactive(alisp::LanguageEngine &alisp_engine)
 
         if (!command)
         {
-            std::cout << '\n';
+            fmt::print("\n");
             break;
         }
 
