@@ -1,0 +1,6 @@
+- repo: https://gitlab.com/daverona/pre-commit-cpp
+  rev: 0.6.0          # use the most recent version
+  hooks:
+  - id: clang-format  # formatter of C/C++ code based on a style guide: LLVM, Google, Chromium, Mozilla, and WebKit available
+  - id: cpplint       # linter (or style-error checker) for Google C++ Style Guide
+  - id: cppcheck      # static analyzer of C/C++ code
