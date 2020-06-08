@@ -48,7 +48,7 @@ void env::update_prime(ALObjectPtr t_sym, ALObjectPtr t_val)
 }
 
 
-uint32_t object_to_resource(ALObjectPtr t_obj)
+uint32_t object_to_resource(const ALObjectPtr &t_obj)
 {
     return static_cast<uint32_t>(t_obj->to_int());
 }

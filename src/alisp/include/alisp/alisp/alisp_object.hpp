@@ -265,7 +265,7 @@ inline ALObjectPtr eval_transform(eval::Evaluator *evl, ALObjectPtr t_obj, size_
 /* |____/ \___/ \___/|_|  \__,_|\__|_|_|___/ */
 
 
-inline bool is_falsy(ALObjectPtr obj)
+inline bool is_falsy(const ALObjectPtr &obj)
 {
     if (obj == Qnil) return true;
 
@@ -277,12 +277,12 @@ inline bool is_falsy(ALObjectPtr obj)
     return false;
 }
 
-inline bool is_truthy(ALObjectPtr obj)
+inline bool is_truthy(const ALObjectPtr &obj)
 {
     return !is_falsy(obj);
 }
 
-inline bool are_objects_numbers(ALObjectPtr obj)
+inline bool are_objects_numbers(const ALObjectPtr &obj)
 {
     if (!obj->is_list())
     {
@@ -295,7 +295,7 @@ inline bool are_objects_numbers(ALObjectPtr obj)
     return true;
 }
 
-inline bool are_objects_int(ALObjectPtr obj)
+inline bool are_objects_int(const ALObjectPtr &obj)
 {
     if (!obj->is_list())
     {
@@ -308,7 +308,7 @@ inline bool are_objects_int(ALObjectPtr obj)
     return true;
 }
 
-inline bool are_objects_real(ALObjectPtr obj)
+inline bool are_objects_real(const ALObjectPtr &obj)
 {
     if (!obj->is_list())
     {
@@ -321,7 +321,7 @@ inline bool are_objects_real(ALObjectPtr obj)
     return true;
 }
 
-inline bool are_objects_string(ALObjectPtr obj)
+inline bool are_objects_string(const ALObjectPtr &obj)
 {
     if (!obj->is_list())
     {
@@ -334,52 +334,52 @@ inline bool are_objects_string(ALObjectPtr obj)
     return true;
 }
 
-inline bool min_list_elements(ALObjectPtr obj, size_t t_element_cnt)
+inline bool min_list_elements(const ALObjectPtr &obj, size_t t_element_cnt)
 {
     return obj->is_list() && std::size(*obj) >= t_element_cnt;
 }
 
-inline bool max_list_elements(ALObjectPtr obj, size_t t_element_cnt)
+inline bool max_list_elements(const ALObjectPtr &obj, size_t t_element_cnt)
 {
     return obj->is_list() && std::size(*obj) <= t_element_cnt;
 }
 
-inline bool psym(ALObjectPtr obj)
+inline bool psym(const ALObjectPtr &obj)
 {
     return obj->is_sym();
 }
 
-inline bool pint(ALObjectPtr obj)
+inline bool pint(const ALObjectPtr &obj)
 {
     return obj->is_int();
 }
 
-inline bool preal(ALObjectPtr obj)
+inline bool preal(const ALObjectPtr &obj)
 {
     return obj->is_real();
 }
 
-inline bool plist(ALObjectPtr obj)
+inline bool plist(const ALObjectPtr &obj)
 {
     return obj->is_list();
 }
 
-inline bool pstring(ALObjectPtr obj)
+inline bool pstring(const ALObjectPtr &obj)
 {
     return obj->is_string();
 }
 
-inline bool pfunction(ALObjectPtr obj)
+inline bool pfunction(const ALObjectPtr &obj)
 {
     return obj->check_function_flag();
 }
 
-inline bool pprime(ALObjectPtr obj)
+inline bool pprime(const ALObjectPtr &obj)
 {
     return obj->get_prime() != nullptr;
 }
 
-inline bool contains(ALObjectPtr obj, const std::string &t_str)
+inline bool contains(const ALObjectPtr &obj, const std::string &t_str)
 {
     if (!plist(obj))
     {
@@ -401,7 +401,7 @@ inline bool contains(ALObjectPtr obj, const std::string &t_str)
     return std::any_of(std::begin(*obj), std::end(*obj), pred);
 }
 
-inline auto get_next(ALObjectPtr obj, const std::string &t_str) -> std::pair<ALObjectPtr, bool>
+inline auto get_next(const ALObjectPtr &obj, const std::string &t_str) -> std::pair<ALObjectPtr, bool>
 {
     if (!plist(obj))
     {
@@ -444,7 +444,7 @@ inline const auto OR_OBJ_FUN  = [](bool t_acc, ALObjectPtr t_obj) { return t_acc
 //     return is_truthy(t_obj);
 // }
 
-uint32_t object_to_resource(ALObjectPtr t_obj);
+uint32_t object_to_resource(const ALObjectPtr &t_obj);
 
 ALObjectPtr resource_to_object(uint32_t t_id);
 
@@ -456,23 +456,27 @@ ALObjectPtr resource_to_object(uint32_t t_id);
 /* |_|  |_|\__,_|\__|_| |_|  \__,_|\__|_|_|___/ */
 
 
-inline const auto ADD_OBJ_FUN = [](int64_t t_acc, ALObjectPtr t_obj) { return t_acc + t_obj->to_int(); };
-inline const auto SUB_OBJ_FUN = [](int64_t t_acc, ALObjectPtr t_obj) { return t_acc - t_obj->to_int(); };
-inline const auto MUL_OBJ_FUN = [](int64_t t_acc, ALObjectPtr t_obj) { return t_acc * t_obj->to_int(); };
-inline const auto DIV_OBJ_FUN = [](int64_t t_acc, ALObjectPtr t_obj) { return t_acc / t_obj->to_int(); };
+inline const auto ADD_OBJ_FUN = [](int64_t t_acc, ALObjectPtr &t_obj) { return t_acc + t_obj->to_int(); };
+inline const auto SUB_OBJ_FUN = [](int64_t t_acc, ALObjectPtr &t_obj) { return t_acc - t_obj->to_int(); };
+inline const auto MUL_OBJ_FUN = [](int64_t t_acc, ALObjectPtr &t_obj) { return t_acc * t_obj->to_int(); };
+inline const auto DIV_OBJ_FUN = [](int64_t t_acc, ALObjectPtr &t_obj) { return t_acc / t_obj->to_int(); };
 
-inline const auto ADD_OBJ_FUN_D = [](double t_acc, ALObjectPtr t_obj) { return t_acc + t_obj->to_real(); };
-inline const auto SUB_OBJ_FUN_D = [](double t_acc, ALObjectPtr t_obj) { return t_acc - t_obj->to_real(); };
-inline const auto MUL_OBJ_FUN_D = [](double t_acc, ALObjectPtr t_obj) { return t_acc * t_obj->to_real(); };
-inline const auto DIV_OBJ_FUN_D = [](double t_acc, ALObjectPtr t_obj) { return t_acc / t_obj->to_real(); };
+inline const auto ADD_OBJ_FUN_D = [](double t_acc, ALObjectPtr &t_obj) { return t_acc + t_obj->to_real(); };
+inline const auto SUB_OBJ_FUN_D = [](double t_acc, ALObjectPtr &t_obj) { return t_acc - t_obj->to_real(); };
+inline const auto MUL_OBJ_FUN_D = [](double t_acc, ALObjectPtr &t_obj) { return t_acc * t_obj->to_real(); };
+inline const auto DIV_OBJ_FUN_D = [](double t_acc, ALObjectPtr &t_obj) { return t_acc / t_obj->to_real(); };
 
 
-inline const auto SHIFT_LEFT  = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() << t_rhs->to_int(); };
-inline const auto SHIFT_RIGHT = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() >> t_rhs->to_int(); };
-inline const auto BIT_OR      = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() | t_rhs->to_int(); };
-inline const auto BIT_AND     = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() & t_rhs->to_int(); };
-inline const auto BIT_XOR     = [](ALObjectPtr t_lhs, ALObjectPtr t_rhs) { return t_lhs->to_int() ^ t_rhs->to_int(); };
-inline const auto BIT_INV     = [](ALObjectPtr t_obj) { return ~t_obj->to_int(); };
+inline const auto SHIFT_LEFT = [](ALObjectPtr &t_lhs, ALObjectPtr &t_rhs) {
+    return t_lhs->to_int() << t_rhs->to_int();
+};
+inline const auto SHIFT_RIGHT = [](ALObjectPtr &t_lhs, ALObjectPtr &t_rhs) {
+    return t_lhs->to_int() >> t_rhs->to_int();
+};
+inline const auto BIT_OR  = [](ALObjectPtr &t_lhs, ALObjectPtr &t_rhs) { return t_lhs->to_int() | t_rhs->to_int(); };
+inline const auto BIT_AND = [](ALObjectPtr &t_lhs, ALObjectPtr &t_rhs) { return t_lhs->to_int() & t_rhs->to_int(); };
+inline const auto BIT_XOR = [](ALObjectPtr &t_lhs, ALObjectPtr &t_rhs) { return t_lhs->to_int() ^ t_rhs->to_int(); };
+inline const auto BIT_INV = [](ALObjectPtr &t_obj) { return ~t_obj->to_int(); };
 
 
 /*  _____                  _ _ _          */
