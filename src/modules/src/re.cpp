@@ -235,18 +235,23 @@ ALObjectPtr Freplace(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     auto repl = eval->eval(t_obj->i(2));
     AL_CHECK(assert_string(repl));
 
-    std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
-    if (std::size(*t_obj) > 3)
+    try
     {
-        auto flags_list = eval->eval(t_obj->i(3));
-        AL_CHECK(assert_list(flags_list));
-        flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+        std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
+        if (std::size(*t_obj) > 3)
+        {
+            auto flags_list = eval->eval(t_obj->i(3));
+            AL_CHECK(assert_list(flags_list));
+            flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+        }
+        auto res = std::regex_replace(str->to_string(), detail::obj_to_regex(reg), repl->to_string(), flags);
+        return make_string(res);
     }
-
-
-    auto res = std::regex_replace(str->to_string(), detail::obj_to_regex(reg), repl->to_string(), flags);
-
-    return make_string(res);
+    catch (std::regex_error &exc)
+    {
+        signal(re_signal, fmt::format("Re error: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fmatch(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -257,17 +262,24 @@ ALObjectPtr Fmatch(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto str = eval->eval(t_obj->i(1));
     AL_CHECK(assert_string(str));
     std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
-    if (std::size(*t_obj) > 2)
+
+    try
     {
-        auto flags_list = eval->eval(t_obj->i(2));
-        AL_CHECK(assert_list(flags_list));
-        flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+        if (std::size(*t_obj) > 2)
+        {
+            auto flags_list = eval->eval(t_obj->i(2));
+            AL_CHECK(assert_list(flags_list));
+            flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+        }
+        std::smatch match;
+        auto res = std::regex_match(str->to_string(), match, detail::obj_to_regex(reg), flags);
+        return res ? detail::match_to_obj(match) : Qnil;
     }
-
-    std::smatch match;
-    auto res = std::regex_match(str->to_string(), match, detail::obj_to_regex(reg), flags);
-
-    return res ? detail::match_to_obj(match) : Qnil;
+    catch (std::regex_error &exc)
+    {
+        signal(re_signal, fmt::format("Re error: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fsearch(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -277,19 +289,26 @@ ALObjectPtr Fsearch(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
 
     auto str = eval->eval(t_obj->i(1));
     AL_CHECK(assert_string(str));
-
     std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
-    if (std::size(*t_obj) > 2)
+
+
+    try
     {
-        auto flags_list = eval->eval(t_obj->i(2));
-        AL_CHECK(assert_list(flags_list));
-        flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+        if (std::size(*t_obj) > 2)
+        {
+            auto flags_list = eval->eval(t_obj->i(2));
+            AL_CHECK(assert_list(flags_list));
+            flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+        }
+        std::smatch match;
+        auto res = std::regex_search(str->to_string(), match, detail::obj_to_regex(reg), flags);
+        return res ? detail::match_to_obj(match) : Qnil;
     }
-
-    std::smatch match;
-    auto res = std::regex_search(str->to_string(), match, detail::obj_to_regex(reg), flags);
-
-    return res ? detail::match_to_obj(match) : Qnil;
+    catch (std::regex_error &exc)
+    {
+        signal(re_signal, fmt::format("Re error: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fsearch_all(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -301,25 +320,34 @@ ALObjectPtr Fsearch_all(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *
     AL_CHECK(assert_string(str));
 
     std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
-    if (std::size(*t_obj) > 2)
+
+    try
     {
-        auto flags_list = eval->eval(t_obj->i(2));
-        AL_CHECK(assert_list(flags_list));
-        flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+        if (std::size(*t_obj) > 2)
+        {
+            auto flags_list = eval->eval(t_obj->i(2));
+            AL_CHECK(assert_list(flags_list));
+            flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+        }
+
+        auto string_expr = str->to_string();
+        std::string::const_iterator search_start(string_expr.cbegin());
+
+        ALObject::list_type matches;
+        std::smatch match;
+        while (std::regex_search(search_start, string_expr.cend(), match, detail::obj_to_regex(reg), flags))
+        {
+            matches.push_back(detail::match_to_obj(match));
+            search_start = match.suffix().first;
+        }
+
+        return make_list(matches);
     }
-
-    auto string_expr = str->to_string();
-    std::string::const_iterator search_start(string_expr.cbegin());
-
-    ALObject::list_type matches;
-    std::smatch match;
-    while (std::regex_search(search_start, string_expr.cend(), match, detail::obj_to_regex(reg), flags))
+    catch (std::regex_error &exc)
     {
-        matches.push_back(detail::match_to_obj(match));
-        search_start = match.suffix().first;
+        signal(re_signal, fmt::format("Re error: {}", exc.what()));
+        return Qnil;
     }
-
-    return make_list(matches);
 }
 
 
@@ -330,16 +358,25 @@ ALObjectPtr Fcompile(ALObjectPtr t_obj, env::Environment *env, eval::Evaluator *
     AL_CHECK(assert_string(reg));
 
     std::regex_constants::syntax_option_type flags = std::regex_constants::ECMAScript;
-    if (std::size(*t_obj) > 1)
-    {
-        auto flags_list = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_list(flags_list));
-        flags = detail::handle_regex_flags(flags_list);
-    }
 
-    auto id = detail::reg_registry.emplace_resource(reg->to_string(), flags)->id;
-    env->defer_callback([id = id]() { detail::reg_registry.destroy_resource(id); });
-    return resource_to_object(id);
+    try
+    {
+        if (std::size(*t_obj) > 1)
+        {
+            auto flags_list = eval->eval(t_obj->i(1));
+            AL_CHECK(assert_list(flags_list));
+            flags = detail::handle_regex_flags(flags_list);
+        }
+
+        auto id = detail::reg_registry.emplace_resource(reg->to_string(), flags)->id;
+        env->defer_callback([id = id]() { detail::reg_registry.destroy_resource(id); });
+        return resource_to_object(id);
+    }
+    catch (std::regex_error &exc)
+    {
+        signal(re_signal, fmt::format("Re error: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 }  // namespace re
