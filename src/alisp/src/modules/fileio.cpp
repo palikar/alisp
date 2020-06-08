@@ -24,9 +24,12 @@
 #include <filesystem>
 #include <glob.h>
 #include <string.h>
+#include <fmt/format.h>
 
 namespace alisp
 {
+
+auto fileio_signal = alisp::make_symbol("fileio-signal");
 
 namespace detail
 {
@@ -96,7 +99,20 @@ ALObjectPtr Froot(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
 {
     namespace fs = std::filesystem;
     AL_CHECK(assert_size<0>(t_obj));
-    return make_string(fs::current_path().root_path());
+
+    try
+    {
+        return make_string(fs::current_path().root_path());
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
+    return Qnil;
 }
 
 ALObjectPtr Fdirectories(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -109,13 +125,24 @@ ALObjectPtr Fdirectories(ALObjectPtr t_obj, env::Environment *, eval::Evaluator 
 
     ALObject::list_type entries;
 
-    for (auto &entr : fs::directory_iterator(path->to_string()))
+    try
     {
-        if (!entr.is_directory())
+        for (auto &entr : fs::directory_iterator(path->to_string()))
         {
-            continue;
+            if (!entr.is_directory())
+            {
+                continue;
+            }
+            entries.push_back(make_string(entr.path().string()));
         }
-        entries.push_back(make_string(entr.path().string()));
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
     }
 
     return make_object(entries);
@@ -131,9 +158,20 @@ ALObjectPtr Fentries(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
 
     ALObject::list_type entries;
 
-    for (auto &entr : fs::directory_iterator(path->to_string()))
+    try
     {
-        entries.push_back(make_string(entr.path().string()));
+        for (auto &entr : fs::directory_iterator(path->to_string()))
+        {
+            entries.push_back(make_string(entr.path().string()));
+        }
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
     }
 
     return make_object(entries);
@@ -146,6 +184,7 @@ ALObjectPtr Fglob(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     AL_CHECK(assert_min_size<2>(t_obj));
     auto pattern = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(pattern));
+
     if (std::size(*t_obj) > 1)
     {
         auto path = eval->eval(t_obj->i(1));
@@ -197,8 +236,12 @@ ALObjectPtr Fcopy(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     {
         fs::copy(source->to_string(), target->to_string());
     }
-    catch (...)
+    catch (fs::filesystem_error &exc)
     {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
         return Qnil;
     }
 
@@ -216,14 +259,20 @@ ALObjectPtr Fmove(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     AL_CHECK(assert_string(source));
     AL_CHECK(assert_string(target));
 
+
     try
     {
         fs::rename(source->to_string(), target->to_string());
     }
-    catch (...)
+    catch (fs::filesystem_error &exc)
     {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
         return Qnil;
     }
+
 
     return Qt;
 }
@@ -239,14 +288,20 @@ ALObjectPtr Fmake_symlink(ALObjectPtr t_obj, env::Environment *, eval::Evaluator
     AL_CHECK(assert_string(link));
     AL_CHECK(assert_string(target));
 
+
     try
     {
         fs::create_symlink(target->to_string(), link->to_string());
     }
-    catch (...)
+    catch (fs::filesystem_error &exc)
     {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
         return Qnil;
     }
+
 
     return Qt;
 }
@@ -259,16 +314,27 @@ ALObjectPtr Fdelete(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
 
-    if (std::size(*t_obj) > 1 and is_truthy(eval->eval(t_obj->i(1))))
+    try
     {
+        if (std::size(*t_obj) > 1 and is_truthy(eval->eval(t_obj->i(1))))
+        {
 
-        bool val = fs::remove_all(path->to_string());
-        return val ? Qt : Qnil;
+            bool val = fs::remove_all(path->to_string());
+            return val ? Qt : Qnil;
+        }
+        else
+        {
+            bool val = fs::remove(path->to_string());
+            return val ? Qt : Qnil;
+        }
     }
-    else
+    catch (fs::filesystem_error &exc)
     {
-        bool val = fs::remove(path->to_string());
-        return val ? Qt : Qnil;
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
     }
 }
 
@@ -280,9 +346,19 @@ ALObjectPtr Fmkdir(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
 
-    bool val = fs::create_directory(path->to_string());
-
-    return val ? Qt : Qnil;
+    try
+    {
+        bool val = fs::create_directory(path->to_string());
+        return val ? Qt : Qnil;
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fwith_temp_file(ALObjectPtr t_obj, env::Environment *env, eval::Evaluator *eval)
@@ -548,9 +624,19 @@ ALObjectPtr Fexpand(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
 
-    const auto p = fs::absolute(path->to_string());
-
-    return make_string(p);
+    try
+    {
+        const auto p = fs::absolute(path->to_string());
+        return make_string(p);
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Ffilename(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -561,9 +647,20 @@ ALObjectPtr Ffilename(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
 
-    const auto p = fs::path(path->to_string());
 
-    return make_string(p.filename());
+    try
+    {
+        const auto p = fs::path(path->to_string());
+        return make_string(p.filename());
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fdirname(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -574,9 +671,20 @@ ALObjectPtr Fdirname(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
 
-    const auto p = fs::path(path->to_string());
 
-    return make_string(p.parent_path());
+    try
+    {
+        const auto p = fs::path(path->to_string());
+        return make_string(p.parent_path());
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fcommon_parent(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -596,9 +704,19 @@ ALObjectPtr Fext(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
 
-    const auto p = fs::path(path->to_string());
-
-    return make_string(p.extension());
+    try
+    {
+        const auto p = fs::path(path->to_string());
+        return make_string(p.extension());
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fno_ext(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -609,9 +727,19 @@ ALObjectPtr Fno_ext(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
 
-    const auto p = fs::path(path->to_string());
-
-    return make_string(p.stem());
+    try
+    {
+        const auto p = fs::path(path->to_string());
+        return make_string(p.stem());
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fswap_ext(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -624,9 +752,19 @@ ALObjectPtr Fswap_ext(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
     AL_CHECK(assert_string(path));
     AL_CHECK(assert_string(ext));
 
-    const auto p = fs::path(path->to_string());
-
-    return make_string(p.stem().string() + "." + ext->to_string());
+    try
+    {
+        const auto p = fs::path(path->to_string());
+        return make_string(p.stem().string() + "." + ext->to_string());
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fbase(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -658,14 +796,24 @@ ALObjectPtr Frelative(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
 
     const auto p = fs::path(path->to_string());
 
-    if (std::size(*t_obj) > 1)
+    try
     {
-        auto to_path = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(to_path));
-        return make_string(fs::relative(p, to_path->to_string()));
+        if (std::size(*t_obj) > 1)
+        {
+            auto to_path = eval->eval(t_obj->i(1));
+            AL_CHECK(assert_string(to_path));
+            return make_string(fs::relative(p, to_path->to_string()));
+        }
+        return make_string(path->to_string());
     }
-
-    return make_string(path->to_string());
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fshort(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -685,7 +833,18 @@ ALObjectPtr Flong(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
 
-    return make_string(fs::canonical(path->to_string()));
+    try
+    {
+        return make_string(fs::canonical(path->to_string()));
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fcanonical(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -696,7 +855,18 @@ ALObjectPtr Fcanonical(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
 
-    return make_string(fs::canonical(path->to_string()));
+    try
+    {
+        return make_string(fs::canonical(path->to_string()));
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Ffull(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -706,8 +876,20 @@ ALObjectPtr Ffull(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     AL_CHECK(assert_size<1>(t_obj));
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
-    auto p = fs::path(path->to_string());
-    return make_string(fs::absolute(p));
+
+    try
+    {
+        auto p = fs::path(path->to_string());
+        return make_string(fs::absolute(p));
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fexists(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -717,7 +899,7 @@ ALObjectPtr Fexists(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval
     AL_CHECK(assert_size<1>(t_obj));
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
-    auto p = fs::path(path->to_string());
+    const auto p = fs::path(path->to_string());
     return fs::exists(p) ? Qt : Qnil;
 }
 
@@ -834,7 +1016,19 @@ ALObjectPtr Fsame(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     AL_CHECK(assert_string(path2));
     const auto p1 = fs::path(path1->to_string());
     const auto p2 = fs::path(path2->to_string());
-    return fs::equivalent(p1, p2) ? Qt : Qnil;
+
+    try
+    {
+        return fs::equivalent(p1, p2) ? Qt : Qnil;
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fparent_of(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -848,7 +1042,19 @@ ALObjectPtr Fparent_of(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     AL_CHECK(assert_string(path2));
     const auto p1 = fs::path(path1->to_string());
     const auto p2 = fs::path(path2->to_string());
-    return fs::equivalent(p1, p2.parent_path()) ? Qt : Qnil;
+
+    try
+    {
+        return fs::equivalent(p1, p2.parent_path()) ? Qt : Qnil;
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fchild_of(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -862,7 +1068,19 @@ ALObjectPtr Fchild_of(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
     AL_CHECK(assert_string(path2));
     const auto p1 = fs::path(path1->to_string());
     const auto p2 = fs::path(path2->to_string());
-    return fs::equivalent(p1, p2.parent_path()) ? Qt : Qnil;
+
+    try
+    {
+        return fs::equivalent(p1, p2.parent_path()) ? Qt : Qnil;
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fancestor_of(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -946,9 +1164,19 @@ ALObjectPtr Fempty(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto path = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(path));
 
-    const auto p = fs::path(path->to_string());
-
-    return fs::is_empty(p) ? Qt : Qnil;
+    try
+    {
+        const auto p = fs::path(path->to_string());
+        return fs::is_empty(p) ? Qt : Qnil;
+    }
+    catch (fs::filesystem_error &exc)
+    {
+        signal(
+          fileio_signal,
+          fmt::format(
+            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        return Qnil;
+    }
 }
 
 }  // namespace detail

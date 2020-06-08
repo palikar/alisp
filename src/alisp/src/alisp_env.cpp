@@ -39,10 +39,11 @@ namespace env
 {
 
 Environment::Environment()
-    : m_modules{ { "--main--", std::make_shared<Module>("--main--") } }
-    , m_active_module({ *m_modules.at("--main--").get() })
-    , m_call_depth(0)
-{}
+  : m_modules{ { "--main--", std::make_shared<Module>("--main--") } }
+  , m_active_module({ *m_modules.at("--main--").get() })
+  , m_call_depth(0)
+{
+}
 
 Environment::~Environment()
 {
@@ -325,7 +326,10 @@ void Environment::define_module(const std::string t_name, ModulePtr t_mod)
     m_modules.insert({ std::move(t_name), std::move(t_mod) });
 }
 
-bool Environment::module_loaded(const std::string &t_module_name) { return m_modules.count(t_module_name) != 0; }
+bool Environment::module_loaded(const std::string &t_module_name)
+{
+    return m_modules.count(t_module_name) != 0;
+}
 
 void Environment::resolve_callbacks()
 {
@@ -522,10 +526,10 @@ MacroCall::MacroCall(Environment &t_env) : m_env(t_env)
 MacroCall::~MacroCall()
 {
     m_env.destroy_scope();
-        
 }
 
-ModuleChange::ModuleChange(Environment &t_env, const std::string &t_module) : m_env(t_env), m_prev_mod(m_env.current_module())
+ModuleChange::ModuleChange(Environment &t_env, const std::string &t_module)
+  : m_env(t_env), m_prev_mod(m_env.current_module())
 {
 
     m_env.activate_module(t_module);
@@ -536,7 +540,7 @@ ModuleChange::~ModuleChange()
     m_env.activate_module(m_prev_mod);
 }
 
-}
+}  // namespace detail
 
 }  // namespace env
 

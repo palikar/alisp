@@ -57,7 +57,7 @@ namespace detail
 struct CellStack
 {
   public:
-    using Scope = std::unordered_map<std::string, ALObjectPtr>;
+    using Scope      = std::unordered_map<std::string, ALObjectPtr>;
     using StackFrame = std::vector<Scope>;
     using Stack      = std::vector<StackFrame>;
 
@@ -237,11 +237,11 @@ class Environment
         m_stack.pop_frame();
     }
 
-    inline  size_t call_depth() { return m_call_depth; }
+    inline size_t call_depth() { return m_call_depth; }
 
-    inline  bool in_function() { return m_call_depth != 0; }
+    inline bool in_function() { return m_call_depth != 0; }
 
-    inline  bool in_root() { return (!in_function()) && (std::size(m_stack.root_frame()) == 1); }
+    inline bool in_root() { return (!in_function()) && (std::size(m_stack.root_frame()) == 1); }
 
     void stack_dump() const;
 
@@ -349,8 +349,6 @@ struct CallTracer
     bool m_is_prime      = false;
     size_t m_line        = 0;
     size_t m_catch_depth = 0;
-
-    
 };
 
 #endif
@@ -371,7 +369,6 @@ struct FunctionCall
 struct ScopePushPop
 {
   public:
-
     explicit ScopePushPop(Environment &t_env);
 
     ~ScopePushPop();
@@ -384,12 +381,12 @@ struct ScopePushPop
 
 struct MacroCall
 {
-    
+
   public:
     explicit MacroCall(Environment &t_env);
-    
+
     ~MacroCall();
-    
+
     ALISP_RAII_OBJECT(MacroCall);
 
   private:
@@ -398,15 +395,14 @@ struct MacroCall
 
 struct ModuleChange
 {
-    
-  public:
 
+  public:
     ModuleChange(Environment &t_env, const std::string &t_module);
-    
+
     ~ModuleChange();
 
     ALISP_RAII_OBJECT(ModuleChange);
-    
+
     const std::string &old_module() const { return m_prev_mod; }
 
   private:

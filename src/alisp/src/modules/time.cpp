@@ -43,6 +43,12 @@ ALObjectPtr Ftime(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
 {
     AL_CHECK(assert_size<0>(t_obj));
     std::time_t result = std::time(nullptr);
+
+    if (result == -1)
+    {
+        return Qnil;
+    }
+
     return make_int(result);
 }
 
