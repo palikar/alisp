@@ -43,6 +43,8 @@ namespace process
 using namespace alisp;
 using namespace subprocess;
 
+auto subprocess_signal = alisp::make_symbol("subprocess-signal");
+
 namespace detail
 {
 
@@ -175,15 +177,26 @@ ALObjectPtr Fpopen(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval
         }
     }
 
-    auto new_id = detail::proc_registry
-                    .emplace_resource(detail::open_proc(
-                      args, options, std::make_index_sequence<std::tuple_size<detail::opts>::value>()))
-                    ->id;
-
-    env->defer_callback([id = new_id]() { detail::proc_registry.destroy_resource(id); });
-
-    auto new_obj = resource_to_object(new_id);
-    return new_obj;
+    try
+    {
+        auto new_id = detail::proc_registry
+                        .emplace_resource(detail::open_proc(
+                          args, options, std::make_index_sequence<std::tuple_size<detail::opts>::value>()))
+                        ->id;
+        env->defer_callback([id = new_id]() { detail::proc_registry.destroy_resource(id); });
+        auto new_obj = resource_to_object(new_id);
+        return new_obj;
+    }
+    catch (subprocess::OSError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+        return Qnil;
+    }
+    catch (subprocess::CalledProcessError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fcheck_output(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
@@ -196,9 +209,21 @@ ALObjectPtr Fcheck_output(ALObjectPtr obj, env::Environment *, eval::Evaluator *
         args.push_back(eval->eval(el)->to_string());
     }
 
-    auto buf = subprocess::check_output(args);
-
-    return make_string(std::string{ buf.buf.begin(), buf.buf.end() });
+    try
+    {
+        auto buf = subprocess::check_output(args);
+        return make_string(std::string{ buf.buf.begin(), buf.buf.end() });
+    }
+    catch (subprocess::OSError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+        return Qnil;
+    }
+    catch (subprocess::CalledProcessError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fcheck_output_bytes(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
@@ -211,14 +236,26 @@ ALObjectPtr Fcheck_output_bytes(ALObjectPtr obj, env::Environment *, eval::Evalu
         args.push_back(eval->eval(el)->to_string());
     }
 
-    auto buf = subprocess::check_output(args);
-
-    ALObject::list_type bytes;
-    for (auto b : buf.buf)
+    try
     {
-        bytes.push_back(make_int(b));
+        auto buf = subprocess::check_output(args);
+        ALObject::list_type bytes;
+        for (auto b : buf.buf)
+        {
+            bytes.push_back(make_int(b));
+        }
+        return make_list(bytes);
     }
-    return make_list(bytes);
+    catch (subprocess::OSError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+        return Qnil;
+    }
+    catch (subprocess::CalledProcessError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fpid(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -238,7 +275,20 @@ ALObjectPtr Fretcode(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     auto pro = eval->eval(t_obj->i(0));
     AL_CHECK(assert_int(pro));
 
-    return make_int(detail::proc_registry[object_to_resource(pro)]->retcode());
+    try
+    {
+        return make_int(detail::proc_registry[object_to_resource(pro)]->retcode());
+    }
+    catch (subprocess::OSError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+        return Qnil;
+    }
+    catch (subprocess::CalledProcessError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fwait(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -248,7 +298,20 @@ ALObjectPtr Fwait(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto pro = eval->eval(t_obj->i(0));
     AL_CHECK(assert_int(pro));
 
-    return make_int(detail::proc_registry[object_to_resource(pro)]->wait());
+    try
+    {
+        return make_int(detail::proc_registry[object_to_resource(pro)]->wait());
+    }
+    catch (subprocess::OSError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+        return Qnil;
+    }
+    catch (subprocess::CalledProcessError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fpoll(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -258,7 +321,20 @@ ALObjectPtr Fpoll(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto pro = eval->eval(t_obj->i(0));
     AL_CHECK(assert_int(pro));
 
-    return make_int(detail::proc_registry[object_to_resource(pro)]->poll());
+    try
+    {
+        return make_int(detail::proc_registry[object_to_resource(pro)]->poll());
+    }
+    catch (subprocess::OSError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+        return Qnil;
+    }
+    catch (subprocess::CalledProcessError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fstart(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -268,8 +344,21 @@ ALObjectPtr Fstart(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto pro = eval->eval(t_obj->i(0));
     AL_CHECK(assert_int(pro));
 
-    detail::proc_registry[object_to_resource(pro)]->start_process();
-    return Qt;
+    try
+    {
+        detail::proc_registry[object_to_resource(pro)]->start_process();
+        return Qt;
+    }
+    catch (subprocess::OSError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+        return Qnil;
+    }
+    catch (subprocess::CalledProcessError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fkill(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -279,16 +368,29 @@ ALObjectPtr Fkill(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto pro = eval->eval(t_obj->i(0));
     AL_CHECK(assert_int(pro));
 
-    if (std::size(*t_obj) > 1)
+    try
     {
-        auto sig = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_int(sig));
-        detail::proc_registry[object_to_resource(pro)]->kill(static_cast<int>(sig->to_int()));
+        if (std::size(*t_obj) > 1)
+        {
+            auto sig = eval->eval(t_obj->i(1));
+            AL_CHECK(assert_int(sig));
+            detail::proc_registry[object_to_resource(pro)]->kill(static_cast<int>(sig->to_int()));
+            return Qt;
+        }
+
+        detail::proc_registry[object_to_resource(pro)]->kill();
         return Qt;
     }
-
-    detail::proc_registry[object_to_resource(pro)]->kill();
-    return Qt;
+    catch (subprocess::OSError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+        return Qnil;
+    }
+    catch (subprocess::CalledProcessError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fsend(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -300,8 +402,21 @@ ALObjectPtr Fsend(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     auto msgs = eval->eval(t_obj->i(1));
     AL_CHECK(assert_string(msgs));
 
-    auto s = msgs->to_string();
-    return make_int(detail::proc_registry[object_to_resource(pro)]->send(s.data(), s.size()));
+    try
+    {
+        auto s = msgs->to_string();
+        return make_int(detail::proc_registry[object_to_resource(pro)]->send(s.data(), s.size()));
+    }
+    catch (subprocess::OSError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+        return Qnil;
+    }
+    catch (subprocess::CalledProcessError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fcommunicate(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
@@ -311,21 +426,35 @@ ALObjectPtr Fcommunicate(ALObjectPtr t_obj, env::Environment *, eval::Evaluator 
     auto pro = eval->eval(t_obj->i(0));
     AL_CHECK(assert_int(pro));
 
-    if (std::size(*t_obj) > 1)
+    try
     {
-        auto msgs = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(msgs));
-        auto s          = msgs->to_string();
-        auto [out, err] = detail::proc_registry[object_to_resource(pro)]->communicate(s.data(), s.size());
+
+        if (std::size(*t_obj) > 1)
+        {
+            auto msgs = eval->eval(t_obj->i(1));
+            AL_CHECK(assert_string(msgs));
+            auto s          = msgs->to_string();
+            auto [out, err] = detail::proc_registry[object_to_resource(pro)]->communicate(s.data(), s.size());
+            return make_object(make_string(std::string{ out.buf.begin(), out.buf.end() }),
+                               make_string(std::string{ err.buf.begin(), err.buf.end() }));
+        }
+
+        auto [out, err] = detail::proc_registry[object_to_resource(pro)]->communicate();
+
+
         return make_object(make_string(std::string{ out.buf.begin(), out.buf.end() }),
                            make_string(std::string{ err.buf.begin(), err.buf.end() }));
     }
-
-    auto [out, err] = detail::proc_registry[object_to_resource(pro)]->communicate();
-
-
-    return make_object(make_string(std::string{ out.buf.begin(), out.buf.end() }),
-                       make_string(std::string{ err.buf.begin(), err.buf.end() }));
+    catch (subprocess::OSError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+        return Qnil;
+    }
+    catch (subprocess::CalledProcessError &exc)
+    {
+        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+        return Qnil;
+    }
 }
 
 
