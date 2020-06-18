@@ -5,9 +5,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 project(alisp LANGUAGES CXX)
 
 include(cmake/safeguards.cmake)
-
 include(GNUInstallDirs)
 include(FindUnixCommands)
+include(FetchContent)
 
 
 #######################################################################

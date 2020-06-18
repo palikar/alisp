@@ -113,10 +113,7 @@ class LanguageEngine
 
     std::pair<bool, int> eval_objs(std::vector<ALObjectPtr> t_objs);
 
-    inline ALObjectPtr get_value(const std::string &t_sym_name)
-    {
-        return m_environment.find(make_symbol(t_sym_name));
-    }
+    inline ALObjectPtr get_value(const std::string &t_sym_name) { return m_environment.find(make_symbol(t_sym_name)); }
 
     inline const std::string &get_home() const { return m_home_directory; }
 

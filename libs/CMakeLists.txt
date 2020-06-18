@@ -14,3 +14,9 @@ install(TARGETS tinyxml2
 set(FMT_PEDANTIC ON)
 set(FMT_INSTALL ON)
 add_subdirectory(fmt)
+
+
+set(USE_SYSTEM_CURL ON)
+set(BUILD_CPR_TESTS OFF)
+FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/whoshuu/cpr.git)
+FetchContent_MakeAvailable(cpr)
