@@ -59,7 +59,7 @@ enum class WarnTypes
 
 void init_warning(std::vector<std::string> t_enabled_warning = {});
 
-void warning(ALObjectPtr t_sym, std::string_view t_msg);
+void warning(const ALObjectPtr &t_sym, std::string_view t_msg);
 
 void warning_internal(WarnTypes t_type, std::string_view t_msg);
 

@@ -55,14 +55,14 @@ void reset_system_streams()
 
 }  // namespace al
 
-void StreamsHelper::rebind_cout(ALObjectPtr t_stream)
+void StreamsHelper::rebind_cout(const ALObjectPtr &t_stream)
 {
     AL_DEBUG("Rebinging cout."s);
     const auto id = object_to_resource(t_stream);
     al::cout      = *al::streams_registry[id];
 }
 
-void StreamsHelper::rebind_cerr(ALObjectPtr t_stream)
+void StreamsHelper::rebind_cerr(const ALObjectPtr &t_stream)
 {
     AL_DEBUG("Rebinging cerr."s);
     const auto id = object_to_resource(t_stream);
@@ -70,19 +70,19 @@ void StreamsHelper::rebind_cerr(ALObjectPtr t_stream)
 }
 
 
-void StreamsHelper::rebind_cin(ALObjectPtr t_stream)
+void StreamsHelper::rebind_cin(const ALObjectPtr &t_stream)
 {
     AL_DEBUG("Rebinging cin."s);
     const auto id = object_to_resource(t_stream);
     al::cin       = *al::streams_registry[id];
 }
 
-streams::ALStream *StreamsHelper::get_stream(ALObjectPtr t_stream)
+streams::ALStream *StreamsHelper::get_stream(const ALObjectPtr &t_stream)
 {
     return al::streams_registry[object_to_resource(t_stream)].get();
 }
 
-ALObjectPtr StreamsHelper::create_string_stream(ALObjectPtr t_string)
+ALObjectPtr StreamsHelper::create_string_stream(const ALObjectPtr &t_string)
 {
     streams::StringStream *new_stream = new streams::StringStream(t_string->to_string());
 
@@ -94,7 +94,7 @@ ALObjectPtr StreamsHelper::create_string_stream(ALObjectPtr t_string)
     return resource_to_object(new_id);
 }
 
-ALObjectPtr StreamsHelper::create_file_stream(ALObjectPtr t_file)
+ALObjectPtr StreamsHelper::create_file_stream(const ALObjectPtr &t_file)
 {
     streams::FileStream *new_stream = new streams::FileStream(FileHelpers::get_file(t_file).m_file);
 
@@ -106,7 +106,7 @@ ALObjectPtr StreamsHelper::create_file_stream(ALObjectPtr t_file)
     return resource_to_object(new_id);
 }
 
-void StreamsHelper::close_stream(ALObjectPtr t_stream)
+void StreamsHelper::close_stream(const ALObjectPtr &t_stream)
 {
     const auto id = object_to_resource(t_stream);
     AL_DEBUG("Closing stream: "s += std::to_string(id));

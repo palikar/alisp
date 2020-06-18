@@ -9,7 +9,7 @@ namespace alisp
 {
 
 
-ALObjectPtr FileHelpers::open_file(ALObjectPtr t_file, ALObjectPtr t_output, ALObjectPtr t_input)
+ALObjectPtr FileHelpers::open_file(const ALObjectPtr &t_file, const ALObjectPtr &t_output, const ALObjectPtr &t_input)
 {
     namespace fs = std::filesystem;
 
@@ -88,7 +88,7 @@ files::FileObj &FileHelpers::get_file(ALObjectPtr t_file)
     return *files::files_registry[object_to_resource(t_file)];
 }
 
-void FileHelpers::close_file(ALObjectPtr t_file)
+void FileHelpers::close_file(const ALObjectPtr &t_file)
 {
     const auto id = object_to_resource(t_file);
     auto file     = files::files_registry[id].release();

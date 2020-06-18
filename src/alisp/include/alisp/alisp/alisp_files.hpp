@@ -57,13 +57,13 @@ struct FileHelpers
 {
 
   public:
-    static ALObjectPtr open_file(ALObjectPtr t_file, ALObjectPtr t_output, ALObjectPtr t_input);
+    static ALObjectPtr open_file(const ALObjectPtr &t_file, const ALObjectPtr &t_output, const ALObjectPtr &t_input);
 
     static ALObjectPtr put_file(std::string t_path, std::fstream &&t_stream, bool t_input, bool t_output);
 
     static files::FileObj &get_file(ALObjectPtr t_file);
 
-    static void close_file(ALObjectPtr t_file);
+    static void close_file(const ALObjectPtr &t_file);
 
     static std::string temp_file_path(std::string t_prefix = "al");
 };
@@ -76,7 +76,7 @@ struct FileClose
     ALObjectPtr m_id;
 
   public:
-    explicit FileClose(ALObjectPtr t_id) : m_id(t_id) {}
+    explicit FileClose(ALObjectPtr t_id) : m_id(std::move(t_id)) {}
     ~FileClose() { FileHelpers::close_file(m_id); }
 
     ALISP_RAII_OBJECT(FileClose);

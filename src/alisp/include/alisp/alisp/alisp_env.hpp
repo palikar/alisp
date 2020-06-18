@@ -49,7 +49,7 @@ namespace env
 
 extern ALObjectPtr intern(std::string name);
 
-extern void update_prime(ALObjectPtr t_sym, ALObjectPtr t_val);
+extern void update_prime(const ALObjectPtr &t_sym, ALObjectPtr t_val);
 
 namespace detail
 {
@@ -112,7 +112,7 @@ class Module
 
     void add_module(ModulePtr t_module, const std::string &t_alias)
     {
-        m_modules.insert({ std::move(t_alias), t_module });
+        m_modules.insert({ std::move(t_alias), std::move(t_module) });
     }
 
     detail::CellStack::Scope &get_root() { return m_root_scope; }
@@ -201,17 +201,17 @@ class Environment
 
     bool load_builtin_module(const std::string &t_module_name, eval::Evaluator *eval);
 
-    ALObjectPtr find(const ALObjectPtr t_sym);
+    ALObjectPtr find(const ALObjectPtr &t_sym);
 
-    void define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, std::string t_doc = {}, bool t_const = false);
+    void define_variable(const ALObjectPtr &t_sym, ALObjectPtr t_value, std::string t_doc = {}, bool t_const = false);
 
-    void define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc = {});
+    void define_function(const ALObjectPtr &t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc = {});
 
-    void define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc = {});
+    void define_macro(const ALObjectPtr &t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc = {});
 
-    void put(const ALObjectPtr t_sym, ALObjectPtr t_val);
+    void put(const ALObjectPtr &t_sym, ALObjectPtr t_val);
 
-    void update(const ALObjectPtr t_sym, ALObjectPtr t_value);
+    void update(const ALObjectPtr &t_sym, ALObjectPtr t_value);
 
     void defer_callback(std::function<void()> t_callback);
 

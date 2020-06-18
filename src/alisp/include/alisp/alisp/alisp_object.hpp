@@ -39,7 +39,7 @@
 namespace alisp
 {
 
-inline auto splice(ALObjectPtr t_obj,
+inline auto splice(const ALObjectPtr& t_obj,
                    std::vector<ALObject>::difference_type start_index,
                    std::vector<ALObject>::difference_type end_index = -1)
 {
@@ -59,7 +59,7 @@ inline auto splice(ALObjectPtr t_obj,
     return make_object(new_child);
 }
 
-inline auto splice_temp(ALObjectPtr t_obj,
+inline auto splice_temp(const ALObjectPtr& t_obj,
                         std::vector<ALObject>::difference_type start_index,
                         std::vector<ALObject>::difference_type end_index = -1)
 {
@@ -78,7 +78,7 @@ inline auto splice_temp(ALObjectPtr t_obj,
     return make_object(begin_it, end_it);
 }
 
-inline auto quote(ALObjectPtr t_obj)
+inline auto quote(const ALObjectPtr& t_obj)
 {
     return make_object(Qquote, std::move(t_obj));
 }
@@ -97,7 +97,7 @@ inline auto quote(ALObjectPtr t_obj)
 /*                         |_|  */
 
 
-inline ALObjectPtr eval_list(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_offset = 0)
+inline ALObjectPtr eval_list(eval::Evaluator *evl, const ALObjectPtr &t_obj, size_t t_offset = 0)
 {
     auto &objects   = *t_obj;
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
@@ -117,7 +117,7 @@ inline ALObjectPtr eval_list(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_o
     return evl->eval(*end_it);
 }
 
-template<size_t N> inline ALObjectPtr eval_list_n(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_offset = 0)
+template<size_t N> inline ALObjectPtr eval_list_n(eval::Evaluator *evl, const ALObjectPtr &t_obj, size_t t_offset = 0)
 {
 
     auto &objects   = *t_obj;
@@ -150,18 +150,18 @@ template<size_t N> inline ALObjectPtr eval_list_n(eval::Evaluator *evl, ALObject
     return res;
 }
 
-inline ALObjectPtr eval_list_1(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_offset = 0)
+inline ALObjectPtr eval_list_1(eval::Evaluator *evl, const ALObjectPtr &t_obj, size_t t_offset = 0)
 {
     return eval_list_n<0>(evl, t_obj, t_offset);
 }
 
-inline ALObjectPtr eval_list_2(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_offset = 0)
+inline ALObjectPtr eval_list_2(eval::Evaluator *evl, const ALObjectPtr &t_obj, size_t t_offset = 0)
 {
     return eval_list_n<1>(evl, t_obj, t_offset);
 }
 
 template<bool eval, typename Callable>
-inline auto apply(eval::Evaluator *evl, ALObjectPtr t_obj, Callable t_fun, size_t t_offset = 0)
+inline auto apply(eval::Evaluator *evl, const ALObjectPtr &t_obj, Callable t_fun, size_t t_offset = 0)
 {
 
     auto &objects   = *t_obj;
@@ -200,9 +200,9 @@ inline auto apply(eval::Evaluator *evl, ALObjectPtr t_obj, Callable t_fun, size_
 
 template<bool eval, typename Callable, typename StartType>
 inline StartType reduce([[maybe_unused]] eval::Evaluator *evl,
-                        ALObjectPtr t_obj,
-                        Callable &&t_fun,
-                        StartType t_start,
+const ALObjectPtr &t_obj,
+Callable &&t_fun,
+StartType t_start,
                         size_t t_offset = 0)
 {
     auto &objects   = *t_obj;
@@ -240,7 +240,7 @@ inline StartType reduce([[maybe_unused]] eval::Evaluator *evl,
     return val;
 }
 
-inline ALObjectPtr eval_transform(eval::Evaluator *evl, ALObjectPtr t_obj, size_t t_offset = 0)
+inline ALObjectPtr eval_transform(eval::Evaluator *evl, const ALObjectPtr &t_obj, size_t t_offset = 0)
 {
     auto &objects   = *t_obj;
     const auto hops = static_cast<std::iterator_traits<decltype(std::begin(objects))>::difference_type>(t_offset);
@@ -436,8 +436,8 @@ inline auto get_next(const ALObjectPtr &obj, const std::string &t_str) -> std::p
 }
 
 
-inline const auto AND_OBJ_FUN = [](bool t_acc, ALObjectPtr t_obj) { return t_acc and is_truthy(t_obj); };
-inline const auto OR_OBJ_FUN  = [](bool t_acc, ALObjectPtr t_obj) { return t_acc or is_truthy(t_obj); };
+inline const auto AND_OBJ_FUN = [](bool t_acc, const ALObjectPtr &t_obj) { return t_acc and is_truthy(t_obj); };
+inline const auto OR_OBJ_FUN  = [](bool t_acc, const ALObjectPtr &t_obj) { return t_acc or is_truthy(t_obj); };
 
 
 // inline bool operator bool(ALObjectPtr t_obj) {
@@ -486,10 +486,10 @@ inline const auto BIT_INV = [](ALObjectPtr &t_obj) { return ~t_obj->to_int(); };
 /* |_____\__, |\__,_|\__,_|_|_|\__|\__, | */
 /*          |_|                    |___/  */
 
-inline bool equal(ALObjectPtr t_lhs, ALObjectPtr t_rhs);
+inline bool equal(const ALObjectPtr &t_lhs, const ALObjectPtr &t_rhs);
 
 
-inline bool list_equal(ALObjectPtr t_lhs, ALObjectPtr t_rhs)
+inline bool list_equal(const ALObjectPtr &t_lhs, const ALObjectPtr &t_rhs)
 {
 
     auto &children_1 = *t_lhs;
@@ -510,13 +510,13 @@ inline bool list_equal(ALObjectPtr t_lhs, ALObjectPtr t_rhs)
 }
 
 
-inline bool real_equal(ALObjectPtr t_lhs, ALObjectPtr t_rhs)
+inline bool real_equal(const ALObjectPtr &t_lhs, const ALObjectPtr &t_rhs)
 {
     return t_lhs->to_real() == t_rhs->to_real();
 }
 
 
-inline bool equal(ALObjectPtr t_lhs, ALObjectPtr t_rhs)
+inline bool equal(const ALObjectPtr &t_lhs, const ALObjectPtr &t_rhs)
 {
 
     if (t_lhs->type() != t_rhs->type())
@@ -534,7 +534,7 @@ inline bool equal(ALObjectPtr t_lhs, ALObjectPtr t_rhs)
       any_pattern() >>= [](ALObjectPtr) { return false; });
 }
 
-inline bool eq(ALObjectPtr t_lhs, ALObjectPtr t_rhs)
+inline bool eq(const ALObjectPtr &t_lhs, const ALObjectPtr &t_rhs)
 {
     if (t_lhs->type() != t_rhs->type())
     {
@@ -629,7 +629,7 @@ struct NameValidator
     }
 };
 
-inline auto to_string(ALObjectPtr t_obj)
+inline auto to_string(const ALObjectPtr &t_obj)
 {
 
     return make_visit(

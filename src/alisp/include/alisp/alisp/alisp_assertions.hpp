@@ -29,98 +29,97 @@
 namespace alisp
 {
 
-
-template<size_t N> inline void assert_min_size(ALObjectPtr obj)
+template<size_t N> inline void assert_min_size(const ALObjectPtr &obj)
 {
     if (!min_list_elements(obj, N))
         throw argument_error("Invalid argument. Must be list with at least " + std::to_string(N) + " elements", obj);
 }
 
-template<size_t N> inline void assert_max_size(ALObjectPtr obj)
+template<size_t N> inline void assert_max_size(const ALObjectPtr &obj)
 {
     if (!max_list_elements(obj, N))
         throw argument_error("Invalid argument. Must be list with maximum of " + std::to_string(N) + " elements", obj);
 }
 
-template<size_t N> inline void assert_size(ALObjectPtr obj)
+template<size_t N> inline void assert_size(const ALObjectPtr &obj)
 {
     if (obj->length() != N)
         throw argument_error("Invalid argument. Must be list with  " + std::to_string(N) + " elements", obj);
 }
 
-inline void assert_numbers(ALObjectPtr obj)
+inline void assert_numbers(const ALObjectPtr &obj)
 {
     if (!are_objects_numbers(obj))
         throw argument_error("Invalid argument. The list must contain only numbers (real of int)", obj);
 }
 
-inline void assert_symbol(ALObjectPtr obj)
+inline void assert_symbol(const ALObjectPtr &obj)
 {
     if (!obj->is_sym()) throw argument_error("Invalid argument. Object must be symbol", obj);
 }
 
-inline void assert_string(ALObjectPtr obj)
+inline void assert_string(const ALObjectPtr &obj)
 {
     if (!obj->is_string()) throw argument_error("Invalid argument. Object must be string", obj);
 }
 
-inline void assert_list(ALObjectPtr obj)
+inline void assert_list(const ALObjectPtr &obj)
 {
     if (!obj->is_list() and obj != Qnil) throw argument_error("Invalid argument. Object must be list", obj);
 }
 
-inline void assert_number(ALObjectPtr obj)
+inline void assert_number(const ALObjectPtr &obj)
 {
     if (!obj->is_int() and !obj->is_real()) throw argument_error("Invalid argument. Object must be a number", obj);
 }
 
-inline void assert_int(ALObjectPtr obj)
+inline void assert_int(const ALObjectPtr &obj)
 {
     if (!obj->is_int()) throw argument_error("Invalid argument. Object must be an integer", obj);
 }
 
-inline void assert_char(ALObjectPtr obj)
+inline void assert_char(const ALObjectPtr &obj)
 {
     if (!obj->is_int() and !obj->check_char_flag())
         throw argument_error("Invalid argument. Object must be a char", obj);
 }
 
-inline void assert_function(ALObjectPtr obj)
+inline void assert_function(const ALObjectPtr &obj)
 {
     if (!obj->check_function_flag()) throw argument_error("Invalid argument. Object must be a function", obj);
 }
 
-inline void assert_non_const(ALObjectPtr obj)
+inline void assert_non_const(const ALObjectPtr &obj)
 {
     if (!obj->check_const_flag()) throw argument_error("A symbol is const.", obj);
 }
 
-inline void assert_file(ALObjectPtr obj)
+inline void assert_file(const ALObjectPtr &obj)
 {
     if (!files::files_registry.belong(object_to_resource(obj)))
         throw argument_error("The object does not point to a file", obj);
 }
 
-inline void assert_stream(ALObjectPtr obj)
+inline void assert_stream(const ALObjectPtr &obj)
 {
     if (!al::streams_registry.belong(object_to_resource(obj)))
         throw argument_error("The object does not point to a stream", obj);
 }
 
-inline void assert_memory(ALObjectPtr obj)
+inline void assert_memory(const ALObjectPtr &obj)
 {
     if (!memory::memory_registry.belong(object_to_resource(obj)))
         throw argument_error("The object does not point to a stream", obj);
 }
 
-inline void assert_byte(ALObjectPtr obj)
+inline void assert_byte(const ALObjectPtr &obj)
 {
     if (!obj->is_int()) throw argument_error("Object cannot be intrepreted as byte.", obj);
     auto val = obj->to_int();
     if (!(0 <= val and val <= 255)) throw argument_error("Object cannot be intrepreted as byte.", obj);
 }
 
-inline void assert_byte_array(ALObjectPtr obj)
+inline void assert_byte_array(const ALObjectPtr &obj)
 {
     if (!obj->is_list()) throw argument_error("Object cannot be intrepreted as byte-array.", obj);
     for (auto &el : *obj)

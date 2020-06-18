@@ -50,7 +50,7 @@ Environment::~Environment()
     g_symbol_table.clear();
 }
 
-ALObjectPtr Environment::find(const ALObjectPtr t_sym)
+ALObjectPtr Environment::find(const ALObjectPtr &t_sym)
 {
 
     const auto name = t_sym->to_string();
@@ -83,7 +83,7 @@ ALObjectPtr Environment::find(const ALObjectPtr t_sym)
     throw environment_error("Unbounded Symbol: " + name);
 }
 
-void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
+void Environment::update(const ALObjectPtr &t_sym, ALObjectPtr t_value)
 {
     const auto name = t_sym->to_string();
 
@@ -94,7 +94,7 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
             auto &sym = scope.at(name);
             AL_CHECK(
               if (sym->check_const_flag()) { throw environment_error("Trying to change a const symbol: " + name); });
-            sym = t_value;
+            sym = std::move(t_value);
             return;
         };
     }
@@ -103,14 +103,14 @@ void Environment::update(const ALObjectPtr t_sym, ALObjectPtr t_value)
     {
         auto &sym = m_active_module.get().root_scope().at(name);
         AL_CHECK(if (sym->check_const_flag()) { throw environment_error("Trying to change a const symbol: " + name); });
-        sym = t_value;
+        sym = std::move(t_value);
         return;
     };
 
     throw environment_error("Unbounded Symbol: " + name);
 }
 
-void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
+void Environment::put(const ALObjectPtr &t_sym, ALObjectPtr t_val)
 {
     auto &scope = m_stack.current_scope();
     auto name   = t_sym->to_string();
@@ -124,10 +124,10 @@ void Environment::put(const ALObjectPtr t_sym, ALObjectPtr t_val)
         // throw environment_error("Variable alredy exists: " + name);
     }
 
-    scope.insert({ name, t_val });
+    scope.insert({ name, std::move(t_val) });
 }
 
-void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, std::string t_doc, bool t_const)
+void Environment::define_variable(const ALObjectPtr &t_sym, ALObjectPtr t_value, std::string t_doc, bool t_const)
 {
     auto &scope = m_active_module.get().root_scope();
     auto name   = t_sym->to_string();
@@ -149,10 +149,10 @@ void Environment::define_variable(const ALObjectPtr t_sym, ALObjectPtr t_value, 
         t_value->set_const_flag();
     }
 
-    scope.insert({ name, t_value });
+    scope.insert({ name, std::move(t_value) });
 }
 
-void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc)
+void Environment::define_function(const ALObjectPtr &t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc)
 {
 
     auto &scope = m_active_module.get().root_scope();
@@ -173,10 +173,10 @@ void Environment::define_function(const ALObjectPtr t_sym, ALObjectPtr t_params,
     new_fun->set_prop("--doc--", make_string(t_doc));
 #endif
 
-    scope.insert({ name, new_fun });
+    scope.insert({ name, std::move(new_fun) });
 }
 
-void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc)
+void Environment::define_macro(const ALObjectPtr &t_sym, ALObjectPtr t_params, ALObjectPtr t_body, std::string t_doc)
 {
 
     auto &scope = m_active_module.get().root_scope();
@@ -198,7 +198,7 @@ void Environment::define_macro(const ALObjectPtr t_sym, ALObjectPtr t_params, AL
     new_fun->set_prop("--doc--", make_string(t_doc));
 #endif
 
-    scope.insert({ name, new_fun });
+    scope.insert({ name, std::move(new_fun) });
 }
 
 void Environment::activate_module(const std::string &t_name)

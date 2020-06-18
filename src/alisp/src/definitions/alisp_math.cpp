@@ -36,7 +36,7 @@ namespace alisp
 {
 
 
-ALObjectPtr Fmultiply(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fmultiply(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     auto eval_obj = eval_transform(evl, obj);
 
@@ -58,7 +58,7 @@ ALObjectPtr Fmultiply(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     return Qnil;
 }
 
-ALObjectPtr Fplus(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fplus(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     auto eval_obj = eval_transform(evl, obj);
 
@@ -80,7 +80,7 @@ ALObjectPtr Fplus(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     return Qnil;
 }
 
-ALObjectPtr Fminus(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fminus(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     auto eval_obj = eval_transform(evl, obj);
 
@@ -101,7 +101,7 @@ ALObjectPtr Fminus(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     return Qnil;
 }
 
-ALObjectPtr Fdev(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fdev(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     auto eval_obj = eval_transform(evl, obj);
 
@@ -121,7 +121,7 @@ ALObjectPtr Fdev(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     return Qnil;
 }
 
-ALObjectPtr Flt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Flt(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<2>(obj));
 
@@ -142,7 +142,7 @@ ALObjectPtr Flt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     };
 }
 
-ALObjectPtr Fleq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fleq(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_min_size<0>(obj));
 
@@ -163,7 +163,7 @@ ALObjectPtr Fleq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     }
 }
 
-ALObjectPtr Fgt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fgt(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_min_size<0>(obj));
 
@@ -184,7 +184,7 @@ ALObjectPtr Fgt(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     }
 }
 
-ALObjectPtr Fgeq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fgeq(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_min_size<0>(obj));
 
@@ -205,7 +205,7 @@ ALObjectPtr Fgeq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     }
 }
 
-ALObjectPtr Feq_math(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Feq_math(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_min_size<0>(obj));
 
@@ -226,7 +226,7 @@ ALObjectPtr Feq_math(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     }
 }
 
-ALObjectPtr Fneq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fneq(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_min_size<0>(obj));
 
@@ -247,7 +247,7 @@ ALObjectPtr Fneq(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     }
 }
 
-ALObjectPtr Fmod(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fmod(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<2>(obj));
 
@@ -262,7 +262,7 @@ ALObjectPtr Fmod(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     return make_object(res);
 }
 
-ALObjectPtr Fpow(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpow(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<2>(obj));
 
@@ -275,7 +275,7 @@ ALObjectPtr Fpow(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
     return make_object(std::pow(one->to_real(), two->to_real()));
 }
 
-ALObjectPtr Fmin(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmin(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(obj));
 
@@ -311,7 +311,7 @@ ALObjectPtr Fmin(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     }
 }
 
-ALObjectPtr Fmax(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmax(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(obj));
 
@@ -347,7 +347,7 @@ ALObjectPtr Fmax(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     }
 }
 
-ALObjectPtr Fround(ALObjectPtr obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fround(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<2>(obj));
 

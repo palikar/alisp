@@ -35,14 +35,14 @@ ALObjectPtr MemoryHelpers::allocate_buffer(size_t t_size)
     return resource_to_object(new_id);
 }
 
-memory::MemoryBuffer &MemoryHelpers::get_buffer(ALObjectPtr t_buffer)
+memory::MemoryBuffer &MemoryHelpers::get_buffer(const ALObjectPtr &t_buffer)
 {
 
     return memory::memory_registry[object_to_resource(t_buffer)];
 }
 
 
-void MemoryHelpers::release_buffer(ALObjectPtr t_buffer)
+void MemoryHelpers::release_buffer(const ALObjectPtr &t_buffer)
 {
     const auto id = object_to_resource(t_buffer);
     AL_DEBUG("Releasing buffer: "s += std::to_string(id));

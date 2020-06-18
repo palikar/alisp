@@ -33,7 +33,7 @@
 namespace alisp
 {
 
-ALObjectPtr Feval_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Feval_string(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto str = eval->eval(obj->i(0));
@@ -43,7 +43,7 @@ ALObjectPtr Feval_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
     return Qt;
 }
 
-ALObjectPtr Feval_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Feval_file(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto str = eval->eval(obj->i(0));

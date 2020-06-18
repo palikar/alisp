@@ -56,16 +56,16 @@ struct StreamsHelper
 {
 
   public:
-    static void rebind_cout(ALObjectPtr t_stream);
-    static void rebind_cin(ALObjectPtr t_stream);
-    static void rebind_cerr(ALObjectPtr t_stream);
+    static void rebind_cout(const ALObjectPtr &t_stream);
+    static void rebind_cin(const ALObjectPtr &t_stream);
+    static void rebind_cerr(const ALObjectPtr &t_stream);
 
-    static streams::ALStream *get_stream(ALObjectPtr t_stream);
+    static streams::ALStream *get_stream(const ALObjectPtr &t_stream);
 
-    static ALObjectPtr create_string_stream(ALObjectPtr t_string);
+    static ALObjectPtr create_string_stream(const ALObjectPtr &t_string);
 
-    static ALObjectPtr create_file_stream(ALObjectPtr t_file);
-    static void close_stream(ALObjectPtr t_stream);
+    static ALObjectPtr create_file_stream(const ALObjectPtr &t_file);
+    static void close_stream(const ALObjectPtr &t_string);
 };
 
 struct StreamClose

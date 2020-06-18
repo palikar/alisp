@@ -33,7 +33,7 @@ namespace detail
 {
 
 
-ALObjectPtr Fmmap(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmmap(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<3>(t_obj));
     auto mem_source = eval->eval(t_obj->i(0));
@@ -56,7 +56,7 @@ ALObjectPtr Fmmap(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     return Qt;
 }
 
-ALObjectPtr Fget_size(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fget_size(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto mem = eval->eval(t_obj->i(0));
@@ -65,7 +65,7 @@ ALObjectPtr Fget_size(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
     return make_int(MemoryHelpers::get_buffer(mem).m_size);
 }
 
-ALObjectPtr Fset_nth_byte(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fset_nth_byte(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<3>(t_obj));
     auto mem  = eval->eval(t_obj->i(0));
@@ -79,7 +79,7 @@ ALObjectPtr Fset_nth_byte(ALObjectPtr t_obj, env::Environment *, eval::Evaluator
     return Qt;
 }
 
-ALObjectPtr Fget_nth_byte(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fget_nth_byte(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(t_obj));
     auto mem = eval->eval(t_obj->i(0));
@@ -90,7 +90,7 @@ ALObjectPtr Fget_nth_byte(ALObjectPtr t_obj, env::Environment *, eval::Evaluator
     return make_int(static_cast<ALObject::int_type>(*(MemoryHelpers::get_buffer(mem).m_ptr + i->to_int())));
 }
 
-ALObjectPtr Fget_range(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fget_range(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<3>(t_obj));
     auto mem   = eval->eval(t_obj->i(0));
@@ -110,7 +110,7 @@ ALObjectPtr Fget_range(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     return make_object(bytes);
 }
 
-ALObjectPtr Ffill_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffill_bytes(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(t_obj));
     auto mem = eval->eval(t_obj->i(0));
@@ -127,7 +127,7 @@ ALObjectPtr Ffill_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *
     return Qt;
 }
 
-ALObjectPtr Fset_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fset_bytes(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(t_obj));
     auto mem   = eval->eval(t_obj->i(0));
@@ -144,7 +144,7 @@ ALObjectPtr Fset_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     return Qt;
 }
 
-ALObjectPtr Fget_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fget_bytes(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto mem = eval->eval(t_obj->i(0));
@@ -160,7 +160,7 @@ ALObjectPtr Fget_bytes(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     return make_object(bytes);
 }
 
-ALObjectPtr Fallocate_buffer(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fallocate_buffer(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto size = eval->eval(t_obj->i(0));
@@ -169,7 +169,7 @@ ALObjectPtr Fallocate_buffer(ALObjectPtr t_obj, env::Environment *, eval::Evalua
     return MemoryHelpers::allocate_buffer(static_cast<size_t>(size->to_int()));
 }
 
-ALObjectPtr Frelease_buffer(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Frelease_buffer(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto mem = eval->eval(t_obj->i(0));

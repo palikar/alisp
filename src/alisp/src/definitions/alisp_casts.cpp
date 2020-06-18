@@ -30,7 +30,7 @@ namespace alisp
 {
 
 
-ALObjectPtr Fint_parse(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fint_parse(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto str_1 = eval->eval(obj->i(0));
@@ -50,7 +50,7 @@ ALObjectPtr Fint_parse(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
     return Qnil;
 }
 
-ALObjectPtr Ffloat_parse(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffloat_parse(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto str_1 = eval->eval(obj->i(0));
@@ -70,7 +70,7 @@ ALObjectPtr Ffloat_parse(ALObjectPtr obj, env::Environment *, eval::Evaluator *e
     return Qnil;
 }
 
-ALObjectPtr Fto_string(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fto_string(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
 
@@ -92,7 +92,7 @@ ALObjectPtr Fto_string(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     );
 }
 
-ALObjectPtr Fto_char(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fto_char(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
 

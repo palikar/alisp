@@ -39,7 +39,7 @@ ALObjectPtr get_evnvars()
     return make_object(list_env);
 }
 
-ALObjectPtr Fget_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fget_env(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto var = eval->eval(t_obj->i(0));
@@ -47,7 +47,7 @@ ALObjectPtr Fget_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return make_string(utility::env_string(var->to_string().c_str()));
 }
 
-ALObjectPtr Fcheck_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcheck_env(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto var = eval->eval(t_obj->i(0));
@@ -56,7 +56,7 @@ ALObjectPtr Fcheck_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     return utility::env_bool(var->to_string().c_str()) ? Qt : Qnil;
 }
 
-ALObjectPtr Fset_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fset_env(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(t_obj));
     auto var = eval->eval(t_obj->i(0));
@@ -69,13 +69,13 @@ ALObjectPtr Fset_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return Qt;
 }
 
-ALObjectPtr Flist_env(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
+ALObjectPtr Flist_env(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
 {
     AL_CHECK(assert_size<0>(t_obj));
     return get_evnvars();
 }
 
-ALObjectPtr Fchwd(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fchwd(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -94,7 +94,7 @@ ALObjectPtr Fchwd(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
     return Qt;
 }
 
-ALObjectPtr Fsystem(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fsystem(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto command = eval->eval(t_obj->i(0));

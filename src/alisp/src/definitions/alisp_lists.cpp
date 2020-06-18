@@ -34,7 +34,7 @@ namespace alisp
 {
 
 
-ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmapc(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
 
@@ -72,7 +72,7 @@ ALObjectPtr Fmapc(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return Qnil;
 }
 
-ALObjectPtr Fmapcar(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmapcar(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
 
@@ -101,14 +101,14 @@ ALObjectPtr Fmapcar(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return make_list(new_l);
 }
 
-ALObjectPtr Fcar(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcar(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto list = eval->eval(obj->i(0));
     return list->i(0);
 }
 
-ALObjectPtr Fcons(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcons(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto list = eval->eval(obj->i(0));
@@ -116,7 +116,7 @@ ALObjectPtr Fcons(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return splice(list, 1);
 }
 
-ALObjectPtr Fcdr(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcdr(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto list = eval->eval(obj->i(0));
@@ -124,17 +124,17 @@ ALObjectPtr Fcdr(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return splice(list, 1);
 }
 
-ALObjectPtr Fhead(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
+ALObjectPtr Fhead(ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
 {
     return Fcar(obj, env, eval);
 }
 
-ALObjectPtr Ftail(ALObjectPtr obj, env::Environment *env, eval::Evaluator *eval)
+ALObjectPtr Ftail(ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
 {
     return Fcons(obj, env, eval);
 }
 
-ALObjectPtr Flast(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Flast(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto list = eval->eval(obj->i(0));
@@ -142,7 +142,7 @@ ALObjectPtr Flast(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list->i(list->length() - 1);
 }
 
-ALObjectPtr Finit(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Finit(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto list = eval->eval(obj->i(0));
@@ -150,7 +150,7 @@ ALObjectPtr Finit(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return splice(list, 0, static_cast<ALObject::list_type::difference_type>(list->length() - 1));
 }
 
-ALObjectPtr Fpush(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fpush(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
@@ -162,7 +162,7 @@ ALObjectPtr Fpush(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list;
 }
 
-ALObjectPtr Fshove(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fshove(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
@@ -174,7 +174,7 @@ ALObjectPtr Fshove(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list;
 }
 
-ALObjectPtr Flength(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Flength(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto l = eval->eval(obj->i(0));
@@ -183,7 +183,7 @@ ALObjectPtr Flength(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return make_int(std::size(*l));
 }
 
-ALObjectPtr Fnth(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fnth(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
     auto list  = eval->eval(obj->i(0));
@@ -205,7 +205,7 @@ ALObjectPtr Fnth(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list->i(static_cast<ALObject::list_type::size_type>(index->to_int()));
 }
 
-ALObjectPtr Ffind(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffind(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
     auto list    = eval->eval(obj->i(0));
@@ -223,7 +223,7 @@ ALObjectPtr Ffind(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 }
 
 // inplace
-ALObjectPtr Finsert(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Finsert(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<3>(obj));
     auto list  = eval->eval(obj->i(0));
@@ -238,7 +238,7 @@ ALObjectPtr Finsert(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list;
 }
 
-ALObjectPtr Fcontains(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcontains(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
@@ -257,7 +257,7 @@ ALObjectPtr Fcontains(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
     return Qnil;
 }
 
-ALObjectPtr Fclear(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fclear(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto list = eval->eval(obj->i(0));
@@ -266,7 +266,7 @@ ALObjectPtr Fclear(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return list;
 }
 
-ALObjectPtr Flist(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Flist(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<0>(obj));
     ALObject::list_type new_list{};
@@ -278,7 +278,7 @@ ALObjectPtr Flist(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 }
 
 // inplace
-ALObjectPtr Fdelete(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fdelete(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
@@ -294,7 +294,7 @@ ALObjectPtr Fdelete(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 }
 
 // return copy
-ALObjectPtr Fremove(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fremove(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
@@ -313,7 +313,7 @@ ALObjectPtr Fremove(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 }
 
 // inplace
-ALObjectPtr Fdelq(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fdelq(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
@@ -329,7 +329,7 @@ ALObjectPtr Fdelq(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
 }
 
 // return copy
-ALObjectPtr Fremq(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fremq(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
     auto list = eval->eval(obj->i(0));
@@ -347,7 +347,7 @@ ALObjectPtr Fremq(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
     return make_object(new_children);
 }
 
-ALObjectPtr Frange(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Frange(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<2>(obj));
 

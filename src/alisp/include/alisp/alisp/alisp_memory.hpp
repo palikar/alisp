@@ -53,8 +53,8 @@ struct MemoryHelpers
 {
   public:
     static ALObjectPtr allocate_buffer(size_t t_size);
-    static memory::MemoryBuffer &get_buffer(ALObjectPtr t_buffer);
-    static void release_buffer(ALObjectPtr t_buffer);
+    static memory::MemoryBuffer &get_buffer(const ALObjectPtr &t_buffer);
+    static void release_buffer(const ALObjectPtr &t_buffer);
 };
 
 struct BufferRelease
@@ -64,7 +64,7 @@ struct BufferRelease
     ALObjectPtr m_id;
 
   public:
-    explicit BufferRelease(ALObjectPtr t_id) : m_id(t_id) {}
+    explicit BufferRelease(ALObjectPtr t_id) : m_id(std::move(t_id)) {}
     ~BufferRelease() { MemoryHelpers::release_buffer(m_id); }
 
     ALISP_RAII_OBJECT(BufferRelease);
