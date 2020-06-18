@@ -36,3 +36,5 @@ build*/**
 ./build*
 
 .idea/
+
+.code_manager_cache
