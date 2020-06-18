@@ -18,7 +18,7 @@ namespace alisp
 {
 
 
-ALObjectPtr Fstream(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fstream(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     auto [string_sym, from_string] = get_next(t_obj, ":from-string");
     auto [file_sym, from_file]     = get_next(t_obj, ":from-file");
@@ -41,7 +41,7 @@ ALObjectPtr Fstream(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eva
     return Qnil;
 }
 
-ALObjectPtr Fclose_stream(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fclose_stream(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto obj = eval->eval(t_obj->i(0));
@@ -51,7 +51,7 @@ ALObjectPtr Fclose_stream(ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
     return Qt;
 }
 
-ALObjectPtr Fwith_cout(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fwith_cout(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(t_obj));
     auto obj = eval->eval(t_obj->i(0));
@@ -65,7 +65,7 @@ ALObjectPtr Fwith_cout(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *
     return eval_list(eval, t_obj, 1);
 }
 
-ALObjectPtr Fwith_cin(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fwith_cin(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(t_obj));
     auto obj = eval->eval(t_obj->i(0));
@@ -79,7 +79,7 @@ ALObjectPtr Fwith_cin(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *e
     return eval_list(eval, t_obj, 1);
 }
 
-ALObjectPtr Fstream_content(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fstream_content(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto obj = eval->eval(t_obj->i(0));
@@ -89,7 +89,7 @@ ALObjectPtr Fstream_content(ALObjectPtr &t_obj, env::Environment *, eval::Evalua
     return make_string(stream->content());
 }
 
-ALObjectPtr Fstream_write(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fstream_write(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(t_obj));
     auto stream_obj = eval->eval(t_obj->i(0));
@@ -110,7 +110,7 @@ ALObjectPtr Fstream_write(ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
     return Qt;
 }
 
-ALObjectPtr Fstream_write_line(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fstream_write_line(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(t_obj));
     auto stream_obj = eval->eval(t_obj->i(0));
@@ -130,7 +130,7 @@ ALObjectPtr Fstream_write_line(ALObjectPtr &t_obj, env::Environment *, eval::Eva
     return Qt;
 }
 
-ALObjectPtr Fstream_write_lines(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fstream_write_lines(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(t_obj));
     auto stream_obj = eval->eval(t_obj->i(0));
@@ -157,7 +157,7 @@ ALObjectPtr Fstream_write_lines(ALObjectPtr &t_obj, env::Environment *, eval::Ev
     return Qt;
 }
 
-ALObjectPtr Fstream_read(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fstream_read(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(t_obj));
     auto obj = eval->eval(t_obj->i(0));
@@ -172,7 +172,7 @@ ALObjectPtr Fstream_read(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
     return make_string(content);
 }
 
-ALObjectPtr Fstream_read_line(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fstream_read_line(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto obj = eval->eval(t_obj->i(0));
@@ -184,7 +184,7 @@ ALObjectPtr Fstream_read_line(ALObjectPtr &t_obj, env::Environment *, eval::Eval
     return make_string(content);
 }
 
-ALObjectPtr Fstream_read_lines(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fstream_read_lines(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
     AL_CHECK(assert_size<1>(t_obj));

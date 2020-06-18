@@ -17,7 +17,7 @@ namespace alisp
 {
 
 
-ALObjectPtr Ffile_open(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffile_open(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(t_obj));
     auto name = eval->eval(t_obj->i(0));
@@ -32,7 +32,7 @@ ALObjectPtr Ffile_open(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *
 }
 
 
-ALObjectPtr Ffile_close(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffile_close(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto file = eval->eval(t_obj->i(0));
@@ -44,7 +44,7 @@ ALObjectPtr Ffile_close(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
 }
 
 
-ALObjectPtr Ffile_read_line(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffile_read_line(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
     AL_CHECK(assert_size<1>(t_obj));
@@ -65,7 +65,7 @@ ALObjectPtr Ffile_read_line(ALObjectPtr &t_obj, env::Environment *, eval::Evalua
 }
 
 
-ALObjectPtr Ffile_write_line(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffile_write_line(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
     AL_CHECK(assert_size<2>(t_obj));
@@ -88,7 +88,7 @@ ALObjectPtr Ffile_write_line(ALObjectPtr &t_obj, env::Environment *, eval::Evalu
 }
 
 
-ALObjectPtr Ffile_has_more(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffile_has_more(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
     AL_CHECK(assert_size<1>(t_obj));

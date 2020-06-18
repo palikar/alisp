@@ -35,7 +35,7 @@
 namespace alisp
 {
 
-ALObjectPtr Fleftshift(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fleftshift(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<2>(obj));
     auto lhs = evl->eval(obj->i(0));
@@ -45,7 +45,7 @@ ALObjectPtr Fleftshift(ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
     return make_int(SHIFT_LEFT(lhs, rhs));
 }
 
-ALObjectPtr Frightshift(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Frightshift(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<2>(obj));
     auto lhs = evl->eval(obj->i(0));
@@ -55,7 +55,7 @@ ALObjectPtr Frightshift(ALObjectPtr &obj, env::Environment *, eval::Evaluator *e
     return make_int(SHIFT_RIGHT(lhs, rhs));
 }
 
-ALObjectPtr Fbit_or(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fbit_or(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<2>(obj));
     auto lhs = evl->eval(obj->i(0));
@@ -65,7 +65,7 @@ ALObjectPtr Fbit_or(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
     return make_int(BIT_OR(lhs, rhs));
 }
 
-ALObjectPtr Fbit_and(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fbit_and(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<2>(obj));
     auto lhs = evl->eval(obj->i(0));
@@ -75,7 +75,7 @@ ALObjectPtr Fbit_and(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
     return make_int(BIT_AND(lhs, rhs));
 }
 
-ALObjectPtr Fbit_xor(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fbit_xor(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<2>(obj));
     auto lhs = evl->eval(obj->i(0));
@@ -85,7 +85,7 @@ ALObjectPtr Fbit_xor(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
     return make_int(BIT_XOR(lhs, rhs));
 }
 
-ALObjectPtr Fbit_inv(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fbit_inv(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
     auto lhs = evl->eval(obj->i(0));

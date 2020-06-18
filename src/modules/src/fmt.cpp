@@ -543,7 +543,7 @@ static std::string format_string(const std::string &t_format, ALObjectPtr t_args
 
 }  // namespace detail
 
-ALObjectPtr Ffmt(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffmt(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
     auto args = eval_transform(eval, obj);
@@ -554,7 +554,7 @@ ALObjectPtr Ffmt(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     return make_string(detail::format_string(str->to_string(), args));
 }
 
-ALObjectPtr Fprintf(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fprintf(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
     auto args = eval_transform(eval, obj);
@@ -568,7 +568,7 @@ ALObjectPtr Fprintf(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     return make_string(res);
 }
 
-ALObjectPtr Fprintfln(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fprintfln(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
     auto args = eval_transform(eval, obj);
@@ -583,7 +583,7 @@ ALObjectPtr Fprintfln(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eva
 }
 
 
-ALObjectPtr Feprintf(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Feprintf(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
     auto args = eval_transform(eval, obj);
@@ -596,7 +596,7 @@ ALObjectPtr Feprintf(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval
     return make_string(res);
 }
 
-ALObjectPtr Feprintfln(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Feprintfln(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
     auto args = eval_transform(eval, obj);

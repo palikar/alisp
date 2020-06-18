@@ -77,7 +77,7 @@ auto process_stderr = alisp::make_symbol("stderr");
 auto process_pipe   = alisp::make_symbol("pipe");
 
 
-ALObjectPtr Fpopen(ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
+ALObjectPtr Fpopen(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
 
@@ -199,7 +199,7 @@ ALObjectPtr Fpopen(ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eva
     }
 }
 
-ALObjectPtr Fcheck_output(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcheck_output(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
 
@@ -226,7 +226,7 @@ ALObjectPtr Fcheck_output(ALObjectPtr &obj, env::Environment *, eval::Evaluator 
     }
 }
 
-ALObjectPtr Fcheck_output_bytes(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcheck_output_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_min_size<1>(obj);
 
@@ -258,7 +258,7 @@ ALObjectPtr Fcheck_output_bytes(ALObjectPtr &obj, env::Environment *, eval::Eval
     }
 }
 
-ALObjectPtr Fpid(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fpid(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
     AL_CHECK(assert_size<1>(t_obj));
@@ -268,7 +268,7 @@ ALObjectPtr Fpid(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     return make_int(detail::proc_registry[object_to_resource(pro)]->pid());
 }
 
-ALObjectPtr Fretcode(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fretcode(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
     AL_CHECK(assert_size<1>(t_obj));
@@ -291,7 +291,7 @@ ALObjectPtr Fretcode(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *ev
     }
 }
 
-ALObjectPtr Fwait(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fwait(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
     AL_CHECK(assert_size<1>(t_obj));
@@ -314,7 +314,7 @@ ALObjectPtr Fwait(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     }
 }
 
-ALObjectPtr Fpoll(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fpoll(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
     AL_CHECK(assert_size<1>(t_obj));
@@ -337,7 +337,7 @@ ALObjectPtr Fpoll(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     }
 }
 
-ALObjectPtr Fstart(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fstart(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
     AL_CHECK(assert_size<1>(t_obj));
@@ -361,7 +361,7 @@ ALObjectPtr Fstart(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval
     }
 }
 
-ALObjectPtr Fkill(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fkill(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
     AL_CHECK(assert_min_size<1>(t_obj));
@@ -393,7 +393,7 @@ ALObjectPtr Fkill(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     }
 }
 
-ALObjectPtr Fsend(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fsend(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
     AL_CHECK(assert_size<2>(t_obj));
@@ -419,7 +419,7 @@ ALObjectPtr Fsend(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     }
 }
 
-ALObjectPtr Fcommunicate(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcommunicate(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
     AL_CHECK(assert_min_size<1>(t_obj));

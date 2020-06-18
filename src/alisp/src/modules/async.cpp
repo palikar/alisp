@@ -29,7 +29,7 @@ namespace alisp
 namespace detail
 {
 
-ALObjectPtr Fasync_start(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fasync_start(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(obj));
     AL_CHECK(assert_max_size<2>(obj));
@@ -47,7 +47,7 @@ ALObjectPtr Fasync_start(ALObjectPtr &obj, env::Environment *, eval::Evaluator *
     return async::dispatch<async_action>(eval->async(), std::move(action), std::move(callback));
 }
 
-ALObjectPtr Fasync_await(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fasync_await(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
     auto future = eval->eval(obj->i(0));
@@ -64,7 +64,7 @@ ALObjectPtr Fasync_await(ALObjectPtr &obj, env::Environment *, eval::Evaluator *
     return eval->async().future(object_to_resource(future)).value;
 }
 
-ALObjectPtr Fasync_then(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fasync_then(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<2>(obj));
     AL_CHECK(assert_max_size<3>(obj));
@@ -107,7 +107,7 @@ ALObjectPtr Fasync_then(ALObjectPtr &obj, env::Environment *, eval::Evaluator *e
     return Qt;
 }
 
-ALObjectPtr Fasync_ready(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fasync_ready(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
 
@@ -117,7 +117,7 @@ ALObjectPtr Fasync_ready(ALObjectPtr &obj, env::Environment *, eval::Evaluator *
     return eval->async().future(object_to_resource(future)).resolved;
 }
 
-ALObjectPtr Fasync_state(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fasync_state(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
 
@@ -127,7 +127,7 @@ ALObjectPtr Fasync_state(ALObjectPtr &obj, env::Environment *, eval::Evaluator *
     return eval->async().future(object_to_resource(future)).success_state;
 }
 
-ALObjectPtr Ftimeout(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ftimeout(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
     auto time = eval->eval(obj->i(1));

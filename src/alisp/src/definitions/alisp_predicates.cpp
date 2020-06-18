@@ -33,61 +33,61 @@ namespace alisp
 {
 
 
-ALObjectPtr Fpsym(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpsym(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
     return psym(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
-ALObjectPtr Fplist(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fplist(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
     return plist(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
-ALObjectPtr Fpint(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpint(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
     return pint(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
-ALObjectPtr Fpreal(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpreal(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
     return preal(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
-ALObjectPtr Fpstring(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpstring(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
     return pstring(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
-ALObjectPtr Fpfunction(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpfunction(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
     return pfunction(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
-ALObjectPtr Fpfile(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpfile(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
     return files::files_registry.belong(object_to_resource(evl->eval(obj->i(0)))) ? Qt : Qnil;
 }
 
-ALObjectPtr Fpstream(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpstream(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
     return al::streams_registry.belong(object_to_resource(evl->eval(obj->i(0)))) ? Qt : Qnil;
 }
 
-ALObjectPtr Fpmemory(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpmemory(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
     return memory::memory_registry.belong(object_to_resource(evl->eval(obj->i(0)))) ? Qt : Qnil;
 }
 
-ALObjectPtr Fpbyte(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpbyte(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
     auto ob = evl->eval(obj->i(0));

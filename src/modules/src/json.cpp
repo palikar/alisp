@@ -534,7 +534,7 @@ static std::string dump(ALObjectPtr t_json, long depth = 1, const std::string &t
 }  // namespace detail
 
 
-ALObjectPtr Fparse_json(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fparse_json(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
     auto str = eval->eval(obj->i(0));
@@ -542,13 +542,13 @@ ALObjectPtr Fparse_json(ALObjectPtr &obj, env::Environment *, eval::Evaluator *e
     return detail::load(str->to_string());
 }
 
-ALObjectPtr Fdump_json(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fdump_json(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
     return make_string(detail::dump(eval->eval(obj->i(0))));
 }
 
-ALObjectPtr Fload_file(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fload_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -568,7 +568,7 @@ ALObjectPtr Fload_file(ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
     return detail::load(utility::load_file(file->to_string()));
 }
 
-ALObjectPtr Fdump_file(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fdump_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 

@@ -224,7 +224,7 @@ std::regex_constants::syntax_option_type handle_regex_flags(ALObjectPtr t_obj)
 
 }  // namespace detail
 
-ALObjectPtr Freplace(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Freplace(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<4>(t_obj));
     auto reg = eval->eval(t_obj->i(0));
@@ -254,7 +254,7 @@ ALObjectPtr Freplace(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *ev
     }
 }
 
-ALObjectPtr Fmatch(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmatch(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<3>(t_obj));
     auto reg = eval->eval(t_obj->i(0));
@@ -282,7 +282,7 @@ ALObjectPtr Fmatch(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval
     }
 }
 
-ALObjectPtr Fsearch(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fsearch(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<3>(t_obj));
     auto reg = eval->eval(t_obj->i(0));
@@ -311,7 +311,7 @@ ALObjectPtr Fsearch(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eva
     }
 }
 
-ALObjectPtr Fsearch_all(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fsearch_all(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<3>(t_obj));
     auto reg = eval->eval(t_obj->i(0));
@@ -351,7 +351,7 @@ ALObjectPtr Fsearch_all(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
 }
 
 
-ALObjectPtr Fcompile(ALObjectPtr &t_obj, env::Environment *env, eval::Evaluator *eval)
+ALObjectPtr Fcompile(const ALObjectPtr &t_obj, env::Environment *env, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
     auto reg = eval->eval(t_obj->i(0));

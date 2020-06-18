@@ -39,7 +39,7 @@ static constexpr int HIGH_RES_CLOCK = 3;
 static constexpr int clocks_per_sec = CLOCKS_PER_SEC;
 
 
-ALObjectPtr Ftime(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+ALObjectPtr Ftime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
 {
     AL_CHECK(assert_size<0>(t_obj));
     std::time_t result = std::time(nullptr);
@@ -52,13 +52,13 @@ ALObjectPtr Ftime(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     return make_int(result);
 }
 
-ALObjectPtr Fclock(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+ALObjectPtr Fclock(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
 {
     AL_CHECK(assert_size<0>(t_obj));
     return make_int(std::clock());
 }
 
-ALObjectPtr Fnow(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fnow(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
 
@@ -87,7 +87,7 @@ ALObjectPtr Fnow(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     return nullptr;
 }
 
-ALObjectPtr Fnow_ns(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fnow_ns(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
 
@@ -113,7 +113,7 @@ ALObjectPtr Fnow_ns(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eva
     return nullptr;
 }
 
-ALObjectPtr Fgmtime(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fgmtime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -132,7 +132,7 @@ ALObjectPtr Fgmtime(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eva
                        res->tm_isdst);
 }
 
-ALObjectPtr Flocaltime(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Flocaltime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -151,7 +151,7 @@ ALObjectPtr Flocaltime(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *
                        res->tm_isdst);
 }
 
-ALObjectPtr Fmktime(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmktime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -174,7 +174,7 @@ ALObjectPtr Fmktime(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eva
     return make_int(std::mktime(&tm));
 }
 
-ALObjectPtr Fstrftime(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fstrftime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_min_size<2>(t_obj));
@@ -215,7 +215,7 @@ ALObjectPtr Fstrftime(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *e
     return Qnil;
 }
 
-ALObjectPtr Fctime(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fctime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_max_size<1>(t_obj));
@@ -230,7 +230,7 @@ ALObjectPtr Fctime(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval
     return make_string(std::ctime(&time_t));
 }
 
-ALObjectPtr Fns(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fns(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -240,7 +240,7 @@ ALObjectPtr Fns(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     return make_real(res);
 }
 
-ALObjectPtr Fms(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fms(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -250,7 +250,7 @@ ALObjectPtr Fms(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     return make_real(res);
 }
 
-ALObjectPtr Fs(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fs(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -260,7 +260,7 @@ ALObjectPtr Fs(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     return make_real(res);
 }
 
-ALObjectPtr Fhr(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fhr(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -270,7 +270,7 @@ ALObjectPtr Fhr(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     return make_real(res);
 }
 
-ALObjectPtr Fsleep(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fsleep(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));

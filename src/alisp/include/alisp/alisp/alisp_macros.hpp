@@ -37,14 +37,14 @@
 
 
 #define DEFUN(name, sym, doc)                                                                                      \
-    extern ALObjectPtr F##name(ALObjectPtr &, env::Environment *, eval::Evaluator *);                              \
+    extern ALObjectPtr F##name(const ALObjectPtr &, env::Environment *, eval::Evaluator *); \
     inline auto Q##name = env::Environment::g_global_symbol_table.insert({ sym, make_symbol(sym) }).first->second; \
     inline auto P##name = env::Environment::g_prime_values.insert({ sym, make_prime(&F##name, sym, doc) }).first->second
 
 
 #define APP_FUNCTION_(NAME, FUN, TYPE)                                           \
-    ALObjectPtr NAME(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl) \
-    {                                                                            \
+    ALObjectPtr NAME(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl) \
+    {                                                                   \
         assert_size<1>(obj);                                                     \
         auto num = evl->eval(obj->i(0));                                         \
         assert_number(num);                                                      \
@@ -59,7 +59,7 @@
 
 
 #define APP_BIFUNCTION(NAME, FUN)                                                                      \
-    ALObjectPtr NAME(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)                       \
+    ALObjectPtr NAME(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)                       \
     {                                                                                                  \
         assert_size<2>(obj);                                                                           \
         auto eval_obj = eval_transform(evl, obj);                                                      \
@@ -80,7 +80,7 @@
 
 
 #define INT_APP_BIFUNCTION(NAME, FUN)                                                               \
-    ALObjectPtr NAME(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)                    \
+    ALObjectPtr NAME(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)                    \
     {                                                                                               \
         assert_size<2>(obj);                                                                        \
         auto eval_obj = eval_transform(evl, obj);                                                   \
@@ -96,7 +96,7 @@
 
 
 #define REAL_APP_BIFUNCTION(NAME, FUN)                                                                 \
-    ALObjectPtr NAME(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)                       \
+    ALObjectPtr NAME(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)                       \
     {                                                                                                  \
         assert_size<2>(obj);                                                                           \
         auto eval_obj = eval_transform(evl, obj);                                                      \
@@ -112,7 +112,7 @@
 
 
 #define REAL_APP_PREDICATE(NAME, FUN)                                            \
-    ALObjectPtr NAME(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl) \
+    ALObjectPtr NAME(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl) \
     {                                                                            \
         assert_size<1>(obj);                                                     \
         const auto one = evl->eval(obj->i(0));                                   \

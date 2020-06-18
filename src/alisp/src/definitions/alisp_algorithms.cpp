@@ -26,7 +26,7 @@
 namespace alisp
 {
 
-ALObjectPtr Fslice(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fslice(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<2>(obj));
 
@@ -56,7 +56,7 @@ ALObjectPtr Fslice(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     return make_object(new_list);
 }
 
-ALObjectPtr Fsort(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fsort(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
 
@@ -71,7 +71,7 @@ ALObjectPtr Fsort(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     return list;
 }
 
-ALObjectPtr Freverse(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Freverse(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
 
@@ -84,7 +84,7 @@ ALObjectPtr Freverse(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval
     return make_list(new_list);
 }
 
-ALObjectPtr Fzip(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fzip(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<2>(obj));
 
@@ -115,7 +115,7 @@ ALObjectPtr Fzip(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     return make_object(new_list);
 }
 
-ALObjectPtr Ffilter(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffilter(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
 
@@ -137,7 +137,7 @@ ALObjectPtr Ffilter(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     return make_object(new_list);
 }
 
-ALObjectPtr Fany(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fany(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
 
@@ -158,7 +158,7 @@ ALObjectPtr Fany(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     return Qnil;
 }
 
-ALObjectPtr Fall(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fall(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
 

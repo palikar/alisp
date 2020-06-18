@@ -34,7 +34,7 @@ namespace alisp
 {
 
 
-ALObjectPtr Fand(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fand(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     for (auto el : *obj)
     {
@@ -46,7 +46,7 @@ ALObjectPtr Fand(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
     return Qt;
 }
 
-ALObjectPtr For(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr For(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     for (auto el : *obj)
     {
@@ -58,7 +58,7 @@ ALObjectPtr For(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
     return Qnil;
 }
 
-ALObjectPtr Fnot(ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fnot(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
     AL_CHECK(assert_size<1>(obj));
 

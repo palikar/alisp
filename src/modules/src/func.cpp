@@ -32,7 +32,7 @@ namespace details
 
 auto placeholder_sym = alisp::make_symbol("_");
 
-ALObjectPtr Fcompose(ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
+ALObjectPtr Fcompose(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<2>(obj));
 
@@ -48,7 +48,7 @@ ALObjectPtr Fcompose(ALObjectPtr &obj, env::Environment *env, eval::Evaluator *e
     return Flambda(make_object(make_object(Qrest, env::intern("rest--")), res), env, eval);
 }
 
-ALObjectPtr Fpartial(ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
+ALObjectPtr Fpartial(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(obj));
 
@@ -87,7 +87,7 @@ ALObjectPtr Fpartial(ALObjectPtr &obj, env::Environment *env, eval::Evaluator *e
       eval);
 }
 
-ALObjectPtr Fthread_first(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fthread_first(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_min_size<2>(obj);
 
@@ -111,7 +111,7 @@ ALObjectPtr Fthread_first(ALObjectPtr &obj, env::Environment *, eval::Evaluator 
     return eval->eval(first);
 }
 
-ALObjectPtr Fthread_last(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fthread_last(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_min_size<2>(obj);
 
@@ -134,7 +134,7 @@ ALObjectPtr Fthread_last(ALObjectPtr &obj, env::Environment *, eval::Evaluator *
     return eval->eval(first);
 }
 
-ALObjectPtr Freduce(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Freduce(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<2>(obj));
 
@@ -160,13 +160,13 @@ ALObjectPtr Freduce(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     return res;
 }
 
-ALObjectPtr Fidentity(ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
+ALObjectPtr Fidentity(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
 {
     AL_CHECK(assert_size<1>(obj));
     return obj->i(0);
 }
 
-ALObjectPtr Fignore(ALObjectPtr&, env::Environment *, eval::Evaluator *)
+ALObjectPtr Fignore(const ALObjectPtr&, env::Environment *, eval::Evaluator *)
 {
     return Qnil;
 }

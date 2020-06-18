@@ -95,7 +95,7 @@ inline constexpr auto separator = "/";
 #endif
 
 
-ALObjectPtr Froot(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+ALObjectPtr Froot(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
 {
     namespace fs = std::filesystem;
     AL_CHECK(assert_size<0>(t_obj));
@@ -115,7 +115,7 @@ ALObjectPtr Froot(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     return Qnil;
 }
 
-ALObjectPtr Fdirectories(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fdirectories(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -148,7 +148,7 @@ ALObjectPtr Fdirectories(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
     return make_object(entries);
 }
 
-ALObjectPtr Fentries(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fentries(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -177,7 +177,7 @@ ALObjectPtr Fentries(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *ev
     return make_object(entries);
 }
 
-ALObjectPtr Fglob(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fglob(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -195,7 +195,7 @@ ALObjectPtr Fglob(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     return make_list(glob(pattern->to_string()));
 }
 
-ALObjectPtr Ftouch(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ftouch(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto path = eval->eval(t_obj->i(0));
@@ -212,7 +212,7 @@ ALObjectPtr Ftouch(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval
     return Qt;
 }
 
-ALObjectPtr Fexpand_user(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fexpand_user(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto path = eval->eval(t_obj->i(0));
@@ -221,7 +221,7 @@ ALObjectPtr Fexpand_user(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
     return make_string(expand_user(path->to_string()));
 }
 
-ALObjectPtr Fcopy(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcopy(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -248,7 +248,7 @@ ALObjectPtr Fcopy(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     return Qt;
 }
 
-ALObjectPtr Fmove(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmove(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -277,7 +277,7 @@ ALObjectPtr Fmove(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     return Qt;
 }
 
-ALObjectPtr Fmake_symlink(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmake_symlink(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -306,7 +306,7 @@ ALObjectPtr Fmake_symlink(ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
     return Qt;
 }
 
-ALObjectPtr Fdelete(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fdelete(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -338,7 +338,7 @@ ALObjectPtr Fdelete(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eva
     }
 }
 
-ALObjectPtr Fmkdir(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmkdir(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -361,7 +361,7 @@ ALObjectPtr Fmkdir(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval
     }
 }
 
-ALObjectPtr Fwith_temp_file(ALObjectPtr &t_obj, env::Environment *env, eval::Evaluator *eval)
+ALObjectPtr Fwith_temp_file(const ALObjectPtr &t_obj, env::Environment *env, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -381,20 +381,20 @@ ALObjectPtr Fwith_temp_file(ALObjectPtr &t_obj, env::Environment *env, eval::Eva
     return res;
 }
 
-ALObjectPtr Ftemp_file_name(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+ALObjectPtr Ftemp_file_name(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
 {
     AL_CHECK(assert_size<0>(t_obj));
     return make_string(FileHelpers::temp_file_path());
 }
 
-ALObjectPtr Ftemp_file(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+ALObjectPtr Ftemp_file(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
 {
     AL_CHECK(assert_size<0>(t_obj));
     auto path = FileHelpers::temp_file_path();
     return FileHelpers::put_file(path, std::fstream(path, std::ios::out), false, true);
 }
 
-ALObjectPtr Fread_bytes(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fread_bytes(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -434,7 +434,7 @@ ALObjectPtr Fread_bytes(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
     return make_object(bytes);
 }
 
-ALObjectPtr Fread_text(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fread_text(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -455,7 +455,7 @@ ALObjectPtr Fread_text(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *
     return make_string(utility::load_file(path->to_string()));
 }
 
-ALObjectPtr Fwrite_text(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fwrite_text(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -484,7 +484,7 @@ ALObjectPtr Fwrite_text(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
     return Qt;
 }
 
-ALObjectPtr Fwrite_bytes(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fwrite_bytes(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -519,7 +519,7 @@ ALObjectPtr Fwrite_bytes(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
     return Qt;
 }
 
-ALObjectPtr Fappend_text(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fappend_text(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -548,7 +548,7 @@ ALObjectPtr Fappend_text(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
     return Qt;
 }
 
-ALObjectPtr Fappend_bytes(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fappend_bytes(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -583,7 +583,7 @@ ALObjectPtr Fappend_bytes(ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
     return Qt;
 }
 
-ALObjectPtr Fjoin(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fjoin(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -603,7 +603,7 @@ ALObjectPtr Fjoin(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     return make_string(path.string());
 }
 
-ALObjectPtr Fsplit(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fsplit(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -616,7 +616,7 @@ ALObjectPtr Fsplit(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval
     return make_list(parts);
 }
 
-ALObjectPtr Fexpand(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fexpand(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -639,7 +639,7 @@ ALObjectPtr Fexpand(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eva
     }
 }
 
-ALObjectPtr Ffilename(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffilename(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -663,7 +663,7 @@ ALObjectPtr Ffilename(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *e
     }
 }
 
-ALObjectPtr Fdirname(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fdirname(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -687,7 +687,7 @@ ALObjectPtr Fdirname(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *ev
     }
 }
 
-ALObjectPtr Fcommon_parent(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcommon_parent(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto path = eval->eval(t_obj->i(0));
@@ -696,7 +696,7 @@ ALObjectPtr Fcommon_parent(ALObjectPtr &t_obj, env::Environment *, eval::Evaluat
     return Qnil;
 }
 
-ALObjectPtr Fext(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fext(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -719,7 +719,7 @@ ALObjectPtr Fext(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     }
 }
 
-ALObjectPtr Fno_ext(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fno_ext(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -742,7 +742,7 @@ ALObjectPtr Fno_ext(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eva
     }
 }
 
-ALObjectPtr Fswap_ext(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fswap_ext(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -767,7 +767,7 @@ ALObjectPtr Fswap_ext(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *e
     }
 }
 
-ALObjectPtr Fbase(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -786,7 +786,7 @@ ALObjectPtr Fbase(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     return make_string(p.stem().filename());
 }
 
-ALObjectPtr Frelative(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Frelative(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -816,7 +816,7 @@ ALObjectPtr Frelative(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *e
     }
 }
 
-ALObjectPtr Fshort(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fshort(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto path = eval->eval(t_obj->i(0));
@@ -825,7 +825,7 @@ ALObjectPtr Fshort(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval
     return Qnil;
 }
 
-ALObjectPtr Flong(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Flong(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -847,7 +847,7 @@ ALObjectPtr Flong(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     }
 }
 
-ALObjectPtr Fcanonical(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fcanonical(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -869,7 +869,7 @@ ALObjectPtr Fcanonical(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *
     }
 }
 
-ALObjectPtr Ffull(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffull(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -892,7 +892,7 @@ ALObjectPtr Ffull(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     }
 }
 
-ALObjectPtr Fexists(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fexists(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -903,7 +903,7 @@ ALObjectPtr Fexists(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eva
     return fs::exists(p) ? Qt : Qnil;
 }
 
-ALObjectPtr Fdirecotry(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fdirecotry(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -914,7 +914,7 @@ ALObjectPtr Fdirecotry(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *
     return fs::is_directory(p) ? Qt : Qnil;
 }
 
-ALObjectPtr Ffile(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Ffile(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -925,7 +925,7 @@ ALObjectPtr Ffile(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     return fs::is_regular_file(p) ? Qt : Qnil;
 }
 
-ALObjectPtr Fsymlink(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fsymlink(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -936,7 +936,7 @@ ALObjectPtr Fsymlink(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *ev
     return fs::is_symlink(p) ? Qt : Qnil;
 }
 
-ALObjectPtr Freadable(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Freadable(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -948,7 +948,7 @@ ALObjectPtr Freadable(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *e
     return (fs::status(p).permissions() & fs::perms::owner_read) != fs::perms::none ? Qt : Qnil;
 }
 
-ALObjectPtr Fwritable(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fwritable(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -960,7 +960,7 @@ ALObjectPtr Fwritable(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *e
     return (fs::status(p).permissions() & fs::perms::owner_write) != fs::perms::none ? Qt : Qnil;
 }
 
-ALObjectPtr Fexecutable(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fexecutable(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -972,7 +972,7 @@ ALObjectPtr Fexecutable(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
     return (fs::status(p).permissions() & fs::perms::owner_exec) != fs::perms::none ? Qt : Qnil;
 }
 
-ALObjectPtr Fabsolute(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fabsolute(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -983,7 +983,7 @@ ALObjectPtr Fabsolute(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *e
     return p.is_absolute() ? Qt : Qnil;
 }
 
-ALObjectPtr Fprelative(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fprelative(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -994,7 +994,7 @@ ALObjectPtr Fprelative(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *
     return p.is_relative() ? Qt : Qnil;
 }
 
-ALObjectPtr Fis_root(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fis_root(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -1005,7 +1005,7 @@ ALObjectPtr Fis_root(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *ev
     return fs::equivalent(p, fs::current_path().root_path()) ? Qt : Qnil;
 }
 
-ALObjectPtr Fsame(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fsame(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -1031,7 +1031,7 @@ ALObjectPtr Fsame(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     }
 }
 
-ALObjectPtr Fparent_of(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fparent_of(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -1057,7 +1057,7 @@ ALObjectPtr Fparent_of(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *
     }
 }
 
-ALObjectPtr Fchild_of(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fchild_of(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -1083,7 +1083,7 @@ ALObjectPtr Fchild_of(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *e
     }
 }
 
-ALObjectPtr Fancestor_of(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fancestor_of(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -1115,7 +1115,7 @@ ALObjectPtr Fancestor_of(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
     return Qt;
 }
 
-ALObjectPtr Fdescendant_of(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fdescendant_of(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -1147,7 +1147,7 @@ ALObjectPtr Fdescendant_of(ALObjectPtr &t_obj, env::Environment *, eval::Evaluat
     return Qt;
 }
 
-ALObjectPtr Fhidden(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fhidden(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
     AL_CHECK(assert_size<1>(t_obj));
@@ -1157,7 +1157,7 @@ ALObjectPtr Fhidden(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eva
     return p.filename().string()[0] == '.' ? Qt : Qnil;
 }
 
-ALObjectPtr Fempty(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fempty(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
     AL_CHECK(assert_size<1>(t_obj));

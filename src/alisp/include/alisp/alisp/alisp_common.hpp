@@ -89,8 +89,8 @@ class Evaluator;
 
 struct Prim
 {
-    using func_type = ALObjectPtr (*)(ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval);
-    ALObjectPtr (*function)(ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval);
+    using func_type = ALObjectPtr (*)(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval);
+    ALObjectPtr (*function)(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval);
 };
 
 class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from_this<ALObject>, utility::empty_base>

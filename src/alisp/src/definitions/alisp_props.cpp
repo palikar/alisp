@@ -30,7 +30,7 @@ namespace alisp
 {
 
 
-ALObjectPtr Fprop_set(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fprop_set(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<3>(obj));
 
@@ -47,7 +47,7 @@ ALObjectPtr Fprop_set(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eva
     return Qt;
 }
 
-ALObjectPtr Fprop_get(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fprop_get(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
 
@@ -66,7 +66,7 @@ ALObjectPtr Fprop_get(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eva
 }
 
 
-ALObjectPtr Fprop_exists(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fprop_exists(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
 
@@ -79,7 +79,7 @@ ALObjectPtr Fprop_exists(ALObjectPtr &obj, env::Environment *, eval::Evaluator *
     return target->prop_exists(prop_name) ? Qt : Qnil;
 }
 
-ALObjectPtr Fprop_list(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fprop_list(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
 
@@ -93,7 +93,7 @@ ALObjectPtr Fprop_list(ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
 }
 
 
-ALObjectPtr Fprop_remove(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fprop_remove(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
 
