@@ -166,7 +166,7 @@ ALObjectPtr Fidentity(const ALObjectPtr &obj, env::Environment *, eval::Evaluato
     return obj->i(0);
 }
 
-ALObjectPtr Fignore(const ALObjectPtr&, env::Environment *, eval::Evaluator *)
+ALObjectPtr Fignore(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
 {
     return Qnil;
 }

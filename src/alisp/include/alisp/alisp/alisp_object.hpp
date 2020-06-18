@@ -39,7 +39,7 @@
 namespace alisp
 {
 
-inline auto splice(const ALObjectPtr& t_obj,
+inline auto splice(const ALObjectPtr &t_obj,
                    std::vector<ALObject>::difference_type start_index,
                    std::vector<ALObject>::difference_type end_index = -1)
 {
@@ -59,7 +59,7 @@ inline auto splice(const ALObjectPtr& t_obj,
     return make_object(new_child);
 }
 
-inline auto splice_temp(const ALObjectPtr& t_obj,
+inline auto splice_temp(const ALObjectPtr &t_obj,
                         std::vector<ALObject>::difference_type start_index,
                         std::vector<ALObject>::difference_type end_index = -1)
 {
@@ -78,7 +78,7 @@ inline auto splice_temp(const ALObjectPtr& t_obj,
     return make_object(begin_it, end_it);
 }
 
-inline auto quote(const ALObjectPtr& t_obj)
+inline auto quote(const ALObjectPtr &t_obj)
 {
     return make_object(Qquote, std::move(t_obj));
 }
@@ -200,9 +200,9 @@ inline auto apply(eval::Evaluator *evl, const ALObjectPtr &t_obj, Callable t_fun
 
 template<bool eval, typename Callable, typename StartType>
 inline StartType reduce([[maybe_unused]] eval::Evaluator *evl,
-const ALObjectPtr &t_obj,
-Callable &&t_fun,
-StartType t_start,
+                        const ALObjectPtr &t_obj,
+                        Callable &&t_fun,
+                        StartType t_start,
                         size_t t_offset = 0)
 {
     auto &objects   = *t_obj;

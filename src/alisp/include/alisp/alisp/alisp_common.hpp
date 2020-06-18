@@ -462,7 +462,7 @@ inline std::ostream &operator<<(std::ostream &os, const ALObjectPtr t_obj)
     return os;
 }
 
-inline std::string dump(const ALObjectCPtr& obj)
+inline std::string dump(const ALObjectCPtr &obj)
 {
     std::ostringstream str;
 

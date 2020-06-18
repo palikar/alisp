@@ -81,30 +81,29 @@ template<typename Check, typename Call> pattern_entry<Check, Call> operator>(mat
 template<typename Callalble_In_1, typename Callalble_In_2>
 auto operator||(match<Callalble_In_1> t_match_lhs, match<Callalble_In_2> t_match_rhs)
 {
-    return detail::match([t_rhs = std::move(t_match_rhs), t_lhs = std::move(t_match_lhs)](const ALObjectPtr &obj) -> bool {
-        return t_rhs.m_fun(obj) || t_lhs.m_fun(obj);
-    });
+    return detail::match([t_rhs = std::move(t_match_rhs), t_lhs = std::move(t_match_lhs)](
+                           const ALObjectPtr &obj) -> bool { return t_rhs.m_fun(obj) || t_lhs.m_fun(obj); });
 }
 
 
 template<typename Callalble_In_1, typename Callalble_In_2>
 auto operator&&(detail::match<Callalble_In_1> t_match_lhs, detail::match<Callalble_In_2> t_match_rhs)
 {
-    return detail::match([t_rhs = std::move(t_match_rhs), t_lhs = std::move(t_match_lhs)](const ALObjectPtr &obj) -> bool {
-        return t_rhs.m_fun(obj) && t_lhs.m_fun(obj);
-    });
+    return detail::match([t_rhs = std::move(t_match_rhs), t_lhs = std::move(t_match_lhs)](
+                           const ALObjectPtr &obj) -> bool { return t_rhs.m_fun(obj) && t_lhs.m_fun(obj); });
 }
 
 template<typename Callalble_In_1> auto operator!(match<Callalble_In_1> t_match)
 {
-    return detail::match([t_match = std::move(t_match)](const ALObjectPtr &obj) -> bool { return !t_match.m_fun(obj); });
+    return detail::match(
+      [t_match = std::move(t_match)](const ALObjectPtr &obj) -> bool { return !t_match.m_fun(obj); });
 }
 
 
 template<size_t N, class... Matches, class... Checks>
 auto visit_match_impl([[maybe_unused]] const ALObjectPtr &obj,
-[[maybe_unused]] std::tuple<pattern_entry<Checks, Matches>...> patterns)
-    -> std::common_type_t<std::invoke_result_t<Matches, const ALObjectPtr &>...>
+                      [[maybe_unused]] std::tuple<pattern_entry<Checks, Matches>...> patterns)
+  -> std::common_type_t<std::invoke_result_t<Matches, const ALObjectPtr &>...>
 {
 
 

@@ -92,43 +92,43 @@ ALObjectPtr Fdump(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
     return Qt;
 }
 
-ALObjectPtr Fdumpstack(const ALObjectPtr&, env::Environment *env, eval::Evaluator *)
+ALObjectPtr Fdumpstack(const ALObjectPtr &, env::Environment *env, eval::Evaluator *)
 {
     env->stack_dump();
     return Qt;
 }
 
-ALObjectPtr Fdumpcallstack(const ALObjectPtr&, env::Environment *env, eval::Evaluator *)
+ALObjectPtr Fdumpcallstack(const ALObjectPtr &, env::Environment *env, eval::Evaluator *)
 {
     env->callstack_dump();
     return Qt;
 }
 
-ALObjectPtr Fdumpsystem(const ALObjectPtr&, env::Environment *env, eval::Evaluator *)
+ALObjectPtr Fdumpsystem(const ALObjectPtr &, env::Environment *env, eval::Evaluator *)
 {
     env->env_dump();
     return Qt;
 }
 
-ALObjectPtr Fdumplicense(const ALObjectPtr&, env::Environment *, eval::Evaluator *)
+ALObjectPtr Fdumplicense(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
 {
     al::cout << AL_LICENSE_TEXT << '\n';
     return Qt;
 }
 
-ALObjectPtr Fdumpcredits(const ALObjectPtr&, env::Environment *, eval::Evaluator *)
+ALObjectPtr Fdumpcredits(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
 {
     al::cout << AL_CREDITS_TEXT << '\n';
     return Qt;
 }
 
-ALObjectPtr Fread_line(const ALObjectPtr&, env::Environment *, eval::Evaluator *)
+ALObjectPtr Fread_line(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
 {
     std::string line;
     return make_string(al::cin.get().get_line());
 }
 
-ALObjectPtr Fread_char(const ALObjectPtr&, env::Environment *, eval::Evaluator *)
+ALObjectPtr Fread_char(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
 {
     return make_char(al::cin.get().get_char());
 }

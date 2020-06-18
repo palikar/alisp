@@ -22,6 +22,22 @@
 namespace alisp
 {
 
+LanguageEngine::LanguageEngine(std::vector<EngineSettings> t_setting,
+                               std::vector<std::string> t_cla,
+                               std::vector<std::string> t_extra_imports,
+                               std::vector<std::string> t_warnings)
+  : m_environment()
+  , m_parser(std::make_unique<parser::ALParser<env::Environment>>(m_environment))
+  , m_evaluator(m_environment, m_parser.get(), utility::env_bool(ENV_VAR_DEFER_EL))
+  , m_settings(std::move(t_setting))
+  , m_argv(std::move(t_cla))
+  , m_imports(std::move(t_extra_imports))
+  , m_warnings(std::move(t_warnings))
+  , m_home_directory(utility::env_string("HOME"))
+{
+    init_system();
+}
+
 void LanguageEngine::do_eval(std::string &t_input, const std::string &t_file, bool t_print_res)
 {
     auto parse_result = m_parser->parse(t_input, t_file);
@@ -41,7 +57,6 @@ void LanguageEngine::do_eval(std::string &t_input, const std::string &t_file, bo
             std::cout << *eval_result << "\n";
         }
     }
-    
 }
 
 void LanguageEngine::load_init_scripts()
@@ -106,46 +121,29 @@ void LanguageEngine::init_system()
     Vdebug_mode = check(EngineSettings::DISABLE_DEBUG_MODE) or utility::env_bool(ENV_VAR_NODEBUG) ? Qnil : Qt;
 }
 
-std::pair<bool, int> LanguageEngine::eval_statement(std::string &command, bool exit_on_error)
+std::pair<bool, int> LanguageEngine::handle_exceptions() const noexcept
 {
     try
     {
-        AL_DEBUG("Evaluating statement: "s += command);
-
-        eval::detail::EvaluationLock lock{ m_evaluator };
-        do_eval(command, "__EVAL__", true);
-
-        return { true, 0 };
+        throw;
     }
     catch (al_exit &ex)
     {
-        if (exit_on_error)
-        {
-            return { false, ex.value() };
-        }
+        return { false, ex.value() };
     }
     catch (...)
     {
         handle_errors_lippincott<false>();
-        if (exit_on_error)
-        {
-            return { false, 0 };
-        }
+        return { false, 0 };
     }
-    return { true, 0 };
 }
 
-std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_path, bool insert_mod_path)
+void LanguageEngine::insert_paths(bool t_add, const std::filesystem::path &t_path) const
 {
-    AL_DEBUG("Evaluating file: "s += t_path);
-    m_evaluator.set_current_file(t_path);
-
-    m_evaluator.reset_evaluation_flag();
 
     namespace fs = std::filesystem;
-    if (insert_mod_path)
+    if (t_add)
     {
-
         if (t_path.has_parent_path())
         {
             Vmodpaths->children().push_back(make_string(fs::absolute(t_path.parent_path())));
@@ -156,18 +154,50 @@ std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_pa
             Vmodpaths->children().push_back(make_string(fs::absolute(fs::current_path())));
         }
     }
+}
+
+std::pair<bool, int> LanguageEngine::eval_statement(std::string &command, bool exit_on_error)
+{
+    AL_DEBUG("Evaluating statement: "s += command);
+    m_evaluator.set_current_file("__EVAL__");
+    m_evaluator.reset_evaluation_flag();
+
+    try
+    {
+        eval::detail::EvaluationLock lock{ m_evaluator };
+        do_eval(command, "__EVAL__", true);
+        return { true, 0 };
+    }
+    catch (...)
+    {
+        const auto res = handle_exceptions();
+        if (exit_on_error)
+        {
+            return res;
+        }
+    }
+
+    return { true, 0 };
+}
+
+std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_path, bool insert_mod_path)
+{
+    AL_DEBUG("Evaluating file: "s += t_path);
+    m_evaluator.set_current_file(t_path);
+    m_evaluator.reset_evaluation_flag();
+
+    insert_paths(insert_mod_path, t_path);
 
     try
     {
         {
-            eval::detail::EvaluationLock lock{ m_evaluator };
             auto file_content = utility::load_file(t_path);
+            eval::detail::EvaluationLock lock{ m_evaluator };
             do_eval(file_content, t_path);
         }
 
         while (m_evaluator.is_async_pending())
         {
-            // std::unique_lock<std::mutex> lock(m_evaluator.callback_m);
             m_evaluator.async().spin_loop();
             m_evaluator.callback_cv.wait(m_evaluator.lock());
 
@@ -177,13 +207,9 @@ std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_pa
             }
         }
     }
-    catch (al_exit &ex)
-    {
-        return { false, ex.value() };
-    }
     catch (...)
     {
-        handle_errors_lippincott<true>();
+        return handle_exceptions();
     }
     return { true, 0 };
 }
@@ -202,14 +228,9 @@ std::pair<bool, int> LanguageEngine::eval_objs(std::vector<ALObjectPtr> t_objs)
 
         return { true, 0 };
     }
-    catch (al_exit &ex)
-    {
-        return { false, ex.value() };
-    }
     catch (...)
     {
-        handle_errors_lippincott<false>();
-        return { false, 0 };
+        return handle_exceptions();
     }
     return { true, 0 };
 }

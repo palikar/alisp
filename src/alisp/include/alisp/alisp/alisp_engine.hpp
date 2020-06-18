@@ -83,32 +83,25 @@ class LanguageEngine
 
     const std::string m_home_directory;
 
-    bool check(EngineSettings t_setting)
+    inline bool check(EngineSettings t_setting)
     {
         return std::find(std::begin(m_settings), std::end(m_settings), t_setting) != std::end(m_settings);
     }
 
     void do_eval(std::string &t_input, const std::string &t_file, bool t_print_res = false);
 
+    std::pair<bool, int> handle_exceptions() const noexcept;
+
+    void insert_paths(bool t_add, const std::filesystem::path &t_path) const;
+
 
   public:
     LanguageEngine(std::vector<EngineSettings> t_setting    = {},
                    std::vector<std::string> t_cla           = {},
                    std::vector<std::string> t_extra_imports = {},
-                   std::vector<std::string> t_warnings      = {})
-      : m_environment()
-      , m_parser(std::make_unique<parser::ALParser<env::Environment>>(m_environment))
-      , m_evaluator(m_environment, m_parser.get(), utility::env_bool(ENV_VAR_DEFER_EL))
-      , m_settings(std::move(t_setting))
-      , m_argv(std::move(t_cla))
-      , m_imports(std::move(t_extra_imports))
-      , m_warnings(std::move(t_warnings))
-      , m_home_directory(utility::env_string("HOME"))
-    {
-        init_system();
-    }
+                   std::vector<std::string> t_warnings      = {});
 
-    ~LanguageEngine() {}
+    ~LanguageEngine() = default;
 
     void init_system();
 
@@ -120,13 +113,16 @@ class LanguageEngine
 
     std::pair<bool, int> eval_objs(std::vector<ALObjectPtr> t_objs);
 
-    ALObjectPtr get_value(const std::string &t_sym_name) { return m_environment.find(make_symbol(t_sym_name)); }
+    inline ALObjectPtr get_value(const std::string &t_sym_name)
+    {
+        return m_environment.find(make_symbol(t_sym_name));
+    }
 
-    const std::string &get_home() const { return m_home_directory; }
+    inline const std::string &get_home() const { return m_home_directory; }
 
     void interactive();
 
-    void handle_signal(int t_c)
+    inline void handle_signal(int t_c)
     {
         AL_DEBUG("Receiving signal: "s += std::to_string(t_c));
         m_evaluator.handle_signal(t_c);

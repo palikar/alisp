@@ -73,13 +73,13 @@ class Evaluator
     void eval_file(const std::string &t_file);
     void eval_string(std::string &t_eval);
 
-    ALObjectPtr eval(const ALObjectPtr& obj);
-    ALObjectPtr eval_function(const ALObjectPtr& func, const ALObjectPtr& args);
-    ALObjectPtr apply_function(const ALObjectPtr& func, const ALObjectPtr& args);
-    ALObjectPtr handle_lambda(const ALObjectPtr& func, const ALObjectPtr& args);
+    ALObjectPtr eval(const ALObjectPtr &obj);
+    ALObjectPtr eval_function(const ALObjectPtr &func, const ALObjectPtr &args);
+    ALObjectPtr apply_function(const ALObjectPtr &func, const ALObjectPtr &args);
+    ALObjectPtr handle_lambda(const ALObjectPtr &func, const ALObjectPtr &args);
 
 
-    template<bool evaluation = true> void handle_argument_bindings(const ALObjectPtr& params, ALObjectPtr args);
+    template<bool evaluation = true> void handle_argument_bindings(const ALObjectPtr &params, ALObjectPtr args);
     void put_argument(const ALObjectPtr &param, ALObjectPtr arg);
 
     void new_evaluation();
@@ -98,11 +98,11 @@ class Evaluator
 
     inline void set_evaluation_flag() { m_status_flags |= ACTIVE_EVALUATION_FLAG; }
     inline void reset_evaluation_flag() { m_status_flags &= ~ACTIVE_EVALUATION_FLAG; }
-          
+
     inline void set_async_flag() { m_status_flags |= ASYNC_FLAG; }
     inline void reset_async_flag() { m_status_flags &= ~ASYNC_FLAG; }
     inline bool is_async_pending() { return (m_status_flags & ASYNC_FLAG) > 0; }
-          
+
     inline void set_interactive_flag() { m_status_flags |= INTERACTIVE_FLAG; }
     inline void reset_interactive_flag() { m_status_flags &= ~INTERACTIVE_FLAG; }
     inline bool is_interactive() { return (m_status_flags & INTERACTIVE_FLAG) > 0; }
