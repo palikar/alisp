@@ -233,7 +233,7 @@ std::string to_string(ALObjectPtr t_xml)
 
 }  // namespace detail
 
-ALObjectPtr Fparse_xml(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fparse_xml(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
     auto str = eval->eval(obj->i(0));
@@ -241,7 +241,7 @@ ALObjectPtr Fparse_xml(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
     return detail::from_string(str->to_string());
 }
 
-ALObjectPtr Fdump_xml(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fdump_xml(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
     auto xml = eval->eval(obj->i(0));
@@ -249,7 +249,7 @@ ALObjectPtr Fdump_xml(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval
     return make_string(detail::to_string(xml));
 }
 
-ALObjectPtr Fdump_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fdump_file(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -274,7 +274,7 @@ ALObjectPtr Fdump_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eva
     return Qt;
 }
 
-ALObjectPtr Fload_file(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fload_file(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 

@@ -41,6 +41,7 @@ void LanguageEngine::do_eval(std::string &t_input, const std::string &t_file, bo
             std::cout << *eval_result << "\n";
         }
     }
+    
 }
 
 void LanguageEngine::load_init_scripts()

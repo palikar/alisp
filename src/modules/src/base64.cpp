@@ -404,7 +404,7 @@ struct Base32
 
 }  // namespace detail
 
-ALObjectPtr Fbase64_encode_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase64_encode_string(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 
@@ -414,7 +414,7 @@ ALObjectPtr Fbase64_encode_string(ALObjectPtr obj, env::Environment *, eval::Eva
     return make_string(detail::Base64::Encode(str->to_string()));
 }
 
-ALObjectPtr Fbase64_encode_bytes(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase64_encode_bytes(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 
@@ -432,7 +432,7 @@ ALObjectPtr Fbase64_encode_bytes(ALObjectPtr obj, env::Environment *, eval::Eval
     return make_string(detail::Base64::Encode(std::string(v.begin(), v.end())));
 }
 
-ALObjectPtr Fbase64_decode_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase64_decode_string(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 
@@ -447,7 +447,7 @@ ALObjectPtr Fbase64_decode_string(ALObjectPtr obj, env::Environment *, eval::Eva
     return Qnil;
 }
 
-ALObjectPtr Fbase64_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase64_decode_bytes(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 
@@ -468,7 +468,7 @@ ALObjectPtr Fbase64_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Eval
     return Qnil;
 }
 
-ALObjectPtr Fbase16_encode_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase16_encode_string(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 
@@ -478,7 +478,7 @@ ALObjectPtr Fbase16_encode_string(ALObjectPtr obj, env::Environment *, eval::Eva
     return make_string(detail::Base16::Encode(str->to_string()));
 }
 
-ALObjectPtr Fbase16_encode_bytes(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase16_encode_bytes(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 
@@ -496,7 +496,7 @@ ALObjectPtr Fbase16_encode_bytes(ALObjectPtr obj, env::Environment *, eval::Eval
     return make_string(detail::Base16::Encode(std::string(v.begin(), v.end())));
 }
 
-ALObjectPtr Fbase16_decode_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase16_decode_string(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 
@@ -511,7 +511,7 @@ ALObjectPtr Fbase16_decode_string(ALObjectPtr obj, env::Environment *, eval::Eva
     return Qnil;
 }
 
-ALObjectPtr Fbase16_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase16_decode_bytes(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 
@@ -532,7 +532,7 @@ ALObjectPtr Fbase16_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Eval
     return Qnil;
 }
 
-ALObjectPtr Fbase32_encode_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase32_encode_string(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 
@@ -542,7 +542,7 @@ ALObjectPtr Fbase32_encode_string(ALObjectPtr obj, env::Environment *, eval::Eva
     return make_string(detail::Base32::Encode(str->to_string()));
 }
 
-ALObjectPtr Fbase32_decode_string(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase32_decode_string(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 
@@ -557,7 +557,7 @@ ALObjectPtr Fbase32_decode_string(ALObjectPtr obj, env::Environment *, eval::Eva
     return Qnil;
 }
 
-ALObjectPtr Fbase32_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase32_decode_bytes(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 
@@ -578,7 +578,7 @@ ALObjectPtr Fbase32_decode_bytes(ALObjectPtr obj, env::Environment *, eval::Eval
     return Qnil;
 }
 
-ALObjectPtr Fbase32_encode_bytes(ALObjectPtr obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fbase32_encode_bytes(ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     assert_size<1>(obj);
 

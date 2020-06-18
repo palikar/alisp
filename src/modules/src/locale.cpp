@@ -47,7 +47,7 @@ template<typename Facet, typename T> auto str_with_locale(const std::locale &t_l
 }  // namespace detail
 
 
-ALObjectPtr Fnum_true_name(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fnum_true_name(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
 
@@ -62,7 +62,7 @@ ALObjectPtr Fnum_true_name(ALObjectPtr t_obj, env::Environment *, eval::Evaluato
     return make_string(std::use_facet<std::numpunct<char>>(detail::g_defautl_loc).truename());
 }
 
-ALObjectPtr Fnum_false_name(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fnum_false_name(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
 
@@ -77,7 +77,7 @@ ALObjectPtr Fnum_false_name(ALObjectPtr t_obj, env::Environment *, eval::Evaluat
     return make_string(std::use_facet<std::numpunct<char>>(detail::g_defautl_loc).falsename());
 }
 
-ALObjectPtr Fnum_thousand_sep(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fnum_thousand_sep(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
 
@@ -92,7 +92,7 @@ ALObjectPtr Fnum_thousand_sep(ALObjectPtr t_obj, env::Environment *, eval::Evalu
     return make_char(std::use_facet<std::numpunct<char>>(detail::g_defautl_loc).thousands_sep());
 }
 
-ALObjectPtr Fnum_decimal_point(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fnum_decimal_point(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
 
@@ -107,7 +107,7 @@ ALObjectPtr Fnum_decimal_point(ALObjectPtr t_obj, env::Environment *, eval::Eval
     return make_char(std::use_facet<std::numpunct<char>>(detail::g_defautl_loc).decimal_point());
 }
 
-ALObjectPtr Fmoney_positive_sign(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmoney_positive_sign(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
 
@@ -122,7 +122,7 @@ ALObjectPtr Fmoney_positive_sign(ALObjectPtr t_obj, env::Environment *, eval::Ev
     return make_string(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).positive_sign());
 }
 
-ALObjectPtr Fmoney_negative_sign(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmoney_negative_sign(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
 
@@ -137,7 +137,7 @@ ALObjectPtr Fmoney_negative_sign(ALObjectPtr t_obj, env::Environment *, eval::Ev
     return make_string(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).negative_sign());
 }
 
-ALObjectPtr Fmoney_symobl(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmoney_symobl(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
 
@@ -152,7 +152,7 @@ ALObjectPtr Fmoney_symobl(ALObjectPtr t_obj, env::Environment *, eval::Evaluator
     return make_string(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).curr_symbol());
 }
 
-ALObjectPtr Fmoney_thousand_sep(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmoney_thousand_sep(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
 
@@ -167,7 +167,7 @@ ALObjectPtr Fmoney_thousand_sep(ALObjectPtr t_obj, env::Environment *, eval::Eva
     return make_char(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).thousands_sep());
 }
 
-ALObjectPtr Fmoney_decimal_point(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fmoney_decimal_point(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
 
@@ -182,7 +182,7 @@ ALObjectPtr Fmoney_decimal_point(ALObjectPtr t_obj, env::Environment *, eval::Ev
     return make_char(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).decimal_point());
 }
 
-ALObjectPtr Fput_money(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fput_money(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
     auto obj = eval->eval(t_obj->i(0));
@@ -201,7 +201,7 @@ ALObjectPtr Fput_money(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *e
     return make_string(s);
 }
 
-ALObjectPtr Fput_num(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fput_num(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
     auto obj = eval->eval(t_obj->i(0));
@@ -225,7 +225,7 @@ ALObjectPtr Fput_num(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return make_string(ss.str());
 }
 
-ALObjectPtr Fput_time(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fput_time(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<2>(t_obj));
     AL_CHECK(assert_max_size<3>(t_obj));
@@ -259,7 +259,7 @@ ALObjectPtr Fput_time(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
     return make_string(ss.str());
 }
 
-ALObjectPtr Fisspace(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fisspace(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
 
@@ -278,7 +278,7 @@ ALObjectPtr Fisspace(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return std::isspace(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
-ALObjectPtr Fisblank(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fisblank(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
 
@@ -296,7 +296,7 @@ ALObjectPtr Fisblank(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return std::isblank(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
-ALObjectPtr Fiscntrl(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fiscntrl(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
 
@@ -314,7 +314,7 @@ ALObjectPtr Fiscntrl(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return std::iscntrl(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
-ALObjectPtr Fisupper(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fisupper(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
 
@@ -332,7 +332,7 @@ ALObjectPtr Fisupper(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return std::isupper(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
-ALObjectPtr Fislower(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fislower(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
 
@@ -350,7 +350,7 @@ ALObjectPtr Fislower(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return std::islower(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
-ALObjectPtr Fisalpha(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fisalpha(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
 
@@ -368,7 +368,7 @@ ALObjectPtr Fisalpha(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return std::isalpha(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
-ALObjectPtr Fisdigit(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fisdigit(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
 
@@ -386,7 +386,7 @@ ALObjectPtr Fisdigit(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return std::isdigit(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
-ALObjectPtr Fispunct(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fispunct(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
 
@@ -404,7 +404,7 @@ ALObjectPtr Fispunct(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return std::ispunct(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
-ALObjectPtr Fisxdigit(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fisxdigit(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
 
@@ -422,7 +422,7 @@ ALObjectPtr Fisxdigit(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *ev
     return std::isxdigit(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
-ALObjectPtr Fisalnum(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fisalnum(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
 
@@ -440,7 +440,7 @@ ALObjectPtr Fisalnum(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return std::isalnum(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
-ALObjectPtr Fisprint(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fisprint(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
 
@@ -458,7 +458,7 @@ ALObjectPtr Fisprint(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return std::isprint(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
-ALObjectPtr Fisgraph(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fisgraph(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<2>(t_obj));
 
@@ -476,7 +476,7 @@ ALObjectPtr Fisgraph(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eva
     return std::isgraph(char(t), detail::g_defautl_loc) ? Qt : Qnil;
 }
 
-ALObjectPtr Freset_locale(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
+ALObjectPtr Freset_locale(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
 {
     AL_CHECK(assert_size<0>(t_obj));
 
@@ -484,7 +484,7 @@ ALObjectPtr Freset_locale(ALObjectPtr t_obj, env::Environment *, eval::Evaluator
     return Qt;
 }
 
-ALObjectPtr Fset_preffered(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *)
+ALObjectPtr Fset_preffered(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
 {
     AL_CHECK(assert_size<0>(t_obj));
 
@@ -492,7 +492,7 @@ ALObjectPtr Fset_preffered(ALObjectPtr t_obj, env::Environment *, eval::Evaluato
     return Qt;
 }
 
-ALObjectPtr Flocale(ALObjectPtr t_obj, env::Environment *env, eval::Evaluator *eval)
+ALObjectPtr Flocale(ALObjectPtr &t_obj, env::Environment *env, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto obj = eval->eval(t_obj->i(0));
@@ -504,7 +504,7 @@ ALObjectPtr Flocale(ALObjectPtr t_obj, env::Environment *env, eval::Evaluator *e
     return resource_to_object(id);
 }
 
-ALObjectPtr Fset_default_locale(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fset_default_locale(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
     auto obj = eval->eval(t_obj->i(0));
@@ -521,7 +521,7 @@ ALObjectPtr Fset_default_locale(ALObjectPtr t_obj, env::Environment *, eval::Eva
     return Qnil;
 }
 
-ALObjectPtr Flocale_name(ALObjectPtr t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Flocale_name(ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_max_size<1>(t_obj));
 
