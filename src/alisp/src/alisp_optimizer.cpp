@@ -24,7 +24,7 @@ namespace alisp
 namespace optimizer
 {
 
-ALObjectPtr MainOptimizer::do_optimize(ALObjectPtr t_obj)
+ALObjectPtr MainOptimizer::do_optimize(const ALObjectPtr &t_obj)
 {
     if (std::size(*t_obj) > 1 && (eq(t_obj->i(0), Qquote) || eq(t_obj->i(0), Qbackquote)))
     {

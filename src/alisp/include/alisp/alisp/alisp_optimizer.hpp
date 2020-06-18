@@ -43,13 +43,13 @@ namespace optimizer
 namespace detail
 {
 
-template<typename... T> inline bool oreq(ALObjectPtr t_obj, T &&... o)
+template<typename... T> inline bool oreq(const ALObjectPtr &t_obj, T &&... o)
 {
 
     return (eq(t_obj, o) || ...);
 }
 
-static bool is_const(ALObjectPtr t_obj)
+static bool is_const(const ALObjectPtr &t_obj)
 {
 
     return pint(t_obj) || pstring(t_obj) || preal(t_obj) || eq(t_obj, Qt) || eq(t_obj, Qnil);
@@ -309,7 +309,7 @@ class MainOptimizer
   private:
     PipelineOptimizer m_opt;
 
-    ALObjectPtr do_optimize(ALObjectPtr t_obj);
+    ALObjectPtr do_optimize(const ALObjectPtr &t_obj);
 
   public:
     MainOptimizer() : m_opt() {}

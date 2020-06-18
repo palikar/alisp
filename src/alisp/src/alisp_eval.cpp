@@ -59,18 +59,18 @@ Evaluator::~Evaluator()
     m_async.end();
 }
 
-void Evaluator::put_argument(ALObjectPtr param, ALObjectPtr arg)
+void Evaluator::put_argument(const ALObjectPtr &param, ALObjectPtr arg)
 {
     AL_DEBUG("Putting argument: "s += dump(param) + " -> " + dump(arg));
 
     this->env.put(param, arg);
 }
 
-template<bool evaluation> void Evaluator::handle_argument_bindings(ALObjectPtr params, ALObjectPtr args)
+template<bool evaluation> void Evaluator::handle_argument_bindings(const ALObjectPtr& params, ALObjectPtr args)
 {
 
     AL_CHECK(
-      if (params->length() == 0 && args->length() != 0) { throw argument_error("Argument\'s lengths do not match."); });
+        if (params->length() == 0 && args->length() != 0) { throw argument_error("Argument\'s lengths do not match."); });
     AL_CHECK(
       if (args->length() != 0 && params->length() == 0) { throw argument_error("Argument\'s lengths do not match."); });
     AL_CHECK(if (args->length() == 0 && params->length() == 0) { return; });
@@ -142,7 +142,7 @@ template<bool evaluation> void Evaluator::handle_argument_bindings(ALObjectPtr p
     AL_CHECK(if (index < arg_cnt) { throw argument_error("Too many arguments provided for the function call."); });
 }
 
-ALObjectPtr Evaluator::eval(ALObjectPtr obj)
+ALObjectPtr Evaluator::eval(const ALObjectPtr& obj)
 {
     detail::EvalDepthTrack track{ *this };
 
@@ -276,7 +276,7 @@ ALObjectPtr Evaluator::eval(ALObjectPtr obj)
     return nullptr;
 }
 
-ALObjectPtr Evaluator::eval_function(ALObjectPtr func, ALObjectPtr args)
+ALObjectPtr Evaluator::eval_function(const ALObjectPtr& func, const ALObjectPtr& args)
 {
     auto [params, body] = func->get_function();
     auto eval_args      = eval_transform(this, args);
@@ -296,14 +296,14 @@ ALObjectPtr Evaluator::eval_function(ALObjectPtr func, ALObjectPtr args)
     }
 }
 
-ALObjectPtr Evaluator::apply_function(ALObjectPtr func, ALObjectPtr args)
+ALObjectPtr Evaluator::apply_function(const ALObjectPtr& func, const ALObjectPtr& args)
 {
     auto [params, body] = func->get_function();
     handle_argument_bindings<false>(params, args);
     return eval_list(this, body, 0);
 }
 
-ALObjectPtr Evaluator::handle_lambda(ALObjectPtr func, ALObjectPtr args)
+ALObjectPtr Evaluator::handle_lambda(const ALObjectPtr& func, const ALObjectPtr& args)
 {
     AL_DEBUG("Calling lambda: "s += dump(func));
 
