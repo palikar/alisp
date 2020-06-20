@@ -40,12 +40,12 @@ namespace request
 {
 using namespace alisp;
 
-auto type_get      = alisp::make_symbol("GET");
-auto type_post     = alisp::make_symbol("POST");
-auto type_head     = alisp::make_symbol("HEAD");
-auto type_delete   = alisp::make_symbol("DELETE");
-auto type_patch    = alisp::make_symbol("PATCH");
-auto type_put      = alisp::make_symbol("PUT");
+auto type_get     = alisp::make_symbol("GET");
+auto type_post    = alisp::make_symbol("POST");
+auto type_head    = alisp::make_symbol("HEAD");
+auto type_delete  = alisp::make_symbol("DELETE");
+auto type_patch   = alisp::make_symbol("PATCH");
+auto type_put     = alisp::make_symbol("PUT");
 auto type_options = alisp::make_symbol("OPTIONS");
 
 namespace detail
@@ -76,10 +76,42 @@ auto do_send(cpr::Session &session, size_t type)
     }
 }
 
+auto handle_headers(cpr::Header t_header)
+{
+    ALObject::list_type ret_list;
+
+    for (auto &[name, value] : t_header)
+    {
+        ret_list.push_back(make_object(name, value));
+    }
+
+    return make_list(ret_list);
+}
+
+auto handle_cookies(cpr::Cookies t_cookies)
+{
+    ALObject::list_type ret_list;
+
+    for (auto &[name, value] : t_cookies)
+    {
+        ret_list.push_back(make_object(name, value));
+    }
+
+    return make_list(ret_list);
+}
+
 auto send(cpr::Session &session, size_t type)
 {
     auto resp = do_send(session, type);
-    return make_string(resp.text);
+
+    auto ret = make_list(make_string(resp.text),
+                         make_int(resp.status_code),
+                         handle_headers(resp.header),
+                         make_string(resp.url),
+                         make_real(resp.elapsed),
+                         handle_cookies(resp.cookies));
+
+    return ret;
 }
 
 }  // namespace detail
@@ -97,7 +129,7 @@ ALObjectPtr Frequest(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluat
 
     size_t request_type{ 0 };
 
-    if(std::size(*t_obj) > 1)
+    if (std::size(*t_obj) > 1)
     {
 
         auto op = eval->eval(t_obj->i(1));
@@ -124,27 +156,27 @@ ALObjectPtr Frequest(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluat
             {
                 request_type = detail::HEAD_TYPE;
             }
-        else if (eq(s, type_patch))
-        {
-            request_type = detail::PATCH_TYPE;
+            else if (eq(s, type_patch))
+            {
+                request_type = detail::PATCH_TYPE;
+            }
+            else
+            {
+                request_type = detail::GET_TYPE;
+            }
         }
-        else
+
+        if (auto [data, succ] = get_next(op, ":data"); succ)
         {
-            request_type = detail::GET_TYPE;
+            auto s = eval->eval(data);
+            AL_CHECK(assert_string(s));
+            auto dat = s->to_string();
+            cpr::priv::set_option(session, cpr::Body{ dat });
         }
-    }
 
-    if (auto [data, succ] = get_next(op, ":data"); succ)
-    {
-        auto s = eval->eval(data);
-        AL_CHECK(assert_string(s));
-        auto dat = s->to_string();
-        cpr::priv::set_option(session, cpr::Body{ dat });
-    }
-
-    if (auto [params, succ] = get_next(op, ":params"); succ)
-    {
-auto s = eval->eval(params);
+        if (auto [params, succ] = get_next(op, ":params"); succ)
+        {
+            auto s = eval->eval(params);
             cpr::Parameters pars;
             cpr::CurlHolder holder;
             AL_CHECK(assert_list(s));
@@ -233,7 +265,7 @@ auto s = eval->eval(params);
             auto pass = eval->eval(s->i(1));
             cpr::priv::set_option(session, cpr::NTLM{ name->to_string(), pass->to_string() });
         }
-    
+
         if (auto [params, succ] = get_next(op, ":cookies"); succ)
         {
             auto s = eval->eval(params);
@@ -248,11 +280,8 @@ auto s = eval->eval(params);
             }
             cpr::priv::set_option(session, cok);
         }
-
-        
-
     }
-    
+
     return detail::send(session, request_type);
 }
 
