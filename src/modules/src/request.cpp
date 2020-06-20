@@ -285,6 +285,73 @@ ALObjectPtr Frequest(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluat
     return detail::send(session, request_type);
 }
 
+ALObjectPtr Fbody(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(t_obj));
+    auto resp_list = eval->eval(t_obj->i(0));
+    if (resp_list->size() == 6)
+    {
+        return resp_list->i(0);
+    }
+    return Qnil;
+}
+
+ALObjectPtr Fstatus_code(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(t_obj));
+    auto resp_list = eval->eval(t_obj->i(0));
+    if (resp_list->size() == 6)
+    {
+        return resp_list->i(1);
+    }
+    return Qnil;
+}
+
+ALObjectPtr Fheaders(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(t_obj));
+    auto resp_list = eval->eval(t_obj->i(0));
+    if (resp_list->size() == 6)
+    {
+        return resp_list->i(2);
+    }
+    return Qnil;
+}
+
+ALObjectPtr Furl(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(t_obj));
+    auto resp_list = eval->eval(t_obj->i(0));
+    if (resp_list->size() == 6)
+    {
+        return resp_list->i(3);
+    }
+    return Qnil;
+}
+
+ALObjectPtr Felapsed(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(t_obj));
+    auto resp_list = eval->eval(t_obj->i(0));
+    if (resp_list->size() == 6)
+    {
+        return resp_list->i(4);
+    }
+    return Qnil;
+}
+
+ALObjectPtr Fcookies(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    AL_CHECK(assert_size<1>(t_obj));
+    auto resp_list = eval->eval(t_obj->i(0));
+    if (resp_list->size() == 6)
+    {
+        return resp_list->i(5);
+    }
+    return Qnil;
+}
+
+
 }  // namespace request
 
 ALISP_EXPORT alisp::env::ModulePtr init_request(alisp::env::Environment *, alisp::eval::Evaluator *)
@@ -295,14 +362,21 @@ ALISP_EXPORT alisp::env::ModulePtr init_request(alisp::env::Environment *, alisp
 
     alisp::module_doc(req_ptr, R"()");
 
-    alisp::module_defvar(req_ptr, "GET", request::type_get);
-    alisp::module_defvar(req_ptr, "POST", request::type_post);
-    alisp::module_defvar(req_ptr, "HEAD", request::type_head);
-    alisp::module_defvar(req_ptr, "DELETE", request::type_delete);
-    alisp::module_defvar(req_ptr, "PUT", request::type_put);
-    alisp::module_defvar(req_ptr, "OPTIONS", request::type_options);
+    alisp::module_defvar(req_ptr, "GET", request::type_get, R"()");
+    alisp::module_defvar(req_ptr, "POST", request::type_post, R"()");
+    alisp::module_defvar(req_ptr, "HEAD", request::type_head, R"()");
+    alisp::module_defvar(req_ptr, "DELETE", request::type_delete, R"()");
+    alisp::module_defvar(req_ptr, "PUT", request::type_put, R"()");
+    alisp::module_defvar(req_ptr, "OPTIONS", request::type_options, R"()");
 
     alisp::module_defun(req_ptr, "request", &request::Frequest, R"()");
+
+    alisp::module_defun(req_ptr, "body", &request::Fbody, R"()");
+    alisp::module_defun(req_ptr, "status-code", &request::Fstatus_code, R"()");
+    alisp::module_defun(req_ptr, "headers", &request::Fheaders, R"()");
+    alisp::module_defun(req_ptr, "url", &request::Furl, R"()");
+    alisp::module_defun(req_ptr, "elapsed", &request::Felapsed, R"()");
+    alisp::module_defun(req_ptr, "cookies", &request::Fcookies, R"()");
 
     return Mrequest;
 }
