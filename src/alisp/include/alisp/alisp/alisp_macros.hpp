@@ -16,6 +16,8 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 #pragma once
 
+#include "alisp/utility/defines.hpp"
+
 #ifdef ALISP_HAS_DECLSPEC
 #define ALISP_EXPORT extern "C" __declspec(dllexport)
 #else
