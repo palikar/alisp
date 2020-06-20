@@ -46,7 +46,7 @@ auto type_head     = alisp::make_symbol("HEAD");
 auto type_delete   = alisp::make_symbol("DELETE");
 auto type_patch    = alisp::make_symbol("PATCH");
 auto type_put      = alisp::make_symbol("PUT");
-auto type_opetions = alisp::make_symbol("OPTIONS");
+auto type_options = alisp::make_symbol("OPTIONS");
 
 namespace detail
 {
@@ -79,7 +79,7 @@ auto do_send(cpr::Session &session, size_t type)
 auto send(cpr::Session &session, size_t type)
 {
     auto resp = do_send(session, type);
-    return make_string(resp.raw_header);
+    return make_string(resp.text);
 }
 
 }  // namespace detail
@@ -92,35 +92,38 @@ ALObjectPtr Frequest(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluat
     auto url = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(url));
 
-    auto op = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_list(op));
-
-    size_t request_type{ 0 };
-
     cpr::Session session;
     cpr::priv::set_option(session, cpr::Url{ url->to_string() });
 
-    if (auto [type, succ] = get_next(op, ":type"); succ)
+    size_t request_type{ 0 };
+
+    if(std::size(*t_obj) > 1)
     {
 
-        auto s = eval->eval(type);
+        auto op = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_list(op));
 
-        if (eq(s, type_get))
+        if (auto [type, succ] = get_next(op, ":type"); succ)
         {
-            request_type = detail::GET_TYPE;
-        }
-        else if (eq(s, type_post))
-        {
-            request_type = detail::POST_TYPE;
-        }
-        else if (eq(s, type_delete))
-        {
-            request_type = detail::DELETE_TYPE;
-        }
-        else if (eq(s, type_head))
-        {
-            request_type = detail::HEAD_TYPE;
-        }
+
+            auto s = eval->eval(type);
+
+            if (eq(s, type_get))
+            {
+                request_type = detail::GET_TYPE;
+            }
+            else if (eq(s, type_post))
+            {
+                request_type = detail::POST_TYPE;
+            }
+            else if (eq(s, type_delete))
+            {
+                request_type = detail::DELETE_TYPE;
+            }
+            else if (eq(s, type_head))
+            {
+                request_type = detail::HEAD_TYPE;
+            }
         else if (eq(s, type_patch))
         {
             request_type = detail::PATCH_TYPE;
@@ -141,125 +144,115 @@ ALObjectPtr Frequest(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluat
 
     if (auto [params, succ] = get_next(op, ":params"); succ)
     {
-        auto s = eval->eval(params);
-        cpr::Parameters pars;
-        cpr::CurlHolder holder;
-        AL_CHECK(assert_list(s));
-        for (auto &par : *s)
-        {
-            auto key   = par->i(0);
-            auto value = par->i(1);
-            pars.AddParameter(cpr::Parameter(key->to_string(), value->to_string()), holder);
+auto s = eval->eval(params);
+            cpr::Parameters pars;
+            cpr::CurlHolder holder;
+            AL_CHECK(assert_list(s));
+            for (auto &par : *s)
+            {
+                auto key   = par->i(0);
+                auto value = par->i(1);
+                pars.AddParameter(cpr::Parameter(key->to_string(), value->to_string()), holder);
+            }
+            cpr::priv::set_option(session, pars);
         }
-        cpr::priv::set_option(session, pars);
-    }
 
-    if (auto [headers, succ] = get_next(op, ":headers"); succ)
-    {
-        auto s = eval->eval(headers);
-        cpr::Header head;
-        AL_CHECK(assert_list(s));
-        for (auto &par : *s)
+        if (auto [headers, succ] = get_next(op, ":headers"); succ)
         {
-            auto key   = par->i(0);
-            auto value = par->i(1);
-            head.insert({ key->to_string(), value->to_string() });
+            auto s = eval->eval(headers);
+            cpr::Header head;
+            AL_CHECK(assert_list(s));
+            for (auto &par : *s)
+            {
+                auto key   = par->i(0);
+                auto value = par->i(1);
+                head.insert({ key->to_string(), value->to_string() });
+            }
+            cpr::priv::set_option(session, head);
         }
-        cpr::priv::set_option(session, head);
-    }
 
-    if (auto [params, succ] = get_next(op, ":payload"); succ)
-    {
-        auto s = eval->eval(params);
-        cpr::Payload pay{};
-        cpr::CurlHolder holder;
-        AL_CHECK(assert_list(s));
-        for (auto &par : *s)
+        if (auto [params, succ] = get_next(op, ":payload"); succ)
         {
-            auto key   = par->i(0);
-            auto value = par->i(1);
-            pay.AddPair({ key->to_string(), value->to_string() }, holder);
+            auto s = eval->eval(params);
+            cpr::Payload pay{};
+            cpr::CurlHolder holder;
+            AL_CHECK(assert_list(s));
+            for (auto &par : *s)
+            {
+                auto key   = par->i(0);
+                auto value = par->i(1);
+                pay.AddPair({ key->to_string(), value->to_string() }, holder);
+            }
+            cpr::priv::set_option(session, pay);
         }
-        cpr::priv::set_option(session, pay);
-    }
 
-    if (auto [params, succ] = get_next(op, ":files"); succ)
-    {
-        auto s = eval->eval(params);
-        cpr::Multipart multi{};
-        AL_CHECK(assert_list(s));
-        for (auto &par : *s)
+        if (auto [params, succ] = get_next(op, ":files"); succ)
         {
-            auto name = par->i(0);
-            auto file = par->i(1);
-            multi.parts.push_back({ name->to_string(), cpr::File(file->to_string()) });
+            auto s = eval->eval(params);
+            cpr::Multipart multi{};
+            AL_CHECK(assert_list(s));
+            for (auto &par : *s)
+            {
+                auto name = par->i(0);
+                auto file = par->i(1);
+                multi.parts.push_back({ name->to_string(), cpr::File(file->to_string()) });
+            }
+            cpr::priv::set_option(session, multi);
         }
-        cpr::priv::set_option(session, multi);
-    }
 
-    if (auto [params, succ] = get_next(op, ":timeout"); succ)
-    {
-        auto s = eval->eval(params);
-        AL_CHECK(assert_int(s));
-        cpr::priv::set_option(session, cpr::Timeout(static_cast<std::int32_t>(s->to_int())));
-    }
-
-    if (auto [params, succ] = get_next(op, ":auth"); succ)
-    {
-        auto s = eval->eval(params);
-        AL_CHECK(assert_list(s));
-        auto name = eval->eval(s->i(0));
-        auto pass = eval->eval(s->i(1));
-        cpr::priv::set_option(session, cpr::Authentication{ name->to_string(), pass->to_string() });
-    }
-
-    if (auto [params, succ] = get_next(op, ":digest"); succ)
-    {
-        auto s = eval->eval(params);
-        AL_CHECK(assert_list(s));
-        auto name = eval->eval(s->i(0));
-        auto pass = eval->eval(s->i(1));
-        cpr::priv::set_option(session, cpr::Digest{ name->to_string(), pass->to_string() });
-    }
-
-    if (auto [params, succ] = get_next(op, ":NTLM"); succ)
-    {
-        auto s = eval->eval(params);
-        AL_CHECK(assert_list(s));
-        auto name = eval->eval(s->i(0));
-        auto pass = eval->eval(s->i(1));
-        cpr::priv::set_option(session, cpr::NTLM{ name->to_string(), pass->to_string() });
-    }
-
-    // if (auto [params, succ] = get_next(op, ":proxies"); succ)
-    // {
-    //     auto s = eval->eval(params);
-    //     cpr::Proxies prox{};
-    //     AL_CHECK(assert_list(s));
-    //     for (auto& par : *s)
-    //     {
-    //         auto protocol = par->i(0);
-    //         auto proxy = par->i(1);
-    //         prox[protocol->to_string()] = proxy->to_string();
-    //     }
-    //     cpr::priv::set_option(session, prox);
-    // }
-
-    if (auto [params, succ] = get_next(op, ":cookies"); succ)
-    {
-        auto s = eval->eval(params);
-        cpr::Cookies cok{};
-        cpr::CurlHolder holder;
-        AL_CHECK(assert_list(s));
-        for (auto &par : *s)
+        if (auto [params, succ] = get_next(op, ":timeout"); succ)
         {
-            auto key              = par->i(0);
-            auto value            = par->i(1);
-            cok[key->to_string()] = value->to_string();
+            auto s = eval->eval(params);
+            AL_CHECK(assert_int(s));
+            cpr::priv::set_option(session, cpr::Timeout(static_cast<std::int32_t>(s->to_int())));
         }
-        cpr::priv::set_option(session, cok);
-    }
 
+        if (auto [params, succ] = get_next(op, ":auth"); succ)
+        {
+            auto s = eval->eval(params);
+            AL_CHECK(assert_list(s));
+            auto name = eval->eval(s->i(0));
+            auto pass = eval->eval(s->i(1));
+            cpr::priv::set_option(session, cpr::Authentication{ name->to_string(), pass->to_string() });
+        }
+
+        if (auto [params, succ] = get_next(op, ":digest"); succ)
+        {
+            auto s = eval->eval(params);
+            AL_CHECK(assert_list(s));
+            auto name = eval->eval(s->i(0));
+            auto pass = eval->eval(s->i(1));
+            cpr::priv::set_option(session, cpr::Digest{ name->to_string(), pass->to_string() });
+        }
+
+        if (auto [params, succ] = get_next(op, ":NTLM"); succ)
+        {
+            auto s = eval->eval(params);
+            AL_CHECK(assert_list(s));
+            auto name = eval->eval(s->i(0));
+            auto pass = eval->eval(s->i(1));
+            cpr::priv::set_option(session, cpr::NTLM{ name->to_string(), pass->to_string() });
+        }
+    
+        if (auto [params, succ] = get_next(op, ":cookies"); succ)
+        {
+            auto s = eval->eval(params);
+            cpr::Cookies cok{};
+            cpr::CurlHolder holder;
+            AL_CHECK(assert_list(s));
+            for (auto &par : *s)
+            {
+                auto key              = par->i(0);
+                auto value            = par->i(1);
+                cok[key->to_string()] = value->to_string();
+            }
+            cpr::priv::set_option(session, cok);
+        }
+
+        
+
+    }
+    
     return detail::send(session, request_type);
 }
 
@@ -273,6 +266,12 @@ ALISP_EXPORT alisp::env::ModulePtr init_request(alisp::env::Environment *, alisp
 
     alisp::module_doc(req_ptr, R"()");
 
+    alisp::module_defvar(req_ptr, "GET", request::type_get);
+    alisp::module_defvar(req_ptr, "POST", request::type_post);
+    alisp::module_defvar(req_ptr, "HEAD", request::type_head);
+    alisp::module_defvar(req_ptr, "DELETE", request::type_delete);
+    alisp::module_defvar(req_ptr, "PUT", request::type_put);
+    alisp::module_defvar(req_ptr, "OPTIONS", request::type_options);
 
     alisp::module_defun(req_ptr, "request", &request::Frequest, R"()");
 
