@@ -19,7 +19,7 @@
 #include <fstream>
 
 #include "alisp/applications/prompt.hpp"
-
+#include "alisp/utility/env.hpp"
 
 #ifdef READLINE_AVAILABLE
 #include <readline/readline.h>
@@ -103,8 +103,13 @@ void init(std::string hist)
     {
         load_history();
     }
-    rl_parse_and_bind(rl_brackets_compl);
-    rl_parse_and_bind(rl_quote_compl);
+
+    if (alisp::utility::env_bool("ALAUTOREPL"))
+    {
+        rl_parse_and_bind(rl_brackets_compl);
+        rl_parse_and_bind(rl_quote_compl);
+    }
+    
 }
 
 std::optional<std::string> repl(const std::string &prompt)
