@@ -45,6 +45,8 @@ void init_warning(std::vector<std::string> t_enabled_warning)
 
             case hash::hash("env"): WarningsHelper::g_warning_bits |= WarningsHelper::ENV_BIT; break;
 
+            case hash::hash("common"): WarningsHelper::g_warning_bits |= WarningsHelper::COMMON_BIT; break;
+
             default: std::cerr << "Unknown warning type: " << warn << "\n";
         }
     }
@@ -111,6 +113,14 @@ void warning_internal(WarnTypes t_type, std::string_view t_msg)
                 or (WarningsHelper::g_warning_bits & ~WarningsHelper::ALL_BIT) > 0)
             {
                 std::cerr << "Warning[EVAL]: " << t_msg << "\n";
+            }
+            return;
+
+        case WarnTypes::COMMON:
+            if ((WarningsHelper::g_warning_bits & ~WarningsHelper::COMMON_BIT) > 0
+                or (WarningsHelper::g_warning_bits & ~WarningsHelper::ALL_BIT) > 0)
+            {
+                std::cerr << "Warning[COMMON]: " << t_msg << "\n";
             }
             return;
     }

@@ -46,6 +46,7 @@ struct WarningsHelper
     constexpr static std::uint8_t MATH_BIT       = 0x04;
     constexpr static std::uint8_t EVAL_BIT       = 0x08;
     constexpr static std::uint8_t ENV_BIT        = 0x10;
+    constexpr static std::uint8_t COMMON_BIT     = 0x20;
 };
 
 enum class WarnTypes
@@ -55,6 +56,7 @@ enum class WarnTypes
     MATH,
     EVAL,
     ENV,
+    COMMON,
 };
 
 void init_warning(std::vector<std::string> t_enabled_warning = {});
@@ -90,6 +92,11 @@ inline void warn_eval(std::string_view t_msg)
 inline void warn_env(std::string_view t_msg)
 {
     warnings::warning_internal(warnings::WarnTypes::ENV, std::move(t_msg));
+}
+
+inline void warn_common(std::string_view t_msg)
+{
+    warnings::warning_internal(warnings::WarnTypes::COMMON, std::move(t_msg));
 }
 
 }  // namespace warn

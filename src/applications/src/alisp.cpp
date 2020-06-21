@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "alisp/applications/prompt.hpp"
 #include "alisp/applications/fmt_formating.hpp"
 #include "alisp/alisp/alisp_engine.hpp"
+#include "alisp/utility/env.hpp"
 
 using namespace std::string_literals;
 
@@ -329,11 +330,23 @@ int interactive(alisp::LanguageEngine &alisp_engine)
 
     alisp_engine.interactive();
 
-    auto alisp_hisotry = fs::path(alisp_engine.get_home()) / PROMPT_HISTORY_FILE;
+    const auto alisp_hisotry = [&alisp_engine]() {
+        if (alisp::utility::env_bool(ENV_VAR_ALHIST))
+        {
+            return fs::path(alisp::utility::env_string(ENV_VAR_ALHIST));
+        }
+
+        return fs::path(alisp_engine.get_home()) / PROMPT_HISTORY_FILE;
+    }();
 
     if (!fs::is_regular_file(alisp_hisotry))
     {
         std::ofstream file{ alisp_hisotry };
+        if (!file.is_open())
+        {
+            alisp::warn::warn_common("Cannot create alisp_hisotry file.");
+        }
+        file.close();
     }
 
     alisp::prompt::init(alisp_hisotry);

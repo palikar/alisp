@@ -71,6 +71,11 @@ not be started on start up of the interpreter but deferred till the
 first function call that needs the event loop. This can lower the
 startup time and increase the time cost of the first functin that
 needs the event loop.
+.TP
+.BR ALHISTFILE:
+If set, youse this as a path for the file that
+stores the history of which commands were executed in the alisp
+repl. If not set, the ~/.alisp_history file will be used instead.
 
 .SH Resources
 .BR Repository:

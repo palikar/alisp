@@ -72,6 +72,7 @@ inline constexpr auto ENV_VAR_RC = "ALISPRC";
 inline constexpr auto ENV_VAR_NODEBUG = "ALNODEBUG";
 inline constexpr auto ENV_VAR_OPTIMIZE = "ALOPTIMIZE";
 inline constexpr auto ENV_VAR_DEFER_EL = "ALDEFEREL";
+inline constexpr auto ENV_VAR_ALHIST = "ALHISTFILE";
 
 inline constexpr auto PROMPT_HISTORY_FILE = ".alisp_history";
 
@@ -96,6 +97,10 @@ not be started on start up of the interpreter but deferred till the
 first function call that needs the event loop. This can lower the
 startup time and increase the time cost of the first functin that
 needs the event loop.
+
+       ALHISTFILE: If set, youse this as a path for the file that
+stores the history of which commands were executed in the alisp
+repl. If not set, the ~/.alisp_history file will be used instead.
 
 )";
 
