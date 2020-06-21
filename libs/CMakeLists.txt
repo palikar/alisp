@@ -20,3 +20,7 @@ set(USE_SYSTEM_CURL ON)
 set(BUILD_CPR_TESTS OFF)
 FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/whoshuu/cpr.git)
 FetchContent_MakeAvailable(cpr)
+
+
+set(HTTPLIB_COMPILE ON)
+add_subdirectory(httplib)
