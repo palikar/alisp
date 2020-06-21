@@ -801,6 +801,7 @@ ALObjectPtr Fassert(const ALObjectPtr &obj, env::Environment *, eval::Evaluator 
     {
         return Qt;
     }
+    
     AL_CHECK(assert_size<1>(obj));
     auto val = evl->eval(obj->i(0));
 
