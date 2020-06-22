@@ -181,14 +181,7 @@ void AsyncS::execute_callback(callback_type call)
 
     auto res = [&] {
         eval::detail::EvaluationLock lock{ *m_eval };
-        if (args == nullptr)
-        {
-            return m_eval->handle_lambda(function, make_list());
-        }
-        else
-        {
-            return m_eval->handle_lambda(function, args);
-        }
+        return m_eval->handle_lambda(function, args == nullptr ? make_list() : args);
     }();
 
     if (internal)
