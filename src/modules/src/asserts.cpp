@@ -31,12 +31,12 @@ ALObjectPtr Fassert_numbers(const ALObjectPtr &t_obj, env::Environment *, eval::
         return Qt;
     }
     AL_CHECK(assert_size<1>(t_obj));
-    
-    if(auto val = eval->eval(t_obj->i(0)); are_objects_numbers(val))
+
+    if (auto val = eval->eval(t_obj->i(0)); are_objects_numbers(val))
     {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
     return Qt;
 }
@@ -48,12 +48,12 @@ ALObjectPtr Fassert_symbol(const ALObjectPtr &t_obj, env::Environment *, eval::E
         return Qt;
     }
     AL_CHECK(assert_size<1>(t_obj));
-    
-    if(auto val = eval->eval(t_obj->i(0)); !psym(val))
+
+    if (auto val = eval->eval(t_obj->i(0)); !psym(val))
     {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
     return Qt;
 }
@@ -65,11 +65,11 @@ ALObjectPtr Fassert_string(const ALObjectPtr &t_obj, env::Environment *, eval::E
         return Qt;
     }
     AL_CHECK(assert_size<1>(t_obj));
-    if(auto val = eval->eval(t_obj->i(0)); !pstring(val))
+    if (auto val = eval->eval(t_obj->i(0)); !pstring(val))
     {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
     return Qt;
 }
@@ -82,11 +82,11 @@ ALObjectPtr Fassert_list(const ALObjectPtr &t_obj, env::Environment *, eval::Eva
     }
     AL_CHECK(assert_size<1>(t_obj));
 
-    if(auto val = eval->eval(t_obj->i(0)); !plist(val))
+    if (auto val = eval->eval(t_obj->i(0)); !plist(val))
     {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
     return Qt;
 }
@@ -98,11 +98,11 @@ ALObjectPtr Fassert_number(const ALObjectPtr &t_obj, env::Environment *, eval::E
         return Qt;
     }
     AL_CHECK(assert_size<1>(t_obj));
-    if(auto val = eval->eval(t_obj->i(0)); !val->is_int() and !val->is_real())
+    if (auto val = eval->eval(t_obj->i(0)); !val->is_int() and !val->is_real())
     {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
     return Qt;
 }
@@ -115,14 +115,13 @@ ALObjectPtr Fassert_int(const ALObjectPtr &t_obj, env::Environment *, eval::Eval
     }
     AL_CHECK(assert_size<1>(t_obj));
 
-    if(auto val = eval->eval(t_obj->i(0)); !pint(val))
+    if (auto val = eval->eval(t_obj->i(0)); !pint(val))
     {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
     return Qt;
-    
 }
 
 ALObjectPtr Fassert_char(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
@@ -132,15 +131,14 @@ ALObjectPtr Fassert_char(const ALObjectPtr &t_obj, env::Environment *, eval::Eva
         return Qt;
     }
     AL_CHECK(assert_size<1>(t_obj));
-    
-    if(auto val = eval->eval(t_obj->i(0)); !val->is_int() and !val->check_char_flag())
+
+    if (auto val = eval->eval(t_obj->i(0)); !val->is_int() and !val->check_char_flag())
     {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
     return Qt;
-    
 }
 
 ALObjectPtr Fassert_function(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
@@ -151,14 +149,13 @@ ALObjectPtr Fassert_function(const ALObjectPtr &t_obj, env::Environment *, eval:
     }
     AL_CHECK(assert_size<1>(t_obj));
 
-    if(auto val = eval->eval(t_obj->i(0)); !val->check_function_flag())
+    if (auto val = eval->eval(t_obj->i(0)); !val->check_function_flag())
     {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
     return Qt;
-    
 }
 
 ALObjectPtr Fassert_non_const(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
@@ -169,14 +166,13 @@ ALObjectPtr Fassert_non_const(const ALObjectPtr &t_obj, env::Environment *, eval
     }
     AL_CHECK(assert_size<1>(t_obj));
 
-    if(auto val = eval->eval(t_obj->i(0)); !val->check_const_flag())
+    if (auto val = eval->eval(t_obj->i(0)); !val->check_const_flag())
     {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
-    return Qt;    
-
+    return Qt;
 }
 
 ALObjectPtr Fassert_file(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
@@ -185,17 +181,16 @@ ALObjectPtr Fassert_file(const ALObjectPtr &t_obj, env::Environment *, eval::Eva
     {
         return Qt;
     }
-    
+
     AL_CHECK(assert_size<1>(t_obj));
 
-    if(auto val = eval->eval(t_obj->i(0)); !files::files_registry.belong(object_to_resource(val)))
+    if (auto val = eval->eval(t_obj->i(0)); !files::files_registry.belong(object_to_resource(val)))
     {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
-    return Qt;    
-
+    return Qt;
 }
 
 ALObjectPtr Fassert_stream(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
@@ -205,15 +200,14 @@ ALObjectPtr Fassert_stream(const ALObjectPtr &t_obj, env::Environment *, eval::E
         return Qt;
     }
     AL_CHECK(assert_size<1>(t_obj));
-    
-    if(auto val = eval->eval(t_obj->i(0)); !al::streams_registry.belong(object_to_resource(val)))
+
+    if (auto val = eval->eval(t_obj->i(0)); !al::streams_registry.belong(object_to_resource(val)))
     {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
-    return Qt;    
-
+    return Qt;
 }
 
 ALObjectPtr Fassert_byte(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
@@ -223,14 +217,14 @@ ALObjectPtr Fassert_byte(const ALObjectPtr &t_obj, env::Environment *, eval::Eva
         return Qt;
     }
     AL_CHECK(assert_size<1>(t_obj));
-    
-    if(auto val = eval->eval(t_obj->i(0)); !pint(val) || !(0 <= val->to_int() and val->to_int() <= 255))
+
+    if (auto val = eval->eval(t_obj->i(0)); !pint(val) || !(0 <= val->to_int() and val->to_int() <= 255))
     {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
-    return Qt;    
+    return Qt;
 }
 
 ALObjectPtr Fassert_byte_array(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
@@ -238,42 +232,39 @@ ALObjectPtr Fassert_byte_array(const ALObjectPtr &t_obj, env::Environment *, eva
     if (is_falsy(Vdebug_mode))
     {
         return Qt;
-    }    
+    }
     AL_CHECK(assert_size<1>(t_obj));
     auto val = eval->eval(t_obj->i(0));
 
     if (!val->is_list())
-    {        
+    {
         throw signal_exception(
-            env::intern("assert-signal"),
-            make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
     }
-    
+
     for (auto &el : *val)
     {
         auto byte = el->to_int();
         if (!(0 <= byte and byte <= 255))
         {
             throw signal_exception(
-                env::intern("assert-signal"),
-                make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
         }
     }
 
     return Qt;
-    
 }
 
 
+}  // namespace asserts
 
-}
-
-ALISP_EXPORT alisp::env::ModulePtr init_asserts(alisp::env::Environment*, alisp::eval::Evaluator*)
+ALISP_EXPORT alisp::env::ModulePtr init_asserts(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     using namespace alisp;
-    auto assert_module     = alisp::module_init("asserts");
-    auto ass_ptr = assert_module.get();
+    auto assert_module = alisp::module_init("asserts");
+    auto ass_ptr       = assert_module.get();
 
     alisp::module_defun(ass_ptr, "assert-numbers", &asserts::Fassert_numbers, R"()");
     alisp::module_defun(ass_ptr, "assert-symbol", &asserts::Fassert_symbol, R"()");

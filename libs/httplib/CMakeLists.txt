@@ -257,13 +257,13 @@ install(TARGETS ${PROJECT_NAME}
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-install(FILES "${_httplib_build_includedir}/httplib.h" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+# install(FILES "${_httplib_build_includedir}/httplib.h" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-install(FILES
-		"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-		"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-	DESTINATION ${_TARGET_INSTALL_CMAKEDIR}
-)
+# install(FILES
+# 		"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+# 		"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+# 	DESTINATION ${_TARGET_INSTALL_CMAKEDIR}
+# )
 
 # NOTE: This path changes depending on if it's on Windows or Linux
 install(EXPORT httplibTargets

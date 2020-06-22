@@ -801,7 +801,7 @@ ALObjectPtr Fassert(const ALObjectPtr &obj, env::Environment *, eval::Evaluator 
     {
         return Qt;
     }
-    
+
     AL_CHECK(assert_size<1>(obj));
     auto val = evl->eval(obj->i(0));
 
@@ -903,7 +903,7 @@ ALObjectPtr Fsym_list(const ALObjectPtr &obj, env::Environment *env, eval::Evalu
     {
         syms.push_back(env::intern(sym));
     }
-    for (auto &[sym, _] : env::Environment::g_global_symbol_table)
+    for (auto &[sym, _] : env::Environment::g_internal_symbols)
     {
         syms.push_back(env::intern(sym));
     }

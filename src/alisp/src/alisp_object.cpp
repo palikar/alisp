@@ -27,17 +27,17 @@ namespace alisp
 ALObjectPtr env::intern(std::string name)
 {
 
-    if (env::Environment::g_global_symbol_table.count(name))
+    if (env::Environment::g_internal_symbols.count(name))
     {
-        return env::Environment::g_global_symbol_table.at(name);
+        return env::Environment::g_internal_symbols.at(name);
     }
 
-    if (env::Environment::g_symbol_table.count(name))
+    if (env::Environment::g_user_symbols.count(name))
     {
-        return env::Environment::g_symbol_table.at(name);
+        return env::Environment::g_user_symbols.at(name);
     }
 
-    auto [new_sym, insertion] = env::Environment::g_symbol_table.insert({ name, make_symbol(name) });
+    auto [new_sym, insertion] = env::Environment::g_user_symbols.insert({ name, make_symbol(name) });
 
     return new_sym->second;
 }

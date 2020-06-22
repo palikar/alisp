@@ -47,7 +47,7 @@ Environment::Environment()
 
 Environment::~Environment()
 {
-    g_symbol_table.clear();
+    g_user_symbols.clear();
 }
 
 ALObjectPtr Environment::find(const ALObjectPtr &t_sym)

@@ -153,10 +153,9 @@ class Environment
 {
 
   public:
-    static inline std::unordered_map<std::string, ALObjectPtr> g_symbol_table;
-    static inline std::unordered_map<std::string, ALObjectPtr> g_global_symbol_table;
+    static inline std::unordered_map<std::string, ALObjectPtr> g_user_symbols;
+    static inline std::unordered_map<std::string, ALObjectPtr> g_internal_symbols;
     static inline std::unordered_map<std::string, ALObjectPtr> g_prime_values;
-
     static inline std::unordered_map<std::string, ModuleImport> g_builtin_modules;
 
   private:

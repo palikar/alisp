@@ -109,7 +109,6 @@ void init(std::string hist)
         rl_parse_and_bind(rl_brackets_compl);
         rl_parse_and_bind(rl_quote_compl);
     }
-    
 }
 
 std::optional<std::string> repl(const std::string &prompt)

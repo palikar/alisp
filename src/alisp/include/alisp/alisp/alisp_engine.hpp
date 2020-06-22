@@ -129,7 +129,7 @@ class LanguageEngine
     {
         std::vector<std::string> vec;
 
-        for (auto [name, _] : env::Environment::g_global_symbol_table)
+        for (auto [name, _] : env::Environment::g_internal_symbols)
         {
             vec.push_back(name);
         }
