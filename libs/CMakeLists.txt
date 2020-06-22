@@ -18,7 +18,9 @@ add_subdirectory(fmt)
 
 set(USE_SYSTEM_CURL ON)
 set(BUILD_CPR_TESTS OFF)
-FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/whoshuu/cpr.git)
+FetchContent_Declare(cpr
+    GIT_REPOSITORY https://github.com/whoshuu/cpr.git
+    GIT_TAG a78ce2655a0f3d8d72fd0ee57f950105666b96f8)
 FetchContent_MakeAvailable(cpr)
 
 

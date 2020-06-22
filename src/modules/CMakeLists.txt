@@ -33,7 +33,7 @@ add_dynmodule(alisp_module_xml xml src/xml.cpp)
 add_dynmodule(alisp_module_request request src/request.cpp)
 add_dynmodule(alisp_module_asserts asserts src/asserts.cpp)
 
-target_link_libraries(alisp_module_request PUBLIC cpr::cpr)
+target_link_libraries(alisp_module_request PUBLIC cpr)
 target_link_libraries(alisp_module_process PUBLIC alisp_management)
 target_link_libraries(alisp_module_xml PUBLIC tinyxml2)
 
