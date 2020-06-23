@@ -146,7 +146,6 @@ private:
         }
         return unsignedIntegerValue;
     }
-
     static unsigned int getHeaders(char *postPaddedBuffer, char *end, struct HttpRequest::Header *headers, BloomFilter *bf) {
         char *preliminaryKey, *preliminaryValue, *start = postPaddedBuffer;
 

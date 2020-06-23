@@ -111,6 +111,7 @@ class AsyncS
     static constexpr std::uint32_t EL_SPINNING_FLAG = 0x0002;
     static constexpr std::uint32_t INIT_FLAG        = 0x0004;
     static constexpr std::uint32_t AWAIT_FLAG       = 0x0008;
+    static constexpr std::uint32_t UR_FLAG          = 0x0010;
 
     inline static management::Registry<Future, 0x05> futures{};
 
@@ -164,6 +165,10 @@ class AsyncS
 
     void submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good = true);
 
+    void async_pending();
+
+    void async_reset_pending();
+
     inline Future &future(uint32_t t_id) { return futures[t_id]; }
 
     ALObjectPtr future_resolved(uint32_t t_id);
@@ -210,6 +215,7 @@ template<typename T, typename... Args> auto dispatch(AsyncS &async, Args &&... a
         return event_object(&async);
     }
 }
+
 
 class Await
 {

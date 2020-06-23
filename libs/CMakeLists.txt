@@ -19,10 +19,16 @@ add_subdirectory(fmt)
 set(BUILD_SHARED_LIBS ON)
 set(USE_SYSTEM_CURL ON)
 set(BUILD_CPR_TESTS OFF)
-FetchContent_Declare(cpr
-    GIT_REPOSITORY https://github.com/whoshuu/cpr.git
-    GIT_TAG a78ce2655a0f3d8d72fd0ee57f950105666b96f8)
-FetchContent_MakeAvailable(cpr)
+
+
+
+if(${CMAKE_VERSION} VERSION_GREATER "3.16.0")
+    FetchContent_Declare(cpr
+        GIT_REPOSITORY https://github.com/whoshuu/cpr.git
+        GIT_TAG a78ce2655a0f3d8d72fd0ee57f950105666b96f8)
+    FetchContent_MakeAvailable(cpr)
+endif()
+
 
 
 set(HTTPLIB_COMPILE ON)

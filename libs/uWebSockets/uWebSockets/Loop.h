@@ -85,7 +85,7 @@ public:
     /* Lazily initializes a per-thread loop and returns it.
      * Will automatically free all initialized loops at exit. */
     static Loop *get(void *existingNativeLoop = nullptr) {
-        static thread_local LoopCleaner lazyLoop;
+        static LoopCleaner lazyLoop;
         if (!lazyLoop.loop) {
             /* If we are given a native loop pointer we pass that to uSockets and let it deal with it */
             if (existingNativeLoop) {

@@ -17,7 +17,14 @@
 
 #include "alisp/config.hpp"
 
+#include "alisp/config.hpp"
 #include "alisp/alisp/alisp_module_helpers.hpp"
+#include "alisp/alisp/alisp_common.hpp"
+#include "alisp/alisp/alisp_asyncs.hpp"
+#include "alisp/alisp/declarations/constants.hpp"
+#include "alisp/alisp/alisp_object.hpp"
+#include "alisp/alisp/alisp_eval.hpp"
+
 
 
 #ifdef __GNUC__
@@ -72,19 +79,85 @@ ALObjectPtr Fserver(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
     return resource_to_object(new_id);
 }
 
-ALObjectPtr Fstart(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+
+ALObjectPtr Fget(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = object_to_resource(eval->eval(t_obj->i(0)));
-    auto &l = detail::server_registry[id];
-    l.run();
+    auto route = eval->eval(t_obj->i(1));
+    auto fun = eval->eval(t_obj->i(2));
+    
+    detail::server_registry[id].post(route->to_string(), [fun, eval](auto *res, auto *req) {
 
+        // std::cout << req->getQuery() << "\n";
+        // auto result = [&] {
+        //     eval::detail::EvaluationLock lock{ *eval };
+        //     return eval->handle_lambda(fun, make_list());
+        // }();
+        // res->writeHeader("Content-Type", "text/html; charset=utf-8")->end(dump(result));
+
+        res->onAborted([](){
+            std::cout << "aborted?" << "\n";
+
+        });
+        
+        std::string buffer;
+        res->onData([res, buffer = std::move(buffer)](std::string_view data, bool last) mutable {
+            buffer.append(data.data(), data.length());
+            if (last) {
+                std::cout << buffer << std::endl;
+                res->writeHeader("Content-Type", "text/html; charset=utf-8")->end(buffer);
+            }
+        });        
+
+    });
 
     return Qnil;
 }
 
+struct server_start
+{
+
+    static constexpr bool managed    = false;
+    static constexpr bool has_future = false;
+
+    ALObjectPtr g_id;
+    
+    server_start(ALObjectPtr id) : g_id(std::move(id))
+    {
+    }
+
+    ALObjectPtr operator()(async::AsyncS* async) const
+    {
+
+        
+        auto t = std::thread([g_id = g_id, async=async](){
+            auto id = object_to_resource(g_id);
+            auto &l = detail::server_registry[id];
+            l.run();
+            async->async_reset_pending();
+            
+        });
+
+        t.detach();
+        return Qt;
+
+    }
+};
+
+
+ALObjectPtr Fstart(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    // auto id = object_to_resource(eval->eval(t_obj->i(0)));
+    // auto &l = detail::server_registry[id];
+    // l.run();
+    // return Qt;
+    
+    eval->async().async_pending();
+    return async::dispatch<server_start>(eval->async(), eval->eval(t_obj->i(0)));
+}
+
 
 }  // namespace http
-
 
 ALISP_EXPORT alisp::env::ModulePtr init_http(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
@@ -92,6 +165,7 @@ ALISP_EXPORT alisp::env::ModulePtr init_http(alisp::env::Environment *, alisp::e
     auto http_ptr = Mhttp.get();
 
     alisp::module_defun(http_ptr, "server", &http::Fserver, R"()");
+    alisp::module_defun(http_ptr, "get", &http::Fget, R"()");
     alisp::module_defun(http_ptr, "start", &http::Fstart, R"()");
 
 

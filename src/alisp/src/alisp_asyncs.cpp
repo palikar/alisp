@@ -103,7 +103,7 @@ void AsyncS::event_loop()
         }
 
         if (m_callback_queue.empty() and m_event_queue.empty() and m_asyncs == 0 and !m_eval->is_interactive()
-            and !AL_BIT_CHECK(m_flags, AWAIT_FLAG))
+            and !AL_BIT_CHECK(m_flags, AWAIT_FLAG) and !AL_BIT_CHECK(m_flags, UR_FLAG))
         {
             AL_BIT_OFF(m_flags, RUNNING_FLAG);
             m_eval->reset_async_flag();
@@ -216,6 +216,18 @@ void AsyncS::submit_event(event_type t_callback)
     }
 
     spin_loop();
+}
+
+void AsyncS::async_pending()
+{
+    AL_BIT_ON(m_flags, UR_FLAG);
+    m_eval->set_async_flag();
+}
+
+void AsyncS::async_reset_pending()
+{
+    AL_BIT_OFF(m_flags, UR_FLAG);
+    m_eval->reset_async_flag();
 }
 
 void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::function<void(ALObjectPtr)> internal)

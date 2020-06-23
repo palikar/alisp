@@ -31,16 +31,21 @@ add_dynmodule(alisp_module_process process src/process.cpp)
 add_dynmodule(alisp_module_random random src/random.cpp)
 add_dynmodule(alisp_module_re re src/re.cpp)
 add_dynmodule(alisp_module_xml xml src/xml.cpp)
-add_dynmodule(alisp_module_request request src/request.cpp)
 add_dynmodule(alisp_module_asserts asserts src/asserts.cpp)
 add_dynmodule(alisp_module_http http src/http.cpp)
 
+if(${CMAKE_VERSION} VERSION_GREATER "3.16.0")
+    add_dynmodule(alisp_module_request request src/request.cpp)
+    target_link_libraries(alisp_module_request PUBLIC cpr)
+endif()
 
-target_link_libraries(alisp_module_request PUBLIC cpr)
+
+target_link_libraries(alisp_module_http PUBLIC usockets uwebsockets alisp_management)
+
 target_link_libraries(alisp_module_process PUBLIC alisp_management)
 target_link_libraries(alisp_module_xml PUBLIC tinyxml2)
 
-target_link_libraries(alisp_module_http PUBLIC usockets uwebsockets alisp_management)
+
 
 set_target_properties(usockets PROPERTIES LINK_WHAT_YOU_USE OFF)
 set_target_properties(alisp_module_http PROPERTIES LINK_WHAT_YOU_USE OFF)
