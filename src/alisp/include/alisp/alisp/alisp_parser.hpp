@@ -989,6 +989,27 @@ template<class Environment> class ALParser : public ParserBase
             return Qnil;
         }
 
+        
+        auto init_obj = [&]()->ALObjectPtr{
+            if (check_char('['))
+            {
+                ++position;
+                auto this_obj = parse_next();
+                skip_whitespace();
+                if (check_char(']')) {
+                    ++position;
+                    return this_obj;
+                } else {
+                    PARSE_ERROR("Malformed init object. Missing closing bracket \']\'.");
+                    return nullptr;
+                }
+            
+            }
+            
+            return nullptr;            
+        }();
+
+
         ALObject::list_type objs;
 #ifdef ENABLE_LINE_TRACE
         const auto line = position.line;
@@ -1006,6 +1027,10 @@ template<class Environment> class ALParser : public ParserBase
             {
                 PARSE_ERROR("Malformed list. Cannot parse element.");
                 return nullptr;
+            }
+
+            if (objs.size() == 1 and init_obj != nullptr) {
+                objs.emplace_back(init_obj);
             }
 
             skip_whitespace();
@@ -1031,7 +1056,7 @@ template<class Environment> class ALParser : public ParserBase
         auto new_list = make_object(objs);
 #ifdef ENABLE_LINE_TRACE
         new_list->set_prop("--line--", make_int(line));
-        // new_list->set_prop("--file--", m_file);
+// new_list->set_prop("--file--", m_file);
 #endif
         return new_list;
     }
