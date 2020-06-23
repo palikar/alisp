@@ -26,7 +26,6 @@
 #include "alisp/alisp/alisp_eval.hpp"
 
 
-
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
@@ -60,8 +59,51 @@ namespace detail
 
 inline management::Registry<uWS::App, 0x07> server_registry;
 
+struct server_start
+{
 
+    static constexpr bool managed    = false;
+    static constexpr bool has_future = false;
+
+    ALObjectPtr g_id;
+
+    server_start(ALObjectPtr id) : g_id(std::move(id)) {}
+
+    ALObjectPtr operator()(async::AsyncS *async) const
+    {
+
+
+        auto t = std::thread([g_id = g_id, async = async]() {
+            auto id = object_to_resource(g_id);
+            auto &l = detail::server_registry[id];
+            l.run();
+            async->async_reset_pending();
+        });
+
+        t.detach();
+        return Qt;
+    }
+};
+
+template<bool SSL> void handle_response(uWS::HttpResponse<SSL> *res, uWS::HttpRequest *, ALObjectPtr res_obj)
+{
+
+    std::string content_buffer;
+    if (auto [cont, succ] = get_next(res_obj, ":content"); succ)
+    {
+        content_buffer.append(cont->to_string());
+    }
+
+
+    res->end(content_buffer);
 }
+
+template<bool SSL> auto handle_request(uWS::HttpResponse<SSL> *, uWS::HttpRequest *)
+{
+    return Qt;
+}
+
+}  // namespace detail
 
 
 ALObjectPtr Fserver(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
@@ -69,7 +111,7 @@ ALObjectPtr Fserver(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
     auto port   = eval->eval(t_obj->i(0));
     auto new_id = detail::server_registry.emplace_resource(us_socket_context_options_t{})->id;
 
-    detail::server_registry[new_id].listen(port->to_int(), [](auto *listenSocket) {
+    detail::server_registry[new_id].listen(static_cast<int>(port->to_int()), [](auto *listenSocket) {
         if (listenSocket)
         {
             std::cout << "Listening on port " << 9001 << std::endl;
@@ -79,81 +121,52 @@ ALObjectPtr Fserver(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
     return resource_to_object(new_id);
 }
 
-
 ALObjectPtr Fget(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id = object_to_resource(eval->eval(t_obj->i(0)));
+    auto id    = object_to_resource(eval->eval(t_obj->i(0)));
     auto route = eval->eval(t_obj->i(1));
-    auto fun = eval->eval(t_obj->i(2));
-    
-    detail::server_registry[id].post(route->to_string(), [fun, eval](auto *res, auto *req) {
+    auto fun   = eval->eval(t_obj->i(2));
 
-        // std::cout << req->getQuery() << "\n";
-        // auto result = [&] {
-        //     eval::detail::EvaluationLock lock{ *eval };
-        //     return eval->handle_lambda(fun, make_list());
-        // }();
-        // res->writeHeader("Content-Type", "text/html; charset=utf-8")->end(dump(result));
-
-        res->onAborted([](){
-            std::cout << "aborted?" << "\n";
-
-        });
-        
-        std::string buffer;
-        res->onData([res, buffer = std::move(buffer)](std::string_view data, bool last) mutable {
-            buffer.append(data.data(), data.length());
-            if (last) {
-                std::cout << buffer << std::endl;
-                res->writeHeader("Content-Type", "text/html; charset=utf-8")->end(buffer);
-            }
-        });        
-
+    detail::server_registry[id].get(route->to_string(), [fun, eval](auto *res, auto *) {
+        auto result = [&] {
+            eval::detail::EvaluationLock lock{ *eval };
+            return eval->handle_lambda(fun, make_list());
+        }();
+        res->writeHeader("Content-Type", "text/html; charset=utf-8")->end(result->to_string());
     });
 
     return Qnil;
 }
 
-struct server_start
+ALObjectPtr Fpost(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
+    auto id    = object_to_resource(eval->eval(t_obj->i(0)));
+    auto route = eval->eval(t_obj->i(1));
+    auto fun   = eval->eval(t_obj->i(2));
 
-    static constexpr bool managed    = false;
-    static constexpr bool has_future = false;
+    detail::server_registry[id].post(route->to_string(), [fun, eval](auto *res, auto *req) {
+        auto req_obj = detail::handle_request(res, req);
+        auto res_obj = make_list();
 
-    ALObjectPtr g_id;
-    
-    server_start(ALObjectPtr id) : g_id(std::move(id))
-    {
-    }
+        auto result = [&] {
+            eval::detail::EvaluationLock lock{ *eval };
+            return eval->handle_lambda(fun, make_list(req_obj, res_obj));
+        }();
 
-    ALObjectPtr operator()(async::AsyncS* async) const
-    {
+        res->onAborted([]() {});
+        if (is_truthy(result))
+        {
+            detail::handle_response(res, req, std::move(res_obj));
+        }
+    });
 
-        
-        auto t = std::thread([g_id = g_id, async=async](){
-            auto id = object_to_resource(g_id);
-            auto &l = detail::server_registry[id];
-            l.run();
-            async->async_reset_pending();
-            
-        });
-
-        t.detach();
-        return Qt;
-
-    }
-};
-
+    return Qnil;
+}
 
 ALObjectPtr Fstart(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    // auto id = object_to_resource(eval->eval(t_obj->i(0)));
-    // auto &l = detail::server_registry[id];
-    // l.run();
-    // return Qt;
-    
     eval->async().async_pending();
-    return async::dispatch<server_start>(eval->async(), eval->eval(t_obj->i(0)));
+    return async::dispatch<detail::server_start>(eval->async(), eval->eval(t_obj->i(0)));
 }
 
 
@@ -166,6 +179,7 @@ ALISP_EXPORT alisp::env::ModulePtr init_http(alisp::env::Environment *, alisp::e
 
     alisp::module_defun(http_ptr, "server", &http::Fserver, R"()");
     alisp::module_defun(http_ptr, "get", &http::Fget, R"()");
+    alisp::module_defun(http_ptr, "post", &http::Fpost, R"()");
     alisp::module_defun(http_ptr, "start", &http::Fstart, R"()");
 
 
@@ -176,3 +190,18 @@ ALISP_EXPORT alisp::env::ModulePtr init_http(alisp::env::Environment *, alisp::e
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
+
+
+// res->onAborted([](){
+//     std::cout << "aborted?" << "\n";
+
+// });
+
+// std::string buffer;
+// res->onData([res, buffer = std::move(buffer)](std::string_view data, bool last) mutable {
+//     buffer.append(data.data(), data.length());
+//     if (last) {
+//         std::cout << buffer << std::endl;
+//         res->writeHeader("Content-Type", "text/html; charset=utf-8")->end(buffer);
+//     }
+// });

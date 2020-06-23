@@ -989,24 +989,26 @@ template<class Environment> class ALParser : public ParserBase
             return Qnil;
         }
 
-        
-        auto init_obj = [&]()->ALObjectPtr{
+
+        auto init_obj = [&]() -> ALObjectPtr {
             if (check_char('['))
             {
                 ++position;
                 auto this_obj = parse_next();
                 skip_whitespace();
-                if (check_char(']')) {
+                if (check_char(']'))
+                {
                     ++position;
                     return this_obj;
-                } else {
+                }
+                else
+                {
                     PARSE_ERROR("Malformed init object. Missing closing bracket \']\'.");
                     return nullptr;
                 }
-            
             }
-            
-            return nullptr;            
+
+            return nullptr;
         }();
 
 
@@ -1029,7 +1031,8 @@ template<class Environment> class ALParser : public ParserBase
                 return nullptr;
             }
 
-            if (objs.size() == 1 and init_obj != nullptr) {
+            if (objs.size() == 1 and init_obj != nullptr)
+            {
                 objs.emplace_back(init_obj);
             }
 

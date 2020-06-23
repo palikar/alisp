@@ -316,13 +316,21 @@ ALObjectPtr Evaluator::handle_lambda(const ALObjectPtr &func, const ALObjectPtr 
     AL_CHECK(if (!obj->check_function_flag()) { throw eval_error("Cannot apply a non function object."); });
 
     env::detail::FunctionCall fc{ env, func };
-    if (obj->check_prime_flag())
+
+    try
     {
-        return obj->get_prime()(args, &env, this);
+        if (obj->check_prime_flag())
+        {
+            return obj->get_prime()(args, &env, this);
+        }
+        else
+        {
+            return apply_function(obj, args);
+        }
     }
-    else
+    catch (al_return &ret)
     {
-        return apply_function(obj, args);
+        return ret.value();
     }
 }
 
