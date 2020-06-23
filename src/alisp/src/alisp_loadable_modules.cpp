@@ -29,15 +29,19 @@ namespace alisp
 namespace dynmoduels
 {
 
-AlispDynModule::AlispDynModule(const std::string &t_module_name, const std::string_view &t_filename)
-  : m_dlmodule(t_filename), m_init_func(m_dlmodule, "init_" + t_module_name)
-{
-
-    if (!m_dlmodule.m_data)
+DLModule::DLModule(const std::string_view &t_filename) : m_data(dlopen(t_filename.data(), RTLD_NOW)) {
+    
+    if (!m_data)
     {
-        alisp::signal(Vload_signal, "Could not load dynamic module: "s += t_module_name, dlerror());
+        alisp::signal(Vload_signal, "Could not load dynamic module: "s += t_filename, dlerror());
     }
 
+}
+
+AlispDynModule::AlispDynModule(const std::string &t_module_name, const std::string_view &t_filename)
+    : m_dlmodule(t_filename), m_init_func(m_dlmodule, "init_" + t_module_name)
+{
+    
     if (!m_init_func.m_symbol)
     {
         alisp::signal(Vload_signal, "Could not load init functions in dynamic module: "s += t_module_name, dlerror());

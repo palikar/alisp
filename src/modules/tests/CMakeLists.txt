@@ -41,6 +41,12 @@ target_link_libraries(alisp_modules_test
     )
 
 
+target_link_libraries(alisp_modules_test PUBLIC cpr)
+target_link_libraries(alisp_modules_test PUBLIC uwebsockets)
+target_link_libraries(alisp_modules_test PUBLIC alisp_management)
+target_link_libraries(alisp_modules_test PUBLIC tinyxml2)
+target_link_libraries(alisp_modules_test PUBLIC uwebsockets)
+
 include(CTest)
 include(Catch)
 catch_discover_tests(alisp_modules_test)

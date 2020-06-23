@@ -20,12 +20,80 @@
 #include "alisp/alisp/alisp_module_helpers.hpp"
 
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wshadow"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
+
+#include <uWebSockets/App.h>
+#include <libusockets.h>
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
+
+namespace http
+{
+
+using namespace alisp;
+
+namespace detail
+{
+
+// inline management::Registry<std::unique_ptr<uWS::App>, 0x07> server_registry;
+
+
+}
+
+
+ALObjectPtr Fstart(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+{
+
+    uWS::App()
+        .get("/hello",
+        [](auto *res, auto *) {
+            res->writeHeader("Content-Type", "text/html; charset=utf-8")->end("Hello HTTP!");
+        });
+
+    //   .listen(9001, [](auto *listenSocket) {
+    //       if (listenSocket)
+    //       {
+    //           std::cout << "Listening on port " << 9001 << std::endl;
+    //       }
+    //   });
+
+    // .run();
+
+    return Qnil;
+}
+
+
+}  // namespace http
+
+
 ALISP_EXPORT alisp::env::ModulePtr init_http(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     auto Mhttp = alisp::module_init("http");
-    // auto base64_ptr = Mrandom.get();
+    auto http_ptr = Mhttp.get();
 
-    // alisp::module_defun(xml_ptr, "xml-parse", &Fparse_xml);
+    alisp::module_defun(http_ptr, "start", &http::Fstart, R"()");
+
 
     return Mhttp;
 }
+
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif

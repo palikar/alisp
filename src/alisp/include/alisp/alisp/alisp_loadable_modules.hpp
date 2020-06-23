@@ -112,14 +112,14 @@ struct DLModule
 
 struct DLModule
 {
-    explicit DLModule(const std::string_view &t_filename) : m_data(dlopen(t_filename.data(), RTLD_NOW)) {}
+    explicit DLModule(const std::string_view &t_filename);
 
     DLModule(DLModule &&) = default;
     DLModule &operator=(DLModule &&) = default;
     DLModule(const DLModule &)       = delete;
     DLModule &operator=(const DLModule &) = delete;
 
-    ~DLModule() { dlclose(m_data); }
+    // ~DLModule() { dlclose(m_data); }
 
     void *m_data;
 };
