@@ -35,6 +35,24 @@ template<typename T> struct Resource
 {
     T res;
     uint32_t id{ 0 };
+
+
+    Resource() = default;
+
+    Resource(T t, uint32_t t_id) : res(std::move(t)), id(t_id) {}
+
+    Resource(const Resource<T> &other) = default;
+
+    Resource(Resource<T> &&other) : res(std::move(other.res)) { id = other.id; }
+
+    Resource<T> &operator=(const Resource<T> &other) = default;
+
+    Resource<T> &operator=(Resource<T> &&other)
+    {
+        id  = other.id;
+        res = std::move(other.res);
+        return *this;
+    }
 };
 
 
@@ -127,7 +145,7 @@ template<typename T, size_t tag> class Registry
         if (is_inlined(id))
         {
             Resource<T> *mem = get_memory(id);
-            new (mem) Resource<T>{ t_res, id };
+            new (mem) Resource<T>{ std::move(t_res), id };
             return mem;
         }
 
@@ -135,11 +153,11 @@ template<typename T, size_t tag> class Registry
 
         if (dyn_res.size() <= dyn_id)
         {
-            dyn_res.push_back({ t_res, id });
+            dyn_res.push_back({ std::move(t_res), id });
         }
         else
         {
-            dyn_res.at(dyn_id) = { t_res, id };
+            dyn_res.at(dyn_id) = { std::move(t_res), id };
         }
         return &dyn_res[dyn_id];
     };
@@ -159,7 +177,7 @@ template<typename T, size_t tag> class Registry
 
         if (dyn_res.size() <= dyn_id)
         {
-            dyn_res.push_back({ T{ std::forward<decltype(t_args)>(t_args)... }, id });
+            dyn_res.emplace_back(T{ std::forward<decltype(t_args)>(t_args)... }, id);
         }
         else
         {

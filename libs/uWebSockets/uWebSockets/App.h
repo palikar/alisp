@@ -31,7 +31,7 @@ namespace uWS {
 
 template <bool SSL>
 struct TemplatedApp {
-private:
+  private:
     /* The app always owns at least one http context, but creates websocket contexts on demand */
     HttpContext<SSL> *httpContext;
     std::vector<WebSocketContext<SSL, true> *> webSocketContexts;
@@ -57,7 +57,7 @@ public:
 
     ~TemplatedApp() {
         /* Let's just put everything here */
-        if (httpContext) {
+        if (httpContext != nullptr) {
             httpContext->free();
 
             for (auto *webSocketContext : webSocketContexts) {
@@ -78,7 +78,21 @@ public:
         webSocketContexts = std::move(other.webSocketContexts);
     }
 
-    TemplatedApp(us_socket_context_options_t options = {}) {
+    TemplatedApp &operator=(TemplatedApp &&other) {
+        /* Move HttpContext */
+        httpContext = other.httpContext;
+        other.httpContext = nullptr;
+
+        /* Move webSocketContexts */
+        webSocketContexts = std::move(other.webSocketContexts);
+        return *this;
+    }
+
+    TemplatedApp() {
+        httpContext = nullptr;
+    }
+    
+    TemplatedApp(us_socket_context_options_t options) {
         httpContext = uWS::HttpContext<SSL>::create(uWS::Loop::get(), options);
     }
 

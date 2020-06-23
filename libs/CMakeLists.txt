@@ -46,7 +46,9 @@ add_library(usockets STATIC
 target_include_directories(usockets PUBLIC ./uSockets)
 
 target_compile_definitions(usockets PUBLIC LIBUS_NO_SSL)
-# target_compile_options(usockets PUBLIC -lssl -lcrypto -std=c11 -flto)
+# target_compile_definitions(usockets PUBLIC LIBUS_USE_OPENSSL=1)
+target_compile_options(usockets PUBLIC -std=c11 )
+target_link_libraries(usockets PUBLIC -flto -lz  -lssl -lcrypto )
 
 set_target_properties(usockets PROPERTIES LANGUAGE CXX)
 set_target_properties(usockets PROPERTIES LINKER_LANGUAGE CXX)

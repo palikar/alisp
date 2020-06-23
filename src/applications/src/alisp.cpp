@@ -78,9 +78,10 @@ std::vector<std::string> alisp::prompt::get_completions(const std::string &t_wor
     return sym_vec;
 }
 
+void (*previous_handler)(int);
+
 void got_signal(int c)
 {
-
     if (g_alisp_engine)
     {
 
@@ -95,6 +96,9 @@ void got_signal(int c)
             alisp::handle_errors_lippincott<false>();
         }
     }
+
+    signal(c, SIG_DFL);
+    raise(c);
 }
 
 struct Options
@@ -199,11 +203,8 @@ int main(int argc, char *argv[])
                                  .prepend_section("DESCRIPTION", "The alisp programming language.")
                                  .append_section("ENVIRONMENT VARIABLES", ENV_VAR_HELP)
                                  .append_section("LICENSE", std::string("\t").append(AL_LICENSE));
-        // std::stringstream ss;
-        // ss << help_page;
-        fmt::print("{}\n", help_page);
-        // fmt::print("{}\n", ss.str());
 
+        fmt::print("{}\n", help_page);
         return 0;
     }
 
@@ -260,12 +261,13 @@ int main(int argc, char *argv[])
     };
     g_alisp_engine = &alisp_engine;
 
-    struct sigaction sa;
-    memset(&sa, 0, sizeof(sa));
-    sa.sa_handler = got_signal;
-    sigfillset(&sa.sa_mask);
-    sigaction(SIGINT, &sa, NULL);
-    sigaction(SIGTERM, &sa, NULL);
+    // struct sigaction sa;
+    // memset(&sa, 0, sizeof(sa));
+    // sa.sa_handler = ;
+    // sigfillset(&sa.sa_mask);
+    // sigaction(SIGTERM, &sa, NULL);
+
+    previous_handler = signal(SIGINT, got_signal);
 
 
     if (opts.interactive)
