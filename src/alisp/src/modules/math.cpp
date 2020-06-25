@@ -386,6 +386,23 @@ Compute square root of the sum of the squares of two given numbers.
 )");
 
 
+    module_defun(math_ptr,
+                 "gcd",
+                 &detail::Fgcd,
+                 R"((gcd VALUE)
+
+Compute greatest common denominator
+)");
+
+    module_defun(math_ptr,
+                 "lcm",
+                 &detail::Flcm,
+                 R"((lcm VALUE)
+
+Compute lowest common denominator
+)");
+
+
     return Mmath;
 }
 

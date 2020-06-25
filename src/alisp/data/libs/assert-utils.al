@@ -1,12 +1,24 @@
 (defvar --doc-- "Anaphoric expressions for, providing implicit temporary variables.")
 
-(defvar --eps-- 0.00001)
+(defvar eps 0.00001)
 
-(defun assert-equal (a b)
+(defun assert-== (a b)
   (assert (== a b)))
 
-(defun assert-not-equal (a b)
+(defun assert-!= (a b)
   (assert (!= a b)))
+
+(defun assert-equal (a b)
+  (assert (equal a b)))
+
+(defun assert-not-equal (a b)
+  (assert-not (equal a b)))
+
+(defun assert-eq (a b)
+  (assert (eq a b)))
+
+(defun assert-not-eq (a b)
+  (assert-not (eq a b)))
 
 (defun assert-list-contain (lis el)
   (assert (contains lis el)))

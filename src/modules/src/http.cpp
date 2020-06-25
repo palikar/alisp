@@ -100,6 +100,15 @@ template<bool SSL> void handle_response(uWS::HttpResponse<SSL> *res, uWS::HttpRe
 
 template<bool SSL> auto handle_request(uWS::HttpResponse<SSL> *, uWS::HttpRequest *)
 {
+    // std::string buffer;
+    // res->onData([res, buffer = std::move(buffer)](std::string_view data, bool last) mutable {
+    //     buffer.append(data.data(), data.length());
+    //     if (last) {
+    //         std::cout << buffer << std::endl;
+    //         res->writeHeader("Content-Type", "text/html; charset=utf-8")->end(buffer);
+    //     }
+    // });
+
     return Qt;
 }
 
@@ -213,18 +222,3 @@ ALISP_EXPORT alisp::env::ModulePtr init_http(alisp::env::Environment *, alisp::e
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-
-
-// res->onAborted([](){
-//     std::cout << "aborted?" << "\n";
-
-// });
-
-// std::string buffer;
-// res->onData([res, buffer = std::move(buffer)](std::string_view data, bool last) mutable {
-//     buffer.append(data.data(), data.length());
-//     if (last) {
-//         std::cout << buffer << std::endl;
-//         res->writeHeader("Content-Type", "text/html; charset=utf-8")->end(buffer);
-//     }
-// });

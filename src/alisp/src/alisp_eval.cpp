@@ -309,7 +309,7 @@ ALObjectPtr Evaluator::apply_function(const ALObjectPtr &func, const ALObjectPtr
     }
 }
 
-void Evaluator::eval_file(const std::string &t_file)
+ALObjectPtr Evaluator::eval_file(const std::string &t_file)
 {
     AL_DEBUG("Evaluating file: "s += t_file);
     m_current_file    = t_file;
@@ -320,30 +320,35 @@ void Evaluator::eval_file(const std::string &t_file)
     if (parse_result.empty())
     {
         warn::warn_eval("Evaluating an empty file: "s + t_file);
+        return Qnil;
     }
 
+    auto res = Qt;
     for (auto sexp : parse_result)
     {
-        eval(sexp);
+        res = eval(sexp);
     }
+    return res;
 }
 
-void Evaluator::eval_string(std::string &t_eval)
+ALObjectPtr Evaluator::eval_string(std::string &t_eval)
 {
     AL_DEBUG("Evaluating string: "s += t_eval);
 
     if (t_eval.empty())
     {
         warn::warn_eval("Evaluating an empty string: ");
-        return;
+        return Qnil;
     }
 
     auto parse_result = m_parser->parse(t_eval, "--EVAL--");
 
+    auto res = Qt;
     for (auto sexp : parse_result)
     {
-        eval(sexp);
+        res = eval(sexp);
     }
+    return res;
 }
 
 void Evaluator::handle_signal(int t_c)

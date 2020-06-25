@@ -36,7 +36,6 @@ auto fmt_signal = alisp::make_symbol("fmt-signal");
 
 namespace detail
 {
-
 template<typename T> auto int_to_bin(T num)
 {
     std::string str{ "" };

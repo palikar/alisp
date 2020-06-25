@@ -87,6 +87,11 @@ DEFUN(dumpcredits, "dumpcredits", R"((dumpcredits)
 Print the contributors information for Alisp on the standard output.
 )");
 
+DEFUN(dumpbuildscript, "dumpbuildscript", R"((dumpbuildscript)
+
+Print the string that gets printed out on start of the repl interpreter.
+)");
+
 DEFUN(read_line, "read-line", R"((read-line)
 
 Read a single line form the standard input stream and return it.

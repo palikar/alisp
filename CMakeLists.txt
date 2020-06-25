@@ -185,7 +185,11 @@ if(ENABLE_TESTING)
 
         include(CodeCoverage)
 
-        set(COVERAGE_GCOVR_EXCLUDES "${PROJECT_SOURCE_DIR}/libs/include/*" "${PROJECT_SOURCE_DIR}/libs/include/catch2/*")
+        set(COVERAGE_GCOVR_EXCLUDES
+            "${PROJECT_SOURCE_DIR}/build*"
+            "${PROJECT_SOURCE_DIR}/libs/*"
+            "${PROJECT_SOURCE_DIR}/libs/include/*"
+            "${PROJECT_SOURCE_DIR}/libs/include/catch2/*")
 
         setup_target_for_coverage_gcovr_html(
             NAME alisp_coverage_html
@@ -444,6 +448,10 @@ if(ENABLE_TESTING)
 
         add_test(NAME script-test.${filename}
             COMMAND ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp -I "${CMAKE_CURRENT_SOURCE_DIR}/src/alisp/data/libs/" -I "${CMAKE_CURRENT_BINARY_DIR}/lib/" ${CMAKE_CURRENT_SOURCE_DIR}/tests/${filename}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+        add_test(NAME script-test.${filename}.optimized
+            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp -O -I "${CMAKE_CURRENT_SOURCE_DIR}/src/alisp/data/libs/" -I "${CMAKE_CURRENT_BINARY_DIR}/lib/" ${CMAKE_CURRENT_SOURCE_DIR}/tests/${filename}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     endforeach()
     

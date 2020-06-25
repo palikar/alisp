@@ -59,7 +59,6 @@ struct async_action
           g_action, nullptr, [callback = std::move(g_callback), async = async, future = g_future](auto value) {
               if (future != 0)
               {
-
                   async->submit_future(future, value);
               }
 

@@ -32,7 +32,7 @@ ALObjectPtr Fhas(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *
     auto col_string = eval->eval(t_obj->i(1));
 
     AL_CHECK(assert_list(l));
-    AL_CHECK(assert_string(col_string));
+    AL_CHECK(assert_symbol(col_string));
 
     return contains(l, col_string->to_string()) ? Qt : Qnil;
 }
@@ -45,7 +45,7 @@ ALObjectPtr Fnext(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
     auto col_string = eval->eval(t_obj->i(1));
 
     AL_CHECK(assert_list(l));
-    AL_CHECK(assert_string(col_string));
+    AL_CHECK(assert_symbol(col_string));
 
     if (auto [next, succ] = get_next(l, col_string->to_string()); succ)
     {
@@ -63,11 +63,11 @@ ALObjectPtr Ftruthy(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
     auto col_string = eval->eval(t_obj->i(1));
 
     AL_CHECK(assert_list(l));
-    AL_CHECK(assert_string(col_string));
+    AL_CHECK(assert_symbol(col_string));
 
     if (auto [next, succ] = get_next(l, col_string->to_string()); succ)
     {
-        return is_truthy(next) ? Qnil : Qt;
+        return is_truthy(next) ? Qt : Qnil;
     }
     return Qnil;
 }
@@ -80,11 +80,11 @@ ALObjectPtr Ffalsey(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
     auto col_string = eval->eval(t_obj->i(1));
 
     AL_CHECK(assert_list(l));
-    AL_CHECK(assert_string(col_string));
+    AL_CHECK(assert_symbol(col_string));
 
     if (auto [next, succ] = get_next(l, col_string->to_string()); succ)
     {
-        return !is_truthy(next) ? Qnil : Qt;
+        return !is_truthy(next) ? Qt : Qnil;
     }
     return Qnil;
 }

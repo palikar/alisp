@@ -39,8 +39,7 @@ ALObjectPtr Feval_string(const ALObjectPtr &obj, env::Environment *, eval::Evalu
     auto str = eval->eval(obj->i(0));
     AL_CHECK(assert_string(str));
 
-    eval->eval_string(str->to_string());
-    return Qt;
+    return eval->eval_string(str->to_string());
 }
 
 ALObjectPtr Feval_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
@@ -49,8 +48,7 @@ ALObjectPtr Feval_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluat
     auto str = eval->eval(obj->i(0));
     AL_CHECK(assert_string(str));
 
-    eval->eval_file(str->to_string());
-    return Qt;
+    return eval->eval_file(str->to_string());
 }
 
 

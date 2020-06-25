@@ -86,8 +86,8 @@ class Evaluator
     Evaluator(env::Environment &env_, parser::ParserBase *t_parser, bool t_defer_el = false);
     ~Evaluator();
 
-    void eval_file(const std::string &t_file);
-    void eval_string(std::string &t_eval);
+    ALObjectPtr eval_file(const std::string &t_file);
+    ALObjectPtr eval_string(std::string &t_eval);
 
     ALObjectPtr eval(const ALObjectPtr &obj);
     ALObjectPtr eval_callable(const ALObjectPtr &callable, const ALObjectPtr &args, const ALObjectPtr &obj = Qnil);

@@ -124,6 +124,23 @@ ALObjectPtr Fassert_int(const ALObjectPtr &t_obj, env::Environment *, eval::Eval
     return Qt;
 }
 
+ALObjectPtr Fassert_real(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    if (is_falsy(Vdebug_mode))
+    {
+        return Qt;
+    }
+    AL_CHECK(assert_size<1>(t_obj));
+
+    if (auto val = eval->eval(t_obj->i(0)); !preal(val))
+    {
+        throw signal_exception(
+          env::intern("assert-signal"),
+          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+    }
+    return Qt;
+}
+
 ALObjectPtr Fassert_char(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     if (is_falsy(Vdebug_mode))
@@ -271,6 +288,7 @@ ALISP_EXPORT alisp::env::ModulePtr init_asserts(alisp::env::Environment *, alisp
     alisp::module_defun(ass_ptr, "assert-string", &asserts::Fassert_string, R"()");
     alisp::module_defun(ass_ptr, "assert-list", &asserts::Fassert_list, R"()");
     alisp::module_defun(ass_ptr, "assert-number", &asserts::Fassert_number, R"()");
+    alisp::module_defun(ass_ptr, "assert-real", &asserts::Fassert_real, R"()");
     alisp::module_defun(ass_ptr, "assert-int", &asserts::Fassert_int, R"()");
     alisp::module_defun(ass_ptr, "assert-char", &asserts::Fassert_char, R"()");
     alisp::module_defun(ass_ptr, "assert-function", &asserts::Fassert_function, R"()");

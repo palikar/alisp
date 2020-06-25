@@ -122,6 +122,14 @@ ALObjectPtr Fdumpcredits(const ALObjectPtr &, env::Environment *, eval::Evaluato
     return Qt;
 }
 
+
+ALObjectPtr Fdumpbuildscript(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
+{
+    al::cout << get_build_info() << '\n';
+    return Qt;
+}
+
+
 ALObjectPtr Fread_line(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
 {
     std::string line;
