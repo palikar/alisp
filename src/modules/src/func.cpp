@@ -154,7 +154,7 @@ ALObjectPtr Freduce(const ALObjectPtr &obj, env::Environment *, eval::Evaluator 
     auto res = list->i(0);
     for (size_t i = 1; i < size; ++i)
     {
-        res = eval->handle_lambda(fun, make_object(res, list->i(i)));
+        res = eval->eval_callable(fun, make_object(res, list->i(i)));
     }
 
     return res;

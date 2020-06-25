@@ -128,7 +128,7 @@ ALObjectPtr Ffilter(const ALObjectPtr &obj, env::Environment *, eval::Evaluator 
     ALObject::list_type new_list{};
     for (auto &el : *list)
     {
-        if (is_truthy(eval->handle_lambda(fun_obj, make_list(el))))
+        if (is_truthy(eval->eval_callable(fun_obj, make_list(el))))
         {
             new_list.push_back(el);
         }
@@ -149,7 +149,7 @@ ALObjectPtr Fany(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
 
     for (auto &el : *list)
     {
-        if (is_truthy(eval->handle_lambda(fun_obj, make_list(el))))
+        if (is_truthy(eval->eval_callable(fun_obj, make_list(el))))
         {
             return Qt;
         }
@@ -170,7 +170,7 @@ ALObjectPtr Fall(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
 
     for (auto &el : *list)
     {
-        if (is_falsy(eval->handle_lambda(fun_obj, make_list(el))))
+        if (is_falsy(eval->eval_callable(fun_obj, make_list(el))))
         {
             return Qnil;
         }

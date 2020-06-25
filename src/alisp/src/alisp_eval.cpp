@@ -66,17 +66,17 @@ void Evaluator::put_argument(const ALObjectPtr &param, ALObjectPtr arg)
     this->env.put(param, arg);
 }
 
-template<bool evaluation> void Evaluator::handle_argument_bindings(const ALObjectPtr &params, ALObjectPtr args)
+void Evaluator::handle_argument_bindings(const ALObjectPtr &params, ALObjectPtr eval_args)
 {
 
-    AL_CHECK(
-      if (params->length() == 0 && args->length() != 0) { throw argument_error("Argument\'s lengths do not match."); });
-    AL_CHECK(
-      if (args->length() != 0 && params->length() == 0) { throw argument_error("Argument\'s lengths do not match."); });
-    AL_CHECK(if (args->length() == 0 && params->length() == 0) { return; });
+    AL_CHECK(if (params->length() == 0 && eval_args->length() != 0) {
+        throw argument_error("Argument\'s lengths do not match.");
+    });
+    AL_CHECK(if (eval_args->length() != 0 && params->length() == 0) {
+        throw argument_error("Argument\'s lengths do not match.");
+    });
+    AL_CHECK(if (eval_args->length() == 0 && params->length() == 0) { return; });
 
-
-    auto eval_args = args;
 
     auto next_argument = std::begin(*eval_args);
     auto next_param    = std::begin(*params);
@@ -84,7 +84,7 @@ template<bool evaluation> void Evaluator::handle_argument_bindings(const ALObjec
 
     auto end_param = std::end(*params);
 
-    auto arg_cnt = static_cast<ALObject::list_type::difference_type>(args->length());
+    auto arg_cnt = static_cast<ALObject::list_type::difference_type>(eval_args->length());
 
     ALObject::list_type::difference_type index = 0;
     bool rest                                  = false;
@@ -159,6 +159,10 @@ ALObjectPtr Evaluator::eval(const ALObjectPtr &obj)
         }
 
         case ALObjectType::SYMBOL: {
+            if (obj->to_string().front() == ':')
+            {
+                return obj;
+            }
             AL_DEBUG("Evaluating symbol: "s += dump(obj));
             return env.find(obj);
         }
@@ -229,8 +233,7 @@ ALObjectPtr Evaluator::eval(const ALObjectPtr &obj)
                 else
                 {
                     STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
-
-                    return eval_function(func, eval_ptr);
+                    return apply_function(func, eval_ptr);
                 }
             }
             catch (al_continue &)
@@ -264,7 +267,6 @@ ALObjectPtr Evaluator::eval(const ALObjectPtr &obj)
                 throw;
             }
 
-
             break;
         }
 
@@ -276,36 +278,16 @@ ALObjectPtr Evaluator::eval(const ALObjectPtr &obj)
     return nullptr;
 }
 
-ALObjectPtr Evaluator::eval_function(const ALObjectPtr &func, const ALObjectPtr &args)
-{
-    auto [params, body] = func->get_function();
-    auto eval_args      = eval_transform(this, args);
-    try
-    {
-        if (!plist(body) || std::size(*body) == 0)
-        {
-            return Qnil;
-        }
-        env::detail::FunctionCall fc{ env, func };
-        handle_argument_bindings(params, eval_args);
-        return eval_list(this, body, 0);
-    }
-    catch (al_return &ret)
-    {
-        return ret.value();
-    }
-}
-
 ALObjectPtr Evaluator::apply_function(const ALObjectPtr &func, const ALObjectPtr &args)
 {
     auto [params, body] = func->get_function();
-    handle_argument_bindings<false>(params, args);
+    handle_argument_bindings(params, args);
     return eval_list(this, body, 0);
 }
 
-ALObjectPtr Evaluator::handle_lambda(const ALObjectPtr &func, const ALObjectPtr &args)
+ALObjectPtr Evaluator::eval_callable(const ALObjectPtr &func, const ALObjectPtr &args)
 {
-    AL_DEBUG("Calling lambda: "s += dump(func));
+    AL_DEBUG("Calling callable: "s += dump(func));
 
     auto obj = func;
     if (psym(func))
@@ -400,7 +382,7 @@ void Evaluator::dispatch_callbacks()
     while (m_async.has_callback())
     {
         auto [func, args, internal] = m_async.next_callback();
-        auto res                    = handle_lambda(func, args);
+        auto res                    = eval_callable(func, args);
         if (internal)
         {
             internal(res);
@@ -422,6 +404,10 @@ void Evaluator::check_status()
         AL_BIT_OFF(m_status_flags, SIGINT_FLAG);
         throw interrupt_error();
     }
+}
+
+void Evaluator::eval_lippincott()
+{
 }
 
 void Evaluator::set_current_file(std::string t_tile)

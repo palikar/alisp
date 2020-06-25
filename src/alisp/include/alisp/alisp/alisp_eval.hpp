@@ -34,7 +34,7 @@ namespace detail
 {
 class EvalDepthTrack;
 class CatchTrack;
-
+class EvaluationLock;
 }  // namespace detail
 
 class Evaluator
@@ -59,6 +59,21 @@ class Evaluator
     static constexpr std::uint32_t ASYNC_FLAG             = 0x0008;
     static constexpr std::uint32_t INTERACTIVE_FLAG       = 0x0010;
 
+    void handle_argument_bindings(const ALObjectPtr &params, ALObjectPtr args);
+
+    void put_argument(const ALObjectPtr &param, ALObjectPtr arg);
+
+    ALObjectPtr apply_function(const ALObjectPtr &func, const ALObjectPtr &args);
+
+    void new_evaluation();
+
+    void end_evaluation();
+
+    void lock_evaluation();
+
+    void unlock_evaluation();
+
+    void eval_lippincott();
 
   public:
     std::mutex callback_m;
@@ -69,30 +84,17 @@ class Evaluator
     Evaluator(env::Environment &env_, parser::ParserBase *t_parser, bool t_defer_el = false);
     ~Evaluator();
 
-
     void eval_file(const std::string &t_file);
     void eval_string(std::string &t_eval);
 
     ALObjectPtr eval(const ALObjectPtr &obj);
-    ALObjectPtr eval_function(const ALObjectPtr &func, const ALObjectPtr &args);
-    ALObjectPtr apply_function(const ALObjectPtr &func, const ALObjectPtr &args);
-    ALObjectPtr handle_lambda(const ALObjectPtr &func, const ALObjectPtr &args);
-
-
-    template<bool evaluation = true> void handle_argument_bindings(const ALObjectPtr &params, ALObjectPtr args);
-    void put_argument(const ALObjectPtr &param, ALObjectPtr arg);
-
-    void new_evaluation();
-    void end_evaluation();
+    ALObjectPtr eval_callable(const ALObjectPtr &func, const ALObjectPtr &args);
 
     size_t evaluation_depth() const { return m_eval_depth; }
 
     void handle_signal(int t_c);
 
     void check_status();
-
-    void lock_evaluation();
-    void unlock_evaluation();
 
     inline std::unique_lock<std::mutex> &lock() { return m_lock; }
 
@@ -116,6 +118,7 @@ class Evaluator
 
     friend detail::EvalDepthTrack;
     friend detail::CatchTrack;
+    friend detail::EvaluationLock;
 };
 
 namespace detail

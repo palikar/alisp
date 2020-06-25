@@ -694,7 +694,7 @@ ALObjectPtr Ffuncall(const ALObjectPtr &obj, env::Environment *, eval::Evaluator
     auto args    = eval_transform(eval, splice(obj, 1));
 
 
-    return eval->handle_lambda(fun_obj, args);
+    return eval->eval_callable(fun_obj, args);
 }
 
 ALObjectPtr Fapply(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
@@ -703,7 +703,7 @@ ALObjectPtr Fapply(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *
 
     auto fun_obj = eval->eval(obj->i(0));
     auto args    = eval_transform(eval, eval->eval(obj->i(1)));
-    return eval->handle_lambda(fun_obj, args);
+    return eval->eval_callable(fun_obj, args);
 }
 
 ALObjectPtr Fprogn(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)

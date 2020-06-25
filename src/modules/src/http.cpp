@@ -130,7 +130,7 @@ ALObjectPtr Fget(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *
     detail::server_registry[id].get(route->to_string(), [fun, eval](auto *res, auto *) {
         auto result = [&] {
             eval::detail::EvaluationLock lock{ *eval };
-            return eval->handle_lambda(fun, make_list());
+            return eval->eval_callable(fun, make_list());
         }();
         res->writeHeader("Content-Type", "text/html; charset=utf-8")->end(result->to_string());
     });
@@ -149,8 +149,16 @@ ALObjectPtr Fpost(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
         auto res_obj = make_list();
 
         auto result = [&] {
-            eval::detail::EvaluationLock lock{ *eval };
-            return eval->handle_lambda(fun, make_list(req_obj, res_obj));
+            try
+            {
+                eval::detail::EvaluationLock lock{ *eval };
+                return eval->eval_callable(fun, make_list(req_obj, res_obj));
+            }
+            catch (...)
+            {
+                handle_errors_lippincott<false>();
+            }
+            return Qnil;
         }();
 
         res->onAborted([]() {});

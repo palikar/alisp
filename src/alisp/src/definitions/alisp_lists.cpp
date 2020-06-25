@@ -49,11 +49,11 @@ ALObjectPtr Fmapc(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *e
         {
             if (psym(el) or plist(el))
             {
-                eval->handle_lambda(fun_obj, make_list(quote(el)));
+                eval->eval_callable(fun_obj, make_list(quote(el)));
             }
             else
             {
-                eval->handle_lambda(fun_obj, make_list(el));
+                eval->eval_callable(fun_obj, make_list(el));
             }
         }
         return Qt;
@@ -63,7 +63,7 @@ ALObjectPtr Fmapc(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *e
 
         for (auto &el : list->to_string())
         {
-            eval->handle_lambda(fun_obj, make_list(make_char(el)));
+            eval->eval_callable(fun_obj, make_list(make_char(el)));
         }
         return Qt;
     }
@@ -90,11 +90,11 @@ ALObjectPtr Fmapcar(const ALObjectPtr &obj, env::Environment *, eval::Evaluator 
 
         if (psym(el) or plist(el))
         {
-            new_l.push_back(eval->handle_lambda(fun_obj, make_list(quote(el))));
+            new_l.push_back(eval->eval_callable(fun_obj, make_list(quote(el))));
         }
         else
         {
-            new_l.push_back(eval->handle_lambda(fun_obj, make_list(el)));
+            new_l.push_back(eval->eval_callable(fun_obj, make_list(el)));
         }
     }
 

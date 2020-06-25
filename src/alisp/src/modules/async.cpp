@@ -91,11 +91,11 @@ ALObjectPtr Fasync_then(const ALObjectPtr &obj, env::Environment *, eval::Evalua
 
         if (is_truthy(fut.success_state))
         {
-            eval->handle_lambda(fut.success_callback, make_list(fut.value));
+            eval->eval_callable(fut.success_callback, make_list(fut.value));
         }
         else
         {
-            eval->handle_lambda(fut.reject_callback, make_list(fut.value));
+            eval->eval_callable(fut.reject_callback, make_list(fut.value));
         }
     }
     else
