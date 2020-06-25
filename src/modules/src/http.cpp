@@ -145,21 +145,27 @@ ALObjectPtr Fpost(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
     auto fun   = eval->eval(t_obj->i(2));
 
     detail::server_registry[id].post(route->to_string(), [fun, eval](auto *res, auto *req) {
+        auto future  = eval->async().new_future();
         auto req_obj = detail::handle_request(res, req);
-        auto res_obj = make_list();
+        auto res_obj = make_list(resource_to_object(future));
+
 
         auto result = [&] {
-            try
+            eval::detail::EvaluationLock lock{ *eval };
+            eval->eval_callable(fun, make_list(req_obj, res_obj));
+
             {
-                eval::detail::EvaluationLock lock{ *eval };
-                return eval->eval_callable(fun, make_list(req_obj, res_obj));
+                async::Await await{ eval->async() };
+                if (!is_truthy(eval->async().future(future).resolved))
+                {
+                    eval->futures_cv.wait(eval->lock(),
+                                          [&] { return is_truthy(eval->async().future(future).resolved); });
+                }
             }
-            catch (...)
-            {
-                handle_errors_lippincott<false>();
-            }
-            return Qnil;
+
+            return Qt;
         }();
+
 
         res->onAborted([]() {});
         if (is_truthy(result))
@@ -175,6 +181,14 @@ ALObjectPtr Fstart(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
 {
     eval->async().async_pending();
     return async::dispatch<detail::server_start>(eval->async(), eval->eval(t_obj->i(0)));
+}
+
+ALObjectPtr Fend_request(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    auto fut = AL_EVAL(t_obj, eval, 0);
+
+    eval->async().submit_future(object_to_resource(fut), Qt);
+    return Qt;
 }
 
 

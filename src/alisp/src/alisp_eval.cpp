@@ -180,94 +180,9 @@ ALObjectPtr Evaluator::eval(const ALObjectPtr &obj)
                 }
             }();
 
-            if (psym(func))
-            {
-                func = env.find(func);
-            }
-
-            AL_CHECK(
-              if (!func->check_function_flag()) { throw eval_error("Head of a list must be bound to function"); });
-
-#ifdef ENABLE_STACK_TRACE
-
-            env::detail::CallTracer tracer{ env };
-
-            if (obj->prop_exists("--line--"))
-            {
-                tracer.line(obj->get_prop("--line--")->to_int());
-            }
-
-            if (func->prop_exists("--name--"))
-            {
-                tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag());
-            }
-            else
-            {
-                tracer.function_name("anonymous", false);
-            }
-
-            tracer.catch_depth(m_catching_depth);
-
-#endif
             AL_DEBUG("Calling funcion: "s += dump(obj->i(0)));
 
-            try
-            {
-
-                if (func->check_prime_flag())
-                {
-
-                    STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
-
-                    return func->get_prime()(eval_ptr, &env, this);
-                }
-                else if (func->check_macro_flag())
-                {
-                    env::detail::MacroCall fc{ env };
-
-                    STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
-                    auto a = apply_function(func, eval_ptr);
-                    AL_DEBUG("Macro expansion: "s += dump(a));
-                    return eval(a);
-                }
-                else
-                {
-                    STACK_ALLOC_OBJECT(eval_obj, eval_ptr, utility::slice_view(obj->children(), 1));
-                    return apply_function(func, eval_ptr);
-                }
-            }
-            catch (al_continue &)
-            {
-                throw;
-            }
-            catch (al_break &)
-            {
-                throw;
-            }
-            catch (al_exit &)
-            {
-                throw;
-            }
-            catch (al_return &)
-            {
-                throw;
-            }
-            catch (interrupt_error &)
-            {
-                throw;
-            }
-            catch (...)
-            {
-#ifdef ENABLE_STACK_TRACE
-                if (m_catching_depth == 0)
-                {
-                    tracer.dump();
-                }
-#endif
-                throw;
-            }
-
-            break;
+            return eval_callable(func, splice(obj, 1), obj);
         }
 
         default: {
@@ -278,37 +193,115 @@ ALObjectPtr Evaluator::eval(const ALObjectPtr &obj)
     return nullptr;
 }
 
-ALObjectPtr Evaluator::apply_function(const ALObjectPtr &func, const ALObjectPtr &args)
+ALObjectPtr Evaluator::eval_callable(const ALObjectPtr &callable, const ALObjectPtr &args, const ALObjectPtr &obj)
+{
+    auto func = callable;
+    if (psym(func))
+    {
+        func = env.find(func);
+    }
+
+    AL_CHECK(if (!func->check_function_flag()) { throw eval_error("Head of a list must be bound to function"); });
+
+
+#ifdef ENABLE_STACK_TRACE
+    env::detail::CallTracer tracer{ env };
+    if (obj->prop_exists("--line--"))
+    {
+        tracer.line(obj->get_prop("--line--")->to_int());
+    }
+    if (func->prop_exists("--name--"))
+    {
+        tracer.function_name(func->get_prop("--name--")->to_string(), func->check_prime_flag());
+    }
+    else
+    {
+        tracer.function_name("anonymous", false);
+    }
+    tracer.catch_depth(m_catching_depth);
+#endif
+
+
+    try
+    {
+
+        if (func->check_prime_flag())
+        {
+            return func->get_prime()(args, &env, this);
+        }
+        else if (func->check_macro_flag())
+        {
+            env::detail::MacroCall fc{ env };
+            auto expoanded = apply_macro(func, args);
+            AL_DEBUG("Macro expansion: "s += dump(a));
+            return eval(expoanded);
+        }
+        else
+        {
+
+            auto eval_args = [&]() {
+                if (is_truthy(obj))
+                {
+                    return eval_transform(this, args);
+                }
+                else
+                {
+                    return args;
+                }
+            }();
+            env::detail::FunctionCall fc{ env, func };
+            return apply_function(func, eval_args);
+        }
+    }
+    catch (al_continue &)
+    {
+        throw;
+    }
+    catch (al_break &)
+    {
+        throw;
+    }
+    catch (al_exit &)
+    {
+        throw;
+    }
+    catch (al_return &)
+    {
+        throw;
+    }
+    catch (interrupt_error &)
+    {
+        throw;
+    }
+    catch (...)
+    {
+
+#ifdef ENABLE_STACK_TRACE
+        if (m_catching_depth == 0)
+        {
+            tracer.dump();
+        }
+#endif
+
+        throw;
+    }
+}
+
+ALObjectPtr Evaluator::apply_macro(const ALObjectPtr &func, const ALObjectPtr &args)
 {
     auto [params, body] = func->get_function();
     handle_argument_bindings(params, args);
     return eval_list(this, body, 0);
 }
 
-ALObjectPtr Evaluator::eval_callable(const ALObjectPtr &func, const ALObjectPtr &args)
+ALObjectPtr Evaluator::apply_function(const ALObjectPtr &func, const ALObjectPtr &args)
 {
-    AL_DEBUG("Calling callable: "s += dump(func));
-
-    auto obj = func;
-    if (psym(func))
-    {
-        obj = eval(func);
-    }
-
-    AL_CHECK(if (!obj->check_function_flag()) { throw eval_error("Cannot apply a non function object."); });
-
-    env::detail::FunctionCall fc{ env, func };
 
     try
     {
-        if (obj->check_prime_flag())
-        {
-            return obj->get_prime()(args, &env, this);
-        }
-        else
-        {
-            return apply_function(obj, args);
-        }
+        auto [params, body] = func->get_function();
+        handle_argument_bindings(params, args);
+        return eval_list(this, body, 0);
     }
     catch (al_return &ret)
     {

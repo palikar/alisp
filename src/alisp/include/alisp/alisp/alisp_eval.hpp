@@ -65,6 +65,8 @@ class Evaluator
 
     ALObjectPtr apply_function(const ALObjectPtr &func, const ALObjectPtr &args);
 
+    ALObjectPtr apply_macro(const ALObjectPtr &func, const ALObjectPtr &args);
+
     void new_evaluation();
 
     void end_evaluation();
@@ -88,7 +90,7 @@ class Evaluator
     void eval_string(std::string &t_eval);
 
     ALObjectPtr eval(const ALObjectPtr &obj);
-    ALObjectPtr eval_callable(const ALObjectPtr &func, const ALObjectPtr &args);
+    ALObjectPtr eval_callable(const ALObjectPtr &callable, const ALObjectPtr &args, const ALObjectPtr &obj = Qnil);
 
     size_t evaluation_depth() const { return m_eval_depth; }
 
