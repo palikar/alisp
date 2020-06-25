@@ -165,13 +165,15 @@ class AsyncS
 
     void submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good = true);
 
-    void async_pending();
-
-    void async_reset_pending();
+    void dispose_future(uint32_t t_id);
 
     inline Future &future(uint32_t t_id) { return futures[t_id]; }
 
     ALObjectPtr future_resolved(uint32_t t_id);
+
+    void async_pending();
+
+    void async_reset_pending();
 
     void spin_loop();
 

@@ -112,10 +112,13 @@ template<typename T, size_t tag> class Registry
   public:
     Registry()
     {
+
         for (size_t i = 0; i < INLINED; ++i)
         {
             inline_res[i].id = 0;
         }
+
+        dyn_res.reserve(20);
     }
 
     ~Registry()

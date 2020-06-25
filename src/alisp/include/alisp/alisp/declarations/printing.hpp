@@ -102,6 +102,11 @@ DEFUN(read_char, "read-char", R"((read-char)
 Read a single character form the standard input stream and return it.
 )");
 
+DEFUN(read_chars, "read-chars", R"((read-chars COUNT)
+
+Read several characters form the standard input stream and return them.
+)");
+
 
 DEFVAR(
   Qlists_all,

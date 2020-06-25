@@ -29,7 +29,7 @@ namespace alisp
 namespace detail
 {
 
-ALObjectPtr Fasync_start(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fasync_start(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(obj));
     AL_CHECK(assert_max_size<2>(obj));
@@ -44,7 +44,14 @@ ALObjectPtr Fasync_start(const ALObjectPtr &obj, env::Environment *, eval::Evalu
         AL_CHECK(assert_function(callback));
     }
 
-    return async::dispatch<async_action>(eval->async(), std::move(action), std::move(callback));
+    auto res = async::dispatch<async_action>(eval->async(), std::move(action), std::move(callback));
+
+    if (pint(res) and eval->async().futures.belong(object_to_resource(res)))
+    {
+        env->defer_callback([eval, id = object_to_resource(res)]() { eval->async().dispose_future(id); });
+    }
+
+    return res;
 }
 
 ALObjectPtr Fasync_await(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)

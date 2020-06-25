@@ -303,6 +303,18 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
     }
 }
 
+void AsyncS::dispose_future(uint32_t t_id)
+{
+    std::lock_guard<std::mutex> lock(future_mutex);
+
+    if (!futures.belong(t_id))
+    {
+        return;
+    }
+
+    futures.destroy_resource(t_id);
+}
+
 ALObjectPtr AsyncS::future_resolved(uint32_t t_id)
 {
     std::lock_guard<std::mutex> lock(future_mutex);

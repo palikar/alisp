@@ -72,7 +72,7 @@ ALObjectPtr Fwith_cin(const ALObjectPtr &t_obj, env::Environment *, eval::Evalua
     AL_CHECK(assert_int(obj));
     AL_CHECK(assert_stream(obj));
 
-    StreamsHelper::rebind_cout(obj);
+    StreamsHelper::rebind_cin(obj);
 
     CinRestore cout;
 

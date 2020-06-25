@@ -306,6 +306,7 @@ void Environment::alias_module(const std::string &t_name, const std::string &t_a
 
 void Environment::defer_callback(std::function<void()> t_callback)
 {
+
     if (m_stack.current_frame().size() == 1)
     {
         return;
@@ -514,8 +515,8 @@ ScopePushPop::ScopePushPop(Environment &t_env) : m_env(t_env)
 
 ScopePushPop::~ScopePushPop()
 {
-    m_env.resolve_callbacks();
     m_env.destroy_scope();
+    m_env.resolve_callbacks();
 }
 
 MacroCall::MacroCall(Environment &t_env) : m_env(t_env)
