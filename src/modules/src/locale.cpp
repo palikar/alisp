@@ -25,6 +25,9 @@ namespace loc
 {
 using namespace alisp;
 
+auto loc_signal = alisp::make_symbol("locale-signal");
+
+
 namespace detail
 {
 
@@ -498,10 +501,18 @@ ALObjectPtr Flocale(const ALObjectPtr &t_obj, env::Environment *env, eval::Evalu
     auto obj = eval->eval(t_obj->i(0));
     AL_CHECK(assert_string(obj));
 
-    auto id = detail::loc_registry.emplace_resource(obj->to_string())->id;
-    env->defer_callback([id = id]() { detail::loc_registry.destroy_resource(id); });
-
-    return resource_to_object(id);
+    try
+    {
+        auto id = detail::loc_registry.emplace_resource(obj->to_string())->id;
+        env->defer_callback([id = id]() { detail::loc_registry.destroy_resource(id); });
+        return resource_to_object(id);
+    }
+    catch (std::runtime_error &exp)
+    {
+        signal(loc_signal,
+               std::string("LOCALE ERROR: Cannot consturct locale '") + obj->to_string() + "'; " + exp.what() + "\n");
+        return Qnil;
+    }
 }
 
 ALObjectPtr Fset_default_locale(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
