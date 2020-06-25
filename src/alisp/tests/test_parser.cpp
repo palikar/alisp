@@ -710,3 +710,73 @@ TEST_CASE("Parser Test [comma, at, backqoute]", "[parser]")
         CHECK(res[0]->i(1)->is_list());
     }
 }
+
+TEST_CASE("Parser Test [init object]", "[parser]")
+{
+    alisp::env::Environment env;
+    alisp::parser::ALParser<alisp::env::Environment> pars(env);
+
+
+    std::string input{ "" };
+    auto res = pars.parse(input, "__TEST__");
+
+    SECTION("init [1]")
+    {
+
+        input =  R"raw( ([sym] func "second_arg") )raw";
+        res   = pars.parse(input, "__TEST__");
+
+        CHECK(std::size(res) == 1);
+        CHECK(res[0]->is_list());
+        CHECK(res[0]->length() == 3);
+
+        CHECK(res[0]->i(0)->is_sym());
+        CHECK(res[0]->i(1)->is_sym());
+        CHECK(res[0]->i(2)->is_string());
+
+        CHECK(res[0]->i(0)->to_string().compare("func") == 0);
+        CHECK(res[0]->i(1)->to_string().compare("sym") == 0);
+        CHECK(res[0]->i(2)->to_string().compare("second_arg") == 0);
+
+    }
+
+    SECTION("init [2]")
+    {
+
+        input =  R"raw( (["sym"] func "second_arg") )raw";
+        res   = pars.parse(input, "__TEST__");
+
+        CHECK(std::size(res) == 1);
+        CHECK(res[0]->is_list());
+        CHECK(res[0]->length() == 3);
+
+        CHECK(res[0]->i(0)->is_sym());
+        CHECK(res[0]->i(1)->is_string());
+        CHECK(res[0]->i(2)->is_string());
+
+        CHECK(res[0]->i(0)->to_string().compare("func") == 0);
+        CHECK(res[0]->i(1)->to_string().compare("sym") == 0);
+        CHECK(res[0]->i(2)->to_string().compare("second_arg") == 0);
+
+    }
+
+    SECTION("init [3]")
+    {
+
+        input =  R"raw(  ([2] func )  )raw";
+        res   = pars.parse(input, "__TEST__");
+
+        CHECK(std::size(res) == 1);
+        CHECK(res[0]->is_list());
+        CHECK(res[0]->length() == 2);
+
+        CHECK(res[0]->i(0)->is_sym());
+        CHECK(res[0]->i(1)->is_int());
+        
+        CHECK(res[0]->i(0)->to_string().compare("func") == 0);
+        CHECK(res[0]->i(1)->to_int() == 2);
+
+    }
+
+
+}

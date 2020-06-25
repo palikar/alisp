@@ -301,7 +301,6 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
         CHECK(res->i(4)->to_int() == 5);
     }
 
-
     SECTION("backqoute [3]")
     {
         std::string input{ R"raw(`(1 2 ,'(3 4) 5))raw" };
@@ -317,6 +316,37 @@ TEST_CASE("Evaluator Test [language]", "[eval]")
     }
 
     std::cout.clear();
+}
+
+TEST_CASE("Evaluator Test [colon-symbols]", "[eval]")
+{
+    using namespace alisp;
+
+    env::Environment env;
+    auto p     = std::make_shared<parser::ALParser<alisp::env::Environment>>(env);
+    auto &pars = *p;
+    eval::Evaluator eval(env, p.get());
+
+    std::cout.setstate(std::ios_base::failbit);
+
+    SECTION("colon-symbols[1]")
+    {
+        std::string input{ ":sym" };
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+
+        CHECK(res->is_sym());
+        CHECK(res->to_string().compare(":sym") == 0);
+    }
+
+    SECTION("colon-symbols[2]")
+    {
+        std::string input{ "(println :sym)" };
+        auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
+        
+    }
+
+    std::cout.clear();
+
 }
 
 
