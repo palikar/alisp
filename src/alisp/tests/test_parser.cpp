@@ -723,7 +723,7 @@ TEST_CASE("Parser Test [init object]", "[parser]")
     SECTION("init [1]")
     {
 
-        input =  R"raw( ([sym] func "second_arg") )raw";
+        input = R"raw( ([sym] func "second_arg") )raw";
         res   = pars.parse(input, "__TEST__");
 
         CHECK(std::size(res) == 1);
@@ -737,13 +737,12 @@ TEST_CASE("Parser Test [init object]", "[parser]")
         CHECK(res[0]->i(0)->to_string().compare("func") == 0);
         CHECK(res[0]->i(1)->to_string().compare("sym") == 0);
         CHECK(res[0]->i(2)->to_string().compare("second_arg") == 0);
-
     }
 
     SECTION("init [2]")
     {
 
-        input =  R"raw( (["sym"] func "second_arg") )raw";
+        input = R"raw( (["sym"] func "second_arg") )raw";
         res   = pars.parse(input, "__TEST__");
 
         CHECK(std::size(res) == 1);
@@ -757,13 +756,12 @@ TEST_CASE("Parser Test [init object]", "[parser]")
         CHECK(res[0]->i(0)->to_string().compare("func") == 0);
         CHECK(res[0]->i(1)->to_string().compare("sym") == 0);
         CHECK(res[0]->i(2)->to_string().compare("second_arg") == 0);
-
     }
 
     SECTION("init [3]")
     {
 
-        input =  R"raw(  ([2] func )  )raw";
+        input = R"raw(  ([2] func )  )raw";
         res   = pars.parse(input, "__TEST__");
 
         CHECK(std::size(res) == 1);
@@ -772,11 +770,8 @@ TEST_CASE("Parser Test [init object]", "[parser]")
 
         CHECK(res[0]->i(0)->is_sym());
         CHECK(res[0]->i(1)->is_int());
-        
+
         CHECK(res[0]->i(0)->to_string().compare("func") == 0);
         CHECK(res[0]->i(1)->to_int() == 2);
-
     }
-
-
 }

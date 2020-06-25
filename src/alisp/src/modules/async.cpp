@@ -130,8 +130,8 @@ ALObjectPtr Fasync_state(const ALObjectPtr &obj, env::Environment *, eval::Evalu
 ALObjectPtr Ftimeout(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto time = eval->eval(obj->i(1));
     auto fun  = eval->eval(obj->i(0));
+    auto time = eval->eval(obj->i(1));
     AL_CHECK(assert_int(time));
     AL_CHECK(assert_function(fun));
 

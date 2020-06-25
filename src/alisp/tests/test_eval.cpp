@@ -342,11 +342,9 @@ TEST_CASE("Evaluator Test [colon-symbols]", "[eval]")
     {
         std::string input{ "(println :sym)" };
         auto res = eval.eval(pars.parse(input, "__TEST__")[0]);
-        
     }
 
     std::cout.clear();
-
 }
 
 

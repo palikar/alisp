@@ -155,9 +155,10 @@ ALObjectPtr Fpost(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
             eval->eval_callable(fun, make_list(req_obj, res_obj));
 
             {
-                async::Await await{ eval->async() };
+
                 if (!is_truthy(eval->async().future(future).resolved))
                 {
+                    async::Await await{ eval->async() };
                     eval->futures_cv.wait(eval->lock(),
                                           [&] { return is_truthy(eval->async().future(future).resolved); });
                 }
@@ -186,7 +187,6 @@ ALObjectPtr Fstart(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
 ALObjectPtr Fend_request(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     auto fut = AL_EVAL(t_obj, eval, 0);
-
     eval->async().submit_future(object_to_resource(fut), Qt);
     return Qt;
 }
@@ -203,6 +203,7 @@ ALISP_EXPORT alisp::env::ModulePtr init_http(alisp::env::Environment *, alisp::e
     alisp::module_defun(http_ptr, "get", &http::Fget, R"()");
     alisp::module_defun(http_ptr, "post", &http::Fpost, R"()");
     alisp::module_defun(http_ptr, "start", &http::Fstart, R"()");
+    alisp::module_defun(http_ptr, "end-request", &http::Fend_request, R"()");
 
 
     return Mhttp;
