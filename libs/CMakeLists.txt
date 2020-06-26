@@ -76,3 +76,6 @@ target_link_libraries(uwebsockets INTERFACE usockets)
 target_include_directories(uwebsockets INTERFACE ./uWebSockets/)
 
 
+set(BUILD_SSL OFF)
+set(BUILD_TESTS OFF)
+add_subdirectory(restbed)

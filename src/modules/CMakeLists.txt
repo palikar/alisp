@@ -44,6 +44,9 @@ add_dynmodule(alisp_module_asserts asserts src/asserts.cpp)
 add_dynmodule(alisp_module_http http src/http.cpp)
 target_link_libraries(alisp_module_http PUBLIC usockets uwebsockets alisp_management)
 
+add_dynmodule(alisp_module_http_restbed http src/http_restbed.cpp)
+target_link_libraries(alisp_module_http_restbed PUBLIC alisp_management restbed-static)
+
 if(${CMAKE_VERSION} VERSION_GREATER "3.16.0")
     add_dynmodule(alisp_module_request request src/request.cpp)
     target_link_libraries(alisp_module_request PUBLIC cpr)

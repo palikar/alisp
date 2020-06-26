@@ -25,18 +25,22 @@
 #include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 
-
 #ifdef __GNUC__
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wunused-result"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wuseless-cast"
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #pragma GCC diagnostic ignored "-Wshadow"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wconversion"
 #endif
 
 #include <uWebSockets/App.h>
+#include <uWebSockets/Helpers/AsyncFileReader.h>
+#include <uWebSockets/Helpers/AsyncFileStreamer.h>
 #include <libusockets.h>
 
 #ifdef __GNUC__
