@@ -39,7 +39,7 @@ DLModule::DLModule(const std::string_view &t_filename) : m_data(dlopen(t_filenam
 }
 
 AlispDynModule::AlispDynModule(const std::string &t_module_name, const std::string_view &t_filename)
-  : m_dlmodule(t_filename), m_init_func(m_dlmodule, "init_" + t_module_name)
+  : m_dlmodule(t_filename), m_init_func(m_dlmodule, "init_" + utility::replace_all(t_module_name, "-", "_"))
 {
 
     if (!m_init_func.m_symbol)

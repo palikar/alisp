@@ -167,7 +167,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     bool is_list() const { return m_type == ALObjectType::LIST; }
     bool is_sym() const { return m_type == ALObjectType::SYMBOL; }
 
-    ALObjectPtr i(const size_t index)
+    ALObjectPtr &i(const size_t index)
     {
         if (check_temp_flag())
         {
@@ -176,7 +176,18 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         return children()[index];
     }
 
-    ALObjectPtr operator[](const size_t index) { return i(index); }
+    const ALObjectPtr &i(const size_t index) const
+    {
+        if (check_temp_flag())
+        {
+            return std::get<view_type>(m_data)[index];
+        }
+        return children()[index];
+    }
+
+    ALObjectPtr &operator[](const size_t index) { return i(index); }
+
+    const ALObjectPtr &operator[](const size_t index) const { return i(index); }
 
     auto length() const noexcept
     {
@@ -378,7 +389,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         return std::cend(children());
     }
 
-    ALObjectPtr get_prop(const std::string &t_name)
+    ALObjectPtr get_prop(const std::string &t_name) const
     {
         auto search = m_props.find(t_name);
         if (search != m_props.end())
@@ -400,10 +411,11 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
         }
     }
 
-    bool prop_exists(const std::string &t_name) { return m_props.count(t_name) != 0; }
+    bool prop_exists(const std::string &t_name) const { return m_props.count(t_name) != 0; }
 
     auto &props() { return m_props; }
 
+    const auto &props() const { return m_props; }
 
     std::string pretty_print() const
     {

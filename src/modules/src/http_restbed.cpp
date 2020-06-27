@@ -26,6 +26,10 @@
 #include "alisp/alisp/alisp_eval.hpp"
 
 
+#include <memory>
+#include <vector>
+#include <unordered_map>
+
 #include <restbed>
 
 
@@ -34,21 +38,19 @@ namespace http
 
 using namespace alisp;
 
+auto localhost = make_string("127.0.0.1");
+
 namespace detail
 {
 
 struct Server
 {
-    std::vector<restbed::Resource> g_resources;
-    restbed::Settings g_settings;
     std::unique_ptr<restbed::Service> g_server;
-    
-
-
+    std::shared_ptr<restbed::Settings> g_settings;
+    std::vector<std::shared_ptr<restbed::Resource>> g_resources;
 };
 
-
-inline management::Registry<uWS::App, 0x08> server_registry;
+inline management::Registry<Server, 0x08> server_registry;
 
 struct server_start
 {
@@ -62,113 +64,199 @@ struct server_start
 
     ALObjectPtr operator()(async::AsyncS *async) const
     {
-        
-        auto t = std::thread([g_id = g_id, async = async]() {
-            auto id = object_to_resource(g_id);
+
+        auto thread = std::thread([g_id = g_id, async = async]() {
+            auto id      = object_to_resource(g_id);
             auto &server = detail::server_registry[id];
 
-            
 
-            for (auto& resoruce : server.g_resoruces)
+            for (auto &resource : server.g_resources)
             {
-                server.g_service->publish(res);
+                server.g_server->publish(resource);
             }
-            
-            server.g_service->start(server.g_settings);
+
+            server.g_server->start(server.g_settings);
             async->async_reset_pending();
         });
 
-        t.detach();
+        thread.detach();
         return Qt;
-
     }
 };
 
+bool sym_name(const ALObjectPtr &t_obj, const std::string &t_name)
+{
+    return psym(t_obj) and t_obj->to_string().compare(t_name) == 0;
+}
+
+auto handle_request(const restbed::Request &request, restbed::Response &)
+{
+    ALObject::list_type list;
+    list.push_back(make_symbol(":body"));
+    list.push_back(make_string(std::string{ request.get_body().begin(), request.get_body().end() }));
+
+    return make_list(list);
+}
+
+void handle_response(const restbed::Request &, restbed::Response &response, const ALObjectPtr &t_al_response)
+{
+
+    for (size_t i = 1; i < std::size(*t_al_response); ++i)
+    {
+
+        if (sym_name(t_al_response->i(i), ":content") and pstring(t_al_response->i(i + 1)))
+        {
+
+            response.set_body(t_al_response->i(i + 1)->to_string());
+            ++i;
+        }
+
+        if (sym_name(t_al_response->i(i), ":code") and pint(t_al_response->i(i + 1)))
+        {
+            response.set_status_code(static_cast<int>(t_al_response->i(i + 1)->to_int()));
+            ++i;
+        }
+
+        if (sym_name(t_al_response->i(i), ":header") and plist(t_al_response->i(i + 1)))
+        {
+            response.set_header(t_al_response->i(i + 1)->i(0)->to_string(), t_al_response->i(i + 1)->i(1)->to_string());
+            ++i;
+        }
+
+        if (sym_name(t_al_response->i(i), ":cookie") and plist(t_al_response->i(i + 1)))
+        {
+            // handle cookie please!
+            ++i;
+        }
+
+        if (sym_name(t_al_response->i(i), ":file") and plist(t_al_response->i(i + 1)))
+        {
+            // handle file please!
+            ++i;
+        }
+
+        if (sym_name(t_al_response->i(i), ":render") and plist(t_al_response->i(i + 1)))
+        {
+            // handle rendering file please!
+            ++i;
+        }
+    }
+}
 
 }  // namespace detail
 
 
-ALObjectPtr Fserver(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fserver(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
 {
     auto new_id = detail::server_registry.emplace_resource()->id;
 
     auto &server = detail::server_registry[new_id];
-    server.g_service = std::make_unique<restbed::Service>();
-    
+
+    server.g_settings = std::make_unique<restbed::Settings>();
+    server.g_server   = std::make_unique<restbed::Service>();
+
     return resource_to_object(new_id);
 }
 
 ALObjectPtr Fserver_port(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id    = object_to_resource(AL_EVAL(t_obj, eval, 0));
-    auto port  = AL_EVAL(t_obj, eval, 1);
-        
-    detail::server_registry[id].g_settings.set_port(port->to_int());
-    
+    auto id   = object_to_resource(AL_EVAL(t_obj, eval, 0));
+    auto port = AL_EVAL(t_obj, eval, 1);
+
+    detail::server_registry[id].g_settings->set_port(static_cast<uint16_t>(port->to_int()));
+
     return Qt;
 }
 
 ALObjectPtr Fserver_root(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id    = object_to_resource(AL_EVAL(t_obj, eval, 0));
-    auto port  = AL_EVAL(t_obj, eval, 1);
-        
-    detail::server_registry[id].g_settings.set_root(port->to_string());
-    
+    auto id   = object_to_resource(AL_EVAL(t_obj, eval, 0));
+    auto port = AL_EVAL(t_obj, eval, 1);
+
+    detail::server_registry[id].g_settings->set_root(port->to_string());
+
     return Qt;
 }
 
 ALObjectPtr Fserver_address(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id    = object_to_resource(AL_EVAL(t_obj, eval, 0));
-    auto address  = AL_EVAL(t_obj, eval, 1);
-        
-    detail::server_registry[id].g_settings.set_address(address->to_string());
-    
+    auto id      = object_to_resource(AL_EVAL(t_obj, eval, 0));
+    auto address = AL_EVAL(t_obj, eval, 1);
+
+    detail::server_registry[id].g_settings->set_bind_address(address->to_string());
+
     return Qt;
 }
 
 ALObjectPtr Fserver_default_header(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id    = object_to_resource(AL_EVAL(t_obj, eval, 0));
-    auto header  = AL_EVAL(t_obj, eval, 1);
+    auto id     = object_to_resource(AL_EVAL(t_obj, eval, 0));
+    auto header = AL_EVAL(t_obj, eval, 1);
     auto value  = AL_EVAL(t_obj, eval, 2);
-        
-    detail::server_registry[id].g_settings.set_default_header(header->to_string(), value->to_string());
-    
-    return Qt;
-}
 
-ALObjectPtr Fget(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    auto id    = object_to_resource(AL_EVAL(t_obj, eval 0));
-    auto route = AL_EVAL(t_obj, eval 1);
-    auto fun   = AL_EVAL(t_obj, eval 2);
-
-    auto res = restbed::Resource();
-    resource->set_path(route->to_string());
-    resource->set_method_handler( "GET", [](const shared_ptr< Session > session) {
-        
-    });
-
-    detail::server_registry[id].g_resources.push_back(std::move(resource));
+    detail::server_registry[id].g_settings->set_default_header(header->to_string(), value->to_string());
 
     return Qt;
 }
 
-ALObjectPtr Fpost(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Froute(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id    = object_to_resource(AL_EVAL(t_obj, eval 0));
-    auto route = AL_EVAL(t_obj, eval 1);
-    auto fun   = AL_EVAL(t_obj, eval 2);
+    auto id    = object_to_resource(AL_EVAL(t_obj, eval, 0));
+    auto route = AL_EVAL(t_obj, eval, 1);
 
-    auto res = restbed::Resource();
-    resource->set_path(route->to_string());
-    resource->set_method_handler( "POST", [](const shared_ptr< Session > session) {
-        
+    auto res = std::make_shared<restbed::Resource>();
+    res->set_path(route->to_string());
+
+    auto &server = detail::server_registry[id];
+    server.g_resources.push_back(res);
+
+    return make_int(server.g_resources.size() - 1);
+}
+
+ALObjectPtr Fhandler(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+{
+    auto id       = object_to_resource(AL_EVAL(t_obj, eval, 0));
+    auto route_id = AL_EVAL(t_obj, eval, 1);
+    auto method   = AL_EVAL(t_obj, eval, 2);
+    auto fun      = AL_EVAL(t_obj, eval, 3);
+
+    auto &server = detail::server_registry[id];
+    auto &res    = server.g_resources[static_cast<size_t>(route_id->to_int())];
+
+    res->set_method_handler(method->to_string(), [eval, fun](const std::shared_ptr<restbed::Session> session) {
+        auto future  = eval->async().new_future();
+        auto request = session->get_request();
+
+
+        const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
+        session->fetch(content_length, [&](const std::shared_ptr<restbed::Session>, const restbed::Bytes &) {
+            restbed::Response response{};
+            auto req_obj = detail::handle_request(*request.get(), response);
+            auto res_obj = make_list(resource_to_object(future));
+
+            auto callback_result = [&] {
+                eval::detail::EvaluationLock lock{ *eval };
+                eval->eval_callable(fun, make_list(req_obj, res_obj));
+
+                if (!is_truthy(eval->async().future(future).resolved))
+                {
+                    async::Await await{ eval->async() };
+                    eval->futures_cv.wait(eval->lock(),
+                                          [&] { return is_truthy(eval->async().future(future).resolved); });
+                }
+
+                return Qt;
+            }();
+
+            if (is_truthy(callback_result))
+            {
+
+                detail::handle_response(*request.get(), response, std::move(res_obj));
+
+                session->close(response);
+            }
+        });
     });
-
-    detail::server_registry[id].g_resources.push_back(std::move(resource));
 
     return Qt;
 }
@@ -177,13 +265,14 @@ ALObjectPtr Fstart(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
 {
     eval->async().async_pending();
     return async::dispatch<detail::server_start>(eval->async(), eval->eval(t_obj->i(0)));
-
-
 }
 
 ALObjectPtr Fend_request(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
 
+    auto fut = AL_EVAL(t_obj, eval, 0);
+    eval->async().submit_future(object_to_resource(fut->i(0)), Qt);
+    return Qt;
 }
 
 
@@ -194,13 +283,79 @@ ALISP_EXPORT alisp::env::ModulePtr init_http_restbed(alisp::env::Environment *, 
     auto Mhttp    = alisp::module_init("http-restbed");
     auto http_ptr = Mhttp.get();
 
+    alisp::module_defvar(http_ptr, "localhost", http::localhost, R"()");
+
     alisp::module_defun(http_ptr, "server", &http::Fserver, R"()");
-    alisp::module_defun(http_ptr, "get", &http::Fget, R"()");
-    alisp::module_defun(http_ptr, "post", &http::Fpost, R"()");
+    alisp::module_defun(http_ptr, "set-root", &http::Fserver_root, R"()");
+    alisp::module_defun(http_ptr, "set-port", &http::Fserver_port, R"()");
+    alisp::module_defun(http_ptr, "set-address", &http::Fserver_address, R"()");
+    alisp::module_defun(http_ptr, "set-default-header", &http::Fserver_default_header, R"()");
     alisp::module_defun(http_ptr, "start", &http::Fstart, R"()");
+
+    alisp::module_defun(http_ptr, "route", &http::Froute, R"()");
+    alisp::module_defun(http_ptr, "route-handler", &http::Fhandler, R"()");
+    alisp::module_defun(http_ptr, "route-path", &http::Fhandler, R"()");
+    alisp::module_defun(http_ptr, "route-header", &http::Fhandler, R"()");
+
     alisp::module_defun(http_ptr, "end-request", &http::Fend_request, R"()");
+
+    alisp::module_eval(http_ptr, R"(
+
+(defun http--route-get (serv rout callback)
+  (route-handler serv rout "GET" callback))
+
+(defun http--route-post (serv rout callback)
+  (route-handler serv rout "POST" callback))
+
+(defun http--route-head (serv rout callback)
+  (route-handler serv rout "HEAD" callback))
+
+(defun http--route-delete (serv rout callback)
+  (route-handler serv rout "DELETE" callback))
+
+(defun http--route-patch (serv rout callback)
+  (route-handler serv rout "PATCH" callback))
+
+
+
+
+
+(defun route-post (serv index callback)
+  ([serv] http--route-post index
+   (lambda (req res)
+     (callback req res (lambda () (end-request res))))))
+
+
+(defun route-get (serv index callback)
+  ([serv] http--route-get index
+   (lambda (req res)
+     (callback req res (lambda () (end-request res))))))
+
+
+
+
+(defun set-content (res cont)
+  (push res :content)
+  (push res cont))
+
+(defun set-status-code (res code)
+  (push res :code)
+  (push res code))
+
+
+(defun set-header (res name value)
+  (push res :header)
+  (push res `(,name ,value)))
+
+
+(defun set-cookie (res name value)
+  (push res :cookie)
+  (push res `(,name ,value)))
+
+
+
+)");
 
 
     return Mhttp;
 }
-

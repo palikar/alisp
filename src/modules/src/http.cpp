@@ -162,7 +162,6 @@ ALObjectPtr Fpost(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
         auto req_obj = detail::handle_request(res, req);
         auto res_obj = make_list(resource_to_object(future));
 
-
         auto result = [&] {
             eval::detail::EvaluationLock lock{ *eval };
             eval->eval_callable(fun, make_list(req_obj, res_obj));
@@ -179,7 +178,6 @@ ALObjectPtr Fpost(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
 
             return Qt;
         }();
-
 
         res->onAborted([]() {});
         if (is_truthy(result))
