@@ -435,6 +435,11 @@ inline auto get_next(const ALObjectPtr &obj, const std::string &t_str) -> std::p
     return std::pair{ *val, true };
 }
 
+inline bool sym_name(const ALObjectPtr &t_obj, const std::string &t_name)
+{
+    return psym(t_obj) and t_obj->to_string().compare(t_name) == 0;
+}
+
 
 inline const auto AND_OBJ_FUN = [](bool t_acc, const ALObjectPtr &t_obj) { return t_acc and is_truthy(t_obj); };
 inline const auto OR_OBJ_FUN  = [](bool t_acc, const ALObjectPtr &t_obj) { return t_acc or is_truthy(t_obj); };
