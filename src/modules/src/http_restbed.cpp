@@ -89,7 +89,7 @@ bool sym_name(const ALObjectPtr &t_obj, const std::string &t_name)
     return psym(t_obj) and t_obj->to_string().compare(t_name) == 0;
 }
 
-auto handle_request(const restbed::Request &request, restbed::Response &)
+auto handle_request(const restbed::Request &request)
 {
     ALObject::list_type list;
     list.push_back(make_symbol(":body"));
@@ -100,7 +100,6 @@ auto handle_request(const restbed::Request &request, restbed::Response &)
 
 void handle_response(const restbed::Request &, restbed::Response &response, const ALObjectPtr &t_al_response)
 {
-
     for (size_t i = 1; i < std::size(*t_al_response); ++i)
     {
 
@@ -215,48 +214,43 @@ ALObjectPtr Froute(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
 
 ALObjectPtr Fhandler(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id       = object_to_resource(AL_EVAL(t_obj, eval, 0));
-    auto route_id = AL_EVAL(t_obj, eval, 1);
-    auto method   = AL_EVAL(t_obj, eval, 2);
-    auto fun      = AL_EVAL(t_obj, eval, 3);
+    const auto id               = object_to_resource(AL_EVAL(t_obj, eval, 0));
+    const auto route_id         = AL_EVAL(t_obj, eval, 1);
+    const auto method           = AL_EVAL(t_obj, eval, 2);
+    const auto handler_callback = AL_EVAL(t_obj, eval, 3);
 
     auto &server = detail::server_registry[id];
     auto &res    = server.g_resources[static_cast<size_t>(route_id->to_int())];
 
-    res->set_method_handler(method->to_string(), [eval, fun](const std::shared_ptr<restbed::Session> session) {
-        auto future  = eval->async().new_future();
-        auto request = session->get_request();
+    res->set_method_handler(
+      method->to_string(), [eval, handler_callback](const std::shared_ptr<restbed::Session> session) {
+          const auto request = session->get_request();
 
+          const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
 
-        const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
-        session->fetch(content_length, [&](const std::shared_ptr<restbed::Session>, const restbed::Bytes &) {
-            restbed::Response response{};
-            auto req_obj = detail::handle_request(*request.get(), response);
-            auto res_obj = make_list(resource_to_object(future));
+          session->fetch(content_length,
+                         [eval, handler_callback, request](const std::shared_ptr<restbed::Session> fetched_session,
+                                                           const restbed::Bytes &) {
+                             auto req_obj = detail::handle_request(*request.get());
+                             auto res_obj = make_list();
 
-            auto callback_result = [&] {
-                eval::detail::EvaluationLock lock{ *eval };
-                eval->eval_callable(fun, make_list(req_obj, res_obj));
+                             auto future = eval->async().new_future(
+                               [fetched_session, request, res_obj, req_obj](auto future_result) {
+                                   if (is_falsy(future_result))
+                                   {
+                                       return;
+                                   }
 
-                if (!is_truthy(eval->async().future(future).resolved))
-                {
-                    async::Await await{ eval->async() };
-                    eval->futures_cv.wait(eval->lock(),
-                                          [&] { return is_truthy(eval->async().future(future).resolved); });
-                }
+                                   restbed::Response response{};
+                                   detail::handle_response(*request.get(), response, std::move(res_obj));
+                                   fetched_session->close(response);
+                               });
 
-                return Qt;
-            }();
+                             res_obj->children().push_back(resource_to_object(future));
 
-            if (is_truthy(callback_result))
-            {
-
-                detail::handle_response(*request.get(), response, std::move(res_obj));
-
-                session->close(response);
-            }
-        });
-    });
+                             eval->async().submit_callback(handler_callback, make_list(req_obj, res_obj));
+                         });
+      });
 
     return Qt;
 }

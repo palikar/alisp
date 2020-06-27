@@ -59,6 +59,9 @@ struct Future
     // callbacks
     ALObjectPtr success_callback;
     ALObjectPtr reject_callback;
+
+    // c++ space things
+    std::function<void(ALObjectPtr)> internal{};
 };
 
 class AsyncS;
@@ -161,7 +164,7 @@ class AsyncS
     void
       submit_callback(ALObjectPtr function, ALObjectPtr args = nullptr, std::function<void(ALObjectPtr)> internal = {});
 
-    uint32_t new_future();
+    uint32_t new_future(std::function<void(ALObjectPtr)> t_calback = {});
 
     void submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good = true);
 

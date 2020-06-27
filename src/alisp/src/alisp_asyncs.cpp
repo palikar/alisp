@@ -261,7 +261,7 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::functi
     }
 }
 
-uint32_t AsyncS::new_future()
+uint32_t AsyncS::new_future(std::function<void(ALObjectPtr)> t_calback)
 {
 
     if (!AL_BIT_CHECK(m_flags, INIT_FLAG))
@@ -270,7 +270,7 @@ uint32_t AsyncS::new_future()
     }
 
     std::lock_guard<std::mutex> lock(future_mutex);
-    const auto id = futures.emplace_resource(Qnil, Qnil, Qnil, Qnil, Qnil)->id;
+    const auto id = futures.emplace_resource(Qnil, Qnil, Qnil, Qnil, Qnil, t_calback)->id;
 
     return id;
 }
@@ -300,6 +300,11 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
     if (pfunction(fut.reject_callback))
     {
         submit_callback(fut.reject_callback, make_list(t_value));
+    }
+
+    if (fut.internal)
+    {
+        fut.internal(fut.value);
     }
 }
 
