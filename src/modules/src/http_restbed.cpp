@@ -89,11 +89,57 @@ bool sym_name(const ALObjectPtr &t_obj, const std::string &t_name)
     return psym(t_obj) and t_obj->to_string().compare(t_name) == 0;
 }
 
-auto handle_request(const restbed::Request &request)
+ALObjectPtr handle_request(const restbed::Request &request)
 {
     ALObject::list_type list;
+
     list.push_back(make_symbol(":body"));
     list.push_back(make_string(std::string{ request.get_body().begin(), request.get_body().end() }));
+
+    list.push_back(make_symbol(":method"));
+    list.push_back(make_string(request.get_method()));  // 2
+
+    list.push_back(make_symbol(":host"));
+    list.push_back(make_string(request.get_host()));  // 5
+
+    list.push_back(make_symbol(":path"));
+    list.push_back(make_string(request.get_path()));  // 7
+
+    list.push_back(make_symbol(":protocol"));
+    list.push_back(make_string(request.get_protocol()));  // 9
+
+    list.push_back(make_symbol(":version"));
+    list.push_back(make_double(request.get_version()));  // 11
+
+    ALObject::list_type header_list;
+    for (const auto &[name, value] : request.get_headers())
+    {
+        header_list.push_back(make_object(name, value));
+    }
+
+    list.push_back(make_symbol(":headers"));
+    list.push_back(make_list(header_list));  // 13
+
+    ALObject::list_type path_params_list;
+    for (const auto &[name, value] : request.get_path_parameters())
+    {
+        path_params_list.push_back(make_object(name, value));
+    }
+
+    list.push_back(make_symbol(":path-parameters"));
+    list.push_back(make_list(path_params_list));  // 15
+
+    ALObject::list_type query_params_list;
+    for (const auto &[name, value] : request.get_query_parameters())
+    {
+        query_params_list.push_back(make_object(name, value));
+    }
+
+    list.push_back(make_symbol(":query-parameters"));
+    list.push_back(make_list(query_params_list));  // 17
+
+    list.push_back(make_symbol(":port"));
+    list.push_back(make_int(request.get_port()));  // 19
 
     return make_list(list);
 }
@@ -295,6 +341,12 @@ ALISP_EXPORT alisp::env::ModulePtr init_http_restbed(alisp::env::Environment *, 
 
     alisp::module_eval(http_ptr, R"(
 
+(import 'nargs :all)
+
+
+
+;; Low level routing
+
 (defun http--route-get (serv rout callback)
   (route-handler serv rout "GET" callback))
 
@@ -312,7 +364,7 @@ ALISP_EXPORT alisp::env::ModulePtr init_http_restbed(alisp::env::Environment *, 
 
 
 
-
+;; user friendly routing 
 
 (defun route-post (serv index callback)
   ([serv] http--route-post index
@@ -327,6 +379,9 @@ ALISP_EXPORT alisp::env::ModulePtr init_http_restbed(alisp::env::Environment *, 
 
 
 
+
+
+;; Response handling
 
 (defun set-content (res cont)
   (push res :content)
@@ -345,6 +400,89 @@ ALISP_EXPORT alisp::env::ModulePtr init_http_restbed(alisp::env::Environment *, 
 (defun set-cookie (res name value)
   (push res :cookie)
   (push res `(,name ,value)))
+
+
+
+
+;; Request handling
+
+(defun body (req)
+  ([req] nth 1))
+
+(defun method (req)
+  ([req] nth 3))
+
+(defun host (req)
+  ([req] nth 5))
+
+(defun path (req)
+  ([req] nth 7))
+
+(defun protocol (req)
+  ([req] nth 9))
+
+(defun version (req)
+  ([req] nth 11))
+
+(defun headers (req)
+  ([req] nth 13))
+
+(defun path-parameters (req)
+  ([req] nth 15))
+
+(defun query-parameters (req)
+  ([req] nth 17))
+
+(defun port (req)
+  ([req] nth 19))
+
+
+;; Headers
+
+(defun has-header (req name)
+  (dolist (header (headers req))
+    (when (equal name ([header] nth 0))
+      (return t)))
+  (return nil))
+
+(defun header (req name)
+  (dolist (header (headers req))
+    (when (equal name ([header] nth 0))
+      (return ([header] nth 1))))
+  (return nil))
+
+
+
+;; Query parameters
+
+(defun has-query-parameter (req name)
+  (dolist (parameter (query-parameters req))
+    (when (equal name ([parameter] nth 0))
+      (return t)))
+  (return nil))
+
+(defun query-parameter (req name)
+  (dolist (parameter (query-parameters req))
+    (when (equal name ([parameter] nth 0))
+      (return ([parameter] nth 1))))
+  (return nil))
+
+
+
+
+;; Path parameters
+
+(defun has-path-parameter (req name)
+  (dolist (parameter (path-parameters req))
+    (when (equal name ([parameter] nth 0))
+      (return t)))
+  (return nil))
+
+(defun path-parameter (req name)
+  (dolist (parameter (path-parameters req))
+    (when (equal name ([parameter] nth 0))
+      (return ([parameter] nth 1))))
+  (return nil))
 
 
 
