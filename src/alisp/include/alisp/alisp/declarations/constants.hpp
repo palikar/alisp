@@ -77,7 +77,22 @@ DEFVAR(Qdefun_signal,
        env::intern("defun-signal"),
        R"(Signal raised when a function definition error occures)");
 
+DEFSYM(Qint, "&int", R"()");
+DEFSYM(Qdouble, "&double", R"()");
+DEFSYM(Qstring, "&string", R"()");
+DEFSYM(Qlist_arg, "&list", R"()");
+DEFSYM(Qsym_arg, "&sym", R"()");
+DEFSYM(Qchar_arg, "&char", R"()");
+DEFSYM(Qnumber_arg, "&number", R"()");
+DEFSYM(Qfunction_arg, "&function", R"()");
+DEFSYM(Qfile_arg, "&file", R"()");
+DEFSYM(Qstream_arg, "&stream", R"()");
+DEFSYM(Qmemory_arg, "&memory", R"()");
+DEFSYM(Qbyte_arg, "&byte", R"()");
+DEFSYM(Qbytearray_arg, "&byte-array", R"()");
+
 DEFSYM(Qoptional, "&optional", R"(Used in an argument list to signify that the next arguments are optional.)");
+
 DEFSYM(Qrest,
        "&rest",
        R"(Used in an argument list to signify that the next arguemnt should be

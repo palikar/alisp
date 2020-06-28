@@ -24,7 +24,6 @@
 #include "alisp/alisp/declarations/constants.hpp"
 #include "alisp/alisp/alisp_object.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
-#include "alisp/alisp/alisp_assertions.hpp"
 
 #include "http/definitions.hpp"
 #include "http/async_actions.hpp"
@@ -57,10 +56,10 @@ ALObjectPtr Fserver(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
 ALObjectPtr Fserver_port(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    // AL_CHECK(assert_int(id));
 
     auto port = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_int(port));
+    // AL_CHECK(assert_int(port));
 
     detail::server_registry[object_to_resource(id)].g_settings->set_port(static_cast<uint16_t>(port->to_int()));
 
@@ -72,10 +71,10 @@ ALObjectPtr Fserver_root(const ALObjectPtr &t_obj, env::Environment *, eval::Eva
     auto id = AL_EVAL(t_obj, eval, 0);
     AL_CHECK(assert_int(id));
 
-    auto port = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_int(port));
+    auto root = AL_EVAL(t_obj, eval, 1);
+    AL_CHECK(assert_string(root));
 
-    detail::server_registry[object_to_resource(id)].g_settings->set_root(port->to_string());
+    detail::server_registry[object_to_resource(id)].g_settings->set_root(root->to_string());
 
     return Qt;
 }

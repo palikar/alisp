@@ -355,6 +355,21 @@ if(BUILD_EXAMPLES)
     
     add_custom_target(test_examples DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/scripts_results alisp)
 
+    if(ENABLE_TESTING)
+        file(GLOB EXAMPLE_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/basic/*.al ${CMAKE_CURRENT_SOURCE_DIR}/scripts/examples/*.al
+            ${CMAKE_CURRENT_SOURCE_DIR}/scripts/libs/*.al)
+        
+
+        foreach(example ${EXAMPLE_TESTS})            
+            get_filename_component(test_name ${example} NAME )
+
+            add_test(NAME example.${test_name}.test
+                COMMAND ${CMAKE_CURRENT_BINARY_DIR}/bin/alisp ${example} > /dev/null
+                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})            
+        endforeach()
+        
+    endif()
+
 endif(BUILD_EXAMPLES)
 
 if(VALGRIND_CHECKS)

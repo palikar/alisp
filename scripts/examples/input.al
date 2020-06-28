@@ -1,3 +1,2 @@
-(defvar input (read-line))
-(println input)
-
+;; (defvar input (read-line))
+;; (println input)

@@ -25,6 +25,7 @@
 #include "alisp/alisp/alisp_streams.hpp"
 #include "alisp/alisp/alisp_memory.hpp"
 
+#include <fmt/format.h>
 
 namespace alisp
 {
@@ -32,100 +33,114 @@ namespace alisp
 template<size_t N> inline void assert_min_size(const ALObjectPtr &obj)
 {
     if (!min_list_elements(obj, N))
-        throw argument_error("Invalid argument. Must be list with at least " + std::to_string(N) + " elements", obj);
+        throw argument_error(fmt::format("The object must be a list with at least {} elements", std::to_string(N)), obj);
 }
 
 template<size_t N> inline void assert_max_size(const ALObjectPtr &obj)
 {
     if (!max_list_elements(obj, N))
-        throw argument_error("Invalid argument. Must be list with maximum of " + std::to_string(N) + " elements", obj);
+        throw argument_error(fmt::format("The object must be a list with maximum of {} elements", std::to_string(N)), obj);
 }
 
 template<size_t N> inline void assert_size(const ALObjectPtr &obj)
 {
     if (obj->length() != N)
-        throw argument_error("Invalid argument. Must be list with  " + std::to_string(N) + " elements", obj);
+        throw argument_error(fmt::format("The object must be a list with {} elements", std::to_string(N)), obj);
 }
 
-inline void assert_numbers(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_numbers(const ALObjectPtr &obj, const T &param = {})
 {
     if (!are_objects_numbers(obj))
-        throw argument_error("Invalid argument. The list must contain only numbers (real of int)", obj);
+        throw argument_error("The list must contain only numbers (real of int)", obj, param);
 }
 
-inline void assert_symbol(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_symbol(const ALObjectPtr &obj, const T &param = {})
 {
-    if (!obj->is_sym()) throw argument_error("Invalid argument. Object must be symbol", obj);
+    if (!obj->is_sym()) throw argument_error("Object must be a symbol", obj, param);
 }
 
-inline void assert_string(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_string(const ALObjectPtr &obj, const T &param = {})
 {
-    if (!obj->is_string()) throw argument_error("Invalid argument. Object must be string", obj);
+    if (!obj->is_string()) throw argument_error("Object must be a string", obj, param);
 }
 
-inline void assert_list(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_list(const ALObjectPtr &obj, const T &param = {})
 {
-    if (!obj->is_list() and obj != Qnil) throw argument_error("Invalid argument. Object must be list", obj);
+    if (!obj->is_list() and obj != Qnil) throw argument_error("Object must be a list", obj, param);
 }
 
-inline void assert_number(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_number(const ALObjectPtr &obj, const T &param = {})
 {
-    if (!obj->is_int() and !obj->is_real()) throw argument_error("Invalid argument. Object must be a number", obj);
+    if (!obj->is_int() and !obj->is_real()) throw argument_error("Object must be a number", obj, param);
 }
 
-inline void assert_int(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_int(const ALObjectPtr &obj, const T &param = {})
 {
-    if (!obj->is_int()) throw argument_error("Invalid argument. Object must be an integer", obj);
+    if (!obj->is_int()) throw argument_error("Object must be an integer", obj, param);
 }
 
-inline void assert_char(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_char(const ALObjectPtr &obj, const T &param = {})
 {
     if (!obj->is_int() and !obj->check_char_flag())
-        throw argument_error("Invalid argument. Object must be a char", obj);
+        throw argument_error("Object must be a char", obj, param);
 }
 
-inline void assert_function(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_function(const ALObjectPtr &obj, const T &param = {})
 {
-    if (!obj->check_function_flag()) throw argument_error("Invalid argument. Object must be a function", obj);
+    if (!obj->check_function_flag()) throw argument_error("Object must be a function", obj, param);
 }
 
-inline void assert_non_const(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_non_const(const ALObjectPtr &obj, const T &param = {})
 {
-    if (!obj->check_const_flag()) throw argument_error("A symbol is const.", obj);
+    if (!obj->check_const_flag()) throw argument_error("The object must not be const.", obj, param);
 }
 
-inline void assert_file(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_file(const ALObjectPtr &obj, const T &param = {})
 {
     if (!files::files_registry.belong(object_to_resource(obj)))
-        throw argument_error("The object does not point to a file", obj);
+        throw argument_error("The object must point to a file", obj, param);
 }
 
-inline void assert_stream(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_stream(const ALObjectPtr &obj, const T &param = {})
 {
     if (!al::streams_registry.belong(object_to_resource(obj)))
-        throw argument_error("The object does not point to a stream", obj);
+        throw argument_error("The object must point to a stream", obj, param);
 }
 
-inline void assert_memory(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_memory(const ALObjectPtr &obj, const T &param = {})
 {
     if (!memory::memory_registry.belong(object_to_resource(obj)))
-        throw argument_error("The object does not point to a stream", obj);
+        throw argument_error("The object must point to a stream", obj, param);
 }
 
-inline void assert_byte(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_byte(const ALObjectPtr &obj, const T &param = {})
 {
-    if (!obj->is_int()) throw argument_error("Object cannot be intrepreted as byte.", obj);
+    if (!obj->is_int()) throw argument_error("The object must be intrepretable as byte.", obj, param);
     auto val = obj->to_int();
-    if (!(0 <= val and val <= 255)) throw argument_error("Object cannot be intrepreted as byte.", obj);
+    if (!(0 <= val and val <= 255)) throw argument_error("The object must be intrepretable as byte.", obj, param);
 }
 
-inline void assert_byte_array(const ALObjectPtr &obj)
+template<typename T = bool>
+inline void assert_byte_array(const ALObjectPtr &obj, const T &param = {})
 {
-    if (!obj->is_list()) throw argument_error("Object cannot be intrepreted as byte-array.", obj);
+    if (!obj->is_list()) throw argument_error("The object must be intrepretable as byte array.", obj, param);
     for (auto &el : *obj)
     {
         auto val = el->to_int();
-        if (!(0 <= val and val <= 255)) throw argument_error("Object cannot be intrepreted as byte-array.", obj);
+        if (!(0 <= val and val <= 255)) throw argument_error("The object must be intrepretable as byte array.", obj, param);
     }
 }
 

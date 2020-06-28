@@ -23,6 +23,7 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/alisp/alisp_assertions.hpp"
 #include "alisp/alisp/alisp_factory.hpp"
+#include "alisp/alisp/alisp_signature.hpp"
 
 #include "alisp/alisp/declarations/constants.hpp"
 
@@ -57,6 +58,25 @@ inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_t
     new_fun->set_prop("--name--", make_string(t_name));
     new_fun->set_prop("--module--", make_string(t_module->name()));
 }
+
+template<typename ... Args>
+inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_type fun, Signature<Args...> signature, std::string t_doc = {})
+{
+    auto &new_fun = t_module->get_root().insert({ t_name, make_prime(fun, t_name) }).first->second;
+    new_fun->set_function_flag();
+
+#ifdef ENABLE_OBJECT_DOC
+    new_fun->set_prop("--doc--", make_string(t_doc));
+#endif
+    new_fun->set_prop("--name--", make_string(t_name));
+    new_fun->set_prop("--module--", make_string(t_module->name()));
+
+    new_fun->set_prop("--managed--", Qt);
+    new_fun->set_prop("--signature--", signature.arglist_object());
+
+    
+}
+
 
 inline void module_defvar(env::Module *t_module, std::string t_name, ALObjectPtr val, std::string t_doc = {})
 {

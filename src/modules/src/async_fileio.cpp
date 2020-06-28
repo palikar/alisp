@@ -154,7 +154,7 @@ ALObjectPtr Fasync_read_text(const ALObjectPtr &obj, env::Environment *, eval::E
 
 }  // namespace async_fileio
 
-ALISP_EXPORT alisp::env::ModulePtr init_async_fileio(alisp::env::Environment *env, alisp::eval::Evaluator *eval)
+ALISP_EXPORT alisp::env::ModulePtr init_async_fileio(alisp::env::Environment*, alisp::eval::Evaluator*)
 {
     using namespace alisp;
     auto M       = alisp::module_init("async-fileio");

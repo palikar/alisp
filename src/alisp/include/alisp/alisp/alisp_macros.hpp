@@ -139,6 +139,6 @@
 #endif
 
 
-#define AL_EVAL(obj, eval_obj, index) eval_obj->eval(obj->i(index))
+#define AL_EVAL(obj, eval_obj, index) (obj->prop_exists("--evaled--") ? obj->i(index) : eval_obj->eval(obj->i(index)))
 
 #define AL_BOOL(value) value ? Qt : Qnil
