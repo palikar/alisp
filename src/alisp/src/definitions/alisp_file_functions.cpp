@@ -20,8 +20,8 @@ namespace alisp
 ALObjectPtr Ffile_open(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(t_obj));
-    auto name = eval_check(eval, t_obj,0, &assert_string<int>);
-    
+    auto name = eval_check(eval, t_obj, 0, &assert_string<int>);
+
 
     auto output = contains(t_obj, ":out") ? Qt : Qnil;
     auto input  = contains(t_obj, ":in") ? Qt : Qnil;
@@ -35,8 +35,8 @@ ALObjectPtr Ffile_open(const ALObjectPtr &t_obj, env::Environment *, eval::Evalu
 ALObjectPtr Ffile_close(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
-    auto file = eval_check(eval, t_obj,0, &assert_file<int>);
-    
+    auto file = eval_check(eval, t_obj, 0, &assert_file<int>);
+
     FileHelpers::close_file(file);
     return Qt;
 }
@@ -46,8 +46,8 @@ ALObjectPtr Ffile_read_line(const ALObjectPtr &t_obj, env::Environment *, eval::
 {
 
     AL_CHECK(assert_size<1>(t_obj));
-    auto file = eval_check(eval, t_obj,0, &assert_file<int>);
-    
+    auto file = eval_check(eval, t_obj, 0, &assert_file<int>);
+
     auto &file_obj = FileHelpers::get_file(file);
 
     if (file_obj.m_input and !file_obj.m_file.eof())
@@ -65,8 +65,8 @@ ALObjectPtr Ffile_write_line(const ALObjectPtr &t_obj, env::Environment *, eval:
 {
 
     AL_CHECK(assert_size<2>(t_obj));
-    auto file = eval_check(eval, t_obj,0, &assert_file<int>);
-    auto line = eval_check(eval, t_obj,1, &assert_string<int>);
+    auto file = eval_check(eval, t_obj, 0, &assert_file<int>);
+    auto line = eval_check(eval, t_obj, 1, &assert_string<int>);
 
     auto &file_obj = FileHelpers::get_file(file);
 
@@ -84,8 +84,8 @@ ALObjectPtr Ffile_has_more(const ALObjectPtr &t_obj, env::Environment *, eval::E
 {
 
     AL_CHECK(assert_size<1>(t_obj));
-    
-    auto file = eval_check(eval, t_obj,0, &assert_file<int>);
+
+    auto file = eval_check(eval, t_obj, 0, &assert_file<int>);
 
     auto &file_obj = FileHelpers::get_file(file);
 

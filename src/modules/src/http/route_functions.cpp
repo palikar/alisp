@@ -43,9 +43,9 @@ using namespace alisp;
 
 ALObjectPtr Froute(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id    = AL_EVAL(t_obj, eval, 0);
+    auto id = AL_EVAL(t_obj, eval, 0);
     AL_CHECK(assert_int(id));
-    
+
     auto route = AL_EVAL(t_obj, eval, 1);
     AL_CHECK(assert_string(id));
 
@@ -60,12 +60,12 @@ ALObjectPtr Froute(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
 
 ALObjectPtr Froute_set_path(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id         = AL_EVAL(t_obj, eval, 0);
+    const auto id = AL_EVAL(t_obj, eval, 0);
     AL_CHECK(assert_int(id));
 
-    const auto route_id   = AL_EVAL(t_obj, eval, 1);
+    const auto route_id = AL_EVAL(t_obj, eval, 1);
     AL_CHECK(assert_int(route_id));
-    
+
     const auto route_path = AL_EVAL(t_obj, eval, 2);
     AL_CHECK(assert_string(route_path));
 
@@ -79,13 +79,13 @@ ALObjectPtr Froute_set_path(const ALObjectPtr &t_obj, env::Environment *, eval::
 
 ALObjectPtr Froute_default_headers(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id         = AL_EVAL(t_obj, eval, 0);
+    const auto id = AL_EVAL(t_obj, eval, 0);
     AL_CHECK(assert_int(id));
 
-    const auto route_id   = AL_EVAL(t_obj, eval, 1);
+    const auto route_id = AL_EVAL(t_obj, eval, 1);
     AL_CHECK(assert_int(route_id));
-    
-    const auto headers  = AL_EVAL(t_obj, eval, 2);
+
+    const auto headers = AL_EVAL(t_obj, eval, 2);
     AL_CHECK(assert_list(headers));
 
     auto &server = detail::server_registry[object_to_resource(id)];
@@ -95,7 +95,7 @@ ALObjectPtr Froute_default_headers(const ALObjectPtr &t_obj, env::Environment *,
     {
         AL_CHECK(assert_string(header->i(0)));
         AL_CHECK(assert_string(header->i(1)));
-        
+
         res->set_default_header(header->i(0)->to_string(), header->i(1)->to_string());
     }
 
@@ -104,13 +104,13 @@ ALObjectPtr Froute_default_headers(const ALObjectPtr &t_obj, env::Environment *,
 
 ALObjectPtr Froute_default_header(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id         = AL_EVAL(t_obj, eval, 0);
+    const auto id = AL_EVAL(t_obj, eval, 0);
     AL_CHECK(assert_int(id));
 
-    const auto route_id   = AL_EVAL(t_obj, eval, 1);
+    const auto route_id = AL_EVAL(t_obj, eval, 1);
     AL_CHECK(assert_int(route_id));
-    
-    const auto header   = AL_EVAL(t_obj, eval, 2);
+
+    const auto header = AL_EVAL(t_obj, eval, 2);
     AL_CHECK(assert_list(header));
 
     AL_CHECK(assert_string(header->i(0)));
@@ -126,15 +126,15 @@ ALObjectPtr Froute_default_header(const ALObjectPtr &t_obj, env::Environment *, 
 
 ALObjectPtr Froute_method_handler(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id         = AL_EVAL(t_obj, eval, 0);
+    const auto id = AL_EVAL(t_obj, eval, 0);
     AL_CHECK(assert_int(id));
 
-    const auto route_id   = AL_EVAL(t_obj, eval, 1);
+    const auto route_id = AL_EVAL(t_obj, eval, 1);
     AL_CHECK(assert_int(route_id));
-    
-    const auto method           = AL_EVAL(t_obj, eval, 2);
+
+    const auto method = AL_EVAL(t_obj, eval, 2);
     AL_CHECK(assert_string(method));
-    
+
     const auto handler_callback = AL_EVAL(t_obj, eval, 3);
     AL_CHECK(assert_function(handler_callback));
 
@@ -176,12 +176,12 @@ ALObjectPtr Froute_method_handler(const ALObjectPtr &t_obj, env::Environment *, 
 
 ALObjectPtr Froute_error_handler(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id         = AL_EVAL(t_obj, eval, 0);
+    const auto id = AL_EVAL(t_obj, eval, 0);
     AL_CHECK(assert_int(id));
 
-    const auto route_id   = AL_EVAL(t_obj, eval, 1);
+    const auto route_id = AL_EVAL(t_obj, eval, 1);
     AL_CHECK(assert_int(route_id));
-    
+
     const auto handler_callback = AL_EVAL(t_obj, eval, 2);
     AL_CHECK(assert_function(handler_callback));
 

@@ -72,21 +72,21 @@ ALObjectPtr Fpfunction(const ALObjectPtr &obj, env::Environment *, eval::Evaluat
 ALObjectPtr Fpfile(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto id = eval_check(eval, obj,0, &assert_int<int>);
+    auto id = eval_check(eval, obj, 0, &assert_int<int>);
     return files::files_registry.belong(object_to_resource(id)) ? Qt : Qnil;
 }
 
 ALObjectPtr Fpstream(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto id = eval_check(eval, obj,0, &assert_int<int>);
+    auto id = eval_check(eval, obj, 0, &assert_int<int>);
     return al::streams_registry.belong(object_to_resource(id)) ? Qt : Qnil;
 }
 
 ALObjectPtr Fpmemory(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto id = eval_check(eval, obj,0, &assert_int<int>);
+    auto id = eval_check(eval, obj, 0, &assert_int<int>);
     return memory::memory_registry.belong(object_to_resource(id)) ? Qt : Qnil;
 }
 

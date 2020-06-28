@@ -59,7 +59,9 @@ class Evaluator
     static constexpr std::uint32_t ASYNC_FLAG             = 0x0008;
     static constexpr std::uint32_t INTERACTIVE_FLAG       = 0x0010;
 
-    void handle_argument_bindings(const ALObjectPtr &params, ALObjectPtr args, std::function<void(ALObjectPtr,ALObjectPtr)> handler);
+    void handle_argument_bindings(const ALObjectPtr &params,
+                                  ALObjectPtr args,
+                                  std::function<void(ALObjectPtr, ALObjectPtr)> handler);
 
     void put_argument(const ALObjectPtr &param, ALObjectPtr arg);
 

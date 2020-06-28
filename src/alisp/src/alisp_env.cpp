@@ -29,6 +29,7 @@
 #include "alisp/utility/macros.hpp"
 
 #include <fmt/format.h>
+#include <rang.hpp>
 
 
 namespace alisp
@@ -450,18 +451,20 @@ void Environment::callstack_dump() const
     cout.flush();
     cout << format("+{:-^48}+", "Call stack") << '\n';
 
-    for (auto &[fun, prime] : utility::reverse(m_stack_trace))
+    for (auto &call : utility::reverse(m_stack_trace))
     {
 
-        if (prime)
+        if (call.m_is_prime)
         {
-            cout << format("|{:<46}{:>}|", fun, "<-") << '\n';
+            cout << '(' << rang::fg::cyan << call.m_function << rang::fg::reset << ')';
+            cout << format("\n\t{}:{}\n", call.m_file, call.m_line);
         }
         else
         {
-            cout << format("|{:<48}|", fun) << '\n';
+            cout << format("({})\n\t{}:{}\n", call.m_function, call.m_file, call.m_line);
         }
     }
+
     cout << format("+{:-^48}+", "") << '\n';
 #endif
 }

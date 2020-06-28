@@ -125,10 +125,9 @@ ALObjectPtr Flt(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eva
 {
     AL_CHECK(assert_size<2>(obj));
 
-    const auto one = eval_check(eval, obj,0, &assert_number<int>);
-    
-    const auto two = eval_check(eval, obj,1, &assert_number<int>);
-    
+    const auto one = eval_check(eval, obj, 0, &assert_number<int>);
+
+    const auto two = eval_check(eval, obj, 1, &assert_number<int>);
 
 
     if (one->to_real() < two->to_real())
@@ -146,10 +145,9 @@ ALObjectPtr Fleq(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
 {
     AL_CHECK(assert_min_size<0>(obj));
 
-    const auto one = eval_check(eval, obj,0, &assert_number<int>);
-    
-    const auto two = eval_check(eval, obj,1, &assert_number<int>);
-    
+    const auto one = eval_check(eval, obj, 0, &assert_number<int>);
+
+    const auto two = eval_check(eval, obj, 1, &assert_number<int>);
 
 
     if (one->to_real() <= two->to_real())
@@ -167,10 +165,9 @@ ALObjectPtr Fgt(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eva
 {
     AL_CHECK(assert_min_size<0>(obj));
 
-    const auto one = eval_check(eval, obj,0, &assert_number<int>);
-    
-    const auto two = eval_check(eval, obj,1, &assert_number<int>);
-    
+    const auto one = eval_check(eval, obj, 0, &assert_number<int>);
+
+    const auto two = eval_check(eval, obj, 1, &assert_number<int>);
 
 
     if (one->to_real() > two->to_real())
@@ -188,10 +185,9 @@ ALObjectPtr Fgeq(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
 {
     AL_CHECK(assert_min_size<0>(obj));
 
-    const auto one = eval_check(eval, obj,0, &assert_number<int>);
-    
-    const auto two = eval_check(eval, obj,1, &assert_number<int>);
-    
+    const auto one = eval_check(eval, obj, 0, &assert_number<int>);
+
+    const auto two = eval_check(eval, obj, 1, &assert_number<int>);
 
 
     if (one->to_real() >= two->to_real())
@@ -209,10 +205,9 @@ ALObjectPtr Feq_math(const ALObjectPtr &obj, env::Environment *, eval::Evaluator
 {
     AL_CHECK(assert_min_size<0>(obj));
 
-    const auto one = eval_check(eval, obj,0, &assert_number<int>);
-    
-    const auto two = eval_check(eval, obj,1, &assert_number<int>);
-    
+    const auto one = eval_check(eval, obj, 0, &assert_number<int>);
+
+    const auto two = eval_check(eval, obj, 1, &assert_number<int>);
 
 
     if (one->to_real() == two->to_real())
@@ -230,10 +225,9 @@ ALObjectPtr Fneq(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
 {
     AL_CHECK(assert_min_size<0>(obj));
 
-    const auto one = eval_check(eval, obj,0, &assert_number<int>);
-    
-    const auto two = eval_check(eval, obj,1, &assert_number<int>);
-    
+    const auto one = eval_check(eval, obj, 0, &assert_number<int>);
+
+    const auto two = eval_check(eval, obj, 1, &assert_number<int>);
 
 
     if (one->to_real() != two->to_real())
@@ -251,10 +245,10 @@ ALObjectPtr Fmod(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
 {
     AL_CHECK(assert_size<2>(obj));
 
-    const auto one = eval_check(eval, obj,0, &assert_int<int>);
-    
-    const auto two = eval_check(eval, obj,1, &assert_int<int>);
-    
+    const auto one = eval_check(eval, obj, 0, &assert_int<int>);
+
+    const auto two = eval_check(eval, obj, 1, &assert_int<int>);
+
     auto res = one->to_int() % two->to_int();
 
     return make_object(res);
@@ -264,10 +258,9 @@ ALObjectPtr Fpow(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
 {
     AL_CHECK(assert_size<2>(obj));
 
-    const auto one = eval_check(eval, obj,0, &assert_number<int>);
-    
-    const auto two = eval_check(eval, obj,1, &assert_number<int>);
-    
+    const auto one = eval_check(eval, obj, 0, &assert_number<int>);
+
+    const auto two = eval_check(eval, obj, 1, &assert_number<int>);
 
 
     return make_object(std::pow(one->to_real(), two->to_real()));
@@ -349,8 +342,8 @@ ALObjectPtr Fround(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *
 {
     AL_CHECK(assert_size<2>(obj));
 
-    const auto one = eval_check(eval, obj,0, &assert_number<int>);
-    const auto two = eval_check(eval, obj,1, &assert_int<int>);    
+    const auto one = eval_check(eval, obj, 0, &assert_number<int>);
+    const auto two = eval_check(eval, obj, 1, &assert_int<int>);
 
 
     return make_double(utility::round_nplaces(one->to_real(), two->to_int()));

@@ -69,8 +69,8 @@ void Evaluator::put_argument(const ALObjectPtr &param, ALObjectPtr arg)
 }
 
 void Evaluator::handle_argument_bindings(const ALObjectPtr &params,
-ALObjectPtr eval_args,
-std::function<void(ALObjectPtr, ALObjectPtr)> handler)
+                                         ALObjectPtr eval_args,
+                                         std::function<void(ALObjectPtr, ALObjectPtr)> handler)
 {
 
     AL_CHECK(if (params->length() == 0 && eval_args->length() != 0) {
@@ -213,6 +213,7 @@ ALObjectPtr Evaluator::eval_callable(const ALObjectPtr &callable, const ALObject
     if (obj->prop_exists("--line--"))
     {
         tracer.line(obj->get_prop("--line--")->to_int());
+        tracer.file(obj->get_prop("--file--")->to_string());
     }
     if (func->prop_exists("--name--"))
     {
@@ -232,7 +233,6 @@ ALObjectPtr Evaluator::eval_callable(const ALObjectPtr &callable, const ALObject
         if (func->check_prime_flag())
         {
             return apply_prime(func, args, obj);
-            // return func->get_prime()(args, &env, this);
         }
         else if (func->check_macro_flag())
         {
@@ -295,9 +295,7 @@ ALObjectPtr Evaluator::eval_callable(const ALObjectPtr &callable, const ALObject
 ALObjectPtr Evaluator::apply_macro(const ALObjectPtr &func, const ALObjectPtr &args)
 {
     auto [params, body] = func->get_function();
-    handle_argument_bindings(params, args, [&](auto param, auto arg) {
-        put_argument(param, arg);
-    });
+    handle_argument_bindings(params, args, [&](auto param, auto arg) { put_argument(param, arg); });
     return eval_list(this, body, 0);
 }
 
@@ -307,9 +305,7 @@ ALObjectPtr Evaluator::apply_function(const ALObjectPtr &func, const ALObjectPtr
     try
     {
         auto [params, body] = func->get_function();
-        handle_argument_bindings(params, args, [&](auto param, auto arg) {
-            put_argument(param, arg);
-        });
+        handle_argument_bindings(params, args, [&](auto param, auto arg) { put_argument(param, arg); });
         return eval_list(this, body, 0);
     }
     catch (al_return &ret)
@@ -320,17 +316,14 @@ ALObjectPtr Evaluator::apply_function(const ALObjectPtr &func, const ALObjectPtr
 
 ALObjectPtr Evaluator::apply_prime(const ALObjectPtr &func, const ALObjectPtr &args, const ALObjectPtr &)
 {
-    
+
     auto check_args = [&](const ALObjectPtr &evaled_args, const ALObjectPtr &signature) {
-        
         handle_argument_bindings(signature, evaled_args, [&](const ALObjectPtr &param, ALObjectPtr arg) {
             signature_assertions.at(param.get())(arg, signature);
         });
-
     };
 
     auto func_args = [&] {
-
         if (func->prop_exists("--managed--"))
         {
             auto eval_args = eval_transform(this, args);
@@ -339,7 +332,6 @@ ALObjectPtr Evaluator::apply_prime(const ALObjectPtr &func, const ALObjectPtr &a
 
             if (func->prop_exists("--signature--"))
             {
-
                 check_args(eval_args, func->get_prop("--signature--"));
             }
 

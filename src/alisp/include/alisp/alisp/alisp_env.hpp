@@ -158,6 +158,20 @@ class Environment
     static inline std::unordered_map<std::string, ALObjectPtr> g_prime_values;
     static inline std::unordered_map<std::string, ModuleImport> g_builtin_modules;
 
+#ifdef ENABLE_STACK_TRACE
+
+    struct CallElement
+    {
+        std::string m_function{};
+        std::string m_args{};
+        std::string m_file{};
+        bool m_is_prime      = false;
+        size_t m_line        = 0;
+        size_t m_catch_depth = 0;
+    };
+
+#endif
+
   private:
     detail::CellStack m_stack;
     std::unordered_map<std::string, ModulePtr> m_modules;
@@ -169,7 +183,7 @@ class Environment
     std::vector<std::tuple<size_t, size_t, std::function<void()>>> m_deferred_calls;
 
 #ifdef ENABLE_STACK_TRACE
-    std::vector<std::tuple<std::string, bool>> m_stack_trace;  // name, is_prime
+    std::vector<CallElement> m_stack_trace;  // name, is_prime
     size_t m_unwind_defers{ 0 };
 #endif
 
@@ -252,10 +266,7 @@ class Environment
 
 #ifdef ENABLE_STACK_TRACE
 
-    void trace_call(std::string t_trace, bool is_prime = false)
-    {
-        m_stack_trace.push_back({ std::move(t_trace), is_prime });
-    }
+    void trace_call(CallElement t_traced) { m_stack_trace.push_back(std::move(t_traced)); }
 
     void trace_unwind()
     {
@@ -299,11 +310,11 @@ namespace detail
 struct CallTracer
 {
   public:
-    explicit CallTracer(Environment &t_env) : m_env(t_env) {}
+    explicit CallTracer(Environment &t_env) : m_env(t_env), m_traced() {}
 
     ~CallTracer()
     {
-        if (m_catch_depth == 0)
+        if (m_traced.m_catch_depth == 0)
         {
             m_env.trace_unwind();
         }
@@ -313,15 +324,18 @@ struct CallTracer
         }
     }
 
-    void line(ALObject::int_type t_line) { m_line = static_cast<size_t>(t_line); }
+    void line(ALObject::int_type t_line) { m_traced.m_line = static_cast<size_t>(t_line); }
 
-    void catch_depth(size_t t_catch_depth) { m_catch_depth = t_catch_depth; }
+    void file(ALObject::string_type t_name) { m_traced.m_file = std::move(t_name); }
+
+    void catch_depth(size_t t_catch_depth) { m_traced.m_catch_depth = t_catch_depth; }
 
     void function_name(std::string t_func, bool t_is_prime = false)
     {
-        m_is_prime = t_is_prime;
-        m_function = std::move(t_func);
-        m_env.trace_call("(" + m_function + "):" + std::to_string(m_line), t_is_prime);
+        m_traced.m_function = std::move(t_func);
+        m_traced.m_is_prime = t_is_prime;
+
+        m_env.trace_call(m_traced);
     }
 
     void dump()
@@ -342,12 +356,7 @@ struct CallTracer
 
   private:
     Environment &m_env;
-
-    std::string m_function;
-    std::string m_args;
-    bool m_is_prime      = false;
-    size_t m_line        = 0;
-    size_t m_catch_depth = 0;
+    Environment::CallElement m_traced;
 };
 
 #endif

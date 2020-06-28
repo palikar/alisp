@@ -245,10 +245,10 @@ TEST_CASE("Environment Test [dumping]", "[env]")
     CHECK_NOTHROW(env.stack_dump());
     CHECK_NOTHROW(env.callstack_dump());
 
-    env.trace_call("let");
-    env.trace_call("when");
-    env.trace_call("if");
-    env.trace_call("while");
+    env.trace_call({ "let" });
+    env.trace_call({ "when" });
+    env.trace_call({ "if" });
+    env.trace_call({ "while" });
 
     CHECK_NOTHROW(env.stack_dump());
     CHECK_NOTHROW(env.callstack_dump());

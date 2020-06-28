@@ -31,16 +31,16 @@ ALObjectPtr Fslice(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *
 {
     AL_CHECK(assert_min_size<2>(obj));
 
-    auto list = eval_check(eval, obj, 0, &assert_list<int>);
+    auto list  = eval_check(eval, obj, 0, &assert_list<int>);
     auto ind_1 = eval_check(eval, obj, 1, &assert_int<int>);
-    
+
     const size_t start = static_cast<size_t>(ind_1->to_int());
 
     size_t end = list->children().size();
     if (std::size(*obj) == 3)
     {
         auto ind_2 = eval_check(eval, obj, 2, &assert_int<int>);
-        end = static_cast<size_t>(ind_2->to_int());
+        end        = static_cast<size_t>(ind_2->to_int());
     }
 
     ALObject::list_type new_list{};
@@ -115,8 +115,8 @@ ALObjectPtr Ffilter(const ALObjectPtr &obj, env::Environment *, eval::Evaluator 
     AL_CHECK(assert_size<2>(obj));
 
     auto fun_obj = eval_check(eval, obj, 0, &assert_function<int>);
-    auto list    = eval_check(eval, obj,1, &assert_list<int>);
-    
+    auto list    = eval_check(eval, obj, 1, &assert_list<int>);
+
     ALObject::list_type new_list{};
     for (auto &el : *list)
     {

@@ -67,9 +67,10 @@ ALISP_EXPORT alisp::env::ModulePtr init_http_restbed(alisp::env::Environment *, 
     alisp::module_defun(http_ptr, "server", &http::Fserver, R"()");
 
     alisp::module_defun(http_ptr, "server-root", &http::Fserver_root, R"()");
-    
-    alisp::module_defun(http_ptr, "server-port", &http::Fserver_port, alisp::Signature(alisp::Int{}, alisp::Int{}), R"()");
-    
+
+    alisp::module_defun(
+      http_ptr, "server-port", &http::Fserver_port, R"()", alisp::Signature(alisp::Int{}, alisp::Int{}));
+
     alisp::module_defun(http_ptr, "server-address", &http::Fserver_address, R"()");
     alisp::module_defun(http_ptr, "server-default-header", &http::Fserver_default_header, R"()");
     alisp::module_defun(http_ptr, "server-default-headers", &http::Fserver_default_headers, R"()");

@@ -161,38 +161,33 @@ struct eval_error : public al_exception
 struct argument_error : public al_exception
 {
   public:
-
-    
-    argument_error(const std::string &t_why)
-        : al_exception(t_why, SignalTag::INVALID_ARGUMENTS)
+    argument_error(const std::string &t_why) : al_exception(t_why, SignalTag::INVALID_ARGUMENTS)
     {
         m_signal_name = "eval-signal";
     }
-
 
 
     argument_error(const std::string &t_why, ALObjectPtr t_arg, ALObjectPtr t_param)
-        : al_exception(format(t_why, t_arg, t_param), SignalTag::INVALID_ARGUMENTS)
+      : al_exception(format(t_why, t_arg, t_param), SignalTag::INVALID_ARGUMENTS)
     {
         m_signal_name = "eval-signal";
     }
 
-    
-    argument_error(const std::string &t_why, ALObjectPtr t_arg, bool=false)
-        : al_exception(format(t_why, t_arg), SignalTag::INVALID_ARGUMENTS)
+
+    argument_error(const std::string &t_why, ALObjectPtr t_arg, bool = false)
+      : al_exception(format(t_why, t_arg), SignalTag::INVALID_ARGUMENTS)
     {
         m_signal_name = "eval-signal";
     }
 
 
     argument_error(const std::string &t_why, ALObjectPtr t_obj, int t_param)
-        : al_exception(format(t_why, t_obj, t_param), SignalTag::INVALID_ARGUMENTS)
+      : al_exception(format(t_why, t_obj, t_param), SignalTag::INVALID_ARGUMENTS)
     {
         m_signal_name = "eval-signal";
     }
 
   private:
-
     static std::string format(const std::string &t_why, ALObjectPtr obj)
     {
         std::ostringstream ss;
@@ -205,17 +200,19 @@ struct argument_error : public al_exception
         }
         return ss.str();
     }
-    
+
     static std::string format(const std::string &t_why, ALObjectPtr obj, ALObjectPtr t_param)
     {
         std::ostringstream ss;
 
-        if (t_param->is_string()) {
-            ss << fmt::format("Invalid argument: {}.", t_param->to_string());
-        } else {
-            ss << fmt::format("Unmet signature: {}", dump(t_param));
+        if (t_param->is_string())
+        {
+            ss << fmt::format("Invalid argument: {}. ", t_param->to_string());
         }
-
+        else
+        {
+            ss << fmt::format("Unmet signature: {}. ", dump(t_param));
+        }
         ss << t_why << '\n';
 
         if (obj)
@@ -237,7 +234,6 @@ struct argument_error : public al_exception
         }
         return ss.str();
     }
-    
 };
 
 struct module_error : public al_exception

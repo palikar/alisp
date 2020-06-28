@@ -44,9 +44,9 @@ ALObjectPtr Fstream(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
 ALObjectPtr Fclose_stream(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
-    auto obj = eval_check(eval, t_obj,0, &assert_stream<int>);
-    
-    
+    auto obj = eval_check(eval, t_obj, 0, &assert_stream<int>);
+
+
     StreamsHelper::close_stream(obj);
     return Qt;
 }
@@ -54,8 +54,8 @@ ALObjectPtr Fclose_stream(const ALObjectPtr &t_obj, env::Environment *, eval::Ev
 ALObjectPtr Fwith_cout(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(t_obj));
-    auto obj = eval_check(eval, t_obj,0, &assert_stream<int>);
-    
+    auto obj = eval_check(eval, t_obj, 0, &assert_stream<int>);
+
 
     StreamsHelper::rebind_cout(obj);
 
@@ -67,7 +67,7 @@ ALObjectPtr Fwith_cout(const ALObjectPtr &t_obj, env::Environment *, eval::Evalu
 ALObjectPtr Fwith_cin(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<1>(t_obj));
-    auto obj = eval_check(eval, t_obj,0, &assert_stream<int>);
+    auto obj = eval_check(eval, t_obj, 0, &assert_stream<int>);
 
     StreamsHelper::rebind_cin(obj);
 
@@ -79,7 +79,7 @@ ALObjectPtr Fwith_cin(const ALObjectPtr &t_obj, env::Environment *, eval::Evalua
 ALObjectPtr Fstream_content(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
-    auto obj = eval_check(eval, t_obj,0, &assert_stream<int>);
+    auto obj    = eval_check(eval, t_obj, 0, &assert_stream<int>);
     auto stream = StreamsHelper::get_stream(obj);
     return make_string(stream->content());
 }
@@ -87,7 +87,7 @@ ALObjectPtr Fstream_content(const ALObjectPtr &t_obj, env::Environment *, eval::
 ALObjectPtr Fstream_write(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(t_obj));
-    auto stream_obj = eval_check(eval, t_obj,0, &assert_stream<int>);
+    auto stream_obj = eval_check(eval, t_obj, 0, &assert_stream<int>);
 
     auto str_obj = eval->eval(t_obj->i(1));
 
@@ -106,7 +106,7 @@ ALObjectPtr Fstream_write(const ALObjectPtr &t_obj, env::Environment *, eval::Ev
 ALObjectPtr Fstream_write_line(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(t_obj));
-    auto stream_obj = eval_check(eval, t_obj,0, &assert_stream<int>);
+    auto stream_obj = eval_check(eval, t_obj, 0, &assert_stream<int>);
 
     auto str_obj = eval->eval(t_obj->i(1));
     auto stream  = StreamsHelper::get_stream(stream_obj);
@@ -124,7 +124,7 @@ ALObjectPtr Fstream_write_line(const ALObjectPtr &t_obj, env::Environment *, eva
 ALObjectPtr Fstream_write_lines(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(t_obj));
-    auto stream_obj = eval_check(eval, t_obj,0, &assert_stream<int>);
+    auto stream_obj = eval_check(eval, t_obj, 0, &assert_stream<int>);
 
     auto stream = StreamsHelper::get_stream(stream_obj);
 
@@ -149,10 +149,10 @@ ALObjectPtr Fstream_write_lines(const ALObjectPtr &t_obj, env::Environment *, ev
 ALObjectPtr Fstream_read(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(t_obj));
-    auto stream_obj = eval_check(eval, t_obj,0, &assert_stream<int>);
-    
-    auto int_obj = eval_check(eval, t_obj,1, &assert_int<int>);
-    
+    auto stream_obj = eval_check(eval, t_obj, 0, &assert_stream<int>);
+
+    auto int_obj = eval_check(eval, t_obj, 1, &assert_int<int>);
+
 
     auto stream  = StreamsHelper::get_stream(stream_obj);
     auto content = (*stream).get_chars(static_cast<size_t>(int_obj->to_int()));
@@ -162,7 +162,7 @@ ALObjectPtr Fstream_read(const ALObjectPtr &t_obj, env::Environment *, eval::Eva
 ALObjectPtr Fstream_read_line(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
-    auto stream_obj = eval_check(eval, t_obj,0, &assert_stream<int>);
+    auto stream_obj = eval_check(eval, t_obj, 0, &assert_stream<int>);
 
     auto stream  = StreamsHelper::get_stream(stream_obj);
     auto content = (*stream).get_line();
@@ -173,9 +173,9 @@ ALObjectPtr Fstream_read_lines(const ALObjectPtr &t_obj, env::Environment *, eva
 {
 
     AL_CHECK(assert_size<1>(t_obj));
-    auto stream_obj = eval_check(eval, t_obj,0, &assert_stream<int>);
+    auto stream_obj = eval_check(eval, t_obj, 0, &assert_stream<int>);
 
-    auto stream  = StreamsHelper::get_stream(stream_obj);
+    auto stream = StreamsHelper::get_stream(stream_obj);
 
     ALObject::list_type lines{};
     while (stream->hasmore())

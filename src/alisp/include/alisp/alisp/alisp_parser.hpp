@@ -1059,7 +1059,7 @@ template<class Environment> class ALParser : public ParserBase
         auto new_list = make_object(objs);
 #ifdef ENABLE_LINE_TRACE
         new_list->set_prop("--line--", make_int(line));
-// new_list->set_prop("--file--", m_file);
+        new_list->set_prop("--file--", make_string(m_file));
 #endif
         return new_list;
     }
@@ -1145,7 +1145,7 @@ template<class Environment> class ALParser : public ParserBase
         const auto end   = begin == nullptr ? nullptr : begin + input.size();
         this->position   = detail::Position(begin, end);
 
-        m_file  = file_name;
+        m_file  = std::filesystem::absolute(file_name).string();
         m_input = input;
         depth   = 0;
 
