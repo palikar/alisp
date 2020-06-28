@@ -166,34 +166,33 @@ struct argument_error : public al_exception
         m_signal_name = "eval-signal";
     }
 
-
-    argument_error(const std::string &t_why, ALObjectPtr t_arg, ALObjectPtr t_param)
-      : al_exception(format(t_why, t_arg, t_param), SignalTag::INVALID_ARGUMENTS)
+    argument_error(const std::string &t_why, ALObjectPtr t_arg)
+        : al_exception(format(t_why, t_arg, 0), SignalTag::INVALID_ARGUMENTS)
     {
         m_signal_name = "eval-signal";
     }
 
-
-    argument_error(const std::string &t_why, ALObjectPtr t_arg, bool = false)
-      : al_exception(format(t_why, t_arg), SignalTag::INVALID_ARGUMENTS)
+    argument_error(const std::string &t_why, ALObjectPtr t_arg, size_t t_param)
+        : al_exception(format(t_why, t_arg, t_param), SignalTag::INVALID_ARGUMENTS)
     {
         m_signal_name = "eval-signal";
     }
 
-
-    argument_error(const std::string &t_why, ALObjectPtr t_obj, int t_param)
-      : al_exception(format(t_why, t_obj, t_param), SignalTag::INVALID_ARGUMENTS)
+    argument_error(const std::string &t_why, ALObjectPtr t_obj, size_t t_param, ALObjectPtr t_sign)
+        : al_exception(format(t_why, t_obj, t_param, t_sign), SignalTag::INVALID_ARGUMENTS)
     {
         m_signal_name = "eval-signal";
     }
 
   private:
-    static std::string format(const std::string &t_why, ALObjectPtr obj)
+    static std::string format(const std::string &t_why, ALObjectPtr obj, size_t t_param)
     {
         std::ostringstream ss;
 
+        if (t_param != 0) {
+            ss << fmt::format("Invalid {}. argument.", t_param);
+        }  
         ss << t_why << '\n';
-
         if (obj)
         {
             ss << "\tFound: " << dump(obj) << '\n';
@@ -201,37 +200,17 @@ struct argument_error : public al_exception
         return ss.str();
     }
 
-    static std::string format(const std::string &t_why, ALObjectPtr obj, ALObjectPtr t_param)
+    static std::string format(const std::string &t_why, ALObjectPtr obj, size_t t_param, ALObjectPtr t_sign)
     {
         std::ostringstream ss;
 
-        if (t_param->is_string())
-        {
-            ss << fmt::format("Invalid argument: {}. ", t_param->to_string());
-        }
-        else
-        {
-            ss << fmt::format("Unmet signature: {}. ", dump(t_param));
-        }
-        ss << t_why << '\n';
-
-        if (obj)
-        {
-            ss << "\tFound: " << dump(obj) << '\n';
-        }
-        return ss.str();
-    }
-
-    static std::string format(const std::string &t_why, ALObjectPtr obj, int t_param)
-    {
-        std::ostringstream ss;
-
-        ss << fmt::format("Invalid {}. argument.", t_param);
+        ss << fmt::format("Unmet signature: {}; Invalid {}. argument; \n\t", dump(t_sign), t_param);
         ss << t_why << '\n';
         if (obj)
         {
             ss << "\tFound: " << dump(obj) << '\n';
         }
+
         return ss.str();
     }
 };

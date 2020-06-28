@@ -142,7 +142,7 @@ ALObjectPtr Fread_char(const ALObjectPtr &, env::Environment *, eval::Evaluator 
 ALObjectPtr Fread_chars(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(t_obj));
-    auto count = eval_check(eval, t_obj, 0, &assert_int<int>);
+    auto count = eval_check(eval, t_obj, 0, &assert_int<size_t>);
     return make_string(al::cin.get().get_chars(static_cast<size_t>(count->to_int())));
 }
 

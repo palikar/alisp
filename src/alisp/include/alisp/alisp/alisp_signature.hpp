@@ -135,21 +135,21 @@ template<typename... Args> struct Signature
 };
 
 
-inline std::unordered_map<ALObject *, std::function<void(ALObjectPtr, ALObjectPtr)>> signature_assertions = {
-    { Qint.get(), &assert_int<ALObjectPtr> },
-    { Qdouble.get(), &assert_number<ALObjectPtr> },
-    { Qstring.get(), &assert_string<ALObjectPtr> },
-    { Qint.get(), &assert_int<ALObjectPtr> },
-    { Qlist_arg.get(), &assert_list<ALObjectPtr> },
-    { Qsym_arg.get(), &assert_symbol<ALObjectPtr> },
-    { Qchar_arg.get(), &assert_char<ALObjectPtr> },
-    { Qnumber_arg.get(), &assert_number<ALObjectPtr> },
-    { Qfunction_arg.get(), &assert_function<ALObjectPtr> },
-    { Qfile_arg.get(), &assert_file<ALObjectPtr> },
-    { Qstream_arg.get(), &assert_stream<ALObjectPtr> },
-    { Qmemory_arg.get(), &assert_memory<ALObjectPtr> },
-    { Qbyte_arg.get(), &assert_byte<ALObjectPtr> },
-    { Qbytearray_arg.get(), &assert_byte_array<ALObjectPtr> },
+inline std::unordered_map<ALObject *, std::function<void( ALObjectPtr, size_t, ALObjectPtr)>> signature_assertions = {
+    { Qint.get(), &assert_int<size_t, ALObjectPtr> },
+    { Qdouble.get(), &assert_number<size_t, ALObjectPtr> },
+    { Qstring.get(), &assert_string<size_t, ALObjectPtr> },
+    { Qint.get(), &assert_int<size_t, ALObjectPtr> },
+    { Qlist_arg.get(), &assert_list<size_t, ALObjectPtr> },
+    { Qsym_arg.get(), &assert_symbol<size_t, ALObjectPtr> },
+    { Qchar_arg.get(), &assert_char<size_t, ALObjectPtr> },
+    { Qnumber_arg.get(), &assert_number<size_t, ALObjectPtr> },
+    { Qfunction_arg.get(), &assert_function<size_t, ALObjectPtr> },
+    { Qfile_arg.get(), &assert_file<size_t, ALObjectPtr> },
+    { Qstream_arg.get(), &assert_stream<size_t, ALObjectPtr> },
+    { Qmemory_arg.get(), &assert_memory<size_t, ALObjectPtr> },
+    { Qbyte_arg.get(), &assert_byte<size_t, ALObjectPtr> },
+    { Qbytearray_arg.get(), &assert_byte_array<size_t, ALObjectPtr> },
 };
 
 

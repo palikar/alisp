@@ -36,7 +36,7 @@ namespace alisp
 ALObjectPtr Feval_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
 
 
     return eval->eval_string(str->to_string());
@@ -45,7 +45,7 @@ ALObjectPtr Feval_string(const ALObjectPtr &obj, env::Environment *, eval::Evalu
 ALObjectPtr Feval_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
 
 
     return eval->eval_file(str->to_string());

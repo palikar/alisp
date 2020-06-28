@@ -31,15 +31,15 @@ ALObjectPtr Fslice(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *
 {
     AL_CHECK(assert_min_size<2>(obj));
 
-    auto list  = eval_check(eval, obj, 0, &assert_list<int>);
-    auto ind_1 = eval_check(eval, obj, 1, &assert_int<int>);
+    auto list  = eval_check(eval, obj, 0, &assert_list<size_t>);
+    auto ind_1 = eval_check(eval, obj, 1, &assert_int<size_t>);
 
     const size_t start = static_cast<size_t>(ind_1->to_int());
 
     size_t end = list->children().size();
     if (std::size(*obj) == 3)
     {
-        auto ind_2 = eval_check(eval, obj, 2, &assert_int<int>);
+        auto ind_2 = eval_check(eval, obj, 2, &assert_int<size_t>);
         end        = static_cast<size_t>(ind_2->to_int());
     }
 
@@ -58,7 +58,7 @@ ALObjectPtr Fsort(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *e
 {
     AL_CHECK(assert_size<1>(obj));
 
-    auto list = eval_check(eval, obj, 0, &assert_list<int>);
+    auto list = eval_check(eval, obj, 0, &assert_list<size_t>);
 
     std::sort(std::begin(*list), std::end(*list), [&](auto &obj_1, auto &obj_2) {
         return obj_1->to_real() < obj_2->to_real();
@@ -71,7 +71,7 @@ ALObjectPtr Freverse(const ALObjectPtr &obj, env::Environment *, eval::Evaluator
 {
     AL_CHECK(assert_size<1>(obj));
 
-    auto list = eval_check(eval, obj, 0, &assert_list<int>);
+    auto list = eval_check(eval, obj, 0, &assert_list<size_t>);
 
     ALObject::list_type new_list;
     std::reverse_copy(std::begin(*list), std::end(*list), std::back_inserter(new_list));
@@ -114,8 +114,8 @@ ALObjectPtr Ffilter(const ALObjectPtr &obj, env::Environment *, eval::Evaluator 
 {
     AL_CHECK(assert_size<2>(obj));
 
-    auto fun_obj = eval_check(eval, obj, 0, &assert_function<int>);
-    auto list    = eval_check(eval, obj, 1, &assert_list<int>);
+    auto fun_obj = eval_check(eval, obj, 0, &assert_function<size_t>);
+    auto list    = eval_check(eval, obj, 1, &assert_list<size_t>);
 
     ALObject::list_type new_list{};
     for (auto &el : *list)
@@ -133,9 +133,9 @@ ALObjectPtr Fany(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
 {
     AL_CHECK(assert_size<2>(obj));
 
-    auto list    = eval_check(eval, obj, 1, &assert_list<int>);
-    auto fun_obj = eval_check(eval, obj, 0, &assert_function<int>);
-
+    auto list    = eval_check(eval, obj, 1, &assert_list<size_t>);
+    auto fun_obj = eval_check(eval, obj, 0, &assert_function<size_t>);
+    
 
     for (auto &el : *list)
     {
@@ -152,8 +152,8 @@ ALObjectPtr Fall(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
 {
     AL_CHECK(assert_size<2>(obj));
 
-    auto fun_obj = eval_check(eval, obj, 0, &assert_function<int>);
-    auto list    = eval_check(eval, obj, 1, &assert_list<int>);
+    auto fun_obj = eval_check(eval, obj, 0, &assert_function<size_t>);
+    auto list    = eval_check(eval, obj, 1, &assert_list<size_t>);
 
 
     for (auto &el : *list)

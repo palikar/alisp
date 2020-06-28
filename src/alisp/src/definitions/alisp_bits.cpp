@@ -38,47 +38,47 @@ namespace alisp
 ALObjectPtr Fleftshift(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto lhs = eval_check(eval, obj, 0, &assert_int<int>);
-    auto rhs = eval_check(eval, obj, 1, &assert_int<int>);
+    auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
+    auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
     return make_int(SHIFT_LEFT(lhs, rhs));
 }
 
 ALObjectPtr Frightshift(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto lhs = eval_check(eval, obj, 0, &assert_int<int>);
-    auto rhs = eval_check(eval, obj, 1, &assert_int<int>);
+    auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
+    auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
 
     return make_int(SHIFT_RIGHT(lhs, rhs));
 }
 ALObjectPtr Fbit_or(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto lhs = eval_check(eval, obj, 0, &assert_int<int>);
-    auto rhs = eval_check(eval, obj, 1, &assert_int<int>);
+    auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
+    auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
     return make_int(BIT_OR(lhs, rhs));
 }
 
 ALObjectPtr Fbit_and(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto lhs = eval_check(eval, obj, 0, &assert_int<int>);
-    auto rhs = eval_check(eval, obj, 1, &assert_int<int>);
+    auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
+    auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
     return make_int(BIT_AND(lhs, rhs));
 }
 
 ALObjectPtr Fbit_xor(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto lhs = eval_check(eval, obj, 0, &assert_int<int>);
-    auto rhs = eval_check(eval, obj, 1, &assert_int<int>);
+    auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
+    auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
     return make_int(BIT_XOR(lhs, rhs));
 }
 
 ALObjectPtr Fbit_inv(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto lhs = eval_check(eval, obj, 0, &assert_int<int>);
+    auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
     return make_int(BIT_INV(lhs));
 }
 

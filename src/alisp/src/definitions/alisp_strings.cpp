@@ -33,9 +33,9 @@ namespace alisp
 ALObjectPtr Fstring_append(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    auto str_2 = eval_check(eval, obj, 1, &assert_string<int>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
 
     return make_string(str_1->to_string() += str_2->to_string());
@@ -44,9 +44,9 @@ ALObjectPtr Fstring_append(const ALObjectPtr &obj, env::Environment *, eval::Eva
 ALObjectPtr Fstring_prepend(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    auto str_2 = eval_check(eval, obj, 1, &assert_string<int>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
 
     return make_string(str_2->to_string() += str_1->to_string());
@@ -55,9 +55,9 @@ ALObjectPtr Fstring_prepend(const ALObjectPtr &obj, env::Environment *, eval::Ev
 ALObjectPtr Fstring_equals(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    auto str_2 = eval_check(eval, obj, 1, &assert_string<int>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
 
     return str_1->to_string().compare(str_2->to_string()) == 0 ? Qt : Qnil;
@@ -66,9 +66,9 @@ ALObjectPtr Fstring_equals(const ALObjectPtr &obj, env::Environment *, eval::Eva
 ALObjectPtr Fstring_less(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    auto str_2 = eval_check(eval, obj, 1, &assert_string<int>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
 
     return str_1->to_string().compare(str_2->to_string()) < 0 ? Qt : Qnil;
@@ -77,9 +77,9 @@ ALObjectPtr Fstring_less(const ALObjectPtr &obj, env::Environment *, eval::Evalu
 ALObjectPtr Fstring_contains(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    auto str_2 = eval_check(eval, obj, 1, &assert_string<int>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
 
     if (str_1->to_string().find(str_2->to_string()) != std::string::npos)
@@ -92,9 +92,9 @@ ALObjectPtr Fstring_contains(const ALObjectPtr &obj, env::Environment *, eval::E
 ALObjectPtr Fstring_endswith(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    auto str_2 = eval_check(eval, obj, 1, &assert_string<int>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
 
     if (utility::ends_with(str_1->to_string(), str_2->to_string()))
@@ -107,9 +107,9 @@ ALObjectPtr Fstring_endswith(const ALObjectPtr &obj, env::Environment *, eval::E
 ALObjectPtr Fstring_startswith(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    auto str_2 = eval_check(eval, obj, 1, &assert_string<int>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
 
     if (utility::starts_with(str_1->to_string(), str_2->to_string()))
@@ -122,7 +122,7 @@ ALObjectPtr Fstring_startswith(const ALObjectPtr &obj, env::Environment *, eval:
 ALObjectPtr Fstring_length(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
 
     return make_int(std::size(str->to_string()));
 }
@@ -130,17 +130,17 @@ ALObjectPtr Fstring_length(const ALObjectPtr &obj, env::Environment *, eval::Eva
 ALObjectPtr Fstring_capitalize(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
 
     auto &s = str->to_string();
-    s[0]    = static_cast<char>(std::toupper(static_cast<int>(s[0])));
+    s[0]    = static_cast<char>(std::toupper(static_cast<size_t>(s[0])));
     return str;
 }
 
 ALObjectPtr Fchar_isalpha(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str = eval_check(eval, obj, 0, &assert_char<int>);
+    auto str = eval_check(eval, obj, 0, &assert_char<size_t>);
 
     return std::isalpha(static_cast<int>(str->to_int())) ? Qt : Qnil;
 }
@@ -148,7 +148,7 @@ ALObjectPtr Fchar_isalpha(const ALObjectPtr &obj, env::Environment *, eval::Eval
 ALObjectPtr Fchar_isdigit(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str = eval_check(eval, obj, 0, &assert_char<int>);
+    auto str = eval_check(eval, obj, 0, &assert_char<size_t>);
 
     return std::isdigit(static_cast<int>(str->to_int())) ? Qt : Qnil;
 }
@@ -156,9 +156,9 @@ ALObjectPtr Fchar_isdigit(const ALObjectPtr &obj, env::Environment *, eval::Eval
 ALObjectPtr Fstring_find(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    auto str_2 = eval_check(eval, obj, 1, &assert_string<int>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
 
     auto pos = str_1->to_string().find(str_2->to_string());
@@ -172,7 +172,7 @@ ALObjectPtr Fstring_find(const ALObjectPtr &obj, env::Environment *, eval::Evalu
 ALObjectPtr Fstring_reverse(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
 
     std::string copy = str_1->to_string();
@@ -183,11 +183,11 @@ ALObjectPtr Fstring_reverse(const ALObjectPtr &obj, env::Environment *, eval::Ev
 ALObjectPtr Fstring_replace(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<3>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    auto str_2 = eval_check(eval, obj, 1, &assert_string<int>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-    auto str_3 = eval_check(eval, obj, 2, &assert_string<int>);
+    auto str_3 = eval_check(eval, obj, 2, &assert_string<size_t>);
 
     return make_string(utility::replace(str_1->to_string(), str_2->to_string(), str_3->to_string()));
 }
@@ -195,11 +195,11 @@ ALObjectPtr Fstring_replace(const ALObjectPtr &obj, env::Environment *, eval::Ev
 ALObjectPtr Fstring_replaceall(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<3>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    auto str_2 = eval_check(eval, obj, 1, &assert_string<int>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-    auto str_3 = eval_check(eval, obj, 2, &assert_string<int>);
+    auto str_3 = eval_check(eval, obj, 2, &assert_string<size_t>);
 
 
     return make_string(utility::replace_all(str_1->to_string(), str_2->to_string(), str_3->to_string()));
@@ -209,9 +209,9 @@ ALObjectPtr Fstring_split(const ALObjectPtr &obj, env::Environment *, eval::Eval
 {
     AL_CHECK(assert_size<2>(obj));
 
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    auto str_2 = eval_check(eval, obj, 1, &assert_string<int>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
     return make_list(utility::split(str_1->to_string(), str_2->to_string()));
 }
@@ -219,11 +219,11 @@ ALObjectPtr Fstring_split(const ALObjectPtr &obj, env::Environment *, eval::Eval
 ALObjectPtr Fstring_substring(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<3>(obj));
-    auto str = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    auto ind_1 = eval_check(eval, obj, 1, &assert_int<int>);
+    auto ind_1 = eval_check(eval, obj, 1, &assert_int<size_t>);
 
-    auto ind_2 = eval_check(eval, obj, 2, &assert_int<int>);
+    auto ind_2 = eval_check(eval, obj, 2, &assert_int<size_t>);
 
     return make_string(str->to_string().substr(static_cast<ALObject::string_type::size_type>(ind_1->to_int()),
                                                static_cast<ALObject::string_type::size_type>(ind_2->to_int())));
@@ -232,7 +232,7 @@ ALObjectPtr Fstring_substring(const ALObjectPtr &obj, env::Environment *, eval::
 ALObjectPtr Fstring_splitlines(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
     return make_list(utility::split(str_1->to_string(), '\n'));
 }
@@ -240,7 +240,7 @@ ALObjectPtr Fstring_splitlines(const ALObjectPtr &obj, env::Environment *, eval:
 ALObjectPtr Fstring_upper(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
     return make_string(utility::str_toupper(str_1->to_string()));
 }
@@ -248,7 +248,7 @@ ALObjectPtr Fstring_upper(const ALObjectPtr &obj, env::Environment *, eval::Eval
 ALObjectPtr Fstring_lower(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
     return make_string(utility::str_tolower(str_1->to_string()));
 }
@@ -256,7 +256,7 @@ ALObjectPtr Fstring_lower(const ALObjectPtr &obj, env::Environment *, eval::Eval
 ALObjectPtr Fstring_strip(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str_1 = eval_check(eval, obj, 0, &assert_string<int>);
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
     return make_string(utility::trim(str_1->to_string()));
 }

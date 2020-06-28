@@ -36,7 +36,7 @@ ALObjectPtr Fprop_set(const ALObjectPtr &obj, env::Environment *, eval::Evaluato
 
     auto target = eval->eval(obj->i(0));
 
-    auto prop = eval_check(eval, obj, 1, &assert_string<int>);
+    auto prop = eval_check(eval, obj, 1, &assert_string<size_t>);
 
     auto &prop_name = prop->to_string();
 
@@ -51,7 +51,7 @@ ALObjectPtr Fprop_get(const ALObjectPtr &obj, env::Environment *, eval::Evaluato
 
     auto target = eval->eval(obj->i(0));
 
-    auto prop = eval_check(eval, obj, 1, &assert_string<int>);
+    auto prop = eval_check(eval, obj, 1, &assert_string<size_t>);
 
     auto &prop_name = prop->to_string();
 
@@ -70,7 +70,7 @@ ALObjectPtr Fprop_exists(const ALObjectPtr &obj, env::Environment *, eval::Evalu
 
     auto target = eval->eval(obj->i(0));
 
-    auto prop = eval_check(eval, obj, 1, &assert_string<int>);
+    auto prop = eval_check(eval, obj, 1, &assert_string<size_t>);
 
     auto &prop_name = prop->to_string();
 
@@ -97,7 +97,7 @@ ALObjectPtr Fprop_remove(const ALObjectPtr &obj, env::Environment *, eval::Evalu
 
     auto target = eval->eval(obj->i(0));
 
-    auto prop = eval_check(eval, obj, 1, &assert_string<int>);
+    auto prop = eval_check(eval, obj, 1, &assert_string<size_t>);
 
     const auto &prop_name = prop->to_string();
     const auto removed    = target->props().erase(prop_name);
