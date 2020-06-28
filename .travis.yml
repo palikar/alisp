@@ -16,6 +16,7 @@ matrix:
             - libx11-dev
             - libxrandr-dev
             - libudev-dev
+            - libasio-dev
             - g++-9
             - lcov
             - gcovr
@@ -33,6 +34,7 @@ matrix:
             - libx11-dev
             - libxrandr-dev
             - libudev-dev
+            - libasio-dev
             - g++-9
             - lcov
             - gcovr
