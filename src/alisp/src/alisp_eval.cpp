@@ -320,7 +320,7 @@ ALObjectPtr Evaluator::apply_prime(const ALObjectPtr &func, const ALObjectPtr &a
     auto check_args = [&](const ALObjectPtr &evaled_args, const ALObjectPtr &signature) {
         size_t cnt = 1;
         handle_argument_bindings(signature, evaled_args, [&](const ALObjectPtr &param, ALObjectPtr arg) {
-            signature_assertions.at(param.get())(arg,  cnt++, signature);
+            signature_assertions.at(param.get())(arg, cnt++, signature);
         });
     };
 

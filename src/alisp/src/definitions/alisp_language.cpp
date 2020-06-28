@@ -139,7 +139,8 @@ static ALObjectPtr handle_exception(EXC p_exc, ALObjectPtr t_obj, env::Environme
             if (t_obj->i(0) != Qnil)
             {
                 env::detail::ScopePushPop cpp{ *env };
-                env->put(t_obj->i(0), make_object(make_int(static_cast<size_t>(p_exc.tag())), make_string(p_exc.what())));
+                env->put(t_obj->i(0),
+                         make_object(make_int(static_cast<size_t>(p_exc.tag())), make_string(p_exc.what())));
             }
             return eval_list(eval, handler, 1);
         }

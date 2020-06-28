@@ -135,7 +135,7 @@ ALObjectPtr Fany(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
 
     auto list    = eval_check(eval, obj, 1, &assert_list<size_t>);
     auto fun_obj = eval_check(eval, obj, 0, &assert_function<size_t>);
-    
+
 
     for (auto &el : *list)
     {

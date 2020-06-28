@@ -129,21 +129,22 @@ inline std::string erase_substr(std::string mainStr, const std::string &toErase)
     return mainStr;
 }
 
-inline std::vector<std::string> wraptext(std::string input, size_t width) {
-    size_t curpos = 0;
+inline std::vector<std::string> wraptext(std::string input, size_t width)
+{
+    size_t curpos  = 0;
     size_t nextpos = 0;
 
     std::vector<std::string> lines;
     std::string substr = input.substr(curpos, width + 1);
 
-    while (substr.length() == width + 1 && (nextpos = substr.rfind(' ')) != input.npos) {
+    while (substr.length() == width + 1 && (nextpos = substr.rfind(' ')) != input.npos)
+    {
         lines.push_back(input.substr(curpos, nextpos));
         curpos += nextpos + 1;
         substr = input.substr(curpos, width + 1);
     }
 
-    if (curpos != input.length())
-        lines.push_back(input.substr(curpos, input.npos));
+    if (curpos != input.length()) lines.push_back(input.substr(curpos, input.npos));
 
     return lines;
 }

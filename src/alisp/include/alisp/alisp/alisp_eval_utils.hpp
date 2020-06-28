@@ -192,11 +192,12 @@ inline ALObjectPtr eval_transform(eval::Evaluator *evl, const ALObjectPtr &t_obj
     return make_object(new_child);
 }
 
-template<typename T> inline auto eval_check(eval::Evaluator *eval, const ALObjectPtr &t_obj, size_t t_index, T &&assertion)
+template<typename T>
+inline auto eval_check(eval::Evaluator *eval, const ALObjectPtr &t_obj, size_t t_index, T &&assertion)
 {
     auto temp = eval->eval(t_obj->i(t_index));
     AL_CHECK(assertion(temp, t_index));
     return temp;
 }
 
-}
+}  // namespace alisp

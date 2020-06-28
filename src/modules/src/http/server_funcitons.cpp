@@ -56,10 +56,10 @@ ALObjectPtr Fserver(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
 ALObjectPtr Fserver_port(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = AL_EVAL(t_obj, eval, 0);
-    // AL_CHECK(assert_int(id));
+    AL_CHECK(assert_int(id));
 
     auto port = AL_EVAL(t_obj, eval, 1);
-    // AL_CHECK(assert_int(port));
+    AL_CHECK(assert_int(port));
 
     detail::server_registry[object_to_resource(id)].g_settings->set_port(static_cast<uint16_t>(port->to_int()));
 

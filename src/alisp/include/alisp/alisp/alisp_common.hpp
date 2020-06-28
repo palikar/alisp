@@ -486,7 +486,7 @@ inline std::string dump(const ALObjectCPtr &obj)
 
         case ALObjectType::STRING_VALUE: str << "\"" << obj->to_string() << "\""; break;
 
-        case ALObjectType::SYMBOL: str << obj->to_string() << " "; break;
+        case ALObjectType::SYMBOL: str << obj->to_string(); break;
 
         case ALObjectType::LIST:
             if (obj->length() == 0)

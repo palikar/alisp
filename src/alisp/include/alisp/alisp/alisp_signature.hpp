@@ -135,7 +135,7 @@ template<typename... Args> struct Signature
 };
 
 
-inline std::unordered_map<ALObject *, std::function<void( ALObjectPtr, size_t, ALObjectPtr)>> signature_assertions = {
+inline std::unordered_map<ALObject *, std::function<void(ALObjectPtr, size_t, ALObjectPtr)>> signature_assertions = {
     { Qint.get(), &assert_int<size_t, ALObjectPtr> },
     { Qdouble.get(), &assert_number<size_t, ALObjectPtr> },
     { Qstring.get(), &assert_string<size_t, ALObjectPtr> },

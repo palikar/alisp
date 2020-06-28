@@ -58,48 +58,69 @@ ALObjectPtr Fend_request(const ALObjectPtr &t_obj, env::Environment *, eval::Eva
 
 ALISP_EXPORT alisp::env::ModulePtr init_http_restbed(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
-    auto Mhttp    = alisp::module_init("http-restbed");
+    using namespace alisp;
+
+    auto Mhttp    = module_init("http-restbed");
     auto http_ptr = Mhttp.get();
 
     alisp::module_defvar(http_ptr, "localhost", http::localhost, R"()");
 
     // server config
-    alisp::module_defun(http_ptr, "server", &http::Fserver, R"()");
+    module_defun(http_ptr, "server", &http::Fserver, R"()");
 
-    alisp::module_defun(http_ptr, "server-root", &http::Fserver_root, R"()");
-
-    alisp::module_defun(
-      http_ptr, "server-port", &http::Fserver_port, R"()", alisp::Signature(alisp::Int{}, alisp::Int{}));
-
-    alisp::module_defun(http_ptr, "server-address", &http::Fserver_address, R"()");
-    alisp::module_defun(http_ptr, "server-default-header", &http::Fserver_default_header, R"()");
-    alisp::module_defun(http_ptr, "server-default-headers", &http::Fserver_default_headers, R"()");
-    alisp::module_defun(http_ptr, "server-worker-limit", &http::Fserver_worker_limit, R"()");
-    alisp::module_defun(http_ptr, "server-connection-limit", &http::Fserver_connection_limit, R"()");
-    alisp::module_defun(http_ptr, "server-connection-timeout", &http::Fserver_connection_timeout, R"()");
-    alisp::module_defun(http_ptr, "server-case-insensitive-uris", &http::Fserver_ci_uris, R"()");
-    alisp::module_defun(http_ptr, "server-status-msg", &http::Fserver_status_msg, R"()");
-    alisp::module_defun(http_ptr, "server-property", &http::Fserver_property, R"()");
-    alisp::module_defun(http_ptr, "server-not-found-handler", &http::Fserver_not_found_handler, R"()");
+    module_defun(http_ptr, "server-root", &http::Fserver_root, R"()");
+    module_defun(http_ptr, "server-port", &http::Fserver_port, R"()");
+    module_defun(http_ptr, "server-address", &http::Fserver_address, R"()");
+    module_defun(http_ptr, "server-default-header", &http::Fserver_default_header, R"()");
+    module_defun(http_ptr, "server-default-headers", &http::Fserver_default_headers, R"()");
+    module_defun(http_ptr, "server-worker-limit", &http::Fserver_worker_limit, R"()");
+    module_defun(http_ptr, "server-connection-limit", &http::Fserver_connection_limit, R"()");
+    module_defun(http_ptr, "server-connection-timeout", &http::Fserver_connection_timeout, R"()");
+    module_defun(http_ptr, "server-case-insensitive-uris", &http::Fserver_ci_uris, R"()");
+    module_defun(http_ptr, "server-status-msg", &http::Fserver_status_msg, R"()");
+    module_defun(http_ptr, "server-property", &http::Fserver_property, R"()");
+    module_defun(http_ptr, "server-not-found-handler", &http::Fserver_not_found_handler, R"()");
 
     // server operations
-    alisp::module_defun(http_ptr, "server-start", &http::Fserver_start, R"()");
-    alisp::module_defun(http_ptr, "server-stop", &http::Fserver_stop, R"()");
-    alisp::module_defun(http_ptr, "server-restart", &http::Fserver_restart, R"()");
+    module_defun(http_ptr, "server-start", &http::Fserver_start, R"()");
+    module_defun(http_ptr, "server-stop", &http::Fserver_stop, R"()");
+    module_defun(http_ptr, "server-restart", &http::Fserver_restart, R"()");
 
     // route config
-    alisp::module_defun(http_ptr, "route", &http::Froute, R"()");
-    alisp::module_defun(http_ptr, "route-handler", &http::Froute_method_handler, R"()");
-    alisp::module_defun(http_ptr, "route-path", &http::Froute_set_path, R"()");
-    alisp::module_defun(http_ptr, "route-headers", &http::Froute_default_headers, R"()");
-    alisp::module_defun(http_ptr, "route-header", &http::Froute_default_header, R"()");
+    module_defun(http_ptr, "route", &http::Froute, R"()");
+    module_defun(http_ptr, "route-handler", &http::Froute_method_handler, R"()");
+    module_defun(http_ptr, "route-path", &http::Froute_set_path, R"()");
+    module_defun(http_ptr, "route-headers", &http::Froute_default_headers, R"()");
+    module_defun(http_ptr, "route-header", &http::Froute_default_header, R"()");
 
     // request operations
-    alisp::module_defun(http_ptr, "request-end", &http::Fend_request, R"()");
+    module_defun(http_ptr, "request-end", &http::Fend_request, R"()");
+
+    // language space
+    module_eval(http_ptr, http::detail::language_definitons);
 
 
-    alisp::module_eval(http_ptr, http::detail::language_definitons);
+    module_signature(http_ptr, "server-root", Signature(Int{}, String{}));
+    module_signature(http_ptr, "server-port", Signature(Int{}, Int{}));
+    module_signature(http_ptr, "server-address", Signature(Int{}, String{}));
+    module_signature(http_ptr, "server-default-header", Signature(Int{}, String{}, String{}));
+    module_signature(http_ptr, "server-default-headers", Signature(Int{}, List{}));
+    module_signature(http_ptr, "server-worker-limit", Signature(Int{}, Int{}));
+    module_signature(http_ptr, "server-connection-limit", Signature(Int{}, Int{}));
+    module_signature(http_ptr, "server-connection-timeout", Signature(Int{}, Int{}));
+    module_signature(http_ptr, "server-case-insensitive-uris", Signature(Int{}, Sym{}));
+    module_signature(http_ptr, "server-status-msg", Signature(Int{}, Int{}, String{}));
+    module_signature(http_ptr, "server-property", Signature(Int{}, String{}, String{}));
+    module_signature(http_ptr, "server-not-found-handler", Signature(Int{}, Function{}));
+    module_signature(http_ptr, "server-start", Signature(Int{}));
+    module_signature(http_ptr, "server-stop", Signature(Int{}));
+    module_signature(http_ptr, "server-restart", Signature(Int{}));
 
+    module_signature(http_ptr, "route", Signature(Int{}, String{}));
+    module_signature(http_ptr, "route-handler", Signature(Int{}, Int{}, Function{}));
+    module_signature(http_ptr, "route-path", Signature(Int{}, Int{}, String{}));
+    module_signature(http_ptr, "route-headers", Signature(Int{}, Int{}, List{}));
+    module_signature(http_ptr, "route-header", Signature(Int{}, Int{}, String{}, String{}));
 
     return Mhttp;
 }
