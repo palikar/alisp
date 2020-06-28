@@ -58,6 +58,8 @@ endif()
 
 add_dynmodule(alisp_module_nargs nargs src/nargs.cpp)
 
+add_dynmodule(alisp_module_async_fileio async-fileio ./src/async_fileio.cpp)
+
 
 
 

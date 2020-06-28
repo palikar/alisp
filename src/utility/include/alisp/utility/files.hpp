@@ -37,4 +37,7 @@ bool check_elf(const std::string &t_filename);
 
 std::string load_file(const std::string &t_filename);
 
+void dump_file(const std::string &t_filename, const std::string &t_content, bool t_append);
+
+
 }  // namespace alisp::utility

@@ -112,4 +112,20 @@ std::string load_file(const std::string &t_filename)
         return std::string(v.begin(), v.end());
     }
 }
+
+void dump_file(const std::string &t_filename, const std::string &t_content, bool t_append)
+{
+    std::ofstream outfile;
+    if (t_append)
+    {
+        outfile.open(t_filename, std::ios_base::app | std::ios_base::out);
+    }
+    else
+    {
+        outfile.open(t_filename, std::ios_base::out);
+    }
+    outfile << t_content;
+    outfile.close();
+}
+
 }  // namespace alisp::utility
