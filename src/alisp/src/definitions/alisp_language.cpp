@@ -214,8 +214,8 @@ ALObjectPtr Fimport(const ALObjectPtr &obj, env::Environment *env, eval::Evaluat
     namespace fs = std::filesystem;
     AL_CHECK(assert_min_size<1>(obj));
 
-    auto mod_sym = eval->eval(obj->i(0));
-    AL_CHECK(assert_symbol(mod_sym));
+    auto mod_sym = eval_check(eval, obj,0, &assert_symbol<int>);
+
     const auto module_name = mod_sym->to_string();
 
     bool import_all         = false;

@@ -185,7 +185,7 @@ struct argument_error : public al_exception
     }
 
 
-    argument_error(const std::string &t_why, ALObjectPtr t_obj, size_t t_param)
+    argument_error(const std::string &t_why, ALObjectPtr t_obj, int t_param)
         : al_exception(format(t_why, t_obj, t_param), SignalTag::INVALID_ARGUMENTS)
     {
         m_signal_name = "eval-signal";
@@ -225,7 +225,7 @@ struct argument_error : public al_exception
         return ss.str();
     }
 
-    static std::string format(const std::string &t_why, ALObjectPtr obj, size_t t_param)
+    static std::string format(const std::string &t_why, ALObjectPtr obj, int t_param)
     {
         std::ostringstream ss;
 

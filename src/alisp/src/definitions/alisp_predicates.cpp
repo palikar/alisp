@@ -69,29 +69,31 @@ ALObjectPtr Fpfunction(const ALObjectPtr &obj, env::Environment *, eval::Evaluat
     return pfunction(evl->eval(obj->i(0))) ? Qt : Qnil;
 }
 
-ALObjectPtr Fpfile(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpfile(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    return files::files_registry.belong(object_to_resource(evl->eval(obj->i(0)))) ? Qt : Qnil;
+    auto id = eval_check(eval, obj,0, &assert_int<int>);
+    return files::files_registry.belong(object_to_resource(id)) ? Qt : Qnil;
 }
 
-ALObjectPtr Fpstream(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpstream(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    return al::streams_registry.belong(object_to_resource(evl->eval(obj->i(0)))) ? Qt : Qnil;
+    auto id = eval_check(eval, obj,0, &assert_int<int>);
+    return al::streams_registry.belong(object_to_resource(id)) ? Qt : Qnil;
 }
 
-ALObjectPtr Fpmemory(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpmemory(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    return memory::memory_registry.belong(object_to_resource(evl->eval(obj->i(0)))) ? Qt : Qnil;
+    auto id = eval_check(eval, obj,0, &assert_int<int>);
+    return memory::memory_registry.belong(object_to_resource(id)) ? Qt : Qnil;
 }
 
-ALObjectPtr Fpbyte(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpbyte(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto ob = evl->eval(obj->i(0));
-    AL_CHECK(assert_int(ob));
+    auto ob = eval->eval(obj->i(0));
     if (!pint(ob))
     {
         return Qnil;

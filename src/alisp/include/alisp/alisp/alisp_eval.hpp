@@ -35,63 +35,63 @@ namespace detail
 class EvalDepthTrack;
 class CatchTrack;
 class EvaluationLock;
-    }  // namespace detail
+}  // namespace detail
 
-    class Evaluator
-    {
-      private:
-        env::Environment &env;
-        size_t m_eval_depth;
-        size_t m_catching_depth;
-        parser::ParserBase *m_parser;
+class Evaluator
+{
+  private:
+    env::Environment &env;
+    size_t m_eval_depth;
+    size_t m_catching_depth;
+    parser::ParserBase *m_parser;
 
-        async::AsyncS m_async;
+    async::AsyncS m_async;
 
-        int m_signal;
+    int m_signal;
 
-        std::atomic_uint_fast32_t m_status_flags;
+    std::atomic_uint_fast32_t m_status_flags;
 
-        std::string m_current_file;
+    std::string m_current_file;
 
-        static constexpr std::uint32_t SIGINT_FLAG            = 0x0001;
-        static constexpr std::uint32_t ACTIVE_EVALUATION_FLAG = 0x0002;
-        static constexpr std::uint32_t SIGTERM_FLAG           = 0x0004;
-        static constexpr std::uint32_t ASYNC_FLAG             = 0x0008;
-        static constexpr std::uint32_t INTERACTIVE_FLAG       = 0x0010;
+    static constexpr std::uint32_t SIGINT_FLAG            = 0x0001;
+    static constexpr std::uint32_t ACTIVE_EVALUATION_FLAG = 0x0002;
+    static constexpr std::uint32_t SIGTERM_FLAG           = 0x0004;
+    static constexpr std::uint32_t ASYNC_FLAG             = 0x0008;
+    static constexpr std::uint32_t INTERACTIVE_FLAG       = 0x0010;
 
-        void handle_argument_bindings(const ALObjectPtr &params, ALObjectPtr args, std::function<void(ALObjectPtr,ALObjectPtr)> handler);
+    void handle_argument_bindings(const ALObjectPtr &params, ALObjectPtr args, std::function<void(ALObjectPtr,ALObjectPtr)> handler);
 
-        void put_argument(const ALObjectPtr &param, ALObjectPtr arg);
+    void put_argument(const ALObjectPtr &param, ALObjectPtr arg);
 
-        ALObjectPtr apply_function(const ALObjectPtr &func, const ALObjectPtr &args);
+    ALObjectPtr apply_function(const ALObjectPtr &func, const ALObjectPtr &args);
 
-        ALObjectPtr apply_macro(const ALObjectPtr &func, const ALObjectPtr &args);
+    ALObjectPtr apply_macro(const ALObjectPtr &func, const ALObjectPtr &args);
 
-        ALObjectPtr apply_prime(const ALObjectPtr &func, const ALObjectPtr &args, const ALObjectPtr &internal_call = Qnil);
+    ALObjectPtr apply_prime(const ALObjectPtr &func, const ALObjectPtr &args, const ALObjectPtr &internal_call = Qnil);
 
-        void new_evaluation();
+    void new_evaluation();
 
-        void end_evaluation();
+    void end_evaluation();
 
-        void lock_evaluation();
+    void lock_evaluation();
 
-        void unlock_evaluation();
+    void unlock_evaluation();
 
-        void eval_lippincott();
+    void eval_lippincott();
 
-      public:
-        std::mutex callback_m;
-        std::unique_lock<std::mutex> m_lock;
-        std::condition_variable callback_cv;
-        std::condition_variable futures_cv;
+  public:
+    std::mutex callback_m;
+    std::unique_lock<std::mutex> m_lock;
+    std::condition_variable callback_cv;
+    std::condition_variable futures_cv;
 
-        Evaluator(env::Environment &env_, parser::ParserBase *t_parser, bool t_defer_el = false);
-        ~Evaluator();
+    Evaluator(env::Environment &env_, parser::ParserBase *t_parser, bool t_defer_el = false);
+    ~Evaluator();
 
-        ALObjectPtr eval_file(const std::string &t_file);
-        ALObjectPtr eval_string(std::string &t_eval);
+    ALObjectPtr eval_file(const std::string &t_file);
+    ALObjectPtr eval_string(std::string &t_eval);
 
-ALObjectPtr eval(const ALObjectPtr &obj);
+    ALObjectPtr eval(const ALObjectPtr &obj);
     ALObjectPtr eval_callable(const ALObjectPtr &callable, const ALObjectPtr &args, const ALObjectPtr &obj = Qnil);
 
     size_t evaluation_depth() const { return m_eval_depth; }

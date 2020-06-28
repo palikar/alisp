@@ -35,61 +35,50 @@
 namespace alisp
 {
 
-ALObjectPtr Fleftshift(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fleftshift(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto lhs = evl->eval(obj->i(0));
-    auto rhs = evl->eval(obj->i(1));
-    AL_CHECK(assert_int(rhs));
-    AL_CHECK(assert_int(lhs));
+    auto lhs = eval_check(eval, obj,0, &assert_int<int>);
+    auto rhs = eval_check(eval, obj,1, &assert_int<int>);
     return make_int(SHIFT_LEFT(lhs, rhs));
 }
 
-ALObjectPtr Frightshift(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Frightshift(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto lhs = evl->eval(obj->i(0));
-    auto rhs = evl->eval(obj->i(1));
-    AL_CHECK(assert_int(rhs));
-    AL_CHECK(assert_int(lhs));
+    auto lhs = eval_check(eval, obj,0, &assert_int<int>);
+    auto rhs = eval_check(eval, obj,1, &assert_int<int>);
+    
     return make_int(SHIFT_RIGHT(lhs, rhs));
 }
-
-ALObjectPtr Fbit_or(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fbit_or(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto lhs = evl->eval(obj->i(0));
-    auto rhs = evl->eval(obj->i(1));
-    AL_CHECK(assert_int(rhs));
-    AL_CHECK(assert_int(lhs));
+    auto lhs = eval_check(eval, obj,0, &assert_int<int>);    
+    auto rhs = eval_check(eval, obj,1, &assert_int<int>);    
     return make_int(BIT_OR(lhs, rhs));
 }
 
-ALObjectPtr Fbit_and(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fbit_and(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto lhs = evl->eval(obj->i(0));
-    auto rhs = evl->eval(obj->i(1));
-    AL_CHECK(assert_int(rhs));
-    AL_CHECK(assert_int(lhs));
+    auto lhs = eval_check(eval, obj,0, &assert_int<int>);
+    auto rhs = eval_check(eval, obj,1, &assert_int<int>);    
     return make_int(BIT_AND(lhs, rhs));
 }
 
-ALObjectPtr Fbit_xor(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fbit_xor(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
-    auto lhs = evl->eval(obj->i(0));
-    auto rhs = evl->eval(obj->i(1));
-    AL_CHECK(assert_int(rhs));
-    AL_CHECK(assert_int(lhs));
+    auto lhs = eval_check(eval, obj,0, &assert_int<int>);
+    auto rhs = eval_check(eval, obj,1, &assert_int<int>);
     return make_int(BIT_XOR(lhs, rhs));
 }
 
-ALObjectPtr Fbit_inv(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fbit_inv(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto lhs = evl->eval(obj->i(0));
-    AL_CHECK(assert_int(lhs));
+    auto lhs = eval_check(eval, obj,0, &assert_int<int>);
     return make_int(BIT_INV(lhs));
 }
 

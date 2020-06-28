@@ -121,15 +121,15 @@ ALObjectPtr Fdev(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
     return Qnil;
 }
 
-ALObjectPtr Flt(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Flt(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
 
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
+    const auto one = eval_check(eval, obj,0, &assert_number<int>);
+    
+    const auto two = eval_check(eval, obj,1, &assert_number<int>);
+    
 
-    AL_CHECK(assert_number(one));
-    AL_CHECK(assert_number(two));
 
     if (one->to_real() < two->to_real())
     {
@@ -142,15 +142,15 @@ ALObjectPtr Flt(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl
     };
 }
 
-ALObjectPtr Fleq(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fleq(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<0>(obj));
 
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
+    const auto one = eval_check(eval, obj,0, &assert_number<int>);
+    
+    const auto two = eval_check(eval, obj,1, &assert_number<int>);
+    
 
-    AL_CHECK(assert_number(one));
-    AL_CHECK(assert_number(two));
 
     if (one->to_real() <= two->to_real())
     {
@@ -163,15 +163,15 @@ ALObjectPtr Fleq(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
     }
 }
 
-ALObjectPtr Fgt(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fgt(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<0>(obj));
 
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
+    const auto one = eval_check(eval, obj,0, &assert_number<int>);
+    
+    const auto two = eval_check(eval, obj,1, &assert_number<int>);
+    
 
-    AL_CHECK(assert_number(one));
-    AL_CHECK(assert_number(two));
 
     if (one->to_real() > two->to_real())
     {
@@ -184,15 +184,15 @@ ALObjectPtr Fgt(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl
     }
 }
 
-ALObjectPtr Fgeq(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fgeq(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<0>(obj));
 
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
+    const auto one = eval_check(eval, obj,0, &assert_number<int>);
+    
+    const auto two = eval_check(eval, obj,1, &assert_number<int>);
+    
 
-    AL_CHECK(assert_number(one));
-    AL_CHECK(assert_number(two));
 
     if (one->to_real() >= two->to_real())
     {
@@ -205,15 +205,15 @@ ALObjectPtr Fgeq(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
     }
 }
 
-ALObjectPtr Feq_math(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Feq_math(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<0>(obj));
 
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
+    const auto one = eval_check(eval, obj,0, &assert_number<int>);
+    
+    const auto two = eval_check(eval, obj,1, &assert_number<int>);
+    
 
-    AL_CHECK(assert_number(one));
-    AL_CHECK(assert_number(two));
 
     if (one->to_real() == two->to_real())
     {
@@ -226,15 +226,15 @@ ALObjectPtr Feq_math(const ALObjectPtr &obj, env::Environment *, eval::Evaluator
     }
 }
 
-ALObjectPtr Fneq(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fneq(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_min_size<0>(obj));
 
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
+    const auto one = eval_check(eval, obj,0, &assert_number<int>);
+    
+    const auto two = eval_check(eval, obj,1, &assert_number<int>);
+    
 
-    AL_CHECK(assert_number(one));
-    AL_CHECK(assert_number(two));
 
     if (one->to_real() != two->to_real())
     {
@@ -247,30 +247,28 @@ ALObjectPtr Fneq(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
     }
 }
 
-ALObjectPtr Fmod(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fmod(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
 
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
-
-    AL_CHECK(assert_int(one));
-    AL_CHECK(assert_int(two));
-
+    const auto one = eval_check(eval, obj,0, &assert_int<int>);
+    
+    const auto two = eval_check(eval, obj,1, &assert_int<int>);
+    
     auto res = one->to_int() % two->to_int();
 
     return make_object(res);
 }
 
-ALObjectPtr Fpow(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fpow(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
 
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
+    const auto one = eval_check(eval, obj,0, &assert_number<int>);
+    
+    const auto two = eval_check(eval, obj,1, &assert_number<int>);
+    
 
-    AL_CHECK(assert_number(one));
-    AL_CHECK(assert_number(two));
 
     return make_object(std::pow(one->to_real(), two->to_real()));
 }
@@ -347,15 +345,13 @@ ALObjectPtr Fmax(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *ev
     }
 }
 
-ALObjectPtr Fround(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+ALObjectPtr Fround(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<2>(obj));
 
-    const auto one = evl->eval(obj->i(0));
-    const auto two = evl->eval(obj->i(1));
+    const auto one = eval_check(eval, obj,0, &assert_number<int>);
+    const auto two = eval_check(eval, obj,1, &assert_int<int>);    
 
-    AL_CHECK(assert_number(one));
-    AL_CHECK(assert_int(two));
 
     return make_double(utility::round_nplaces(one->to_real(), two->to_int()));
 }

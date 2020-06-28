@@ -33,8 +33,8 @@ namespace alisp
 ALObjectPtr Fint_parse(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str_1 = eval->eval(obj->i(0));
-    AL_CHECK(assert_string(str_1));
+    auto str_1 = eval_check(eval, obj,0, &assert_string<int>);
+    
     try
     {
         return make_int(std::stoi(str_1->to_string()));
@@ -53,8 +53,8 @@ ALObjectPtr Fint_parse(const ALObjectPtr &obj, env::Environment *, eval::Evaluat
 ALObjectPtr Ffloat_parse(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     AL_CHECK(assert_size<1>(obj));
-    auto str_1 = eval->eval(obj->i(0));
-    AL_CHECK(assert_string(str_1));
+    auto str_1 = eval_check(eval, obj,0, &assert_string<int>);
+    
     try
     {
         return make_double(std::stod(str_1->to_string()));

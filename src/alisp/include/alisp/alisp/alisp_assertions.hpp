@@ -52,7 +52,7 @@ template<typename T = bool>
 inline void assert_numbers(const ALObjectPtr &obj, const T &param = {})
 {
     if (!are_objects_numbers(obj))
-        throw argument_error("The list must contain only numbers (real of int)", obj, param);
+        throw argument_error("The list must contain only numbers (real or int)", obj, param);
 }
 
 template<typename T = bool>
@@ -143,5 +143,14 @@ inline void assert_byte_array(const ALObjectPtr &obj, const T &param = {})
         if (!(0 <= val and val <= 255)) throw argument_error("The object must be intrepretable as byte array.", obj, param);
     }
 }
+
+
+template<typename T>
+inline auto eval_check(eval::Evaluator *eval, const ALObjectPtr &t_obj, int t_index, T && assertion) {
+    auto temp  = eval->eval(t_obj->i(static_cast<size_t>(t_index)));
+    AL_CHECK(assertion(temp, t_index));
+    return temp;
+}
+
 
 }  // namespace alisp

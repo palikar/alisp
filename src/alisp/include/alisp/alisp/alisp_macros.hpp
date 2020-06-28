@@ -141,4 +141,6 @@
 
 #define AL_EVAL(obj, eval_obj, index) (obj->prop_exists("--evaled--") ? obj->i(index) : eval_obj->eval(obj->i(index)))
 
+#define AL_EVAL_CHECK(name, obj, eval_obj, index, assert) auto name = AL_EVAL(obj, eval_obj, index); AL_CHECK(assert(name, index))
+
 #define AL_BOOL(value) value ? Qt : Qnil
