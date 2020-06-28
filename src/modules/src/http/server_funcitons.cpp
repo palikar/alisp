@@ -78,7 +78,13 @@ ALObjectPtr Fserver_address(const ALObjectPtr &t_obj, env::Environment *, eval::
     auto id      = object_to_resource(AL_EVAL(t_obj, eval, 0));
     auto address = AL_EVAL(t_obj, eval, 1);
 
-    detail::server_registry[id].g_settings->set_bind_address(address->to_string());
+    auto address_string = address->to_string();
+    if (address_string.compare("localhost") == 0)
+    {
+        address_string = "127.0.0.1";
+    }
+
+    detail::server_registry[id].g_settings->set_bind_address(address_string);
 
     return Qt;
 }

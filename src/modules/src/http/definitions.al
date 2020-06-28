@@ -3,7 +3,7 @@ AL_STRINGIFY(
              (defun server-path-not-found (serv callback)
                ([serv] server-not-found-handler
                 (lambda (req res)
-                  (callback req res (lambda () (end-request res))))))
+                  (callback req res (lambda () (request-end res))))))
 
 
 
@@ -31,13 +31,13 @@ AL_STRINGIFY(
              (defun route-post (serv index callback)
                ([serv] http--route-post index
                 (lambda (req res)
-                  (callback req res (lambda () (end-request res))))))
+                  (callback req res (lambda () (request-end res))))))
 
 
              (defun route-get (serv index callback)
                ([serv] http--route-get index
                 (lambda (req res)
-                  (callback req res (lambda () (end-request res))))))
+                  (callback req res (lambda () (request-end res))))))
 
 
 

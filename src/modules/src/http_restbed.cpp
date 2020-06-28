@@ -63,25 +63,36 @@ ALISP_EXPORT alisp::env::ModulePtr init_http_restbed(alisp::env::Environment *, 
 
     alisp::module_defvar(http_ptr, "localhost", http::localhost, R"()");
 
+    // server config
     alisp::module_defun(http_ptr, "server", &http::Fserver, R"()");
-    alisp::module_defun(http_ptr, "set-root", &http::Fserver_root, R"()");
-    alisp::module_defun(http_ptr, "set-port", &http::Fserver_port, R"()");
-    alisp::module_defun(http_ptr, "set-address", &http::Fserver_address, R"()");
-    alisp::module_defun(http_ptr, "set-default-header", &http::Fserver_default_header, R"()");
-
+    alisp::module_defun(http_ptr, "server-root", &http::Fserver_root, R"()");
+    alisp::module_defun(http_ptr, "server-port", &http::Fserver_port, R"()");
+    alisp::module_defun(http_ptr, "server-address", &http::Fserver_address, R"()");
+    alisp::module_defun(http_ptr, "server-default-header", &http::Fserver_default_header, R"()");
+    alisp::module_defun(http_ptr, "server-default-headers", &http::Fserver_default_headers, R"()");
+    alisp::module_defun(http_ptr, "server-worker-limit", &http::Fserver_worker_limit, R"()");
+    alisp::module_defun(http_ptr, "server-connection-limit", &http::Fserver_connection_limit, R"()");
+    alisp::module_defun(http_ptr, "server-connection-timeout", &http::Fserver_connection_timeout, R"()");
+    alisp::module_defun(http_ptr, "server-case-insensitive-uris", &http::Fserver_ci_uris, R"()");
+    alisp::module_defun(http_ptr, "server-status-msg", &http::Fserver_status_msg, R"()");
+    alisp::module_defun(http_ptr, "server-property", &http::Fserver_property, R"()");
     alisp::module_defun(http_ptr, "server-not-found-handler", &http::Fserver_not_found_handler, R"()");
 
+    // server operations
     alisp::module_defun(http_ptr, "server-start", &http::Fserver_start, R"()");
     alisp::module_defun(http_ptr, "server-stop", &http::Fserver_stop, R"()");
     alisp::module_defun(http_ptr, "server-restart", &http::Fserver_restart, R"()");
 
+    // route config
     alisp::module_defun(http_ptr, "route", &http::Froute, R"()");
     alisp::module_defun(http_ptr, "route-handler", &http::Froute_method_handler, R"()");
     alisp::module_defun(http_ptr, "route-path", &http::Froute_set_path, R"()");
     alisp::module_defun(http_ptr, "route-headers", &http::Froute_default_headers, R"()");
     alisp::module_defun(http_ptr, "route-header", &http::Froute_default_header, R"()");
 
-    alisp::module_defun(http_ptr, "end-request", &http::Fend_request, R"()");
+    // request operations
+    alisp::module_defun(http_ptr, "request-end", &http::Fend_request, R"()");
+
 
     alisp::module_eval(http_ptr, http::detail::language_definitons);
 
