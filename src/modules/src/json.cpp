@@ -534,71 +534,122 @@ static std::string dump(ALObjectPtr t_json, long depth = 1, const std::string &t
 }  // namespace detail
 
 
-ALObjectPtr Fparse_json(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct parse_json
 {
-    assert_size<1>(obj);
-    auto str = eval->eval(obj->i(0));
-    assert_string(str);
-    return detail::load(str->to_string());
-}
+    inline static const std::string name{ "json-parse" };
 
-ALObjectPtr Fdump_json(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<1>(obj);
-    return make_string(detail::dump(eval->eval(obj->i(0))));
-}
+    inline static const Signature signature{ String{} };
 
-ALObjectPtr Fload_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace fs = std::filesystem;
+    inline static const std::string doc{ R"((json-parse STRING)
 
-    assert_size<1>(obj);
-    auto file = eval->eval(obj->i(0));
-    assert_string(file);
+Parse a json formated string and return a alist representation of the json)" };
 
-    if (!fs::exists(file->to_string()))
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        return Qnil;
+        assert_size<1>(obj);
+        auto str = eval->eval(obj->i(0));
+        assert_string(str);
+        return detail::load(str->to_string());
     }
-    if (!fs::is_regular_file(file->to_string()))
-    {
-        return Qnil;
-    }
+};
 
-    return detail::load(utility::load_file(file->to_string()));
-}
 
-ALObjectPtr Fdump_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct dump_json
 {
-    namespace fs = std::filesystem;
+    inline static const std::string name{ "json-dump" };
 
-    assert_size<2>(obj);
+    inline static const Signature signature{ Any{} };
 
-    auto js   = eval->eval(obj->i(0));
-    auto file = eval->eval(obj->i(1));
+    inline static const std::string doc{ R"((json-dump ALIST)
 
-    assert_string(file);
+Convert a alist to a json formated string. Return the formated string.
+)" };
 
-    // if (!fs::exists(file->to_string())) { return Qnil; }
-    // if (!fs::is_regular_file(file->to_string())) { return Qnil; }
-
-    std::ofstream outfile;
-    outfile.open(file->to_string(), std::ios_base::out);
-    if (outfile.is_open())
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        return Qnil;
+        assert_size<1>(obj);
+        return make_string(detail::dump(eval->eval(obj->i(0))));
     }
-    outfile << detail::dump(js);
+};
 
-    return Qt;
-}
+
+struct load_file
+{
+    inline static const std::string name{ "load-file" };
+
+    inline static const Signature signature{ String{} };
+
+    inline static const std::string doc{ R"((load-file PATH)
+
+Parse the contents of a file as json and return a alist representation of the json.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        assert_size<1>(obj);
+        auto file = eval->eval(obj->i(0));
+        assert_string(file);
+
+        if (!fs::exists(file->to_string()))
+        {
+            return Qnil;
+        }
+        if (!fs::is_regular_file(file->to_string()))
+        {
+            return Qnil;
+        }
+
+        return detail::load(utility::load_file(file->to_string()));
+    }
+};
+
+
+struct dump_file
+{
+    inline static const std::string name{ "dump-file" };
+
+    inline static const Signature signature{ String{}, Any{} };
+
+    inline static const std::string doc{ R"((dump-file PATH ALIST)
+
+Save the a json formated string representation of `ALIST` in the file pointed by `PATH`.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        assert_size<2>(obj);
+
+        auto js   = eval->eval(obj->i(0));
+        auto file = eval->eval(obj->i(1));
+
+        assert_string(file);
+
+        // if (!fs::exists(file->to_string())) { return Qnil; }
+        // if (!fs::is_regular_file(file->to_string())) { return Qnil; }
+
+        std::ofstream outfile;
+        outfile.open(file->to_string(), std::ios_base::out);
+        if (outfile.is_open())
+        {
+            return Qnil;
+        }
+        outfile << detail::dump(js);
+
+        return Qt;
+    }
+};
+
 
 }  // namespace json
 
 ALISP_EXPORT alisp::env::ModulePtr init_json(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     using namespace alisp;
-    
+
     auto Mjson    = alisp::module_init("json");
     auto json_ptr = Mjson.get();
 
@@ -630,40 +681,10 @@ The resulting representaion can be handeld through some of the functions that th
     module_defvar(
       json_ptr, "json-signal", json::json_signal, R"(Signal raised when the json parser encounters an error.)");
 
-    module_defun(json_ptr,
-                        "json-parse",
-                        &json::Fparse_json,
-                        R"((json-parse STRING)
-
-Parse a json formated string and return a alist representation of the json)");
-
-    module_defun(json_ptr,
-                        "json-dump",
-                        &json::Fdump_json,
-                        R"((json-dump ALIST)
-
-Convert a alist to a json formated string. Return the formated string.
-)");
-
-    module_defun(json_ptr,
-                        "load-file",
-                        &json::Fload_file,
-                        R"((load-file PATH)
-
-Parse the contents of a file as json and return a alist representation of the json.
-)");
-    module_defun(json_ptr,
-                        "dump-file",
-                        &json::Fdump_file,
-                        R"((dump-file PATH ALIST)
-
-Save the a json formated string representation of `ALIST` in the file pointed by `PATH`.
-)");
-
-    module_signature(json_ptr, "json-parse", Signature(String{}));
-    module_signature(json_ptr, "json-dump", Signature(Any{}));
-    module_signature(json_ptr, "load-file", Signature(String{}));
-    module_signature(json_ptr, "dump-file", Signature(String{}, Any{}));
+    module_defun<json::parse_json>(json_ptr);
+    module_defun<json::dump_json>(json_ptr);
+    module_defun<json::load_file>(json_ptr);
+    module_defun<json::dump_file>(json_ptr);
 
     return Mjson;
 }

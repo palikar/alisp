@@ -24,255 +24,383 @@ namespace asserts
 
 using namespace alisp;
 
-ALObjectPtr Fassert_numbers(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+struct assert_numbers
 {
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
 
-    if (auto val = eval->eval(t_obj->i(0)); are_objects_numbers(val))
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
+    inline static const std::string name{ "assert-numbers" };
 
-ALObjectPtr Fassert_symbol(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
+    inline static const Signature signature{ Any{} };
 
-    if (auto val = eval->eval(t_obj->i(0)); !psym(val))
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
+    inline static const std::string doc{ R"()" };
 
-ALObjectPtr Fassert_string(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
-    if (auto val = eval->eval(t_obj->i(0)); !pstring(val))
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
 
-ALObjectPtr Fassert_list(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
-
-    if (auto val = eval->eval(t_obj->i(0)); !plist(val))
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
-
-ALObjectPtr Fassert_number(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
-    if (auto val = eval->eval(t_obj->i(0)); !val->is_int() and !val->is_real())
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
-
-ALObjectPtr Fassert_int(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
-
-    if (auto val = eval->eval(t_obj->i(0)); !pint(val))
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
-
-ALObjectPtr Fassert_real(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
-
-    if (auto val = eval->eval(t_obj->i(0)); !preal(val))
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
-
-ALObjectPtr Fassert_char(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
-
-    if (auto val = eval->eval(t_obj->i(0)); !val->is_int() and !val->check_char_flag())
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
-
-ALObjectPtr Fassert_function(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
-
-    if (auto val = eval->eval(t_obj->i(0)); !val->check_function_flag())
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
-
-ALObjectPtr Fassert_non_const(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
-
-    if (auto val = eval->eval(t_obj->i(0)); !val->check_const_flag())
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
-
-ALObjectPtr Fassert_file(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-
-    AL_CHECK(assert_size<1>(t_obj));
-
-    if (auto val = eval->eval(t_obj->i(0)); !files::files_registry.belong(object_to_resource(val)))
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
-
-ALObjectPtr Fassert_stream(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
-
-    if (auto val = eval->eval(t_obj->i(0)); !al::streams_registry.belong(object_to_resource(val)))
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
-
-ALObjectPtr Fassert_byte(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
-
-    if (auto val = eval->eval(t_obj->i(0)); !pint(val) || !(0 <= val->to_int() and val->to_int() <= 255))
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-    return Qt;
-}
-
-ALObjectPtr Fassert_byte_array(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    if (is_falsy(Vdebug_mode))
-    {
-        return Qt;
-    }
-    AL_CHECK(assert_size<1>(t_obj));
-    auto val = eval->eval(t_obj->i(0));
-
-    if (!val->is_list())
-    {
-        throw signal_exception(
-          env::intern("assert-signal"),
-          make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
-    }
-
-    for (auto &el : *val)
-    {
-        auto byte = el->to_int();
-        if (!(0 <= byte and byte <= 255))
+        if (auto val = eval->eval(t_obj->i(0)); are_objects_numbers(val))
         {
             throw signal_exception(
               env::intern("assert-signal"),
               make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
         }
+        return Qt;
     }
+};
 
-    return Qt;
-}
+struct assert_symbol
+{
+    inline static const std::string name{ "assert-symbol" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
+
+        if (auto val = eval->eval(t_obj->i(0)); !psym(val))
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+        return Qt;
+    }
+};
+
+struct assert_string
+{
+    inline static const std::string name{ "assert-string" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
+        if (auto val = eval->eval(t_obj->i(0)); !pstring(val))
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+        return Qt;
+    }
+};
+
+struct assert_list
+{
+    inline static const std::string name{ "assert-list" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
+
+        if (auto val = eval->eval(t_obj->i(0)); !plist(val))
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+        return Qt;
+    }
+};
+
+struct assert_number
+{
+    inline static const std::string name{ "assert-numbers" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
+        if (auto val = eval->eval(t_obj->i(0)); !val->is_int() and !val->is_real())
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+        return Qt;
+    }
+};
+
+struct assert_int
+{
+    inline static const std::string name{ "assert-int" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
+
+        if (auto val = eval->eval(t_obj->i(0)); !pint(val))
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+        return Qt;
+    }
+};
+
+struct assert_real
+{
+    inline static const std::string name{ "assert-real" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
+
+        if (auto val = eval->eval(t_obj->i(0)); !preal(val))
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+        return Qt;
+    }
+};
+
+struct assert_char
+{
+    inline static const std::string name{ "assert-char" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
+
+        if (auto val = eval->eval(t_obj->i(0)); !val->is_int() and !val->check_char_flag())
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+        return Qt;
+    }
+};
+
+struct assert_function
+{
+    inline static const std::string name{ "assert-function" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
+
+        if (auto val = eval->eval(t_obj->i(0)); !val->check_function_flag())
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+        return Qt;
+    }
+};
+
+struct assert_non_const
+{
+    inline static const std::string name{ "assert-non-const" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
+
+        if (auto val = eval->eval(t_obj->i(0)); !val->check_const_flag())
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+        return Qt;
+    }
+};
+
+struct assert_file
+{
+    inline static const std::string name{ "assert-file" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+
+        AL_CHECK(assert_size<1>(t_obj));
+
+        if (auto val = eval->eval(t_obj->i(0)); !files::files_registry.belong(object_to_resource(val)))
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+        return Qt;
+    }
+};
+
+struct assert_stream
+{
+    inline static const std::string name{ "assert-stream" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
+
+        if (auto val = eval->eval(t_obj->i(0)); !al::streams_registry.belong(object_to_resource(val)))
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+        return Qt;
+    }
+};
+
+struct assert_byte
+{
+    inline static const std::string name{ "assert-byte" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
+
+        if (auto val = eval->eval(t_obj->i(0)); !pint(val) || !(0 <= val->to_int() and val->to_int() <= 255))
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+        return Qt;
+    }
+};
+
+struct assert_byte_array
+{
+    inline static const std::string name{ "assert-byte-array" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        if (is_falsy(Vdebug_mode))
+        {
+            return Qt;
+        }
+        AL_CHECK(assert_size<1>(t_obj));
+        auto val = eval->eval(t_obj->i(0));
+
+        if (!val->is_list())
+        {
+            throw signal_exception(
+              env::intern("assert-signal"),
+              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+        }
+
+        for (auto &el : *val)
+        {
+            auto byte = el->to_int();
+            if (!(0 <= byte and byte <= 255))
+            {
+                throw signal_exception(env::intern("assert-signal"),
+                                       make_object(make_string("Assertion failed."),
+                                                   make_string(dump(t_obj->i(0))),
+                                                   make_string(dump(val))));
+            }
+        }
+
+        return Qt;
+    }
+};
 
 
 }  // namespace asserts
@@ -283,35 +411,21 @@ ALISP_EXPORT alisp::env::ModulePtr init_asserts(alisp::env::Environment *, alisp
     auto assert_module = alisp::module_init("asserts");
     auto ass_ptr       = assert_module.get();
 
-    module_defun(ass_ptr, "assert-numbers", &asserts::Fassert_numbers, R"()");
-    module_defun(ass_ptr, "assert-symbol", &asserts::Fassert_symbol, R"()");
-    module_defun(ass_ptr, "assert-string", &asserts::Fassert_string, R"()");
-    module_defun(ass_ptr, "assert-list", &asserts::Fassert_list, R"()");
-    module_defun(ass_ptr, "assert-number", &asserts::Fassert_number, R"()");
-    module_defun(ass_ptr, "assert-real", &asserts::Fassert_real, R"()");
-    module_defun(ass_ptr, "assert-int", &asserts::Fassert_int, R"()");
-    module_defun(ass_ptr, "assert-char", &asserts::Fassert_char, R"()");
-    module_defun(ass_ptr, "assert-function", &asserts::Fassert_function, R"()");
-    module_defun(ass_ptr, "assert-non-const", &asserts::Fassert_non_const, R"()");
-    module_defun(ass_ptr, "assert-file", &asserts::Fassert_file, R"()");
-    module_defun(ass_ptr, "assert-stream", &asserts::Fassert_stream, R"()");
-    module_defun(ass_ptr, "assert-byte", &asserts::Fassert_byte, R"()");
-    module_defun(ass_ptr, "assert-byte-array", &asserts::Fassert_byte_array, R"()");
+    module_defun<asserts::assert_numbers>(ass_ptr);
+    module_defun<asserts::assert_symbol>(ass_ptr);
+    module_defun<asserts::assert_string>(ass_ptr);
+    module_defun<asserts::assert_list>(ass_ptr);
+    module_defun<asserts::assert_number>(ass_ptr);
+    module_defun<asserts::assert_int>(ass_ptr);
+    module_defun<asserts::assert_real>(ass_ptr);
+    module_defun<asserts::assert_char>(ass_ptr);
+    module_defun<asserts::assert_function>(ass_ptr);
+    module_defun<asserts::assert_non_const>(ass_ptr);
+    module_defun<asserts::assert_file>(ass_ptr);
+    module_defun<asserts::assert_stream>(ass_ptr);
+    module_defun<asserts::assert_byte>(ass_ptr);
+    module_defun<asserts::assert_byte_array>(ass_ptr);
 
-    module_signature(ass_ptr, "assert-numbers", Signature(Any{}));
-    module_signature(ass_ptr, "assert-symbol", Signature(Any{}));
-    module_signature(ass_ptr, "assert-string", Signature(Any{}));
-    module_signature(ass_ptr, "assert-list", Signature(Any{}));
-    module_signature(ass_ptr, "assert-number", Signature(Any{}));
-    module_signature(ass_ptr, "assert-real", Signature(Any{}));
-    module_signature(ass_ptr, "assert-int", Signature(Any{}));
-    module_signature(ass_ptr, "assert-char", Signature(Any{}));
-    module_signature(ass_ptr, "assert-function", Signature(Any{}));
-    module_signature(ass_ptr, "assert-non-const", Signature(Any{}));
-    module_signature(ass_ptr, "assert-file", Signature(Any{}));
-    module_signature(ass_ptr, "assert-stream", Signature(Any{}));
-    module_signature(ass_ptr, "assert-byte", Signature(Any{}));
-    module_signature(ass_ptr, "assert-byte-array", Signature(Any{}));
 
     return assert_module;
 }

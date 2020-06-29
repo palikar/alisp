@@ -404,204 +404,349 @@ struct Base32
 
 }  // namespace detail
 
-ALObjectPtr Fbase64_encode_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct base64_encode_string
 {
-    AL_CHECK(assert_size<1>(obj));
+    inline static const std::string name{ "base64-encode-string" };
 
-    auto str = eval->eval(obj->i(0));
-    AL_CHECK(assert_string(str));
+    inline static const Signature signature{ String{} };
 
-    return make_string(detail::Base64::Encode(str->to_string()));
-}
+    inline static const std::string doc{ R"((base64-encode-string STRING)
 
-ALObjectPtr Fbase64_encode_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(obj));
+Return base64 encoded version of the string `STRING`.
+)" };
 
-    auto list = eval->eval(obj->i(0));
-    AL_CHECK(assert_byte_array(list));
-
-    std::vector<char> v;
-    v.reserve(std::size(*list));
-
-    for (auto &b : *list)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        v.emplace_back(static_cast<char>(b->to_int()));
+        AL_CHECK(assert_size<1>(obj));
+
+        auto str = eval->eval(obj->i(0));
+        AL_CHECK(assert_string(str));
+
+        return make_string(detail::Base64::Encode(str->to_string()));
     }
+};
 
-    return make_string(detail::Base64::Encode(std::string(v.begin(), v.end())));
-}
-
-ALObjectPtr Fbase64_decode_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct base64_encode_bytes
 {
-    AL_CHECK(assert_size<1>(obj));
+    inline static const std::string name{ "base64-encode-bytes" };
 
-    auto str = eval->eval(obj->i(0));
-    AL_CHECK(assert_string(str));
-    std::string out;
-    auto res = detail::Base64::Decode(str->to_string(), out);
-    if (res)
+    inline static const Signature signature{ ByteArray{} };
+
+    inline static const std::string doc{ R"((base64-encode-bytes STRING)
+
+Return the bytes of encoding the string `STRING` in base64.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        return make_string(out);
-    }
-    return Qnil;
-}
+        AL_CHECK(assert_size<1>(obj));
 
-ALObjectPtr Fbase64_decode_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(obj));
+        auto list = eval->eval(obj->i(0));
+        AL_CHECK(assert_byte_array(list));
 
-    auto str = eval->eval(obj->i(0));
-    AL_CHECK(assert_string(str));
-    std::string out;
-    auto res = detail::Base64::Decode(str->to_string(), out);
-    if (res)
-    {
+        std::vector<char> v;
+        v.reserve(std::size(*list));
 
-        ALObject::list_type bytes;
-        for (const char c : out)
+        for (auto &b : *list)
         {
-            bytes.push_back(make_int(static_cast<ALObject::int_type>(c)));
+            v.emplace_back(static_cast<char>(b->to_int()));
         }
-        return make_list(bytes);
+
+        return make_string(detail::Base64::Encode(std::string(v.begin(), v.end())));
     }
-    return Qnil;
-}
+};
 
-ALObjectPtr Fbase16_encode_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct base64_decode_string
 {
-    AL_CHECK(assert_size<1>(obj));
+    inline static const std::string name{ "base64-decode-string" };
 
-    auto str = eval->eval(obj->i(0));
-    AL_CHECK(assert_string(str));
+    inline static const Signature signature{ String{} };
 
-    return make_string(detail::Base16::Encode(str->to_string()));
-}
+    inline static const std::string doc{ R"((base64-decode-string STRING)
 
-ALObjectPtr Fbase16_encode_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(obj));
+Decode the base64 encoded string `STRING` and return the result as string.
+)" };
 
-    auto list = eval->eval(obj->i(0));
-    AL_CHECK(assert_byte_array(list));
-
-    std::vector<char> v;
-    v.reserve(std::size(*list));
-
-    for (auto &b : *list)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        v.emplace_back(static_cast<char>(b->to_int()));
-    }
+        AL_CHECK(assert_size<1>(obj));
 
-    return make_string(detail::Base16::Encode(std::string(v.begin(), v.end())));
-}
-
-ALObjectPtr Fbase16_decode_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(obj));
-
-    auto str = eval->eval(obj->i(0));
-    AL_CHECK(assert_string(str));
-    std::string out;
-    auto res = detail::Base16::Decode(str->to_string(), out);
-    if (res)
-    {
-        return make_string(out);
-    }
-    return Qnil;
-}
-
-ALObjectPtr Fbase16_decode_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(obj));
-
-    auto str = eval->eval(obj->i(0));
-    AL_CHECK(assert_string(str));
-    std::string out;
-    auto res = detail::Base16::Decode(str->to_string(), out);
-    if (res)
-    {
-
-        ALObject::list_type bytes;
-        for (const char c : out)
+        auto str = eval->eval(obj->i(0));
+        AL_CHECK(assert_string(str));
+        std::string out;
+        auto res = detail::Base64::Decode(str->to_string(), out);
+        if (res)
         {
-            bytes.push_back(make_int(static_cast<ALObject::int_type>(c)));
+            return make_string(out);
         }
-        return make_list(bytes);
+        return Qnil;
     }
-    return Qnil;
-}
+};
 
-ALObjectPtr Fbase32_encode_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct base64_decode_bytes
 {
-    AL_CHECK(assert_size<1>(obj));
+    inline static const std::string name{ "base64-decode-bytes" };
 
-    auto str = eval->eval(obj->i(0));
-    AL_CHECK(assert_string(str));
+    inline static const Signature signature{ String{} };
 
-    return make_string(detail::Base32::Encode(str->to_string()));
-}
+    inline static const std::string doc{ R"((base64-decode-bytes BYTES_LIST)
 
-ALObjectPtr Fbase32_decode_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(obj));
+Decode the base64 encoded bytes `BYTES_LIST` and return the result as string.
+)" };
 
-    auto str = eval->eval(obj->i(0));
-    AL_CHECK(assert_string(str));
-    std::string out;
-    auto res = detail::Base32::Decode(str->to_string(), out);
-    if (res)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        return make_string(out);
-    }
-    return Qnil;
-}
+        AL_CHECK(assert_size<1>(obj));
 
-ALObjectPtr Fbase32_decode_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(obj));
-
-    auto str = eval->eval(obj->i(0));
-    AL_CHECK(assert_string(str));
-    std::string out;
-    auto res = detail::Base32::Decode(str->to_string(), out);
-    if (res)
-    {
-
-        ALObject::list_type bytes;
-        for (const char c : out)
+        auto str = eval->eval(obj->i(0));
+        AL_CHECK(assert_string(str));
+        std::string out;
+        auto res = detail::Base64::Decode(str->to_string(), out);
+        if (res)
         {
-            bytes.push_back(make_int(static_cast<ALObject::int_type>(c)));
+
+            ALObject::list_type bytes;
+            for (const char c : out)
+            {
+                bytes.push_back(make_int(static_cast<ALObject::int_type>(c)));
+            }
+            return make_list(bytes);
         }
-        return make_list(bytes);
+        return Qnil;
     }
-    return Qnil;
-}
+};
 
-ALObjectPtr Fbase32_encode_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct base16_encode_string
 {
-    assert_size<1>(obj);
+    inline static const std::string name{ "base16-encode-string" };
 
-    auto list = eval->eval(obj->i(0));
-    assert_byte_array(list);
+    inline static const Signature signature{ String{} };
 
-    std::vector<char> v;
-    v.reserve(std::size(*list));
+    inline static const std::string doc{ R"((base16-encode-string STRING)
 
-    for (auto &b : *list)
+Return base16 encoded version of the string `STRING`.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        v.emplace_back(static_cast<char>(b->to_int()));
-    }
+        AL_CHECK(assert_size<1>(obj));
 
-    return make_string(detail::Base32::Encode(std::string(v.begin(), v.end())));
-}
+        auto str = eval->eval(obj->i(0));
+        AL_CHECK(assert_string(str));
+
+        return make_string(detail::Base16::Encode(str->to_string()));
+    }
+};
+
+struct base16_encode_bytes
+{
+    inline static const std::string name{ "base16-encode-bytes" };
+
+    inline static const Signature signature{ ByteArray{} };
+
+    inline static const std::string doc{ R"((base16-encode-string STRING)
+
+Return the bytes of encoding the string `STRING` in base16.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(obj));
+
+        auto list = eval->eval(obj->i(0));
+        AL_CHECK(assert_byte_array(list));
+
+        std::vector<char> v;
+        v.reserve(std::size(*list));
+
+        for (auto &b : *list)
+        {
+            v.emplace_back(static_cast<char>(b->to_int()));
+        }
+
+        return make_string(detail::Base16::Encode(std::string(v.begin(), v.end())));
+    }
+};
+
+struct base16_decode_string
+{
+    inline static const std::string name{ "base16-decode-string" };
+
+    inline static const Signature signature{ String{} };
+
+    inline static const std::string doc{ R"((base16-decode-string STRING)
+
+Decode the base16 encoded string `STRING` and return the result as string.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(obj));
+
+        auto str = eval->eval(obj->i(0));
+        AL_CHECK(assert_string(str));
+        std::string out;
+        auto res = detail::Base16::Decode(str->to_string(), out);
+        if (res)
+        {
+            return make_string(out);
+        }
+        return Qnil;
+    }
+};
+
+struct base16_decode_bytes
+{
+    inline static const std::string name{ "base16-decode-bytes" };
+
+    inline static const Signature signature{ String{} };
+
+    inline static const std::string doc{ R"((base16-decode-bytes BYTES_LIST)
+
+Decode the base16 encoded bytes `BYTES_LIST` and return the result as string.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(obj));
+
+        auto str = eval->eval(obj->i(0));
+        AL_CHECK(assert_string(str));
+        std::string out;
+        auto res = detail::Base16::Decode(str->to_string(), out);
+        if (res)
+        {
+
+            ALObject::list_type bytes;
+            for (const char c : out)
+            {
+                bytes.push_back(make_int(static_cast<ALObject::int_type>(c)));
+            }
+            return make_list(bytes);
+        }
+        return Qnil;
+    }
+};
+
+struct base32_encode_string
+{
+    inline static const std::string name{ "base32-encode-string" };
+
+    inline static const Signature signature{ String{} };
+
+    inline static const std::string doc{ R"((base32-encode-string STRING)
+
+Return base32 encoded version of the string `STRING`.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(obj));
+
+        auto str = eval->eval(obj->i(0));
+        AL_CHECK(assert_string(str));
+
+        return make_string(detail::Base32::Encode(str->to_string()));
+    }
+};
+
+struct base32_decode_string
+{
+    inline static const std::string name{ "base32-decode-string" };
+
+    inline static const Signature signature{ String{} };
+
+    inline static const std::string doc{ R"((base32-decode-string STRING)
+
+Decode the base32 encoded string `STRING` and return the result as string.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(obj));
+
+        auto str = eval->eval(obj->i(0));
+        AL_CHECK(assert_string(str));
+        std::string out;
+        auto res = detail::Base32::Decode(str->to_string(), out);
+        if (res)
+        {
+            return make_string(out);
+        }
+        return Qnil;
+    }
+};
+
+struct base32_decode_bytes
+{
+    inline static const std::string name{ "base32-decode-bytes" };
+
+    inline static const Signature signature{ String{} };
+
+    inline static const std::string doc{ R"((base32-decode-bytes BYTES_LIST)
+
+Decode the base32 encoded bytes `BYTES_LIST` and return the result as string.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(obj));
+
+        auto str = eval->eval(obj->i(0));
+        AL_CHECK(assert_string(str));
+        std::string out;
+        auto res = detail::Base32::Decode(str->to_string(), out);
+        if (res)
+        {
+
+            ALObject::list_type bytes;
+            for (const char c : out)
+            {
+                bytes.push_back(make_int(static_cast<ALObject::int_type>(c)));
+            }
+            return make_list(bytes);
+        }
+        return Qnil;
+    }
+};
+
+struct base32_encode_bytes
+{
+    inline static const std::string name{ "base32-encode-bytes" };
+
+    inline static const Signature signature{ ByteArray{} };
+
+    inline static const std::string doc{ R"((base32-encode-bytes STRING)
+
+Return the bytes of encoding the string `STRING` in base32.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<1>(obj);
+
+        auto list = eval->eval(obj->i(0));
+        assert_byte_array(list);
+
+        std::vector<char> v;
+        v.reserve(std::size(*list));
+
+        for (auto &b : *list)
+        {
+            v.emplace_back(static_cast<char>(b->to_int()));
+        }
+
+        return make_string(detail::Base32::Encode(std::string(v.begin(), v.end())));
+    }
+};
+
 
 }  // namespace base64
 
 ALISP_EXPORT alisp::env::ModulePtr init_base64(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     using namespace alisp;
-    
+
     auto Mbase64    = alisp::module_init("base64");
     auto base64_ptr = Mbase64.get();
 
@@ -620,118 +765,21 @@ Example:
 ```
 )");
 
-    module_defun(base64_ptr,
-                        "base64-encode-string",
-                        &base64::Fbase64_encode_string,
-                        R"((base64-encode-string STRING)
 
-Return base64 encoded version of the string `STRING`.
-)");
+    module_defun<base64::base16_decode_bytes>(base64_ptr);
+    module_defun<base64::base16_encode_bytes>(base64_ptr);
+    module_defun<base64::base16_decode_string>(base64_ptr);
+    module_defun<base64::base16_encode_string>(base64_ptr);
 
-    module_defun(base64_ptr,
-                        "base64-encode-bytes",
-                        &base64::Fbase64_encode_bytes,
-                        R"((base64-encode-bytes STRING)
+    module_defun<base64::base32_decode_bytes>(base64_ptr);
+    module_defun<base64::base32_encode_bytes>(base64_ptr);
+    module_defun<base64::base32_decode_string>(base64_ptr);
+    module_defun<base64::base32_encode_string>(base64_ptr);
 
-Return the bytes of encoding the string `STRING` in base64.
-)");
-
-    module_defun(base64_ptr,
-                        "base64-decode-string",
-                        &base64::Fbase64_decode_string,
-                        R"((base64-decode-string STRING)
-
-Decode the base64 encoded string `STRING` and return the result as string.
-)");
-
-    module_defun(base64_ptr,
-                        "base64-decode-bytes",
-                        &base64::Fbase64_decode_bytes,
-                        R"((base64-decode-bytes BYTES_LIST)
-
-Decode the base64 encoded bytes `BYTES_LIST` and return the result as string.
-)");
-
-    module_defun(base64_ptr,
-                        "base16-encode-string",
-                        &base64::Fbase16_encode_string,
-                        R"((base16-encode-string STRING)
-
-Return base16 encoded version of the string `STRING`.
-)");
-
-    module_defun(base64_ptr,
-                        "base16-encode-bytes",
-                        &base64::Fbase16_encode_bytes,
-                        R"((base16-encode-string STRING)
-
-Return the bytes of encoding the string `STRING` in base16.
-)");
-
-    module_defun(base64_ptr,
-                        "base16-decode-string",
-                        &base64::Fbase16_decode_string,
-                        R"((base16-decode-string STRING)
-
-Decode the base16 encoded string `STRING` and return the result as string.
-)");
-
-    module_defun(base64_ptr,
-                        "base16-decode-bytes",
-                        &base64::Fbase16_decode_bytes,
-                        R"((base16-decode-bytes BYTES_LIST)
-
-Decode the base16 encoded bytes `BYTES_LIST` and return the result as string.
-)");
-
-
-    module_defun(base64_ptr,
-                        "base32-encode-string",
-                        &base64::Fbase32_encode_string,
-                        R"((base32-encode-string STRING)
-
-Return base32 encoded version of the string `STRING`.
-)");
-
-    module_defun(base64_ptr,
-                        "base32-encode-bytes",
-                        &base64::Fbase32_encode_bytes,
-                        R"((base32-encode-bytes STRING)
-
-Return the bytes of encoding the string `STRING` in base32.
-)");
-
-    module_defun(base64_ptr,
-                        "base32-decode-string",
-                        &base64::Fbase32_decode_string,
-                        R"((base32-decode-string STRING)
-
-Decode the base32 encoded string `STRING` and return the result as string.
-)");
-
-    module_defun(base64_ptr,
-                        "base32-decode-bytes",
-                        &base64::Fbase32_decode_bytes,
-                        R"((base32-decode-bytes BYTES_LIST)
-
-Decode the base32 encoded bytes `BYTES_LIST` and return the result as string.
-)");
-
-    
-    module_signature(base64_ptr, "base16-decode-string", Signature(String{}));
-    module_signature(base64_ptr, "base16-encode-string", Signature(String{}));
-    module_signature(base64_ptr, "base16-decode-bytes", Signature(String{}));
-    module_signature(base64_ptr, "base16-encode-bytes", Signature(ByteArray{}));
-
-    module_signature(base64_ptr, "base32-decode-string", Signature(String{}));
-    module_signature(base64_ptr, "base32-encode-string", Signature(String{}));
-    module_signature(base64_ptr, "base32-decode-bytes", Signature(String{}));
-    module_signature(base64_ptr, "base32-encode-bytes", Signature(ByteArray{}));
-
-    module_signature(base64_ptr, "base64-decode-string", Signature(String{}));
-    module_signature(base64_ptr, "base64-encode-string", Signature(String{}));
-    module_signature(base64_ptr, "base64-decode-bytes", Signature(String{}));
-    module_signature(base64_ptr, "base64-encode-bytes", Signature(ByteArray{}));
+    module_defun<base64::base64_decode_bytes>(base64_ptr);
+    module_defun<base64::base64_encode_bytes>(base64_ptr);
+    module_defun<base64::base64_decode_string>(base64_ptr);
+    module_defun<base64::base64_encode_string>(base64_ptr);
 
     return Mbase64;
 }

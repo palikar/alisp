@@ -77,404 +77,568 @@ auto process_stderr = alisp::make_symbol("stderr");
 auto process_pipe   = alisp::make_symbol("pipe");
 
 
-ALObjectPtr Fpopen(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
+struct popen
 {
-    assert_min_size<1>(obj);
+    inline static const std::string name{ "popen" };
 
-    auto l  = eval->eval(obj->i(0));
-    auto op = eval->eval(obj->i(1));
+    inline static const Signature signature{ List{}, List{} };
 
-    AL_CHECK(assert_list(l));
-    AL_CHECK(assert_list(op));
+    inline static const std::string doc{ R"(((open COMMAND_PARTS OPTIONS )
 
-    std::vector<std::string> args;
-    for (auto el : *l)
+Execute a process. `COMMAND_PARTS` must be a list of strings that will
+become the parts of the command that should be executed.
+
+`OPTIONS` is also a list with options on how to execute the
+process. Possible options are:
+
+  * `:defer` - if present, don't start the process immediately but only when the `start` function is called.
+  * `:buff-size` - the buffer size of the stdin/stdout/stderr streams of the child process. Default value is 0.
+  * `:close-fds` - if present, close all file descriptors when the child process is spawned.
+  * `:cwd` - the working directory where the process should be executed.
+  * `:shell` - if present, spawn the process in a sub-shell.
+  * `:env` - a list of pairs `(VAR VALUE)`. For the spawned process, the env variable `VAR` will be set to `VALUE`.
+  * `:input` - specify the input channel fot the child process. This can be `pipe`\`stdout`\`stderr` or a file name.
+  * `:output` - specify the output channel fot the child process. This can be `pipe`\`stdout`\`stderr` or a file name.
+  * `:error` - specify the error channel fot the child process. This can be `pipe`\`stdout`\`stderr` or a file name.
+
+Return the new process as a resource object.
+))" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
     {
-        args.push_back(eval->eval(el)->to_string());
-    }
+        assert_min_size<1>(obj);
 
-    detail::opts options{};
+        auto l  = eval->eval(obj->i(0));
+        auto op = eval->eval(obj->i(1));
 
-    if (contains(op, ":defer"))
-    {
-        std::get<detail::DEFER>(options) = defer_spawn{ true };
-    }
+        AL_CHECK(assert_list(l));
+        AL_CHECK(assert_list(op));
 
-    if (auto [size, succ] = get_next(op, ":buff-size"); succ)
-    {
-        auto s = eval->eval(size);
-        AL_CHECK(assert_int(s));
-        std::get<detail::BUFSIZE>(options) = bufsize{ static_cast<int>(s->to_int()) };
-    }
-
-    if (contains(op, ":close-fds"))
-    {
-        std::get<detail::CLOSE_FDS>(options) = close_fds{ true };
-    }
-
-    if (auto [cwd_str, succ] = get_next(op, ":cwd"); succ)
-    {
-        auto s = eval->eval(cwd_str);
-        AL_CHECK(assert_string(s));
-        std::get<detail::CWD>(options) = cwd{ s->to_string() };
-    }
-
-    if (contains(op, ":shell"))
-    {
-        std::get<detail::SHELL>(options) = shell{ true };
-    }
-
-    if (contains(op, ":env"))
-    {
-    }
-
-    if (auto [in, succ] = get_next(op, ":input"); succ)
-    {
-        if (eq(eval->eval(in), process_stderr))
+        std::vector<std::string> args;
+        for (auto el : *l)
         {
-            std::get<detail::INPUT>(options) = input{ STDERR };
+            args.push_back(eval->eval(el)->to_string());
         }
-        else if (eq(eval->eval(in), process_stdout))
-        {
-            std::get<detail::INPUT>(options) = input{ STDOUT };
-        }
-        else if (eq(eval->eval(in), process_pipe))
-        {
-            std::get<detail::INPUT>(options) = input{ PIPE };
-        }
-    }
 
-    if (auto [out, succ] = get_next(op, ":output"); succ)
-    {
+        detail::opts options{};
 
-        if (eq(eval->eval(out), process_stderr))
+        if (contains(op, ":defer"))
         {
-            std::get<detail::OUTPUT>(options) = output{ STDERR };
+            std::get<detail::DEFER>(options) = defer_spawn{ true };
         }
-        else if (eq(eval->eval(out), process_stdout))
-        {
-            std::get<detail::OUTPUT>(options) = output{ STDOUT };
-        }
-        else if (eq(eval->eval(out), process_pipe))
-        {
-            std::get<detail::OUTPUT>(options) = output{ PIPE };
-        }
-    }
 
-    if (auto [err, succ] = get_next(op, ":error"); succ)
-    {
-        if (eq(eval->eval(err), process_stderr))
+        if (auto [size, succ] = get_next(op, ":buff-size"); succ)
         {
-            std::get<detail::ERROR>(options) = error{ STDERR };
+            auto s = eval->eval(size);
+            AL_CHECK(assert_int(s));
+            std::get<detail::BUFSIZE>(options) = bufsize{ static_cast<int>(s->to_int()) };
         }
-        else if (eq(eval->eval(err), process_stdout))
-        {
-            std::get<detail::ERROR>(options) = error{ STDOUT };
-        }
-        else if (eq(eval->eval(err), process_pipe))
-        {
-            std::get<detail::ERROR>(options) = error{ PIPE };
-        }
-    }
 
-    try
-    {
-        auto new_id = detail::proc_registry
-                        .emplace_resource(detail::open_proc(
-                            args, options, std::make_index_sequence<std::tuple_size<detail::opts>::value>()))
-            ->id;
-        env->defer_callback([id = new_id]() { detail::proc_registry.destroy_resource(id); });
-        auto new_obj = resource_to_object(new_id);
-        return new_obj;
-    }
-    catch (subprocess::OSError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
-        return Qnil;
-    }
-    catch (subprocess::CalledProcessError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
-        return Qnil;
-    }
-}
+        if (contains(op, ":close-fds"))
+        {
+            std::get<detail::CLOSE_FDS>(options) = close_fds{ true };
+        }
 
-ALObjectPtr Fcheck_output(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+        if (auto [cwd_str, succ] = get_next(op, ":cwd"); succ)
+        {
+            auto s = eval->eval(cwd_str);
+            AL_CHECK(assert_string(s));
+            std::get<detail::CWD>(options) = cwd{ s->to_string() };
+        }
+
+        if (contains(op, ":shell"))
+        {
+            std::get<detail::SHELL>(options) = shell{ true };
+        }
+
+        if (contains(op, ":env"))
+        {
+        }
+
+        if (auto [in, succ] = get_next(op, ":input"); succ)
+        {
+            if (eq(eval->eval(in), process_stderr))
+            {
+                std::get<detail::INPUT>(options) = input{ STDERR };
+            }
+            else if (eq(eval->eval(in), process_stdout))
+            {
+                std::get<detail::INPUT>(options) = input{ STDOUT };
+            }
+            else if (eq(eval->eval(in), process_pipe))
+            {
+                std::get<detail::INPUT>(options) = input{ PIPE };
+            }
+        }
+
+        if (auto [out, succ] = get_next(op, ":output"); succ)
+        {
+
+            if (eq(eval->eval(out), process_stderr))
+            {
+                std::get<detail::OUTPUT>(options) = output{ STDERR };
+            }
+            else if (eq(eval->eval(out), process_stdout))
+            {
+                std::get<detail::OUTPUT>(options) = output{ STDOUT };
+            }
+            else if (eq(eval->eval(out), process_pipe))
+            {
+                std::get<detail::OUTPUT>(options) = output{ PIPE };
+            }
+        }
+
+        if (auto [err, succ] = get_next(op, ":error"); succ)
+        {
+            if (eq(eval->eval(err), process_stderr))
+            {
+                std::get<detail::ERROR>(options) = error{ STDERR };
+            }
+            else if (eq(eval->eval(err), process_stdout))
+            {
+                std::get<detail::ERROR>(options) = error{ STDOUT };
+            }
+            else if (eq(eval->eval(err), process_pipe))
+            {
+                std::get<detail::ERROR>(options) = error{ PIPE };
+            }
+        }
+
+        try
+        {
+            auto new_id = detail::proc_registry
+                            .emplace_resource(detail::open_proc(
+                              args, options, std::make_index_sequence<std::tuple_size<detail::opts>::value>()))
+                            ->id;
+            env->defer_callback([id = new_id]() { detail::proc_registry.destroy_resource(id); });
+            auto new_obj = resource_to_object(new_id);
+            return new_obj;
+        }
+        catch (subprocess::OSError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+            return Qnil;
+        }
+        catch (subprocess::CalledProcessError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+            return Qnil;
+        }
+    }
+};
+
+struct check_output
 {
-    assert_min_size<1>(obj);
+    inline static const std::string name{ "check-output" };
 
-    std::vector<std::string> args;
-    for (auto el : *obj)
-    {
-        args.push_back(eval->eval(el)->to_string());
-    }
+    inline static const Signature signature{ Int{} };
 
-    try
-    {
-        auto buf = subprocess::check_output(args);
-        return make_string(std::string{ buf.buf.begin(), buf.buf.end() });
-    }
-    catch (subprocess::OSError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
-        return Qnil;
-    }
-    catch (subprocess::CalledProcessError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
-        return Qnil;
-    }
-}
+    inline static const std::string doc{ R"((check-output [COMMAND_PART]...)
 
-ALObjectPtr Fcheck_output_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_min_size<1>(obj);
+Convenience function. Execute the command with the given parts and
+return the contents of the standard output of the process once its
+finished.
+)" };
 
-    std::vector<std::string> args;
-    for (auto el : *obj)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        args.push_back(eval->eval(el)->to_string());
-    }
+        assert_min_size<1>(obj);
 
-    try
-    {
-        auto buf = subprocess::check_output(args);
-        ALObject::list_type bytes;
-        for (auto b : buf.buf)
+        std::vector<std::string> args;
+        for (auto el : *obj)
         {
-            bytes.push_back(make_int(b));
+            args.push_back(eval->eval(el)->to_string());
         }
-        return make_list(bytes);
-    }
-    catch (subprocess::OSError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
-        return Qnil;
-    }
-    catch (subprocess::CalledProcessError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
-        return Qnil;
-    }
-}
 
-ALObjectPtr Fpid(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-
-    AL_CHECK(assert_size<1>(t_obj));
-    auto pro = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_int(pro));
-
-    return make_int(detail::proc_registry[object_to_resource(pro)]->pid());
-}
-
-ALObjectPtr Fretcode(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-
-    AL_CHECK(assert_size<1>(t_obj));
-    auto pro = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_int(pro));
-
-    try
-    {
-        return make_int(detail::proc_registry[object_to_resource(pro)]->retcode());
-    }
-    catch (subprocess::OSError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
-        return Qnil;
-    }
-    catch (subprocess::CalledProcessError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
-        return Qnil;
-    }
-}
-
-ALObjectPtr Fwait(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-
-    AL_CHECK(assert_size<1>(t_obj));
-    auto pro = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_int(pro));
-
-    try
-    {
-        return make_int(detail::proc_registry[object_to_resource(pro)]->wait());
-    }
-    catch (subprocess::OSError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
-        return Qnil;
-    }
-    catch (subprocess::CalledProcessError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
-        return Qnil;
-    }
-}
-
-ALObjectPtr Fpoll(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-
-    AL_CHECK(assert_size<1>(t_obj));
-    auto pro = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_int(pro));
-
-    try
-    {
-        return make_int(detail::proc_registry[object_to_resource(pro)]->poll());
-    }
-    catch (subprocess::OSError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
-        return Qnil;
-    }
-    catch (subprocess::CalledProcessError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
-        return Qnil;
-    }
-}
-
-ALObjectPtr Fstart(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-
-    AL_CHECK(assert_size<1>(t_obj));
-    auto pro = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_int(pro));
-
-    try
-    {
-        detail::proc_registry[object_to_resource(pro)]->start_process();
-        return Qt;
-    }
-    catch (subprocess::OSError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
-        return Qnil;
-    }
-    catch (subprocess::CalledProcessError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
-        return Qnil;
-    }
-}
-
-ALObjectPtr Fkill(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-
-    AL_CHECK(assert_min_size<1>(t_obj));
-    auto pro = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_int(pro));
-
-    try
-    {
-        if (std::size(*t_obj) > 1)
+        try
         {
-            auto sig = eval->eval(t_obj->i(1));
-            AL_CHECK(assert_int(sig));
-            detail::proc_registry[object_to_resource(pro)]->kill(static_cast<int>(sig->to_int()));
+            auto buf = subprocess::check_output(args);
+            return make_string(std::string{ buf.buf.begin(), buf.buf.end() });
+        }
+        catch (subprocess::OSError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+            return Qnil;
+        }
+        catch (subprocess::CalledProcessError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+            return Qnil;
+        }
+    }
+};
+
+struct check_output_bytes
+{
+    inline static const std::string name{ "check-output-bytes" };
+
+    inline static const Signature signature{ Int{} };
+
+    inline static const std::string doc{ R"((check-output [COMMAND_PART]...)
+
+Convenience function. Execute the command with the given parts and
+return the contents of the standard output as a byte array.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_min_size<1>(obj);
+
+        std::vector<std::string> args;
+        for (auto el : *obj)
+        {
+            args.push_back(eval->eval(el)->to_string());
+        }
+
+        try
+        {
+            auto buf = subprocess::check_output(args);
+            ALObject::list_type bytes;
+            for (auto b : buf.buf)
+            {
+                bytes.push_back(make_int(b));
+            }
+            return make_list(bytes);
+        }
+        catch (subprocess::OSError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+            return Qnil;
+        }
+        catch (subprocess::CalledProcessError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+            return Qnil;
+        }
+    }
+};
+
+struct pid
+{
+    inline static const std::string name{ "pid" };
+
+    inline static const Signature signature{ Int{} };
+
+    inline static const std::string doc{ R"((pid PROCESS)
+
+Return the process id of a process that has been created with `open`.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto pro = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_int(pro));
+
+        return make_int(detail::proc_registry[object_to_resource(pro)]->pid());
+    }
+};
+
+struct retcode
+{
+    inline static const std::string name{ "retcode" };
+
+    inline static const Signature signature{ Int{} };
+
+    inline static const std::string doc{ R"((retcode PROCESS)
+
+Wait for a process to finish and return its return code.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto pro = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_int(pro));
+
+        try
+        {
+            return make_int(detail::proc_registry[object_to_resource(pro)]->retcode());
+        }
+        catch (subprocess::OSError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+            return Qnil;
+        }
+        catch (subprocess::CalledProcessError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+            return Qnil;
+        }
+    }
+};
+
+struct wait
+{
+    inline static const std::string name{ "wait" };
+
+    inline static const Signature signature{ Int{} };
+
+    inline static const std::string doc{ R"((wait PROCESS)
+
+Block until a process has finished its execution.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto pro = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_int(pro));
+
+        try
+        {
+            return make_int(detail::proc_registry[object_to_resource(pro)]->wait());
+        }
+        catch (subprocess::OSError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+            return Qnil;
+        }
+        catch (subprocess::CalledProcessError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+            return Qnil;
+        }
+    }
+};
+
+struct poll
+{
+    inline static const std::string name{ "poll" };
+
+    inline static const Signature signature{};
+
+    inline static const std::string doc{ R"((poll PROCESS)
+
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto pro = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_int(pro));
+
+        try
+        {
+            return make_int(detail::proc_registry[object_to_resource(pro)]->poll());
+        }
+        catch (subprocess::OSError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+            return Qnil;
+        }
+        catch (subprocess::CalledProcessError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+            return Qnil;
+        }
+    }
+};
+
+struct start
+{
+    inline static const std::string name{ "start" };
+
+    inline static const Signature signature{ Int{} };
+
+    inline static const std::string doc{ R"((start PROCESS)
+
+Start a process that has been created with `open`.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto pro = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_int(pro));
+
+        try
+        {
+            detail::proc_registry[object_to_resource(pro)]->start_process();
             return Qt;
         }
-
-        detail::proc_registry[object_to_resource(pro)]->kill();
-        return Qt;
-    }
-    catch (subprocess::OSError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
-        return Qnil;
-    }
-    catch (subprocess::CalledProcessError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
-        return Qnil;
-    }
-}
-
-ALObjectPtr Fsend(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-
-    AL_CHECK(assert_size<2>(t_obj));
-    auto pro = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_int(pro));
-    auto msgs = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(msgs));
-
-    try
-    {
-        auto s = msgs->to_string();
-        return make_int(detail::proc_registry[object_to_resource(pro)]->send(s.data(), s.size()));
-    }
-    catch (subprocess::OSError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
-        return Qnil;
-    }
-    catch (subprocess::CalledProcessError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
-        return Qnil;
-    }
-}
-
-ALObjectPtr Fcommunicate(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-
-    AL_CHECK(assert_min_size<1>(t_obj));
-    auto pro = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_int(pro));
-
-    try
-    {
-
-        if (std::size(*t_obj) > 1)
+        catch (subprocess::OSError &exc)
         {
-            auto msgs = eval->eval(t_obj->i(1));
-            AL_CHECK(assert_string(msgs));
-            auto s          = msgs->to_string();
-            auto [out, err] = detail::proc_registry[object_to_resource(pro)]->communicate(s.data(), s.size());
+            signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+            return Qnil;
+        }
+        catch (subprocess::CalledProcessError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+            return Qnil;
+        }
+    }
+};
+
+struct kill
+{
+    inline static const std::string name{ "kill" };
+
+    inline static const Signature signature{ Int{} };
+
+    inline static const std::string doc{ R"((kill PROCESS [SIGNAL])
+
+Send a signal (by default SIGKILL) to a running process.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+
+        AL_CHECK(assert_min_size<1>(t_obj));
+        auto pro = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_int(pro));
+
+        try
+        {
+            if (std::size(*t_obj) > 1)
+            {
+                auto sig = eval->eval(t_obj->i(1));
+                AL_CHECK(assert_int(sig));
+                detail::proc_registry[object_to_resource(pro)]->kill(static_cast<int>(sig->to_int()));
+                return Qt;
+            }
+
+            detail::proc_registry[object_to_resource(pro)]->kill();
+            return Qt;
+        }
+        catch (subprocess::OSError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+            return Qnil;
+        }
+        catch (subprocess::CalledProcessError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+            return Qnil;
+        }
+    }
+};
+
+struct send
+{
+    inline static const std::string name{ "send" };
+
+    inline static const Signature signature{ Int{}, String{} };
+
+    inline static const std::string doc{ R"((send PROCESS STRING)
+
+Write a string to the standard input stream of a child process.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+
+        AL_CHECK(assert_size<2>(t_obj));
+        auto pro = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_int(pro));
+        auto msgs = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(msgs));
+
+        try
+        {
+            auto s = msgs->to_string();
+            return make_int(detail::proc_registry[object_to_resource(pro)]->send(s.data(), s.size()));
+        }
+        catch (subprocess::OSError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+            return Qnil;
+        }
+        catch (subprocess::CalledProcessError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+            return Qnil;
+        }
+    }
+};
+
+struct communicate
+{
+    inline static const std::string name{ "communicate" };
+
+    inline static const Signature signature{ List{} };
+
+    inline static const std::string doc{ R"((communicate PROCESS STRING)
+
+Write a string to the standard input stream of a child process. Return
+the contents of the standard output and standard error of the process.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+
+        AL_CHECK(assert_min_size<1>(t_obj));
+        auto pro = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_int(pro));
+
+        try
+        {
+
+            if (std::size(*t_obj) > 1)
+            {
+                auto msgs = eval->eval(t_obj->i(1));
+                AL_CHECK(assert_string(msgs));
+                auto s          = msgs->to_string();
+                auto [out, err] = detail::proc_registry[object_to_resource(pro)]->communicate(s.data(), s.size());
+                return make_object(make_string(std::string{ out.buf.begin(), out.buf.end() }),
+                                   make_string(std::string{ err.buf.begin(), err.buf.end() }));
+            }
+
+            auto [out, err] = detail::proc_registry[object_to_resource(pro)]->communicate();
+
+
             return make_object(make_string(std::string{ out.buf.begin(), out.buf.end() }),
                                make_string(std::string{ err.buf.begin(), err.buf.end() }));
         }
-
-        auto [out, err] = detail::proc_registry[object_to_resource(pro)]->communicate();
-
-
-        return make_object(make_string(std::string{ out.buf.begin(), out.buf.end() }),
-                           make_string(std::string{ err.buf.begin(), err.buf.end() }));
+        catch (subprocess::OSError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
+            return Qnil;
+        }
+        catch (subprocess::CalledProcessError &exc)
+        {
+            signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
+            return Qnil;
+        }
     }
-    catch (subprocess::OSError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: OSError: {}", exc.what()));
-        return Qnil;
-    }
-    catch (subprocess::CalledProcessError &exc)
-    {
-        signal(subprocess_signal, fmt::format("Subprocess error: CalledProcessError: {}", exc.what()));
-        return Qnil;
-    }
-}
+};
 
-ALObjectPtr Fpopen(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
+struct call
 {
-    assert_min_size<1>(obj);
+    inline static const std::string name{ "call" };
 
-    auto l  = eval->eval(obj->i(0));
+    inline static const Signature signature{};
 
-    AL_CHECK(assert_list(l));
+    inline static const std::string doc{ R"((call [COMMAND_PART]...)
 
-    std::vector<std::string> args;
-    for (auto el : *l)
+    Convenience function. Execute the command with the given parts and
+    return the exit code of the process once its finished.
+    )" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        args.push_back(eval->eval(el)->to_string());
-    }
+        assert_min_size<1>(obj);
 
-    detail::opts options{};
-    auto ret = subprocsss::Popen(args).wait()
+        auto l = eval->eval(obj->i(0));
+
+        AL_CHECK(assert_list(l));
+
+        std::vector<std::string> args;
+        for (auto el : *l)
+        {
+            args.push_back(eval->eval(el)->to_string());
+        }
+
+        detail::opts options{};
+        auto ret = subprocess::Popen(args).wait();
         return make_int(ret);
-}
+    }
+};
 
 
 }  // namespace process
@@ -482,12 +646,12 @@ ALObjectPtr Fpopen(const ALObjectPtr &obj, env::Environment *env, eval::Evaluato
 ALISP_EXPORT alisp::env::ModulePtr init_process(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     using namespace alisp;
-    
+
     auto Mprocess = alisp::module_init("process");
     auto prop_ptr = Mprocess.get();
 
     module_doc(prop_ptr,
-                      R"(The `process` module enables the starting and communicating with
+               R"(The `process` module enables the starting and communicating with
 external processes. It is similar to the `subprocess` module of
 pyhton. The module tries, in fact, to stay close the the api and
 privide similar functions for starting and communicating with external
@@ -516,135 +680,6 @@ library.
       process::process_pipe,
       R"(Symbol used to signify a link between the spawn process and the interpreter. It is used in some of the functions of the module. )");
 
-    module_defun(prop_ptr,
-                        "popen",
-                        &process::Fpopen,
-                        R"((open COMMAND_PARTS OPTIONS )
-
-Execute a process. `COMMAND_PARTS` must be a list of strings that will
-become the parts of the command that should be executed.
-
-`OPTIONS` is also a list with options on how to execute the
-process. Possible options are:
-
-  * `:defer` - if present, don't start the process immediately but only when the `start` function is called.
-  * `:buff-size` - the buffer size of the stdin/stdout/stderr streams of the child process. Default value is 0.
-  * `:close-fds` - if present, close all file descriptors when the child process is spawned.
-  * `:cwd` - the working directory where the process should be executed.
-  * `:shell` - if present, spawn the process in a sub-shell.
-  * `:env` - a list of pairs `(VAR VALUE)`. For the spawned process, the env variable `VAR` will be set to `VALUE`.
-  * `:input` - specify the input channel fot the child process. This can be `pipe`\`stdout`\`stderr` or a file name.
-  * `:output` - specify the output channel fot the child process. This can be `pipe`\`stdout`\`stderr` or a file name.
-  * `:error` - specify the error channel fot the child process. This can be `pipe`\`stdout`\`stderr` or a file name.
-
-Return the new process as a resource object.
-)");
-
-    module_defun(prop_ptr,
-                        "start",
-                        &process::Fstart,
-                        R"((start PROCESS)
-
-Start a process that has been created with `open`.
-)");
-
-    module_defun(prop_ptr,
-                        "pid",
-                        &process::Fpid,
-                        R"((pid PROCESS)
-
-Return the process id of a process that has been created with `open`.
-)");
-
-    module_defun(prop_ptr,
-                        "wait",
-                        &process::Fwait,
-                        R"((wait PROCESS)
-
-Block until a process has finished its execution.
-)");
-
-    module_defun(prop_ptr,
-                        "poll",
-                        &process::Fpoll,
-                        R"((poll PROCESS)
-
-)");
-
-    module_defun(prop_ptr,
-                        "kill",
-                        &process::Fkill,
-                        R"((kill PROCESS [SIGNAL])
-
-Send a signal (by default SIGKILL) to a running process.
-)");
-
-    module_defun(prop_ptr,
-                        "retcode",
-                        &process::Fretcode,
-                        R"((retcode PROCESS)
-
-Wait for a process to finish and return its return code.
-)");
-
-
-    module_defun(prop_ptr,
-                        "send",
-                        &process::Fsend,
-                        R"((send PROCESS STRING)
-
-Write a string to the standard input stream of a child process.
-)");
-
-    module_defun(prop_ptr,
-                        "communicate",
-                        &process::Fcommunicate,
-                        R"((communicate PROCESS STRING)
-
-Write a string to the standard input stream of a child process. Return
-the contents of the standard output and standard error of the process.
-)");
-
-    module_defun(prop_ptr,
-                        "check-output",
-                        &process::Fcheck_output,
-                        R"((check-output [COMMAND_PART]...)
-
-Convenience function. Execute the command with the given parts and
-return the contents of the standard output of the process once its
-finished.
-)");
-
-    module_defun(prop_ptr,
-                        "check-output-bytes",
-                        &process::Fcheck_output_bytes,
-                        R"((check-output [COMMAND_PART]...)
-
-Convenience function. Execute the command with the given parts and
-return the contents of the standard output as a byte array.
-)");
-
-        module_defun(prop_ptr,
-                            "call",
-                            &process::Fcall,
-                            R"((call [COMMAND_PART]...)
-
-    Convenience function. Execute the command with the given parts and
-    return the exit code of the process once its finished.
-    )");
-
-    
-
-    module_signature(prop_ptr, "popen", Signature{ List{}, List{} });
-    module_signature(prop_ptr, "start", Signature{ Int{} });
-    module_signature(prop_ptr, "pid", Signature{ Int{} });
-    module_signature(prop_ptr, "wait", Signature{ Int{} });
-    module_signature(prop_ptr, "kill", Signature{ Int{} });
-    module_signature(prop_ptr, "retcode", Signature{ Int{} });
-    module_signature(prop_ptr, "send", Signature{ Int{}, String{} });
-    module_signature(prop_ptr, "check-output", Signature{ Int{} });
-    module_signature(prop_ptr, "check-output-bytes", Signature{ Int{} });
-    module_signature(prop_ptr, "call", Signature{List{}});
 
     return Mprocess;
 }

@@ -32,166 +32,14 @@ namespace details
 
 auto placeholder_sym = alisp::make_symbol("_");
 
-ALObjectPtr Fcompose(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
+struct compose
 {
-    AL_CHECK(assert_min_size<2>(obj));
 
-    auto fun_fin = obj->i(std::size(*obj) - 1);
-    auto res     = make_object(env::intern("apply"), fun_fin, env::intern("rest--"));
+    inline static const std::string name{ "compose" };
 
-    for (size_t i = std::size(*obj) - 2; i != 0; --i)
-    {
-        res = make_object(obj->i(i), res);
-    }
-    res = make_object(obj->i(0), res);
+    inline static const Signature signature{ Function{}, Function{}, Rest{}, Any{} };
 
-    return Flambda(make_object(make_object(Qrest, env::intern("rest--")), res), env, eval);
-}
-
-ALObjectPtr Fpartial(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_min_size<1>(obj));
-
-    auto fun = obj->i(0);
-
-    ALObject::list_type args_list;
-    ALObject::list_type op_list;
-
-    op_list.push_back(fun);
-
-    size_t j = 0;
-    for (size_t i = 1; i < std::size(*obj); ++i)
-    {
-        auto o = eval->eval(obj->i(i));
-
-        if (placeholder_sym == o)
-        {
-            const auto s = std::string(1, char('a' + j++)) += "--";
-            args_list.push_back(env::intern(s));
-            op_list.push_back(env::intern(s));
-            continue;
-        }
-
-        op_list.push_back(o);
-    }
-
-    args_list.push_back(Qrest);
-    args_list.push_back(env::intern("rest--"));
-
-    op_list.push_back(make_object(Qcomma_at, env::intern("rest--")));
-
-    return Flambda(
-      make_object(make_list(args_list),
-                  make_object(env::intern("eval"), make_object(env::intern("backquote"), make_list(op_list)))),
-      env,
-      eval);
-}
-
-ALObjectPtr Fthread_first(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_min_size<2>(obj);
-
-    auto first = obj->i(0);
-
-    const size_t size = std::size(*obj);
-
-    for (size_t i = 1; i < size; ++i)
-    {
-        auto next_ls = obj->i(i);
-        ALObject::list_type l;
-        l.push_back(next_ls->i(0));
-        l.push_back(first);
-        for (size_t j = 1; j < std::size(*next_ls); ++j)
-        {
-            l.push_back(next_ls->i(j));
-        }
-        first = make_list(l);
-    }
-
-    return eval->eval(first);
-}
-
-ALObjectPtr Fthread_last(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_min_size<2>(obj);
-
-    auto first = obj->i(0);
-
-    const size_t size = std::size(*obj);
-
-    for (size_t i = 1; i < size; ++i)
-    {
-        auto next_ls = obj->i(i);
-        ALObject::list_type l;
-        l.push_back(next_ls->i(0));
-        for (size_t j = 1; j < std::size(*next_ls); ++j)
-        {
-            l.push_back(next_ls->i(j));
-        }
-        l.push_back(first);
-        first = make_list(l);
-    }
-    return eval->eval(first);
-}
-
-ALObjectPtr Freduce(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_min_size<2>(obj));
-
-    auto fun = eval->eval(obj->i(0));
-    AL_CHECK(assert_function(fun));
-
-    auto list = eval->eval(obj->i(1));
-    AL_CHECK(assert_list(list));
-
-    const size_t size = std::size(*list);
-
-    if (size < 2)
-    {
-        return Qnil;
-    }
-
-    auto res = list->i(0);
-    for (size_t i = 1; i < size; ++i)
-    {
-        res = eval->eval_callable(fun, make_object(res, list->i(i)));
-    }
-
-    return res;
-}
-
-ALObjectPtr Fidentity(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
-{
-    AL_CHECK(assert_size<1>(obj));
-    return obj->i(0);
-}
-
-ALObjectPtr Fignore(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
-{
-    return Qnil;
-}
-
-}  // namespace func
-
-ALISP_EXPORT alisp::env::ModulePtr init_func(alisp::env::Environment *, alisp::eval::Evaluator *)
-{
-    using namespace alisp;
-    
-    auto Mfunc   = alisp::module_init("func");
-    auto fun_ptr = Mfunc.get();
-
-    module_doc(fun_ptr, R"( The `func` modules provides support for working with higher order
-functions. It aims to bring more "functional" features to alisp.
-)");
-
-
-    module_defvar(
-      fun_ptr, "_", func::placeholder_sym, R"(Can be used as a placeholder object at certain places.)");
-
-    module_defun(fun_ptr,
-                        "compose",
-                        &func::Fcompose,
-                        R"((compose [FUNCTION]...)
+    inline static const std::string doc{ R"((compose [FUNCTION]...)
 
 Create a new function by composing several ones. The last function
 will be the innter most funciton in the composition.
@@ -205,12 +53,32 @@ In the above example, the compose function will return a function that
 is equivalent to `(lambda (x) ((lambda (x_2) (* 2 x_2) ) ((lambda (x_1) (* 3 x_1)) x)))`.
 This measns that the last function will be evalued first and then the
 result of that will be used as input for the next function.
-)");
+)" };
 
-    module_defun(fun_ptr,
-                        "partial",
-                        &func::Fpartial,
-                        R"((partial FUNCTION [ARGUMENT] ...)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_min_size<2>(obj));
+
+        auto fun_fin = obj->i(std::size(*obj) - 1);
+        auto res     = make_object(env::intern("apply"), fun_fin, env::intern("rest--"));
+
+        for (size_t i = std::size(*obj) - 2; i != 0; --i)
+        {
+            res = make_object(obj->i(i), res);
+        }
+        res = make_object(obj->i(0), res);
+
+        return Flambda(make_object(make_object(Qrest, env::intern("rest--")), res), env, eval);
+    }
+};
+
+struct partial
+{
+    inline static const std::string name{ "partial" };
+
+    inline static const Signature signature{ Function{}, Rest{}, Any{} };
+
+    inline static const std::string doc{ R"((partial FUNCTION [ARGUMENT] ...)
 
 Create a new function by partially applying arguments to a
 function. The return function can be called normally, either without
@@ -226,31 +94,55 @@ In the example, `(partial (lambda (x y) (x + y)) 5)` is equivalent to
 takes a single argument and adds 5 to it.
 
 
- )");
+ )" };
 
-    module_defun(fun_ptr,
-                        "thread-last",
-                        &func::Fthread_last,
-                        R"((thread-last FORMS)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_min_size<1>(obj));
 
-Thread FORMS elements as the last argument of their successor.
+        auto fun = obj->i(0);
 
-Example:
-```elisp
-    (thread-last
-      5
-      (+ 20)
-      (/ 25)
-      -
-      (+ 40))
-```
+        ALObject::list_type args_list;
+        ALObject::list_type op_list;
 
-Is equivalent to: `(+ 40 (- (/ 25 (+ 20 5))))`)");
+        op_list.push_back(fun);
 
-    module_defun(fun_ptr,
-                        "thread-first",
-                        &func::Fthread_first,
-                        R"((thread-first FORMS)
+        size_t j = 0;
+        for (size_t i = 1; i < std::size(*obj); ++i)
+        {
+            auto o = eval->eval(obj->i(i));
+
+            if (placeholder_sym == o)
+            {
+                const auto s = std::string(1, char('a' + j++)) += "--";
+                args_list.push_back(env::intern(s));
+                op_list.push_back(env::intern(s));
+                continue;
+            }
+
+            op_list.push_back(o);
+        }
+
+        args_list.push_back(Qrest);
+        args_list.push_back(env::intern("rest--"));
+
+        op_list.push_back(make_object(Qcomma_at, env::intern("rest--")));
+
+        return Flambda(
+          make_object(make_list(args_list),
+                      make_object(env::intern("eval"), make_object(env::intern("backquote"), make_list(op_list)))),
+          env,
+          eval);
+    }
+};
+
+struct thread_first
+{
+    inline static const std::string name{ "thread-first" };
+
+    inline static const Signature signature{ Rest{}, Any{} };
+
+    inline static const std::string doc{ R"((thread-first FORMS)
 
 Thread FORMS elements as the first argument of their successor.
 
@@ -264,13 +156,86 @@ Example:
       (+ 40))
 ```
 
-Is equivalent to: `(+ (- (/ (+ 5 20) 25)) 40)` )");
+Is equivalent to: `(+ (- (/ (+ 5 20) 25)) 40)` )" };
 
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_min_size<2>(obj);
 
-    module_defun(fun_ptr,
-                        "reduce",
-                        &func::Freduce,
-                        R"((reduce FUNCTION LIST)
+        auto first = obj->i(0);
+
+        const size_t size = std::size(*obj);
+
+        for (size_t i = 1; i < size; ++i)
+        {
+            auto next_ls = obj->i(i);
+            ALObject::list_type l;
+            l.push_back(next_ls->i(0));
+            l.push_back(first);
+            for (size_t j = 1; j < std::size(*next_ls); ++j)
+            {
+                l.push_back(next_ls->i(j));
+            }
+            first = make_list(l);
+        }
+
+        return eval->eval(first);
+    }
+};
+
+struct thread_last
+{
+    inline static const std::string name{ "thread-last" };
+
+    inline static const Signature signature{ Rest{}, Any{} };
+
+    inline static const std::string doc{ R"((thread-last FORMS)
+
+Thread FORMS elements as the last argument of their successor.
+
+Example:
+```elisp
+    (thread-last
+      5
+      (+ 20)
+      (/ 25)
+      -
+      (+ 40))
+```
+
+Is equivalent to: `(+ 40 (- (/ 25 (+ 20 5))))`)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_min_size<2>(obj);
+
+        auto first = obj->i(0);
+
+        const size_t size = std::size(*obj);
+
+        for (size_t i = 1; i < size; ++i)
+        {
+            auto next_ls = obj->i(i);
+            ALObject::list_type l;
+            l.push_back(next_ls->i(0));
+            for (size_t j = 1; j < std::size(*next_ls); ++j)
+            {
+                l.push_back(next_ls->i(j));
+            }
+            l.push_back(first);
+            first = make_list(l);
+        }
+        return eval->eval(first);
+    }
+};
+
+struct reduce
+{
+    inline static const std::string name{ "reduce" };
+
+    inline static const Signature signature{ Function{}, List{} };
+
+    inline static const std::string doc{ R"((reduce FUNCTION LIST)
 
 Apply function of two arguments cumulatively to the items of LIST,
 from left to right, so as to reduce the iterable to a single value.The
@@ -280,31 +245,92 @@ update value from the list.
 ```elisp
 (reduce (lambda (x y) (+ x y)) '(1 2 3 4 5)) ; -> 15
 ```
- )");
+ )" };
 
-    module_defun(fun_ptr,
-                        "identity",
-                        &func::Fidentity,
-                        R"((identity ARG)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_min_size<2>(obj));
+
+        auto fun = eval->eval(obj->i(0));
+        AL_CHECK(assert_function(fun));
+
+        auto list = eval->eval(obj->i(1));
+        AL_CHECK(assert_list(list));
+
+        const size_t size = std::size(*list);
+
+        if (size < 2)
+        {
+            return Qnil;
+        }
+
+        auto res = list->i(0);
+        for (size_t i = 1; i < size; ++i)
+        {
+            res = eval->eval_callable(fun, make_object(res, list->i(i)));
+        }
+
+        return res;
+    }
+};
+
+struct identity
+{
+    inline static const std::string name{ "identity" };
+
+    inline static const Signature signature{ Any{} };
+
+    inline static const std::string doc{ R"((identity ARG)
 
 Return ARG unchanged.
-)");
+)" };
 
-    module_defun(fun_ptr,
-                        "ignore",
-                        &func::Fignore,
-                        R"((ignore [ANY]...)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
+    {
+        AL_CHECK(assert_size<1>(obj));
+        return obj->i(0);
+    }
+};
+
+struct ignore
+{
+    inline static const std::string name{ "ignore" };
+
+    inline static const Signature signature{ Rest{}, Any{} };
+
+    inline static const std::string doc{ R"((ignore [ANY]...)
 
 Return nil and ignore all of the given arguments.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &, env::Environment *, eval::Evaluator *) { return Qnil; }
+};
+
+
+}  // namespace func
+
+ALISP_EXPORT alisp::env::ModulePtr init_func(alisp::env::Environment *, alisp::eval::Evaluator *)
+{
+    using namespace alisp;
+
+    auto Mfunc   = alisp::module_init("func");
+    auto fun_ptr = Mfunc.get();
+
+    module_doc(fun_ptr, R"( The `func` modules provides support for working with higher order
+functions. It aims to bring more "functional" features to alisp.
 )");
 
-    module_signature(fun_ptr, "reduce", Signature(Function{}, List{}));
-    module_signature(fun_ptr, "identity", Signature(Any{}));
-    module_signature(fun_ptr, "ignore", Signature(Rest{}, Any{}));
-    module_signature(fun_ptr, "thread-first", Signature(Rest{}, Any{}));
-    module_signature(fun_ptr, "thread-last", Signature(Rest{}, Any{}));
-    module_signature(fun_ptr, "partial", Signature(Function{}, Rest{}, Any{}));
-    module_signature(fun_ptr, "compose", Signature(Function{}, Function{}, Rest{}, Any{}));
+
+    module_defvar(fun_ptr, "_", func::placeholder_sym, R"(Can be used as a placeholder object at certain places.)");
+
+
+    module_defun<func::compose>(fun_ptr);
+    module_defun<func::partial>(fun_ptr);
+    module_defun<func::thread_first>(fun_ptr);
+    module_defun<func::thread_last>(fun_ptr);
+    module_defun<func::reduce>(fun_ptr);
+    module_defun<func::identity>(fun_ptr);
+    module_defun<func::ignore>(fun_ptr);
 
     return Mfunc;
 }

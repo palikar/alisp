@@ -105,52 +105,80 @@ struct write_file_text
 
 }  // namespace detail
 
-ALObjectPtr Fasync_append_text(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct async_append_text
 {
-    assert_size<2>(obj);
+    inline static const std::string name{ "async-append-text" };
 
-    auto file_name    = AL_EVAL(obj, eval, 0);
-    auto file_content = AL_EVAL(obj, eval, 1);
-    auto callback     = AL_EVAL(obj, eval, 2);
+    inline static const std::string doc{ R"()" };
 
-    AL_CHECK(assert_string(file_name));
-    AL_CHECK(assert_string(file_content));
-    AL_CHECK(assert_function(callback));
+    inline static const Signature signature{ String{}, String{}, Function{} };
 
-    return async::dispatch<detail::write_file_text>(
-      eval->async(), file_name->to_string(), file_content->to_string(), std::move(callback), true);
-}
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<2>(obj);
 
-ALObjectPtr Fasync_write_text(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+        auto file_name    = AL_EVAL(obj, eval, 0);
+        auto file_content = AL_EVAL(obj, eval, 1);
+        auto callback     = AL_EVAL(obj, eval, 2);
+
+        AL_CHECK(assert_string(file_name));
+        AL_CHECK(assert_string(file_content));
+        AL_CHECK(assert_function(callback));
+
+        return async::dispatch<detail::write_file_text>(
+          eval->async(), file_name->to_string(), file_content->to_string(), std::move(callback), true);
+    }
+};
+
+struct async_write_text
 {
-    assert_size<2>(obj);
+    inline static const std::string name{ "async-write-text" };
 
-    auto file_name    = AL_EVAL(obj, eval, 0);
-    auto file_content = AL_EVAL(obj, eval, 1);
-    auto callback     = AL_EVAL(obj, eval, 2);
+    inline static const std::string doc{ R"()" };
 
-    AL_CHECK(assert_string(file_name));
-    AL_CHECK(assert_string(file_content));
-    AL_CHECK(assert_function(callback));
+    inline static const Signature signature{ String{}, String{}, Function{} };
 
-    return async::dispatch<detail::write_file_text>(
-      eval->async(), file_name->to_string(), file_content->to_string(), std::move(callback), false);
-}
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<2>(obj);
 
-ALObjectPtr Fasync_read_text(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+        auto file_name    = AL_EVAL(obj, eval, 0);
+        auto file_content = AL_EVAL(obj, eval, 1);
+        auto callback     = AL_EVAL(obj, eval, 2);
+
+        AL_CHECK(assert_string(file_name));
+        AL_CHECK(assert_string(file_content));
+        AL_CHECK(assert_function(callback));
+
+        return async::dispatch<detail::write_file_text>(
+          eval->async(), file_name->to_string(), file_content->to_string(), std::move(callback), false);
+    }
+};
+
+struct async_read_text
 {
-    assert_size<2>(obj);
+    inline static const std::string name{ "async-read-text" };
 
-    auto file_name = AL_EVAL(obj, eval, 0);
-    auto callback  = AL_EVAL(obj, eval, 1);
+    inline static const std::string doc{ R"()" };
 
-    AL_CHECK(assert_string(file_name));
-    AL_CHECK(assert_function(callback));
+    inline static const Signature signature{ String{}, Function{} };
 
-    auto file = file_name->to_string();
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<2>(obj);
 
-    return async::dispatch<detail::read_file_text>(eval->async(), file, std::move(callback));
-}
+        auto file_name = AL_EVAL(obj, eval, 0);
+        auto callback  = AL_EVAL(obj, eval, 1);
+
+        AL_CHECK(assert_string(file_name));
+        AL_CHECK(assert_function(callback));
+
+        auto file = file_name->to_string();
+
+        return async::dispatch<detail::read_file_text>(eval->async(), file, std::move(callback));
+    }
+};
+
 
 }  // namespace async_fileio
 
@@ -160,14 +188,9 @@ ALISP_EXPORT alisp::env::ModulePtr init_async_fileio(alisp::env::Environment *, 
     auto M       = alisp::module_init("async-fileio");
     auto aio_ptr = M.get();
 
-
-    module_defun(aio_ptr, "async-write-text", async_fileio::Fasync_write_text, R"()");
-    module_defun(aio_ptr, "async-append-text", async_fileio::Fasync_append_text, R"()");
-    module_defun(aio_ptr, "async-read-text", async_fileio::Fasync_read_text, R"()");
-
-    module_signature(aio_ptr, "async-write-text", Signature(String{}, String{}, Function{}));
-    module_signature(aio_ptr, "async-append-text", Signature(String{}, String{}, Function{}));
-    module_signature(aio_ptr, "async-read-text", Signature(String{}, Function{}));
+    module_defun<async_fileio::async_append_text>(aio_ptr);
+    module_defun<async_fileio::async_write_text>(aio_ptr);
+    module_defun<async_fileio::async_read_text>(aio_ptr);
 
     return M;
 }

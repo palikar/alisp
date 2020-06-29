@@ -30,103 +30,103 @@ struct Int
 {
 
 
-    ALObjectPtr to_al() { return Qint; }
+    ALObjectPtr to_al() const { return Qint; }
 };
 
 struct Double
 {
 
-    ALObjectPtr to_al() { return Qdouble; }
+    ALObjectPtr to_al() const { return Qdouble; }
 };
 
 struct String
 {
 
-    ALObjectPtr to_al() { return Qstring; }
+    ALObjectPtr to_al() const { return Qstring; }
 };
 
 struct List
 {
 
-    ALObjectPtr to_al() { return Qlist_arg; }
+    ALObjectPtr to_al() const { return Qlist_arg; }
 };
 
 struct Char
 {
 
-    ALObjectPtr to_al() { return Qchar_arg; }
+    ALObjectPtr to_al() const { return Qchar_arg; }
 };
 
 struct Sym
 {
 
-    ALObjectPtr to_al() { return Qsym_arg; }
+    ALObjectPtr to_al() const { return Qsym_arg; }
 };
 
 struct Number
 {
 
-    ALObjectPtr to_al() { return Qnumber_arg; }
+    ALObjectPtr to_al() const { return Qnumber_arg; }
 };
 
 struct Numbers
 {
 
-    ALObjectPtr to_al() { return Qnumbers_arg; }
+    ALObjectPtr to_al() const { return Qnumbers_arg; }
 };
 
 struct Function
 {
 
-    ALObjectPtr to_al() { return Qfunction_arg; }
+    ALObjectPtr to_al() const { return Qfunction_arg; }
 };
 
 struct File
 {
 
-    ALObjectPtr to_al() { return Qfile_arg; }
+    ALObjectPtr to_al() const { return Qfile_arg; }
 };
 
 struct Stream
 {
 
-    ALObjectPtr to_al() { return Qstream_arg; }
+    ALObjectPtr to_al() const { return Qstream_arg; }
 };
 
 struct Memory
 {
 
-    ALObjectPtr to_al() { return Qmemory_arg; }
+    ALObjectPtr to_al() const { return Qmemory_arg; }
 };
 
 struct Byte
 {
 
-    ALObjectPtr to_al() { return Qbyte_arg; }
+    ALObjectPtr to_al() const { return Qbyte_arg; }
 };
 
 struct ByteArray
 {
 
-    ALObjectPtr to_al() { return Qbytearray_arg; }
+    ALObjectPtr to_al() const { return Qbytearray_arg; }
 };
 
 struct Any
 {
 
-    ALObjectPtr to_al() { return Qany_arg; }
+    ALObjectPtr to_al() const { return Qany_arg; }
 };
 
 struct Optional
 {
 
-    ALObjectPtr to_al() { return Qoptional; }
+    ALObjectPtr to_al() const { return Qoptional; }
 };
 
 struct Rest
 {
 
-    ALObjectPtr to_al() { return Qrest; }
+    ALObjectPtr to_al() const { return Qrest; }
 };
 
 template<typename... Args> struct Signature
@@ -136,10 +136,10 @@ template<typename... Args> struct Signature
 
     Signature(Args... t_checks) : args(std::move(t_checks)...) {}
 
-    ALObjectPtr arglist_object() { return do_arglist(std::make_index_sequence<cnt>()); }
+    ALObjectPtr arglist_object() const { return do_arglist(std::make_index_sequence<cnt>()); }
 
   private:
-    template<size_t... I> ALObjectPtr do_arglist(std::index_sequence<I...>)
+    template<size_t... I> ALObjectPtr do_arglist(std::index_sequence<I...>) const
     {
         auto signature = make_object(std::get<I>(args).to_al()...);
         return signature;

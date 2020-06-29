@@ -357,7 +357,7 @@ ALObjectPtr Fcookies(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluat
 ALISP_EXPORT alisp::env::ModulePtr init_request(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     using namespace alisp;
-    
+
     auto Mrequest = alisp::module_init("request");
     auto req_ptr  = Mrequest.get();
 

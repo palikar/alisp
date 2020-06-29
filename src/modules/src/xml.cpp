@@ -299,12 +299,12 @@ ALObjectPtr Fload_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluat
 ALISP_EXPORT alisp::env::ModulePtr init_xml(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     using namespace alisp;
-    
+
     auto Mxml    = alisp::module_init("xml");
     auto xml_ptr = Mxml.get();
 
     module_doc(xml_ptr,
-                      R"(The `xml` module enables the handling of XML-formated data. It
+               R"(The `xml` module enables the handling of XML-formated data. It
 provides functionality for parsing and dumping s-expressions as XML.
 
 Internally `xml` uses the
@@ -314,31 +314,31 @@ Internally `xml` uses the
 )");
 
     module_defun(xml_ptr,
-                        "xml-parse",
-                        &xml::Fparse_xml,
-                        R"((xml-parse STRING)
+                 "xml-parse",
+                 &xml::Fparse_xml,
+                 R"((xml-parse STRING)
 
 Parse a xml-formated string and return a alist representation of the xml)");
 
     module_defun(xml_ptr,
-                        "xml-dump",
-                        &xml::Fdump_xml,
-                        R"((xml-parse ALIST)
+                 "xml-dump",
+                 &xml::Fdump_xml,
+                 R"((xml-parse ALIST)
 Convert a alist to a xml-formated string. Return the formated string.
 )");
 
     module_defun(xml_ptr,
-                        "load-file",
-                        &xml::Fload_file,
-                        R"((load-file FILE)
+                 "load-file",
+                 &xml::Fload_file,
+                 R"((load-file FILE)
 
 Parse the contents of a file as xml and return a alist representation of the xml.
 )");
 
     module_defun(xml_ptr,
-                        "dump-file",
-                        &xml::Fdump_file,
-                        R"((dump-file FILE ALIST)
+                 "dump-file",
+                 &xml::Fdump_file,
+                 R"((dump-file FILE ALIST)
 
 Save the xml-formated string representation of `ALIST` in the file pointed by `PATH`.
 )");

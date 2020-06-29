@@ -384,7 +384,7 @@ ALObjectPtr Fcompile(const ALObjectPtr &t_obj, env::Environment *env, eval::Eval
 ALISP_EXPORT alisp::env::ModulePtr init_re(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     using namespace alisp;
-    
+
     auto Mre    = alisp::module_init("re");
     auto re_ptr = Mre.get();
 
@@ -404,16 +404,16 @@ symbols starting with `re-regex-` modify the building of a regex.
     module_defconst(re_ptr, "re-match-default", re::reflag_default, R"(Default flag when matching a regex.)");
 
     module_defconst(re_ptr,
-                           "re-match-not-bol",
-                           re::reflag_not_bol,
-                           R"(Matching flag: The first character in [first,last) will be treated as
+                    "re-match-not-bol",
+                    re::reflag_not_bol,
+                    R"(Matching flag: The first character in [first,last) will be treated as
 if it is not at the beginning of a line (i.e. ^ will not match
 [first,first))");
 
     module_defconst(re_ptr,
-                           "re-match-not-eol",
-                           re::reflag_not_eol,
-                           R"(Matching flag: The last character in [first,last) will be treated as
+                    "re-match-not-eol",
+                    re::reflag_not_eol,
+                    R"(Matching flag: The last character in [first,last) will be treated as
 if it is not at the end of a line (i.e. $ will not match [last,last) )");
 
     module_defconst(
@@ -423,72 +423,72 @@ if it is not at the end of a line (i.e. $ will not match [last,last) )");
       re_ptr, "re-match-not-eow", re::reflag_not_eow, R"(Matching flag: "\b" will not match [last,last) )");
 
     module_defconst(re_ptr,
-                           "re-match-any",
-                           re::reflag_any,
-                           R"(Matching flag: If more than one match is possible, then any match is
+                    "re-match-any",
+                    re::reflag_any,
+                    R"(Matching flag: If more than one match is possible, then any match is
 an acceptable result )");
 
     module_defconst(
       re_ptr, "re-match-not-null", re::reflag_not_null, R"(Matching flag: Do not match empty sequences )");
 
     module_defconst(re_ptr,
-                           "re-match-continous",
-                           re::reflag_continous,
-                           R"(Matching flag: Only match a sub-sequence that begins at first )");
+                    "re-match-continous",
+                    re::reflag_continous,
+                    R"(Matching flag: Only match a sub-sequence that begins at first )");
 
     module_defconst(re_ptr,
-                           "re-match-prev-avail",
-                           re::reflag_prev_avail,
-                           R"(Matching flag: --first is a valid iterator position. When set, causes
+                    "re-match-prev-avail",
+                    re::reflag_prev_avail,
+                    R"(Matching flag: --first is a valid iterator position. When set, causes
 match_not_bol and match_not_bow to be ignored )");
 
     module_defconst(re_ptr,
-                           "re-match-format-default",
-                           re::reflag_format_default,
-                           R"(Matching flag: Use ECMAScript rules to construct strings in
+                    "re-match-format-default",
+                    re::reflag_format_default,
+                    R"(Matching flag: Use ECMAScript rules to construct strings in
 re-replace (syntax documentation) )");
 
     module_defconst(re_ptr,
-                           "re-match-format-sed",
-                           re::reflag_format_sed,
-                           R"(Matching flag: Use POSIX sed utility rules in re-replace. (syntax
+                    "re-match-format-sed",
+                    re::reflag_format_sed,
+                    R"(Matching flag: Use POSIX sed utility rules in re-replace. (syntax
 documentation) )");
 
     module_defconst(re_ptr,
-                           "re-match-format-no-copy",
-                           re::reflag_format_no_copy,
-                           R"(Matching flag: Do not copy un-matched strings to the output in
+                    "re-match-format-no-copy",
+                    re::reflag_format_no_copy,
+                    R"(Matching flag: Do not copy un-matched strings to the output in
 re-replace )");
 
     module_defconst(re_ptr,
-                           "re-match-format-first-only",
-                           re::reflag_format_first_only,
-                           R"(Matching flag: Only replace the first match in re-replace)");
+                    "re-match-format-first-only",
+                    re::reflag_format_first_only,
+                    R"(Matching flag: Only replace the first match in re-replace)");
 
 
     module_defconst(re_ptr,
-                           "re-regex-icase",
-                           re::reflag_icase,
-                           R"(Build flag: Character matching should be performed without regard to case. )");
+                    "re-regex-icase",
+                    re::reflag_icase,
+                    R"(Build flag: Character matching should be performed without regard to case. )");
 
     module_defconst(re_ptr,
-                           "re-regex-nosubs",
-                           re::reflag_nosubs,
-                           R"(Build flag: When performing matches, all marked sub-expressions
+                    "re-regex-nosubs",
+                    re::reflag_nosubs,
+                    R"(Build flag: When performing matches, all marked sub-expressions
 (expr) are treated as non-marking sub-expressions (?:expr))");
 
     module_defconst(re_ptr,
-                           "re-regex-optimize",
-                           re::reflag_optimize,
-                           R"(Build flag: Instructs the regular expression engine to make matching
+                    "re-regex-optimize",
+                    re::reflag_optimize,
+                    R"(Build flag: Instructs the regular expression engine to make matching
 faster, with the potential cost of making construction slower. For
 example, this might mean converting a non-deterministic FSA to a
 deterministic FSA.)");
 
     module_defconst(re_ptr,
-                           "re-regex-collate",
-                           re::reflag_collate,
-                           R"(Build flag: Character ranges of the form "[a-b]" will be locale sensitive. )");
+                    "re-regex-collate",
+                    re::reflag_collate,
+                    R"(Build flag: Character ranges of the form "[a-b]" will be locale sensitive. )");
 
     module_defconst(
       re_ptr,
@@ -503,36 +503,36 @@ deterministic FSA.)");
       R"(Build flag: Use the Modified [ECMAScript regular expression grammar](https://en.cppreference.com/w/cpp/regex/ecmascript))");
 
     module_defconst(re_ptr,
-                           "re-regex-extended",
-                           re::reflag_extended,
-                           R"(Build flag: Use the basic POSIX regular expression grammar)");
+                    "re-regex-extended",
+                    re::reflag_extended,
+                    R"(Build flag: Use the basic POSIX regular expression grammar)");
 
     module_defconst(re_ptr,
-                           "re-regex-awk",
-                           re::reflag_awk,
-                           R"(Build flag: Use the regular expression grammar used by the awk
+                    "re-regex-awk",
+                    re::reflag_awk,
+                    R"(Build flag: Use the regular expression grammar used by the awk
 utility in POSIX)");
 
     module_defconst(re_ptr,
-                           "re-regex-grep",
-                           re::reflag_grep,
-                           R"(Build flag: Use the regular expression grammar used by the grep
+                    "re-regex-grep",
+                    re::reflag_grep,
+                    R"(Build flag: Use the regular expression grammar used by the grep
 utility in POSIX. This is effectively the same as the basic option
 with the addition of newline '\n' as an alternation separator. )");
 
     module_defconst(re_ptr,
-                           "re-regex-egrep",
-                           re::reflag_egrep,
-                           R"(Build flag: Use the regular expression grammar used by the grep
+                    "re-regex-egrep",
+                    re::reflag_egrep,
+                    R"(Build flag: Use the regular expression grammar used by the grep
 utility, with the -E option, in POSIX. This is effectively the same as
 the extended option with the addition of newline '\n' as an
 alternation separator in addtion to '|'.)");
 
 
     module_defun(re_ptr,
-                        "re-compile",
-                        &re::Fcompile,
-                        R"((re-compile REGEX_STRING [BUILD_FLAGS_LIST])
+                 "re-compile",
+                 &re::Fcompile,
+                 R"((re-compile REGEX_STRING [BUILD_FLAGS_LIST])
 
 Compile the regex given in the string and return a resource object to
 the created regex. Optionaly, build flags can be passed through the
@@ -541,9 +541,9 @@ the created regex. Optionaly, build flags can be passed through the
 
 
     module_defun(re_ptr,
-                        "re-match",
-                        &re::Fmatch,
-                        R"((match [REGEX|STRING] STRING [MATCH_FLAGS])
+                 "re-match",
+                 &re::Fmatch,
+                 R"((match [REGEX|STRING] STRING [MATCH_FLAGS])
 
 Try to match the whole of string `STRING` with the given regex object
 or regex-string. Return nil if the match fails and return a list of
@@ -555,9 +555,9 @@ Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
 )");
 
     module_defun(re_ptr,
-                        "re-search",
-                        &re::Fsearch,
-                        R"((re-search [REGEX|STRING] STRING [MATCH_FLAGS])
+                 "re-search",
+                 &re::Fsearch,
+                 R"((re-search [REGEX|STRING] STRING [MATCH_FLAGS])
 
 Search for matching substring in `STRING` with the regex object or
 regex-string. In contrast to `re-match`, this functions does not try
@@ -568,9 +568,9 @@ Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
 )");
 
     module_defun(re_ptr,
-                        "re-search-all",
-                        &re::Fsearch_all,
-                        R"((re-search-all [REGEX|STRING] STRING [MATCH_FLAGS])
+                 "re-search-all",
+                 &re::Fsearch_all,
+                 R"((re-search-all [REGEX|STRING] STRING [MATCH_FLAGS])
 
 Search for all the matches of a regexc in a string. This function is
 like applying re-serach several times and finding all the matches of
@@ -580,9 +580,9 @@ results of the individual matches.
 Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.)");
 
     module_defun(re_ptr,
-                        "re-replace",
-                        &re::Freplace,
-                        R"((re-replace [REGEX|STRING] STRING REPLACEMENT [MATCH_FLAGS])
+                 "re-replace",
+                 &re::Freplace,
+                 R"((re-replace [REGEX|STRING] STRING REPLACEMENT [MATCH_FLAGS])
 
 Try matching a part of `STRING` with the regex object or regex-string
 and replace it with `REPLACEMENT`. Return the new string.

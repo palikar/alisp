@@ -542,78 +542,148 @@ static std::string format_string(const std::string &t_format, ALObjectPtr t_args
 
 }  // namespace detail
 
-ALObjectPtr Ffmt(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct fmt
 {
-    assert_min_size<1>(obj);
-    auto args = eval_transform(eval, obj);
+    inline static const std::string name{ "fmt" };
 
-    auto str = args->i(0);
-    assert_string(str);
+    inline static const Signature signature{ String{}, Rest{}, Any{} };
 
-    return make_string(detail::format_string(str->to_string(), args));
-}
+    inline static const std::string doc{ R"((fmt FORMAT_STRING [ARG]...)
 
-ALObjectPtr Fprintf(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+Return a string resulting from the formating FORMAT_STRING with the
+given arguments.
+
+```elisp
+(fmt "this is formated wiht {} and {}" 42 "some words")
+```
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_min_size<1>(obj);
+        auto args = eval_transform(eval, obj);
+
+        auto str = args->i(0);
+        assert_string(str);
+
+        return make_string(detail::format_string(str->to_string(), args));
+    }
+};
+
+struct printf
 {
-    assert_min_size<1>(obj);
-    auto args = eval_transform(eval, obj);
+    inline static const std::string name{ "printf" };
 
-    auto str = args->i(0);
-    assert_string(str);
+    inline static const Signature signature{ String{}, Rest{}, Any{} };
 
-    auto res = detail::format_string(str->to_string(), args);
-    std::cout << res;
-    al::cout << res;
-    return make_string(res);
-}
+    inline static const std::string doc{ R"((printf FORMAT_STRING [ARG]...)
 
-ALObjectPtr Fprintfln(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+Print the string FORMAT_STRING formated with the given arguments on
+the standard output.
+
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_min_size<1>(obj);
+        auto args = eval_transform(eval, obj);
+
+        auto str = args->i(0);
+        assert_string(str);
+
+        auto res = detail::format_string(str->to_string(), args);
+        std::cout << res;
+        al::cout << res;
+        return make_string(res);
+    }
+};
+
+struct printfln
 {
-    assert_min_size<1>(obj);
-    auto args = eval_transform(eval, obj);
+    inline static const std::string name{ "printfln" };
 
-    auto str = args->i(0);
-    assert_string(str);
+    inline static const Signature signature{ String{}, Rest{}, Any{} };
 
-    auto res = detail::format_string(str->to_string(), args);
-    std::cout << res << '\n';
-    al::cout << res << '\n';
-    return make_string(res);
-}
+    inline static const std::string doc{ R"((printf FORMAT_STRING [ARG]...)
 
+Print the string FORMAT_STRING formated with the given arguments on
+the standard output followed by a new line.
+)" };
 
-ALObjectPtr Feprintf(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_min_size<1>(obj);
+        auto args = eval_transform(eval, obj);
+
+        auto str = args->i(0);
+        assert_string(str);
+
+        auto res = detail::format_string(str->to_string(), args);
+        std::cout << res << '\n';
+        al::cout << res << '\n';
+        return make_string(res);
+    }
+};
+
+struct eprintf
 {
-    assert_min_size<1>(obj);
-    auto args = eval_transform(eval, obj);
+    inline static const std::string name{ "eprintf" };
 
-    auto str = args->i(0);
-    assert_string(str);
+    inline static const Signature signature{ String{}, Rest{}, Any{} };
 
-    auto res = detail::format_string(str->to_string(), args);
-    al::cerr << res;
-    return make_string(res);
-}
+    inline static const std::string doc{ R"((eprintf FORMAT_STRING [ARG]...)
 
-ALObjectPtr Feprintfln(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+Print the string FORMAT_STRING formated with the given arguments on
+the standard error stream.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_min_size<1>(obj);
+        auto args = eval_transform(eval, obj);
+
+        auto str = args->i(0);
+        assert_string(str);
+
+        auto res = detail::format_string(str->to_string(), args);
+        al::cerr << res;
+        return make_string(res);
+    }
+};
+
+struct eprintfln
 {
-    assert_min_size<1>(obj);
-    auto args = eval_transform(eval, obj);
+    inline static const std::string name{ "eprintfln" };
 
-    auto str = args->i(0);
-    assert_string(str);
+    inline static const Signature signature{ String{}, Rest{}, Any{} };
 
-    auto res = detail::format_string(str->to_string(), args);
-    al::cerr << res << '\n';
-    return make_string(res);
-}
+    inline static const std::string doc{ R"((eprintfln FORMAT_STRING [ARG]...)
+
+Print the string FORMAT_STRING formated with the given arguments on
+the standard error stream followed by a new line.
+)" };
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_min_size<1>(obj);
+        auto args = eval_transform(eval, obj);
+
+        auto str = args->i(0);
+        assert_string(str);
+
+        auto res = detail::format_string(str->to_string(), args);
+        al::cerr << res << '\n';
+        return make_string(res);
+    }
+};
+
 
 }  // namespace fmt
 
 ALISP_EXPORT alisp::env::ModulePtr init_fmt(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     using namespace alisp;
-    
+
     auto Mfmt    = alisp::module_init("fmt");
     auto fmt_ptr = Mfmt.get();
 
@@ -630,63 +700,11 @@ To note is that the `printf` and `fmt` functions in the `fmt` module use the sam
 
 )");
 
-    module_defun(fmt_ptr,
-                        "fmt",
-                        &fmt::Ffmt,
-                        R"((fmt FORMAT_STRING [ARG]...)
-
-Return a string resulting from the formating FORMAT_STRING with the
-given arguments.
-
-```elisp
-(fmt "this is formated wiht {} and {}" 42 "some words")
-```
-)");
-
-    module_defun(fmt_ptr,
-                        "printf",
-                        &fmt::Fprintf,
-                        R"((printf FORMAT_STRING [ARG]...)
-
-Print the string FORMAT_STRING formated with the given arguments on
-the standard output.
-
-)");
-
-    module_defun(fmt_ptr,
-                        "printfln",
-                        &fmt::Fprintfln,
-                        R"((printf FORMAT_STRING [ARG]...)
-
-Print the string FORMAT_STRING formated with the given arguments on
-the standard output followed by a new line.
-)");
-
-    module_defun(fmt_ptr,
-                        "eprintf",
-                        &fmt::Feprintf,
-                        R"((eprintf FORMAT_STRING [ARG]...)
-
-Print the string FORMAT_STRING formated with the given arguments on
-the standard error stream.
-)");
-
-    module_defun(fmt_ptr,
-                        "eprintfln",
-                        &fmt::Feprintfln,
-                        R"((eprintfln FORMAT_STRING [ARG]...)
-
-Print the string FORMAT_STRING formated with the given arguments on
-the standard error stream followed by a new line.
-)");
-    
-
-    module_signature(fmt_ptr, "fmt", Signature(String{}, Rest{}, Any{}));
-    module_signature(fmt_ptr, "printf", Signature(String{}, Rest{}, Any{}));
-    module_signature(fmt_ptr, "printfln", Signature(String{}, Rest{}, Any{}));
-    module_signature(fmt_ptr, "eprintf", Signature(String{}, Rest{}, Any{}));
-    module_signature(fmt_ptr, "eprintfln", Signature(String{}, Rest{}, Any{}));
-
+    module_defun<fmt::fmt>(fmt_ptr);
+    module_defun<fmt::printf>(fmt_ptr);
+    module_defun<fmt::eprintf>(fmt_ptr);
+    module_defun<fmt::printfln>(fmt_ptr);
+    module_defun<fmt::eprintfln>(fmt_ptr);
 
     return Mfmt;
 }

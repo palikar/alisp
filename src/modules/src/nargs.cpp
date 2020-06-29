@@ -26,11 +26,11 @@ using namespace alisp;
 
 struct has
 {
-    static const std::string name {"nargs-has"};
+    inline static const std::string name{ "nargs-has" };
 
-    static const std::string doc {R"(This is the sick func)"};
+    inline static const std::string doc{ R"()" };
 
-    static Signature signature{List{}, Sym{}};
+    inline static const Signature signature{ List{}, Sym{} };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -44,13 +44,18 @@ struct has
 
         return contains(l, col_string->to_string()) ? Qt : Qnil;
     }
-
 };
 
 struct next
 {
 
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    inline static const std::string name{ "nargs-next" };
+
+    inline static const std::string doc{ R"()" };
+
+    inline static const Signature signature{ List{}, Sym{} };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         AL_CHECK(assert_size<2>(t_obj));
 
@@ -60,22 +65,25 @@ struct next
         AL_CHECK(assert_list(l));
         AL_CHECK(assert_symbol(col_string));
 
-        if (auto [next, succ] = get_next(l, col_string->to_string()); succ)
+        if (auto [it, succ] = get_next(l, col_string->to_string()); succ)
         {
-            return next;
+            return it;
         }
 
         return Qnil;
     }
-
 };
 
 struct truthy
 {
 
-    std::string doc =  R"()";
+    inline static const std::string name{ "nargs-thruty" };
 
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    inline static const std::string doc{ R"()" };
+
+    inline static const Signature signature{ List{}, Sym{} };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         AL_CHECK(assert_size<2>(t_obj));
 
@@ -91,15 +99,18 @@ struct truthy
         }
         return Qnil;
     }
-
 };
 
 struct falsey
 {
 
-    std::string doc =  R"()";
+    inline static const std::string name{ "nargs-falsey" };
 
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    inline static const std::string doc{ R"()" };
+
+    inline static const Signature signature{ List{}, Sym{} };
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         AL_CHECK(assert_size<2>(t_obj));
 
@@ -115,7 +126,6 @@ struct falsey
         }
         return Qnil;
     }
-
 };
 
 
@@ -124,22 +134,14 @@ struct falsey
 ALISP_EXPORT alisp::env::ModulePtr init_nargs(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     using namespace alisp;
-    
-    auto nargs_module = alisp::module_init("nargs");
+
+    auto nargs_module = module_init("nargs");
     auto ngs_ptr      = nargs_module.get();
 
-    module_defun(ngs_ptr, has::name, &has::func, has::doc);
-    module_signature(ngs_ptr, has::name, has::signature);
-    
-// module_defun(ngs_ptr, "nargs-has", &nargs::Fhas, R"()");
-    module_defun(ngs_ptr, "nargs-next", &nargs::Fnext, R"()");
-    module_defun(ngs_ptr, "nargs-truthy", &nargs::Ftruthy, R"()");
-    module_defun(ngs_ptr, "nargs-falsey", &nargs::Ffalsey, R"()");
-
-    // module_signature(ngs_ptr, "nargs-has", Signature(List{}, Sym{}));
-    module_signature(ngs_ptr, "nargs-next", Signature(List{}, Sym{}));
-    module_signature(ngs_ptr, "nargs-truthy", Signature(List{}, Sym{}));
-    module_signature(ngs_ptr, "nargs-falsey", Signature(List{}, Sym{}));
+    module_defun<nargs::has>(ngs_ptr);
+    module_defun<nargs::next>(ngs_ptr);
+    module_defun<nargs::truthy>(ngs_ptr);
+    module_defun<nargs::falsey>(ngs_ptr);
 
     return nargs_module;
 }

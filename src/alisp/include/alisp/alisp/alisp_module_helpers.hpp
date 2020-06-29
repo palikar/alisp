@@ -47,7 +47,6 @@ inline void module_eval(env::Module *t_module, ALObjectPtr t_obj)
     t_module->eval_obj(std::move(t_obj));
 }
 
-
 inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_type fun, std::string t_doc = {})
 {
     auto &new_fun = t_module->get_root().insert({ t_name, make_prime(fun, t_name) }).first->second;
@@ -61,18 +60,24 @@ inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_t
 }
 
 template<typename... Args>
-inline void module_signature(env::Module *t_module, std::string t_name, [[maybe_unused]] Signature<Args...> signature)
+inline void
+  module_signature(env::Module *t_module, std::string t_name, [[maybe_unused]] const Signature<Args...> &signature)
 {
 
     if (t_module->root_scope().count(t_name) == 0)
     {
         throw std::runtime_error(
-            fmt::format("{} does not exist. Report bug for the module {}", t_name, t_module->name()));
+          fmt::format("{} does not exist. Report bug for the module {}", t_name, t_module->name()));
     }
 
     t_module->root_scope().at(t_name)->set_prop("--managed--", Qt);
     t_module->root_scope().at(t_name)->set_prop("--signature--", signature.arglist_object());
+}
 
+template<typename S> inline void module_defun(env::Module *t_module)
+{
+    module_defun(t_module, S::name, S::func, S::doc);
+    module_signature(t_module, S::name, S::signature);
 }
 
 inline void module_defvar(env::Module *t_module, std::string t_name, ALObjectPtr val, std::string t_doc = {})
