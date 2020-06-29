@@ -224,160 +224,242 @@ std::regex_constants::syntax_option_type handle_regex_flags(ALObjectPtr t_obj)
 
 }  // namespace detail
 
-ALObjectPtr Freplace(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+
+struct replace
 {
-    AL_CHECK(assert_max_size<4>(t_obj));
-    auto reg = eval->eval(t_obj->i(0));
+    inline static const std::string name{"re-replace"};
 
-    auto str = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(str));
+    inline static const Signature signature{};
 
-    auto repl = eval->eval(t_obj->i(2));
-    AL_CHECK(assert_string(repl));
+    inline static const std::string doc{R"((re-replace [REGEX|STRING] STRING REPLACEMENT [MATCH_FLAGS])
 
-    try
+Try matching a part of `STRING` with the regex object or regex-string
+and replace it with `REPLACEMENT`. Return the new string.
+
+Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
+        AL_CHECK(assert_max_size<4>(t_obj));
+        auto reg = eval->eval(t_obj->i(0));
+
+        auto str = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(str));
+
+        auto repl = eval->eval(t_obj->i(2));
+        AL_CHECK(assert_string(repl));
+
+        try
+        {
+            std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
+            if (std::size(*t_obj) > 3)
+            {
+                auto flags_list = eval->eval(t_obj->i(3));
+                AL_CHECK(assert_list(flags_list));
+                flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+            }
+            auto res = std::regex_replace(str->to_string(), detail::obj_to_regex(reg), repl->to_string(), flags);
+            return make_string(res);
+        }
+        catch (std::regex_error &exc)
+        {
+            signal(re_signal, fmt::format("Re error: {}", exc.what()));
+            return Qnil;
+        }
+    }
+};
+
+struct match
+{
+    inline static const std::string name{"re-match"};
+
+    inline static const Signature signature{};
+
+    inline static const std::string doc{R"((match [REGEX|STRING] STRING [MATCH_FLAGS])
+
+Try to match the whole of string `STRING` with the given regex object
+or regex-string. Return nil if the match fails and return a list of
+the match result if the match succeeds. The first element of the list
+will be the whole match, subsequent elements will correspond to the
+matched groups.
+
+Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_max_size<3>(t_obj));
+        auto reg = eval->eval(t_obj->i(0));
+
+        auto str = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(str));
         std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
-        if (std::size(*t_obj) > 3)
-        {
-            auto flags_list = eval->eval(t_obj->i(3));
-            AL_CHECK(assert_list(flags_list));
-            flags = detail::handle_match_flags(eval_transform(eval, flags_list));
-        }
-        auto res = std::regex_replace(str->to_string(), detail::obj_to_regex(reg), repl->to_string(), flags);
-        return make_string(res);
-    }
-    catch (std::regex_error &exc)
-    {
-        signal(re_signal, fmt::format("Re error: {}", exc.what()));
-        return Qnil;
-    }
-}
 
-ALObjectPtr Fmatch(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+        try
+        {
+            if (std::size(*t_obj) > 2)
+            {
+                auto flags_list = eval->eval(t_obj->i(2));
+                AL_CHECK(assert_list(flags_list));
+                flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+            }
+            std::smatch match;
+            auto res = std::regex_match(str->to_string(), match, detail::obj_to_regex(reg), flags);
+            return res ? detail::match_to_obj(match) : Qnil;
+        }
+        catch (std::regex_error &exc)
+        {
+            signal(re_signal, fmt::format("Re error: {}", exc.what()));
+            return Qnil;
+        }
+    }
+};
+
+struct search
 {
-    AL_CHECK(assert_max_size<3>(t_obj));
-    auto reg = eval->eval(t_obj->i(0));
+    inline static const std::string name{"re-search"};
 
-    auto str = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(str));
-    std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
+    inline static const Signature signature{};
 
-    try
+    inline static const std::string doc{R"((re-search [REGEX|STRING] STRING [MATCH_FLAGS])
+
+Search for matching substring in `STRING` with the regex object or
+regex-string. In contrast to `re-match`, this functions does not try
+to match the whole string but find a part of the string that matches
+the regex. Return a list with the resutls of the searching.
+
+Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        if (std::size(*t_obj) > 2)
+        AL_CHECK(assert_max_size<3>(t_obj));
+        auto reg = eval->eval(t_obj->i(0));
+
+        auto str = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(str));
+        std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
+
+
+        try
         {
-            auto flags_list = eval->eval(t_obj->i(2));
-            AL_CHECK(assert_list(flags_list));
-            flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+            if (std::size(*t_obj) > 2)
+            {
+                auto flags_list = eval->eval(t_obj->i(2));
+                AL_CHECK(assert_list(flags_list));
+                flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+            }
+            std::smatch match;
+            auto res = std::regex_search(str->to_string(), match, detail::obj_to_regex(reg), flags);
+            return res ? detail::match_to_obj(match) : Qnil;
         }
-        std::smatch match;
-        auto res = std::regex_match(str->to_string(), match, detail::obj_to_regex(reg), flags);
-        return res ? detail::match_to_obj(match) : Qnil;
-    }
-    catch (std::regex_error &exc)
-    {
-        signal(re_signal, fmt::format("Re error: {}", exc.what()));
-        return Qnil;
-    }
-}
+        catch (std::regex_error &exc)
+        {
+            signal(re_signal, fmt::format("Re error: {}", exc.what()));
 
-ALObjectPtr Fsearch(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+            return Qnil;
+        }
+    }
+};
+
+struct search_all
 {
-    AL_CHECK(assert_max_size<3>(t_obj));
-    auto reg = eval->eval(t_obj->i(0));
+    inline static const std::string name{"re-search-all"};
 
-    auto str = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(str));
-    std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
+    inline static const Signature signature{};
 
+    inline static const std::string doc{R"((re-search-all [REGEX|STRING] STRING [MATCH_FLAGS])
 
-    try
+Search for all the matches of a regexc in a string. This function is
+like applying re-serach several times and finding all the matches of
+the regex in a given string. Return a list of lists that are the
+results of the individual matches.
+
+Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.)"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        if (std::size(*t_obj) > 2)
+        AL_CHECK(assert_max_size<3>(t_obj));
+        auto reg = eval->eval(t_obj->i(0));
+
+        auto str = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(str));
+
+        std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
+
+        try
         {
-            auto flags_list = eval->eval(t_obj->i(2));
-            AL_CHECK(assert_list(flags_list));
-            flags = detail::handle_match_flags(eval_transform(eval, flags_list));
-        }
-        std::smatch match;
-        auto res = std::regex_search(str->to_string(), match, detail::obj_to_regex(reg), flags);
-        return res ? detail::match_to_obj(match) : Qnil;
-    }
-    catch (std::regex_error &exc)
-    {
-        signal(re_signal, fmt::format("Re error: {}", exc.what()));
-        return Qnil;
-    }
-}
+            if (std::size(*t_obj) > 2)
+            {
+                auto flags_list = eval->eval(t_obj->i(2));
+                AL_CHECK(assert_list(flags_list));
+                flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+            }
 
-ALObjectPtr Fsearch_all(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+            auto string_expr = str->to_string();
+            std::string::const_iterator search_start(string_expr.cbegin());
+
+            ALObject::list_type matches;
+            std::smatch match;
+            while (std::regex_search(search_start, string_expr.cend(), match, detail::obj_to_regex(reg), flags))
+            {
+                matches.push_back(detail::match_to_obj(match));
+                search_start = match.suffix().first;
+            }
+
+            return make_list(matches);
+        }
+        catch (std::regex_error &exc)
+        {
+            signal(re_signal, fmt::format("Re error: {}", exc.what()));
+            return Qnil;
+        }
+    }
+};
+
+struct compile
 {
-    AL_CHECK(assert_max_size<3>(t_obj));
-    auto reg = eval->eval(t_obj->i(0));
+    inline static const std::string name{"re-compile"};
 
-    auto str = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(str));
+    inline static const Signature signature{};
 
-    std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
+    inline static const std::string doc{R"((re-compile REGEX_STRING [BUILD_FLAGS_LIST])
 
-    try
+Compile the regex given in the string and return a resource object to
+the created regex. Optionaly, build flags can be passed through the
+`BUILD_FLAGS_LIST` list.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *env, eval::Evaluator *eval)
     {
-        if (std::size(*t_obj) > 2)
+        AL_CHECK(assert_max_size<2>(t_obj));
+        auto reg = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(reg));
+
+        std::regex_constants::syntax_option_type flags = std::regex_constants::ECMAScript;
+
+        try
         {
-            auto flags_list = eval->eval(t_obj->i(2));
-            AL_CHECK(assert_list(flags_list));
-            flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+            if (std::size(*t_obj) > 1)
+            {
+                auto flags_list = eval->eval(t_obj->i(1));
+                AL_CHECK(assert_list(flags_list));
+                flags = detail::handle_regex_flags(flags_list);
+            }
+
+            auto id = detail::reg_registry.emplace_resource(reg->to_string(), flags)->id;
+            env->defer_callback([id = id]() { detail::reg_registry.destroy_resource(id); });
+            return resource_to_object(id);
         }
-
-        auto string_expr = str->to_string();
-        std::string::const_iterator search_start(string_expr.cbegin());
-
-        ALObject::list_type matches;
-        std::smatch match;
-        while (std::regex_search(search_start, string_expr.cend(), match, detail::obj_to_regex(reg), flags))
+        catch (std::regex_error &exc)
         {
-            matches.push_back(detail::match_to_obj(match));
-            search_start = match.suffix().first;
+            signal(re_signal, fmt::format("Re error: {}", exc.what()));
+            return Qnil;
         }
-
-        return make_list(matches);
     }
-    catch (std::regex_error &exc)
-    {
-        signal(re_signal, fmt::format("Re error: {}", exc.what()));
-        return Qnil;
-    }
-}
+};
 
-
-ALObjectPtr Fcompile(const ALObjectPtr &t_obj, env::Environment *env, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_max_size<2>(t_obj));
-    auto reg = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(reg));
-
-    std::regex_constants::syntax_option_type flags = std::regex_constants::ECMAScript;
-
-    try
-    {
-        if (std::size(*t_obj) > 1)
-        {
-            auto flags_list = eval->eval(t_obj->i(1));
-            AL_CHECK(assert_list(flags_list));
-            flags = detail::handle_regex_flags(flags_list);
-        }
-
-        auto id = detail::reg_registry.emplace_resource(reg->to_string(), flags)->id;
-        env->defer_callback([id = id]() { detail::reg_registry.destroy_resource(id); });
-        return resource_to_object(id);
-    }
-    catch (std::regex_error &exc)
-    {
-        signal(re_signal, fmt::format("Re error: {}", exc.what()));
-        return Qnil;
-    }
-}
 
 }  // namespace re
 
@@ -528,68 +610,9 @@ utility, with the -E option, in POSIX. This is effectively the same as
 the extended option with the addition of newline '\n' as an
 alternation separator in addtion to '|'.)");
 
-
-    module_defun(re_ptr,
-                 "re-compile",
-                 &re::Fcompile,
-                 R"((re-compile REGEX_STRING [BUILD_FLAGS_LIST])
-
-Compile the regex given in the string and return a resource object to
-the created regex. Optionaly, build flags can be passed through the
-`BUILD_FLAGS_LIST` list.
-)");
-
-
-    module_defun(re_ptr,
-                 "re-match",
-                 &re::Fmatch,
-                 R"((match [REGEX|STRING] STRING [MATCH_FLAGS])
-
-Try to match the whole of string `STRING` with the given regex object
-or regex-string. Return nil if the match fails and return a list of
-the match result if the match succeeds. The first element of the list
-will be the whole match, subsequent elements will correspond to the
-matched groups.
-
-Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
-)");
-
-    module_defun(re_ptr,
-                 "re-search",
-                 &re::Fsearch,
-                 R"((re-search [REGEX|STRING] STRING [MATCH_FLAGS])
-
-Search for matching substring in `STRING` with the regex object or
-regex-string. In contrast to `re-match`, this functions does not try
-to match the whole string but find a part of the string that matches
-the regex. Return a list with the resutls of the searching.
-
-Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
-)");
-
-    module_defun(re_ptr,
-                 "re-search-all",
-                 &re::Fsearch_all,
-                 R"((re-search-all [REGEX|STRING] STRING [MATCH_FLAGS])
-
-Search for all the matches of a regexc in a string. This function is
-like applying re-serach several times and finding all the matches of
-the regex in a given string. Return a list of lists that are the
-results of the individual matches.
-
-Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.)");
-
-    module_defun(re_ptr,
-                 "re-replace",
-                 &re::Freplace,
-                 R"((re-replace [REGEX|STRING] STRING REPLACEMENT [MATCH_FLAGS])
-
-Try matching a part of `STRING` with the regex object or regex-string
-and replace it with `REPLACEMENT`. Return the new string.
-
-Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
-)");
-
-
+    module_defun<re::replace>(re_ptr);
+    module_defun<re::match>(re_ptr);
+    module_defun<re::compile>(re_ptr);
+    
     return Mre;
 }

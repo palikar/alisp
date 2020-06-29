@@ -116,240 +116,304 @@ auto send(cpr::Session &session, size_t type)
 
 }  // namespace detail
 
-ALObjectPtr Frequest(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+
+struct request
 {
+    inline static const std::string name{"request"};
 
-    AL_CHECK(assert_min_size<1>(t_obj));
+    inline static const Signature signature{};
 
-    auto url = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(url));
+    inline static const std::string doc{R"()"};
 
-    cpr::Session session;
-    cpr::priv::set_option(session, cpr::Url{ url->to_string() });
-
-    size_t request_type{ 0 };
-
-    if (std::size(*t_obj) > 1)
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto op = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_list(op));
+        AL_CHECK(assert_min_size<1>(t_obj));
 
-        if (auto [type, succ] = get_next(op, ":type"); succ)
+        auto url = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(url));
+
+        cpr::Session session;
+        cpr::priv::set_option(session, cpr::Url{ url->to_string() });
+
+        size_t request_type{ 0 };
+
+        if (std::size(*t_obj) > 1)
         {
 
-            auto s = eval->eval(type);
+            auto op = eval->eval(t_obj->i(1));
+            AL_CHECK(assert_list(op));
 
-            if (eq(s, type_get))
+            if (auto [type, succ] = get_next(op, ":type"); succ)
             {
-                request_type = detail::GET_TYPE;
+
+                auto s = eval->eval(type);
+
+                if (eq(s, type_get))
+                {
+                    request_type = detail::GET_TYPE;
+                }
+                else if (eq(s, type_post))
+                {
+                    request_type = detail::POST_TYPE;
+                }
+                else if (eq(s, type_delete))
+                {
+                    request_type = detail::DELETE_TYPE;
+                }
+                else if (eq(s, type_head))
+                {
+                    request_type = detail::HEAD_TYPE;
+                }
+                else if (eq(s, type_patch))
+                {
+                    request_type = detail::PATCH_TYPE;
+                }
+                else
+                {
+                    request_type = detail::GET_TYPE;
+                }
             }
-            else if (eq(s, type_post))
+
+            if (auto [data, succ] = get_next(op, ":data"); succ)
             {
-                request_type = detail::POST_TYPE;
+                auto s = eval->eval(data);
+                AL_CHECK(assert_string(s));
+                auto dat = s->to_string();
+                cpr::priv::set_option(session, cpr::Body{ dat });
             }
-            else if (eq(s, type_delete))
+
+            if (auto [params, succ] = get_next(op, ":params"); succ)
             {
-                request_type = detail::DELETE_TYPE;
+                auto s = eval->eval(params);
+                cpr::Parameters pars;
+                cpr::CurlHolder holder;
+                AL_CHECK(assert_list(s));
+                for (auto &par : *s)
+                {
+                    auto key   = par->i(0);
+                    auto value = par->i(1);
+                    pars.AddParameter(cpr::Parameter(key->to_string(), value->to_string()), holder);
+                }
+                cpr::priv::set_option(session, pars);
             }
-            else if (eq(s, type_head))
+
+            if (auto [headers, succ] = get_next(op, ":headers"); succ)
             {
-                request_type = detail::HEAD_TYPE;
+                auto s = eval->eval(headers);
+                cpr::Header head;
+                AL_CHECK(assert_list(s));
+                for (auto &par : *s)
+                {
+                    auto key   = par->i(0);
+                    auto value = par->i(1);
+                    head.insert({ key->to_string(), value->to_string() });
+                }
+                cpr::priv::set_option(session, head);
             }
-            else if (eq(s, type_patch))
+
+            if (auto [params, succ] = get_next(op, ":payload"); succ)
             {
-                request_type = detail::PATCH_TYPE;
+                auto s = eval->eval(params);
+                cpr::Payload pay{};
+                cpr::CurlHolder holder;
+                AL_CHECK(assert_list(s));
+                for (auto &par : *s)
+                {
+                    auto key   = par->i(0);
+                    auto value = par->i(1);
+                    pay.AddPair({ key->to_string(), value->to_string() }, holder);
+                }
+                cpr::priv::set_option(session, pay);
             }
-            else
+
+            if (auto [params, succ] = get_next(op, ":files"); succ)
             {
-                request_type = detail::GET_TYPE;
+                auto s = eval->eval(params);
+                cpr::Multipart multi{};
+                AL_CHECK(assert_list(s));
+                for (auto &par : *s)
+                {
+                    auto name = par->i(0);
+                    auto file = par->i(1);
+                    multi.parts.push_back({ name->to_string(), cpr::File(file->to_string()) });
+                }
+                cpr::priv::set_option(session, multi);
+            }
+
+            if (auto [params, succ] = get_next(op, ":timeout"); succ)
+            {
+                auto s = eval->eval(params);
+                AL_CHECK(assert_int(s));
+                cpr::priv::set_option(session, cpr::Timeout(static_cast<std::int32_t>(s->to_int())));
+            }
+
+            if (auto [params, succ] = get_next(op, ":auth"); succ)
+            {
+                auto s = eval->eval(params);
+                AL_CHECK(assert_list(s));
+                auto name = eval->eval(s->i(0));
+                auto pass = eval->eval(s->i(1));
+                cpr::priv::set_option(session, cpr::Authentication{ name->to_string(), pass->to_string() });
+            }
+
+            if (auto [params, succ] = get_next(op, ":digest"); succ)
+            {
+                auto s = eval->eval(params);
+                AL_CHECK(assert_list(s));
+                auto name = eval->eval(s->i(0));
+                auto pass = eval->eval(s->i(1));
+                cpr::priv::set_option(session, cpr::Digest{ name->to_string(), pass->to_string() });
+            }
+
+            if (auto [params, succ] = get_next(op, ":NTLM"); succ)
+            {
+                auto s = eval->eval(params);
+                AL_CHECK(assert_list(s));
+                auto name = eval->eval(s->i(0));
+                auto pass = eval->eval(s->i(1));
+                cpr::priv::set_option(session, cpr::NTLM{ name->to_string(), pass->to_string() });
+            }
+
+            if (auto [params, succ] = get_next(op, ":cookies"); succ)
+            {
+                auto s = eval->eval(params);
+                cpr::Cookies cok{};
+                cpr::CurlHolder holder;
+                AL_CHECK(assert_list(s));
+                for (auto &par : *s)
+                {
+                    auto key              = par->i(0);
+                    auto value            = par->i(1);
+                    cok[key->to_string()] = value->to_string();
+                }
+                cpr::priv::set_option(session, cok);
             }
         }
 
-        if (auto [data, succ] = get_next(op, ":data"); succ)
-        {
-            auto s = eval->eval(data);
-            AL_CHECK(assert_string(s));
-            auto dat = s->to_string();
-            cpr::priv::set_option(session, cpr::Body{ dat });
-        }
-
-        if (auto [params, succ] = get_next(op, ":params"); succ)
-        {
-            auto s = eval->eval(params);
-            cpr::Parameters pars;
-            cpr::CurlHolder holder;
-            AL_CHECK(assert_list(s));
-            for (auto &par : *s)
-            {
-                auto key   = par->i(0);
-                auto value = par->i(1);
-                pars.AddParameter(cpr::Parameter(key->to_string(), value->to_string()), holder);
-            }
-            cpr::priv::set_option(session, pars);
-        }
-
-        if (auto [headers, succ] = get_next(op, ":headers"); succ)
-        {
-            auto s = eval->eval(headers);
-            cpr::Header head;
-            AL_CHECK(assert_list(s));
-            for (auto &par : *s)
-            {
-                auto key   = par->i(0);
-                auto value = par->i(1);
-                head.insert({ key->to_string(), value->to_string() });
-            }
-            cpr::priv::set_option(session, head);
-        }
-
-        if (auto [params, succ] = get_next(op, ":payload"); succ)
-        {
-            auto s = eval->eval(params);
-            cpr::Payload pay{};
-            cpr::CurlHolder holder;
-            AL_CHECK(assert_list(s));
-            for (auto &par : *s)
-            {
-                auto key   = par->i(0);
-                auto value = par->i(1);
-                pay.AddPair({ key->to_string(), value->to_string() }, holder);
-            }
-            cpr::priv::set_option(session, pay);
-        }
-
-        if (auto [params, succ] = get_next(op, ":files"); succ)
-        {
-            auto s = eval->eval(params);
-            cpr::Multipart multi{};
-            AL_CHECK(assert_list(s));
-            for (auto &par : *s)
-            {
-                auto name = par->i(0);
-                auto file = par->i(1);
-                multi.parts.push_back({ name->to_string(), cpr::File(file->to_string()) });
-            }
-            cpr::priv::set_option(session, multi);
-        }
-
-        if (auto [params, succ] = get_next(op, ":timeout"); succ)
-        {
-            auto s = eval->eval(params);
-            AL_CHECK(assert_int(s));
-            cpr::priv::set_option(session, cpr::Timeout(static_cast<std::int32_t>(s->to_int())));
-        }
-
-        if (auto [params, succ] = get_next(op, ":auth"); succ)
-        {
-            auto s = eval->eval(params);
-            AL_CHECK(assert_list(s));
-            auto name = eval->eval(s->i(0));
-            auto pass = eval->eval(s->i(1));
-            cpr::priv::set_option(session, cpr::Authentication{ name->to_string(), pass->to_string() });
-        }
-
-        if (auto [params, succ] = get_next(op, ":digest"); succ)
-        {
-            auto s = eval->eval(params);
-            AL_CHECK(assert_list(s));
-            auto name = eval->eval(s->i(0));
-            auto pass = eval->eval(s->i(1));
-            cpr::priv::set_option(session, cpr::Digest{ name->to_string(), pass->to_string() });
-        }
-
-        if (auto [params, succ] = get_next(op, ":NTLM"); succ)
-        {
-            auto s = eval->eval(params);
-            AL_CHECK(assert_list(s));
-            auto name = eval->eval(s->i(0));
-            auto pass = eval->eval(s->i(1));
-            cpr::priv::set_option(session, cpr::NTLM{ name->to_string(), pass->to_string() });
-        }
-
-        if (auto [params, succ] = get_next(op, ":cookies"); succ)
-        {
-            auto s = eval->eval(params);
-            cpr::Cookies cok{};
-            cpr::CurlHolder holder;
-            AL_CHECK(assert_list(s));
-            for (auto &par : *s)
-            {
-                auto key              = par->i(0);
-                auto value            = par->i(1);
-                cok[key->to_string()] = value->to_string();
-            }
-            cpr::priv::set_option(session, cok);
-        }
+        return detail::send(session, request_type);
     }
+};
 
-    return detail::send(session, request_type);
-}
-
-ALObjectPtr Fbody(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+struct body
 {
-    AL_CHECK(assert_size<1>(t_obj));
-    auto resp_list = eval->eval(t_obj->i(0));
-    if (resp_list->size() == 6)
-    {
-        return resp_list->i(0);
-    }
-    return Qnil;
-}
+    inline static const std::string name{"body"};
 
-ALObjectPtr Fstatus_code(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(t_obj));
-    auto resp_list = eval->eval(t_obj->i(0));
-    if (resp_list->size() == 6)
-    {
-        return resp_list->i(1);
-    }
-    return Qnil;
-}
+    inline static const Signature signature{};
 
-ALObjectPtr Fheaders(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(t_obj));
-    auto resp_list = eval->eval(t_obj->i(0));
-    if (resp_list->size() == 6)
-    {
-        return resp_list->i(2);
-    }
-    return Qnil;
-}
+    inline static const std::string doc{R"()"};
 
-ALObjectPtr Furl(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(t_obj));
-    auto resp_list = eval->eval(t_obj->i(0));
-    if (resp_list->size() == 6)
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        return resp_list->i(3);
+        AL_CHECK(assert_size<1>(t_obj));
+        auto resp_list = eval->eval(t_obj->i(0));
+        if (resp_list->size() == 6)
+        {
+            return resp_list->i(0);
+        }
+        return Qnil;
     }
-    return Qnil;
-}
+};
 
-ALObjectPtr Felapsed(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+struct status_code
 {
-    AL_CHECK(assert_size<1>(t_obj));
-    auto resp_list = eval->eval(t_obj->i(0));
-    if (resp_list->size() == 6)
-    {
-        return resp_list->i(4);
-    }
-    return Qnil;
-}
+    inline static const std::string name{"status-code"};
 
-ALObjectPtr Fcookies(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(t_obj));
-    auto resp_list = eval->eval(t_obj->i(0));
-    if (resp_list->size() == 6)
+    inline static const Signature signature{};
+
+    inline static const std::string doc{R"()"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        return resp_list->i(5);
+        AL_CHECK(assert_size<1>(t_obj));
+        auto resp_list = eval->eval(t_obj->i(0));
+        if (resp_list->size() == 6)
+        {
+            return resp_list->i(1);
+        }
+        return Qnil;
     }
-    return Qnil;
-}
+};
+
+struct headers
+{
+    inline static const std::string name{"headers"};
+
+    inline static const Signature signature{};
+
+    inline static const std::string doc{R"()"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(t_obj));
+        auto resp_list = eval->eval(t_obj->i(0));
+        if (resp_list->size() == 6)
+        {
+            return resp_list->i(2);
+        }
+        return Qnil;
+    }
+};
+
+struct url
+{
+    inline static const std::string name{"url"};
+
+    inline static const Signature signature{};
+
+    inline static const std::string doc{R"()"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(t_obj));
+        auto resp_list = eval->eval(t_obj->i(0));
+        if (resp_list->size() == 6)
+        {
+            return resp_list->i(3);
+        }
+        return Qnil;
+    }
+};
+
+struct elapsed
+{
+    inline static const std::string name{"elapsed"};
+
+    inline static const Signature signature{};
+
+    inline static const std::string doc{R"()"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(t_obj));
+        auto resp_list = eval->eval(t_obj->i(0));
+        if (resp_list->size() == 6)
+        {
+            return resp_list->i(4);
+        }
+        return Qnil;
+    }
+};
+
+struct cookies
+{
+    inline static const std::string name{"cookies"};
+
+    inline static const Signature signature{};
+
+    inline static const std::string doc{R"()"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(t_obj));
+        auto resp_list = eval->eval(t_obj->i(0));
+        if (resp_list->size() == 6)
+        {
+            return resp_list->i(5);
+        }
+        return Qnil;
+    }
+};
 
 
 }  // namespace request
@@ -369,15 +433,6 @@ ALISP_EXPORT alisp::env::ModulePtr init_request(alisp::env::Environment *, alisp
     module_defvar(req_ptr, "DELETE", request::type_delete, R"()");
     module_defvar(req_ptr, "PUT", request::type_put, R"()");
     module_defvar(req_ptr, "OPTIONS", request::type_options, R"()");
-
-    module_defun(req_ptr, "request", &request::Frequest, R"()");
-
-    module_defun(req_ptr, "body", &request::Fbody, R"()");
-    module_defun(req_ptr, "status-code", &request::Fstatus_code, R"()");
-    module_defun(req_ptr, "headers", &request::Fheaders, R"()");
-    module_defun(req_ptr, "url", &request::Furl, R"()");
-    module_defun(req_ptr, "elapsed", &request::Felapsed, R"()");
-    module_defun(req_ptr, "cookies", &request::Fcookies, R"()");
-
+    
     return Mrequest;
 }

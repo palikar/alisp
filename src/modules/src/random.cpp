@@ -36,198 +36,392 @@ static std::mt19937 rand_eng(rand_dev());
 
 }  // namespace detail
 
-ALObjectPtr Frand_int(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+
+struct rand_int
 {
-    assert_size<2>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_int(a);
-    auto b = eval->eval(obj->i(1));
-    assert_int(b);
+    inline static const std::string name{"rand-int"};
 
-    std::uniform_int_distribution<> distr(static_cast<int>(a->to_int()), static_cast<int>(b->to_int()) + 1);
+    inline static const Signature signature{Int{}, Int{}};
 
-    return make_int(distr(detail::rand_eng));
-}
+    inline static const std::string doc{R"((rand-int LOWER UPPER)
 
-ALObjectPtr Fchoice(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<1>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_list(a);
+Return a random integer in the range [LOWER, UPPER]
+)"};
 
-    std::uniform_int_distribution<> distr(0, static_cast<int>(a->size()) - 1);
-
-    return a->children()[static_cast<size_t>(distr(detail::rand_eng))];
-}
-
-ALObjectPtr Fsample(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<2>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_list(a);
-    auto k = eval->eval(obj->i(1));
-    assert_int(k);
-    std::uniform_int_distribution<> distr(0, static_cast<int>(a->size()) - 1);
-    ALObject::list_type lis;
-    for (int i = 0; i < k->to_int(); ++i)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        lis.push_back(a->children()[static_cast<size_t>(distr(detail::rand_eng))]);
+        assert_size<2>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_int(a);
+        auto b = eval->eval(obj->i(1));
+        assert_int(b);
+
+        std::uniform_int_distribution<> distr(static_cast<int>(a->to_int()), static_cast<int>(b->to_int()) + 1);
+
+        return make_int(distr(detail::rand_eng));
     }
+};
 
-    return make_list(lis);
-}
-
-ALObjectPtr Funiform(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct choice
 {
-    assert_size<2>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_number(a);
-    auto b = eval->eval(obj->i(1));
-    assert_number(b);
+    inline static const std::string name{"choice"};
 
-    std::uniform_real_distribution<> distr(a->to_real(), b->to_real());
+    inline static const Signature signature{List{}};
 
-    return make_real(distr(detail::rand_eng));
-}
+    inline static const std::string doc{R"((choice LIST)
 
-ALObjectPtr Fexponential(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<1>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_number(a);
+Return a random element from the list `LIST`.
+)"};
 
-    std::exponential_distribution<> distr(a->to_real());
-
-    return make_real(distr(detail::rand_eng));
-}
-
-ALObjectPtr Fgamma(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<2>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_number(a);
-    auto b = eval->eval(obj->i(1));
-    assert_number(b);
-
-    std::gamma_distribution<> distr(a->to_real(), b->to_real());
-
-    return make_real(distr(detail::rand_eng));
-}
-
-ALObjectPtr Fgauss(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<2>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_number(a);
-    auto b = eval->eval(obj->i(1));
-    assert_number(b);
-
-    std::normal_distribution<> distr(a->to_real(), b->to_real());
-
-    return make_real(distr(detail::rand_eng));
-}
-
-ALObjectPtr Flognorm(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<2>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_number(a);
-    auto b = eval->eval(obj->i(1));
-    assert_number(b);
-
-    std::lognormal_distribution<> distr(a->to_real(), b->to_real());
-
-    return make_real(distr(detail::rand_eng));
-}
-
-ALObjectPtr Fweibull(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<2>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_number(a);
-    auto b = eval->eval(obj->i(1));
-    assert_number(b);
-
-    std::weibull_distribution<> distr(a->to_real(), b->to_real());
-
-    return make_real(distr(detail::rand_eng));
-}
-
-ALObjectPtr Fgeometric(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<1>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_number(a);
-
-    std::geometric_distribution<> distr(a->to_real());
-
-    return make_real(distr(detail::rand_eng));
-}
-
-ALObjectPtr Ffisher(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<2>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_number(a);
-    auto b = eval->eval(obj->i(1));
-    assert_number(b);
-
-    std::fisher_f_distribution<> distr(a->to_real(), b->to_real());
-
-    return make_real(distr(detail::rand_eng));
-}
-
-ALObjectPtr Fstudent(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<1>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_number(a);
-
-    std::student_t_distribution<> distr(a->to_real());
-
-    return make_real(distr(detail::rand_eng));
-}
-
-ALObjectPtr Fseed(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<1>(obj);
-    auto a = eval->eval(obj->i(0));
-    assert_int(a);
-    std::seed_seq seed2{ a->to_int() };
-    detail::rand_eng = std::mt19937(seed2);
-
-    return Qt;
-}
-
-ALObjectPtr Fseed_rand(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
-{
-    assert_size<0>(obj);
-    std::seed_seq seed2{ detail::rand_dev(), detail::rand_dev(), detail::rand_dev(),
-                         detail::rand_dev(), detail::rand_dev(), detail::rand_dev() };
-    detail::rand_eng = std::mt19937(seed2);
-    return Qt;
-}
-
-ALObjectPtr Fcrand(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
-{
-    assert_size<0>(obj);
-    return make_int(std::rand());
-}
-
-ALObjectPtr Fcsrand(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_max_size<1>(obj);
-    if (std::size(*obj) == 0)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        std::srand(static_cast<unsigned int>(std::time(NULL)));
+        assert_size<1>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_list(a);
+
+        std::uniform_int_distribution<> distr(0, static_cast<int>(a->size()) - 1);
+
+        return a->children()[static_cast<size_t>(distr(detail::rand_eng))];
+    }
+};
+
+struct sample
+{
+    inline static const std::string name{"sample"};
+
+    inline static const Signature signature{List{}, Int{}};
+
+    inline static const std::string doc{R"((choice LIST CNT)
+
+Return a list with `CNT` random elements from the list `LIST`.
+
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<2>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_list(a);
+        auto k = eval->eval(obj->i(1));
+        assert_int(k);
+        std::uniform_int_distribution<> distr(0, static_cast<int>(a->size()) - 1);
+        ALObject::list_type lis;
+        for (int i = 0; i < k->to_int(); ++i)
+        {
+            lis.push_back(a->children()[static_cast<size_t>(distr(detail::rand_eng))]);
+        }
+
+        return make_list(lis);
+    }
+};
+
+struct uniform
+{
+    inline static const std::string name{"uniform"};
+
+    inline static const Signature signature{Double{}, Double{}};
+
+    inline static const std::string doc{R"((uniform A B)
+
+Return a random real number from an uniform distribution of [A, B].
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<2>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_number(a);
+        auto b = eval->eval(obj->i(1));
+        assert_number(b);
+
+        std::uniform_real_distribution<> distr(a->to_real(), b->to_real());
+
+        return make_real(distr(detail::rand_eng));
+    }
+};
+
+struct exponential
+{
+    inline static const std::string name{"exponential"};
+
+    inline static const Signature signature{Double{}};
+
+    inline static const std::string doc{R"((exponential A)
+
+Return a random real number from an exponential distribution with e=A
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<1>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_number(a);
+
+        std::exponential_distribution<> distr(a->to_real());
+
+        return make_real(distr(detail::rand_eng));
+    }
+};
+
+struct gamma
+{
+    inline static const std::string name{"gamma"};
+
+    inline static const Signature signature{Double{}, Double{}};
+
+    inline static const std::string doc{R"((gamma A B)
+
+Return a random real number from a gamma distribution with k=A, theta=B
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<2>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_number(a);
+        auto b = eval->eval(obj->i(1));
+        assert_number(b);
+
+        std::gamma_distribution<> distr(a->to_real(), b->to_real());
+
+        return make_real(distr(detail::rand_eng));
+    }
+};
+
+struct gauss
+{
+    inline static const std::string name{"gauss"};
+
+    inline static const Signature signature{Double{}, Double{}};
+
+    inline static const std::string doc{R"((gauss A B)
+
+Return a random real number from a gauss distribution with mean=A, std=B
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<2>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_number(a);
+        auto b = eval->eval(obj->i(1));
+        assert_number(b);
+
+        std::normal_distribution<> distr(a->to_real(), b->to_real());
+
+        return make_real(distr(detail::rand_eng));
+    }
+};
+
+struct lognorm
+{
+    inline static const std::string name{"lognorm"};
+
+    inline static const Signature signature{Double{}};
+
+    inline static const std::string doc{R"((lognorm A)
+
+Return a random real number from a log-normal distribution with mean=A, std=B
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<2>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_number(a);
+        auto b = eval->eval(obj->i(1));
+        assert_number(b);
+
+        std::lognormal_distribution<> distr(a->to_real(), b->to_real());
+
+        return make_real(distr(detail::rand_eng));
+    }
+};
+
+struct weibull
+{
+    inline static const std::string name{"weibull"};
+
+    inline static const Signature signature{Double{}, Double{}};
+
+    inline static const std::string doc{R"((weibull A B)
+
+Return a random real number from a weibull distribution with lambda=A, k=B
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<2>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_number(a);
+        auto b = eval->eval(obj->i(1));
+        assert_number(b);
+
+        std::weibull_distribution<> distr(a->to_real(), b->to_real());
+
+        return make_real(distr(detail::rand_eng));
+    }
+};
+
+struct geometric
+{
+    inline static const std::string name{"geometric"};
+
+    inline static const Signature signature{Double{}};
+
+    inline static const std::string doc{R"((geometric A)
+
+Return a random real number from a geometric distribution with p=A
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<1>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_number(a);
+
+        std::geometric_distribution<> distr(a->to_real());
+
+        return make_real(distr(detail::rand_eng));
+    }
+};
+
+struct fisher
+{
+    inline static const std::string name{"fisher-f"};
+
+    inline static const Signature signature{Double{}, Double{}};
+
+    inline static const std::string doc{R"((fisher-f A B)
+
+Return a random real number from a f-distribution distribution with m=A, n=B
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<2>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_number(a);
+        auto b = eval->eval(obj->i(1));
+        assert_number(b);
+
+        std::fisher_f_distribution<> distr(a->to_real(), b->to_real());
+
+        return make_real(distr(detail::rand_eng));
+    }
+};
+
+struct student
+{
+    inline static const std::string name{"student-t"};
+
+    inline static const Signature signature{Double{}};
+
+    inline static const std::string doc{R"((student-t A)
+
+Return a random real number from a studnet-t distribution with n=A
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<1>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_number(a);
+
+        std::student_t_distribution<> distr(a->to_real());
+
+        return make_real(distr(detail::rand_eng));
+    }
+};
+
+struct seed
+{
+    inline static const std::string name{"seed"};
+
+    inline static const Signature signature{Int{}};
+
+    inline static const std::string doc{R"((seed INT)
+
+Seed the random engine with the given integer.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_size<1>(obj);
+        auto a = eval->eval(obj->i(0));
+        assert_int(a);
+        std::seed_seq seed2{ a->to_int() };
+        detail::rand_eng = std::mt19937(seed2);
+
         return Qt;
     }
+};
 
-    auto a = eval->eval(obj->i(0));
-    assert_int(a);
-    std::srand(static_cast<unsigned int>(a->to_int()));
-    return Qt;
-}
+struct seed_rand
+{
+    inline static const std::string name{"seed-rand"};
+
+    inline static const Signature signature{Int{}};
+
+    inline static const std::string doc{R"((seed-rand)
+
+Seed the random engine with random numbers from the base random device.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
+    {
+        assert_size<0>(obj);
+        std::seed_seq seed2{ detail::rand_dev(), detail::rand_dev(), detail::rand_dev(),
+                             detail::rand_dev(), detail::rand_dev(), detail::rand_dev() };
+        detail::rand_eng = std::mt19937(seed2);
+        return Qt;
+    }
+};
+
+struct crand
+{
+    inline static const std::string name{"crand"};
+
+    inline static const Signature signature{};
+
+    inline static const std::string doc{R"((crand)
+
+Return a random number generated by crand.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
+    {
+        assert_size<0>(obj);
+        return make_int(std::rand());
+    }
+};
+
+struct csrand
+{
+    inline static const std::string name{"csrand"};
+
+    inline static const Signature signature{Optional{}, Int{}};
+
+    inline static const std::string doc{R"((csrand [INT])
+
+Call csrand with the given integer or with the current time if none is provided.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        assert_max_size<1>(obj);
+        if (std::size(*obj) == 0)
+        {
+            std::srand(static_cast<unsigned int>(std::time(NULL)));
+            return Qt;
+        }
+
+        auto a = eval->eval(obj->i(0));
+        assert_int(a);
+        std::srand(static_cast<unsigned int>(a->to_int()));
+        return Qt;
+    }
+};
 
 
 }  // namespace al_random
@@ -252,156 +446,8 @@ providced by the standard c++ library. `random` does, however, provide access to
 C-functions like crand.
 
 )");
+    
 
-    module_defun(rand_ptr,
-                 "seed",
-                 &al_random::Fseed,
-                 R"((seed INT)
-
-Seed the random engine with the given integer.
-)");
-
-    module_defun(rand_ptr,
-                 "seed-rand",
-                 &al_random::Fseed_rand,
-                 R"((seed-rand)
-
-Seed the random engine with random numbers from the base random device.
-)");
-
-
-    module_defun(rand_ptr,
-                 "crand",
-                 &al_random::Fcrand,
-                 R"((crand)
-
-Return a random number generated by crand.
-)");
-
-    module_defun(rand_ptr,
-                 "csrand",
-                 &al_random::Fcsrand,
-                 R"((csrand [INT])
-
-Call csrand with the given integer or with the current time if none is provided.
-)");
-
-
-    module_defun(rand_ptr,
-                 "rand-int",
-                 &al_random::Frand_int,
-                 R"((rand-int LOWER UPPER)
-
-Return a random integer in the range [LOWER, UPPER]
-)");
-
-    module_defun(rand_ptr,
-                 "choice",
-                 &al_random::Fchoice,
-                 R"((choice LIST)
-
-Return a random element from the list `LIST`.
-)");
-
-    module_defun(rand_ptr,
-                 "sample",
-                 &al_random::Fsample,
-                 R"((choice LIST CNT)
-
-Return a list with `CNT` random elements from the list `LIST`.
-
-)");
-
-
-    module_defun(rand_ptr,
-                 "uniform",
-                 &al_random::Funiform,
-                 R"((uniform A B)
-
-Return a random real number from an uniform distribution of [A, B].
-)");
-
-    module_defun(rand_ptr,
-                 "exponential",
-                 &al_random::Fexponential,
-                 R"((exponential A)
-
-Return a random real number from an exponential distribution with e=A
-)");
-
-    module_defun(rand_ptr,
-                 "gamma",
-                 &al_random::Fgamma,
-                 R"((gamma A B)
-
-Return a random real number from a gamma distribution with k=A, theta=B
-)");
-
-    module_defun(rand_ptr,
-                 "gauss",
-                 &al_random::Fgauss,
-                 R"((gauss A B)
-
-Return a random real number from a gauss distribution with mean=A, std=B
-)");
-
-    module_defun(rand_ptr,
-                 "lognorm",
-                 &al_random::Flognorm,
-                 R"((lognorm A)
-
-Return a random real number from a log-normal distribution with mean=A, std=B
-)");
-
-    module_defun(rand_ptr,
-                 "weibull",
-                 &al_random::Fweibull,
-                 R"((weibull A B)
-
-Return a random real number from a weibull distribution with lambda=A, k=B
-)");
-
-    module_defun(rand_ptr,
-                 "student-t",
-                 &al_random::Fstudent,
-                 R"((student-t A)
-
-Return a random real number from a studnet-t distribution with n=A
-)");
-
-    module_defun(rand_ptr,
-                 "fisher-f",
-                 &al_random::Ffisher,
-                 R"((fisher-f A B)
-
-Return a random real number from a f-distribution distribution with m=A, n=B
-)");
-
-    module_defun(rand_ptr,
-                 "geometric",
-                 &al_random::Fgeometric,
-                 R"((geometric A)
-
-Return a random real number from a geometric distribution with p=A
-)");
-
-
-    module_signature(rand_ptr, "seed", Signature(Int{}));
-    module_signature(rand_ptr, "seed-rand", Signature(Int{}));
-    module_signature(rand_ptr, "fisher-f", Signature(Double{}, Double{}));
-    module_signature(rand_ptr, "student-t", Signature(Double{}));
-    module_signature(rand_ptr, "geometric", Signature(Double{}));
-    module_signature(rand_ptr, "gamma", Signature(Double{}, Double{}));
-    module_signature(rand_ptr, "csrand", Signature(Optional{}, Int{}));
-    module_signature(rand_ptr, "rand-int", Signature(Int{}, Int{}));
-    module_signature(rand_ptr, "choice", Signature(List{}));
-    module_signature(rand_ptr, "gauss", Signature(Double{}, Double{}));
-    module_signature(rand_ptr, "sample", Signature(List{}, Int{}));
-    module_signature(rand_ptr, "weibull", Signature(Double{}, Double{}));
-    module_signature(rand_ptr, "crand", Signature());
-    module_signature(rand_ptr, "uniform", Signature(Double{}, Double{}));
-    module_signature(rand_ptr, "exponential", Signature(Double{}));
-    module_signature(rand_ptr, "lognorm", Signature(Double{}));
 
     return Mrandom;
 }

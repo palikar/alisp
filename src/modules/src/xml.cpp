@@ -233,66 +233,113 @@ std::string to_string(ALObjectPtr t_xml)
 
 }  // namespace detail
 
-ALObjectPtr Fparse_xml(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct parse_xml
 {
-    assert_size<1>(obj);
-    auto str = eval->eval(obj->i(0));
-    assert_string(str);
-    return detail::from_string(str->to_string());
-}
+    inline static const std::string name{"xml-parse"};
 
-ALObjectPtr Fdump_xml(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    assert_size<1>(obj);
-    auto xml = eval->eval(obj->i(0));
+    inline static const Signature signature{String{}};
 
-    return make_string(detail::to_string(xml));
-}
+    inline static const std::string doc{R"((xml-parse STRING)
 
-ALObjectPtr Fdump_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace fs = std::filesystem;
+Parse a xml-formated string and return a alist representation of the xml)"};
 
-    assert_size<2>(obj);
-
-    auto xml  = eval->eval(obj->i(0));
-    auto file = eval->eval(obj->i(1));
-
-    assert_string(file);
-
-    // if (!fs::exists(file->to_string())) { return Qnil; }
-    // if (!fs::is_regular_file(file->to_string())) { return Qnil; }
-
-    std::ofstream outfile;
-    outfile.open(file->to_string(), std::ios_base::out);
-    if (outfile.is_open())
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        return Qnil;
+        assert_size<1>(obj);
+        auto str = eval->eval(obj->i(0));
+        assert_string(str);
+        return detail::from_string(str->to_string());
     }
-    outfile << detail::to_string(xml);
+};
 
-    return Qt;
-}
-
-ALObjectPtr Fload_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct dump_xml
 {
-    namespace fs = std::filesystem;
+    inline static const std::string name{"xml-dump"};
 
-    assert_size<1>(obj);
-    auto file = eval->eval(obj->i(0));
-    assert_string(file);
+    inline static const Signature signature{Any{}};
 
-    if (!fs::exists(file->to_string()))
+    inline static const std::string doc{R"((xml-parse ALIST)
+Convert a alist to a xml-formated string. Return the formated string.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        return Qnil;
-    }
-    if (!fs::is_regular_file(file->to_string()))
-    {
-        return Qnil;
-    }
+        assert_size<1>(obj);
+        auto xml = eval->eval(obj->i(0));
 
-    return detail::from_string(utility::load_file(file->to_string()));
-}
+        return make_string(detail::to_string(xml));
+    }
+};
+
+struct dump_file
+{
+    inline static const std::string name{"dump-file"};
+
+    inline static const Signature signature{String{}, Any{}};
+
+    inline static const std::string doc{R"((dump-file FILE ALIST)
+
+Save the xml-formated string representation of `ALIST` in the file pointed by `PATH`.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        assert_size<2>(obj);
+
+        auto xml  = eval->eval(obj->i(0));
+        auto file = eval->eval(obj->i(1));
+
+        assert_string(file);
+
+        // if (!fs::exists(file->to_string())) { return Qnil; }
+        // if (!fs::is_regular_file(file->to_string())) { return Qnil; }
+
+        std::ofstream outfile;
+        outfile.open(file->to_string(), std::ios_base::out);
+        if (outfile.is_open())
+        {
+            return Qnil;
+        }
+        outfile << detail::to_string(xml);
+
+        return Qt;
+    }
+};
+
+struct load_file
+{
+    inline static const std::string name{"load-file"};
+
+    inline static const Signature signature{String{}};
+
+    inline static const std::string doc{R"((load-file FILE)
+
+Parse the contents of a file as xml and return a alist representation of the xml.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        assert_size<1>(obj);
+        auto file = eval->eval(obj->i(0));
+        assert_string(file);
+
+        if (!fs::exists(file->to_string()))
+        {
+            return Qnil;
+        }
+        if (!fs::is_regular_file(file->to_string()))
+        {
+            return Qnil;
+        }
+
+        return detail::from_string(utility::load_file(file->to_string()));
+    }
+};
+
 
 }  // namespace xml
 
@@ -312,41 +359,6 @@ Internally `xml` uses the
 
 
 )");
-
-    module_defun(xml_ptr,
-                 "xml-parse",
-                 &xml::Fparse_xml,
-                 R"((xml-parse STRING)
-
-Parse a xml-formated string and return a alist representation of the xml)");
-
-    module_defun(xml_ptr,
-                 "xml-dump",
-                 &xml::Fdump_xml,
-                 R"((xml-parse ALIST)
-Convert a alist to a xml-formated string. Return the formated string.
-)");
-
-    module_defun(xml_ptr,
-                 "load-file",
-                 &xml::Fload_file,
-                 R"((load-file FILE)
-
-Parse the contents of a file as xml and return a alist representation of the xml.
-)");
-
-    module_defun(xml_ptr,
-                 "dump-file",
-                 &xml::Fdump_file,
-                 R"((dump-file FILE ALIST)
-
-Save the xml-formated string representation of `ALIST` in the file pointed by `PATH`.
-)");
-
-    module_signature(xml_ptr, "xml-parse", Signature(String{}));
-    module_signature(xml_ptr, "xml-dump", Signature(Any{}));
-    module_signature(xml_ptr, "load-file", Signature(String{}));
-    module_signature(xml_ptr, "dump-file", Signature(String{}, Any{}));
 
     return Mxml;
 }
