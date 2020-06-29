@@ -406,20 +406,20 @@ struct Base32
 
 ALObjectPtr Fbase64_encode_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    AL_CHECK(assert_size<1>(obj));
 
     auto str = eval->eval(obj->i(0));
-    assert_string(str);
+    AL_CHECK(assert_string(str));
 
     return make_string(detail::Base64::Encode(str->to_string()));
 }
 
 ALObjectPtr Fbase64_encode_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    AL_CHECK(assert_size<1>(obj));
 
     auto list = eval->eval(obj->i(0));
-    assert_byte_array(list);
+    AL_CHECK(assert_byte_array(list));
 
     std::vector<char> v;
     v.reserve(std::size(*list));
@@ -434,10 +434,10 @@ ALObjectPtr Fbase64_encode_bytes(const ALObjectPtr &obj, env::Environment *, eva
 
 ALObjectPtr Fbase64_decode_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    AL_CHECK(assert_size<1>(obj));
 
     auto str = eval->eval(obj->i(0));
-    assert_string(str);
+    AL_CHECK(assert_string(str));
     std::string out;
     auto res = detail::Base64::Decode(str->to_string(), out);
     if (res)
@@ -449,10 +449,10 @@ ALObjectPtr Fbase64_decode_string(const ALObjectPtr &obj, env::Environment *, ev
 
 ALObjectPtr Fbase64_decode_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    AL_CHECK(assert_size<1>(obj));
 
     auto str = eval->eval(obj->i(0));
-    assert_string(str);
+    AL_CHECK(assert_string(str));
     std::string out;
     auto res = detail::Base64::Decode(str->to_string(), out);
     if (res)
@@ -470,20 +470,20 @@ ALObjectPtr Fbase64_decode_bytes(const ALObjectPtr &obj, env::Environment *, eva
 
 ALObjectPtr Fbase16_encode_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    AL_CHECK(assert_size<1>(obj));
 
     auto str = eval->eval(obj->i(0));
-    assert_string(str);
+    AL_CHECK(assert_string(str));
 
     return make_string(detail::Base16::Encode(str->to_string()));
 }
 
 ALObjectPtr Fbase16_encode_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    AL_CHECK(assert_size<1>(obj));
 
     auto list = eval->eval(obj->i(0));
-    assert_byte_array(list);
+    AL_CHECK(assert_byte_array(list));
 
     std::vector<char> v;
     v.reserve(std::size(*list));
@@ -498,10 +498,10 @@ ALObjectPtr Fbase16_encode_bytes(const ALObjectPtr &obj, env::Environment *, eva
 
 ALObjectPtr Fbase16_decode_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    AL_CHECK(assert_size<1>(obj));
 
     auto str = eval->eval(obj->i(0));
-    assert_string(str);
+    AL_CHECK(assert_string(str));
     std::string out;
     auto res = detail::Base16::Decode(str->to_string(), out);
     if (res)
@@ -513,10 +513,10 @@ ALObjectPtr Fbase16_decode_string(const ALObjectPtr &obj, env::Environment *, ev
 
 ALObjectPtr Fbase16_decode_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    AL_CHECK(assert_size<1>(obj));
 
     auto str = eval->eval(obj->i(0));
-    assert_string(str);
+    AL_CHECK(assert_string(str));
     std::string out;
     auto res = detail::Base16::Decode(str->to_string(), out);
     if (res)
@@ -534,20 +534,20 @@ ALObjectPtr Fbase16_decode_bytes(const ALObjectPtr &obj, env::Environment *, eva
 
 ALObjectPtr Fbase32_encode_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    AL_CHECK(assert_size<1>(obj));
 
     auto str = eval->eval(obj->i(0));
-    assert_string(str);
+    AL_CHECK(assert_string(str));
 
     return make_string(detail::Base32::Encode(str->to_string()));
 }
 
 ALObjectPtr Fbase32_decode_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    AL_CHECK(assert_size<1>(obj));
 
     auto str = eval->eval(obj->i(0));
-    assert_string(str);
+    AL_CHECK(assert_string(str));
     std::string out;
     auto res = detail::Base32::Decode(str->to_string(), out);
     if (res)
@@ -559,10 +559,10 @@ ALObjectPtr Fbase32_decode_string(const ALObjectPtr &obj, env::Environment *, ev
 
 ALObjectPtr Fbase32_decode_bytes(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    assert_size<1>(obj);
+    AL_CHECK(assert_size<1>(obj));
 
     auto str = eval->eval(obj->i(0));
-    assert_string(str);
+    AL_CHECK(assert_string(str));
     std::string out;
     auto res = detail::Base32::Decode(str->to_string(), out);
     if (res)
@@ -715,6 +715,22 @@ Decode the base32 encoded string `STRING` and return the result as string.
 Decode the base32 encoded bytes `BYTES_LIST` and return the result as string.
 )");
 
+    using namespace alisp;
+
+    module_signature(base64_ptr, "base16-decode-string", Signature(String{}));
+    module_signature(base64_ptr, "base16-encode-string", Signature(String{}));
+    module_signature(base64_ptr, "base16-decode-bytes", Signature(String{}));
+    module_signature(base64_ptr, "base16-encode-bytes", Signature(ByteArray{}));
+
+    module_signature(base64_ptr, "base32-decode-string", Signature(String{}));
+    module_signature(base64_ptr, "base32-encode-string", Signature(String{}));
+    module_signature(base64_ptr, "base32-decode-bytes", Signature(String{}));
+    module_signature(base64_ptr, "base32-encode-bytes", Signature(ByteArray{}));
+
+    module_signature(base64_ptr, "base64-decode-string", Signature(String{}));
+    module_signature(base64_ptr, "base64-encode-string", Signature(String{}));
+    module_signature(base64_ptr, "base64-decode-bytes", Signature(String{}));
+    module_signature(base64_ptr, "base64-encode-bytes", Signature(ByteArray{}));
 
     return Mbase64;
 }

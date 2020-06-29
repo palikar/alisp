@@ -677,6 +677,13 @@ the standard error stream.
 Print the string FORMAT_STRING formated with the given arguments on
 the standard error stream followed by a new line.
 )");
+    using namespace alisp;
+
+    module_signature(fmt_ptr, "fmt", Signature(String{}, Rest{}, Any{}));
+    module_signature(fmt_ptr, "printf", Signature(String{}, Rest{}, Any{}));
+    module_signature(fmt_ptr, "printfln", Signature(String{}, Rest{}, Any{}));
+    module_signature(fmt_ptr, "eprintf", Signature(String{}, Rest{}, Any{}));
+    module_signature(fmt_ptr, "eprintfln", Signature(String{}, Rest{}, Any{}));
 
 
     return Mfmt;

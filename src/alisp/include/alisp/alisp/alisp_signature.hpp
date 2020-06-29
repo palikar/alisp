@@ -63,10 +63,16 @@ struct Sym
     ALObjectPtr to_al() { return Qsym_arg; }
 };
 
-struct Numbers
+struct Number
 {
 
     ALObjectPtr to_al() { return Qnumber_arg; }
+};
+
+struct Numbers
+{
+
+    ALObjectPtr to_al() { return Qnumbers_arg; }
 };
 
 struct Function
@@ -105,6 +111,12 @@ struct ByteArray
     ALObjectPtr to_al() { return Qbytearray_arg; }
 };
 
+struct Any
+{
+
+    ALObjectPtr to_al() { return Qany_arg; }
+};
+
 struct Optional
 {
 
@@ -134,6 +146,9 @@ template<typename... Args> struct Signature
     }
 };
 
+inline void ignore(ALObjectPtr, size_t, ALObjectPtr)
+{
+}
 
 inline std::unordered_map<ALObject *, std::function<void(ALObjectPtr, size_t, ALObjectPtr)>> signature_assertions = {
     { Qint.get(), &assert_int<size_t, ALObjectPtr> },
@@ -144,12 +159,14 @@ inline std::unordered_map<ALObject *, std::function<void(ALObjectPtr, size_t, AL
     { Qsym_arg.get(), &assert_symbol<size_t, ALObjectPtr> },
     { Qchar_arg.get(), &assert_char<size_t, ALObjectPtr> },
     { Qnumber_arg.get(), &assert_number<size_t, ALObjectPtr> },
+    { Qnumbers_arg.get(), &assert_numbers<size_t, ALObjectPtr> },
     { Qfunction_arg.get(), &assert_function<size_t, ALObjectPtr> },
     { Qfile_arg.get(), &assert_file<size_t, ALObjectPtr> },
     { Qstream_arg.get(), &assert_stream<size_t, ALObjectPtr> },
     { Qmemory_arg.get(), &assert_memory<size_t, ALObjectPtr> },
     { Qbyte_arg.get(), &assert_byte<size_t, ALObjectPtr> },
     { Qbytearray_arg.get(), &assert_byte_array<size_t, ALObjectPtr> },
+    { Qany_arg.get(), &ignore },
 };
 
 

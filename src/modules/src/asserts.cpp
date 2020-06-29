@@ -283,20 +283,35 @@ ALISP_EXPORT alisp::env::ModulePtr init_asserts(alisp::env::Environment *, alisp
     auto assert_module = alisp::module_init("asserts");
     auto ass_ptr       = assert_module.get();
 
-    alisp::module_defun(ass_ptr, "assert-numbers", &asserts::Fassert_numbers, R"()");
-    alisp::module_defun(ass_ptr, "assert-symbol", &asserts::Fassert_symbol, R"()");
-    alisp::module_defun(ass_ptr, "assert-string", &asserts::Fassert_string, R"()");
-    alisp::module_defun(ass_ptr, "assert-list", &asserts::Fassert_list, R"()");
-    alisp::module_defun(ass_ptr, "assert-number", &asserts::Fassert_number, R"()");
-    alisp::module_defun(ass_ptr, "assert-real", &asserts::Fassert_real, R"()");
-    alisp::module_defun(ass_ptr, "assert-int", &asserts::Fassert_int, R"()");
-    alisp::module_defun(ass_ptr, "assert-char", &asserts::Fassert_char, R"()");
-    alisp::module_defun(ass_ptr, "assert-function", &asserts::Fassert_function, R"()");
-    alisp::module_defun(ass_ptr, "assert-non-const", &asserts::Fassert_non_const, R"()");
-    alisp::module_defun(ass_ptr, "assert-file", &asserts::Fassert_file, R"()");
-    alisp::module_defun(ass_ptr, "assert-stream", &asserts::Fassert_stream, R"()");
-    alisp::module_defun(ass_ptr, "assert-byte", &asserts::Fassert_byte, R"()");
-    alisp::module_defun(ass_ptr, "assert-byte-array", &asserts::Fassert_byte_array, R"()");
+    module_defun(ass_ptr, "assert-numbers", &asserts::Fassert_numbers, R"()");
+    module_defun(ass_ptr, "assert-symbol", &asserts::Fassert_symbol, R"()");
+    module_defun(ass_ptr, "assert-string", &asserts::Fassert_string, R"()");
+    module_defun(ass_ptr, "assert-list", &asserts::Fassert_list, R"()");
+    module_defun(ass_ptr, "assert-number", &asserts::Fassert_number, R"()");
+    module_defun(ass_ptr, "assert-real", &asserts::Fassert_real, R"()");
+    module_defun(ass_ptr, "assert-int", &asserts::Fassert_int, R"()");
+    module_defun(ass_ptr, "assert-char", &asserts::Fassert_char, R"()");
+    module_defun(ass_ptr, "assert-function", &asserts::Fassert_function, R"()");
+    module_defun(ass_ptr, "assert-non-const", &asserts::Fassert_non_const, R"()");
+    module_defun(ass_ptr, "assert-file", &asserts::Fassert_file, R"()");
+    module_defun(ass_ptr, "assert-stream", &asserts::Fassert_stream, R"()");
+    module_defun(ass_ptr, "assert-byte", &asserts::Fassert_byte, R"()");
+    module_defun(ass_ptr, "assert-byte-array", &asserts::Fassert_byte_array, R"()");
+
+    module_signature(ass_ptr, "assert-numbers", Signature(Any{}));
+    module_signature(ass_ptr, "assert-symbol", Signature(Any{}));
+    module_signature(ass_ptr, "assert-string", Signature(Any{}));
+    module_signature(ass_ptr, "assert-list", Signature(Any{}));
+    module_signature(ass_ptr, "assert-number", Signature(Any{}));
+    module_signature(ass_ptr, "assert-real", Signature(Any{}));
+    module_signature(ass_ptr, "assert-int", Signature(Any{}));
+    module_signature(ass_ptr, "assert-char", Signature(Any{}));
+    module_signature(ass_ptr, "assert-function", Signature(Any{}));
+    module_signature(ass_ptr, "assert-non-const", Signature(Any{}));
+    module_signature(ass_ptr, "assert-file", Signature(Any{}));
+    module_signature(ass_ptr, "assert-stream", Signature(Any{}));
+    module_signature(ass_ptr, "assert-byte", Signature(Any{}));
+    module_signature(ass_ptr, "assert-byte-array", Signature(Any{}));
 
     return assert_module;
 }

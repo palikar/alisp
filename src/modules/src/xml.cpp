@@ -341,6 +341,12 @@ Parse the contents of a file as xml and return a alist representation of the xml
 Save the xml-formated string representation of `ALIST` in the file pointed by `PATH`.
 )");
 
+    using namespace alisp;
+
+    module_signature(xml_ptr, "xml-parse", Signature(String{}));
+    module_signature(xml_ptr, "xml-dump", Signature(Any{}));
+    module_signature(xml_ptr, "load-file", Signature(String{}));
+    module_signature(xml_ptr, "dump-file", Signature(String{}, Any{}));
 
     return Mxml;
 }

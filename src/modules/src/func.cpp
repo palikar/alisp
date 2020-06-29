@@ -296,6 +296,15 @@ Return ARG unchanged.
 Return nil and ignore all of the given arguments.
 )");
 
+    using namespace alisp;
+
+    module_signature(fun_ptr, "reduce", Signature(Function{}, List{}));
+    module_signature(fun_ptr, "identity", Signature(Any{}));
+    module_signature(fun_ptr, "ignore", Signature(Rest{}, Any{}));
+    module_signature(fun_ptr, "thread-first", Signature(Rest{}, Any{}));
+    module_signature(fun_ptr, "thread-last", Signature(Rest{}, Any{}));
+    module_signature(fun_ptr, "partial", Signature(Function{}, Rest{}, Any{}));
+    module_signature(fun_ptr, "compose", Signature(Function{}, Function{}, Rest{}, Any{}));
 
     return Mfunc;
 }

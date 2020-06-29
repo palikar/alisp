@@ -103,5 +103,12 @@ ALISP_EXPORT alisp::env::ModulePtr init_nargs(alisp::env::Environment *, alisp::
     alisp::module_defun(ngs_ptr, "nargs-truthy", &nargs::Ftruthy, R"()");
     alisp::module_defun(ngs_ptr, "nargs-falsey", &nargs::Ffalsey, R"()");
 
+    using namespace alisp;
+
+    module_signature(ngs_ptr, "nargs-has", Signature(List{}, Sym{}));
+    module_signature(ngs_ptr, "nargs-next", Signature(List{}, Sym{}));
+    module_signature(ngs_ptr, "nargs-truthy", Signature(List{}, Sym{}));
+    module_signature(ngs_ptr, "nargs-falsey", Signature(List{}, Sym{}));
+
     return nargs_module;
 }

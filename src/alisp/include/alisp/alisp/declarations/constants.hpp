@@ -84,12 +84,14 @@ DEFSYM(Qlist_arg, "&list", R"()");
 DEFSYM(Qsym_arg, "&sym", R"()");
 DEFSYM(Qchar_arg, "&char", R"()");
 DEFSYM(Qnumber_arg, "&number", R"()");
+DEFSYM(Qnumbers_arg, "&numbers", R"()");
 DEFSYM(Qfunction_arg, "&function", R"()");
 DEFSYM(Qfile_arg, "&file", R"()");
 DEFSYM(Qstream_arg, "&stream", R"()");
 DEFSYM(Qmemory_arg, "&memory", R"()");
 DEFSYM(Qbyte_arg, "&byte", R"()");
 DEFSYM(Qbytearray_arg, "&byte-array", R"()");
+DEFSYM(Qany_arg, "&any", R"()");
 
 DEFSYM(Qoptional, "&optional", R"(Used in an argument list to signify that the next arguments are optional.)");
 

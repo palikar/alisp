@@ -829,6 +829,37 @@ Return the string used to represent `false` according to the global locale or th
 Return the string used to represent `true` according to the global locale or the
 `LOCALE` if given.
 )");
+    using namespace alisp;
+
+    module_signature(loc_ptr, "num-true-name", Signature(Int{}));
+    module_signature(loc_ptr, "num-false-name", Signature(Int{}));
+    module_signature(loc_ptr, "isdigit", Signature(Char{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "isxdigit", Signature(Char{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "isalpha", Signature(Char{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "isprint", Signature(Char{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "ispunct", Signature(Char{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "isgraph", Signature(Char{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "reset-locale", Signature());
+    module_signature(loc_ptr, "put-num", Signature(Number{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "locale-name", Signature(Int{}));
+    module_signature(loc_ptr, "money-thousand-sep", Signature(Int{}));
+    module_signature(loc_ptr, "set-preffered-locale", Signature(Int{}));
+    module_signature(loc_ptr, "money-positive-sign", Signature(Int{}));
+    module_signature(loc_ptr, "set-locale", Signature(Int{}));
+    module_signature(loc_ptr, "islower", Signature(Char{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "iscntrl", Signature(Char{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "locale", Signature(String{}));
+    module_signature(loc_ptr, "isblank", Signature(Char{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "isspace", Signature(Char{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "put-time", Signature(Int{}, String{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "isalnum", Signature(Char{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "put-money", Signature(Number{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "money-decimal-point", Signature(Optional{}, Int{}));
+    module_signature(loc_ptr, "num-thousand-sep", Signature(Optional{}, Int{}));
+    module_signature(loc_ptr, "money-symobl", Signature(Optional{}, Int{}));
+    module_signature(loc_ptr, "isupper", Signature(Char{}, Optional{}, Int{}));
+    module_signature(loc_ptr, "money-negative-sign", Signature(Optional{}, Int{}));
+    module_signature(loc_ptr, "num-decimal-point", Signature(Optional{}, Int{}));
 
 
     return Mlocale;

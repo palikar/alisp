@@ -658,5 +658,12 @@ Parse the contents of a file as json and return a alist representation of the js
 Save the a json formated string representation of `ALIST` in the file pointed by `PATH`.
 )");
 
+    using namespace alisp;
+
+    module_signature(json_ptr, "json-parse", Signature(String{}));
+    module_signature(json_ptr, "json-dump", Signature(Any{}));
+    module_signature(json_ptr, "load-file", Signature(String{}));
+    module_signature(json_ptr, "dump-file", Signature(String{}, Any{}));
+
     return Mjson;
 }

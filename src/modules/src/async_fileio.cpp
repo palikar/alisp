@@ -165,5 +165,9 @@ ALISP_EXPORT alisp::env::ModulePtr init_async_fileio(alisp::env::Environment *, 
     module_defun(aio_ptr, "async-append-text", async_fileio::Fasync_append_text, R"()");
     module_defun(aio_ptr, "async-read-text", async_fileio::Fasync_read_text, R"()");
 
+    module_signature(aio_ptr, "async-write-text", Signature(String{}, String{}, Function{}));
+    module_signature(aio_ptr, "async-append-text", Signature(String{}, String{}, Function{}));
+    module_signature(aio_ptr, "async-read-text", Signature(String{}, Function{}));
+
     return M;
 }

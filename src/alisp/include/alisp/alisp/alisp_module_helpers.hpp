@@ -61,7 +61,7 @@ inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_t
 }
 
 template<typename... Args>
-inline void module_signature(env::Module *t_module, std::string t_name, Signature<Args...> signature)
+inline void module_signature(env::Module *t_module, std::string t_name, [[maybe_unused]] Signature<Args...> signature)
 {
     if constexpr (Signature<Args...>::cnt != 0)
     {
