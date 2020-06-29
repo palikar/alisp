@@ -24,70 +24,99 @@ namespace nargs
 
 using namespace alisp;
 
-ALObjectPtr Fhas(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+struct has
 {
-    AL_CHECK(assert_size<2>(t_obj));
+    static const std::string name {"nargs-has"};
 
-    auto l          = eval->eval(t_obj->i(0));
-    auto col_string = eval->eval(t_obj->i(1));
+    static const std::string doc {R"(This is the sick func)"};
 
-    AL_CHECK(assert_list(l));
-    AL_CHECK(assert_symbol(col_string));
+    static Signature signature{List{}, Sym{}};
 
-    return contains(l, col_string->to_string()) ? Qt : Qnil;
-}
-
-ALObjectPtr Fnext(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<2>(t_obj));
-
-    auto l          = eval->eval(t_obj->i(0));
-    auto col_string = eval->eval(t_obj->i(1));
-
-    AL_CHECK(assert_list(l));
-    AL_CHECK(assert_symbol(col_string));
-
-    if (auto [next, succ] = get_next(l, col_string->to_string()); succ)
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        return next;
+        AL_CHECK(assert_size<2>(t_obj));
+
+        auto l          = eval->eval(t_obj->i(0));
+        auto col_string = eval->eval(t_obj->i(1));
+
+        AL_CHECK(assert_list(l));
+        AL_CHECK(assert_symbol(col_string));
+
+        return contains(l, col_string->to_string()) ? Qt : Qnil;
     }
 
-    return Qnil;
-}
+};
 
-ALObjectPtr Ftruthy(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+struct next
 {
-    AL_CHECK(assert_size<2>(t_obj));
 
-    auto l          = eval->eval(t_obj->i(0));
-    auto col_string = eval->eval(t_obj->i(1));
-
-    AL_CHECK(assert_list(l));
-    AL_CHECK(assert_symbol(col_string));
-
-    if (auto [next, succ] = get_next(l, col_string->to_string()); succ)
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        return is_truthy(next) ? Qt : Qnil;
-    }
-    return Qnil;
-}
+        AL_CHECK(assert_size<2>(t_obj));
 
-ALObjectPtr Ffalsey(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+        auto l          = eval->eval(t_obj->i(0));
+        auto col_string = eval->eval(t_obj->i(1));
+
+        AL_CHECK(assert_list(l));
+        AL_CHECK(assert_symbol(col_string));
+
+        if (auto [next, succ] = get_next(l, col_string->to_string()); succ)
+        {
+            return next;
+        }
+
+        return Qnil;
+    }
+
+};
+
+struct truthy
 {
-    AL_CHECK(assert_size<2>(t_obj));
 
-    auto l          = eval->eval(t_obj->i(0));
-    auto col_string = eval->eval(t_obj->i(1));
+    std::string doc =  R"()";
 
-    AL_CHECK(assert_list(l));
-    AL_CHECK(assert_symbol(col_string));
-
-    if (auto [next, succ] = get_next(l, col_string->to_string()); succ)
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        return !is_truthy(next) ? Qt : Qnil;
+        AL_CHECK(assert_size<2>(t_obj));
+
+        auto l          = eval->eval(t_obj->i(0));
+        auto col_string = eval->eval(t_obj->i(1));
+
+        AL_CHECK(assert_list(l));
+        AL_CHECK(assert_symbol(col_string));
+
+        if (auto [next, succ] = get_next(l, col_string->to_string()); succ)
+        {
+            return is_truthy(next) ? Qt : Qnil;
+        }
+        return Qnil;
     }
-    return Qnil;
-}
+
+};
+
+struct falsey
+{
+
+    std::string doc =  R"()";
+
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<2>(t_obj));
+
+        auto l          = eval->eval(t_obj->i(0));
+        auto col_string = eval->eval(t_obj->i(1));
+
+        AL_CHECK(assert_list(l));
+        AL_CHECK(assert_symbol(col_string));
+
+        if (auto [next, succ] = get_next(l, col_string->to_string()); succ)
+        {
+            return !is_truthy(next) ? Qt : Qnil;
+        }
+        return Qnil;
+    }
+
+};
 
 
 }  // namespace nargs
@@ -95,17 +124,19 @@ ALObjectPtr Ffalsey(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
 ALISP_EXPORT alisp::env::ModulePtr init_nargs(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     using namespace alisp;
+    
     auto nargs_module = alisp::module_init("nargs");
     auto ngs_ptr      = nargs_module.get();
 
-    alisp::module_defun(ngs_ptr, "nargs-has", &nargs::Fhas, R"()");
-    alisp::module_defun(ngs_ptr, "nargs-next", &nargs::Fnext, R"()");
-    alisp::module_defun(ngs_ptr, "nargs-truthy", &nargs::Ftruthy, R"()");
-    alisp::module_defun(ngs_ptr, "nargs-falsey", &nargs::Ffalsey, R"()");
+    module_defun(ngs_ptr, has::name, &has::func, has::doc);
+    module_signature(ngs_ptr, has::name, has::signature);
+    
+// module_defun(ngs_ptr, "nargs-has", &nargs::Fhas, R"()");
+    module_defun(ngs_ptr, "nargs-next", &nargs::Fnext, R"()");
+    module_defun(ngs_ptr, "nargs-truthy", &nargs::Ftruthy, R"()");
+    module_defun(ngs_ptr, "nargs-falsey", &nargs::Ffalsey, R"()");
 
-    using namespace alisp;
-
-    module_signature(ngs_ptr, "nargs-has", Signature(List{}, Sym{}));
+    // module_signature(ngs_ptr, "nargs-has", Signature(List{}, Sym{}));
     module_signature(ngs_ptr, "nargs-next", Signature(List{}, Sym{}));
     module_signature(ngs_ptr, "nargs-truthy", Signature(List{}, Sym{}));
     module_signature(ngs_ptr, "nargs-falsey", Signature(List{}, Sym{}));

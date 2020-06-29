@@ -63,17 +63,16 @@ inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_t
 template<typename... Args>
 inline void module_signature(env::Module *t_module, std::string t_name, [[maybe_unused]] Signature<Args...> signature)
 {
-    if constexpr (Signature<Args...>::cnt != 0)
-    {
-        if (t_module->root_scope().count(t_name) == 0)
-        {
-            throw std::runtime_error(
-              fmt::format("{} does not exist. Report bug for the module {}", t_name, t_module->name()));
-        }
 
-        t_module->root_scope().at(t_name)->set_prop("--managed--", Qt);
-        t_module->root_scope().at(t_name)->set_prop("--signature--", signature.arglist_object());
+    if (t_module->root_scope().count(t_name) == 0)
+    {
+        throw std::runtime_error(
+            fmt::format("{} does not exist. Report bug for the module {}", t_name, t_module->name()));
     }
+
+    t_module->root_scope().at(t_name)->set_prop("--managed--", Qt);
+    t_module->root_scope().at(t_name)->set_prop("--signature--", signature.arglist_object());
+
 }
 
 inline void module_defvar(env::Module *t_module, std::string t_name, ALObjectPtr val, std::string t_doc = {})

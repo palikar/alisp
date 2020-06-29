@@ -1893,7 +1893,7 @@ namespace detail
   template<typename F, typename... Args>
   int call_impl(F& farg, Args&&... args)
   {
-    return Popen(std::forward<F>(farg), std::forward<Args>(args)...).wait();
+      return Popen(std::forward<F>(farg), std::forward<Args>(args)...).wait();
   }
 
   static inline void pipeline_impl(std::vector<Popen>& cmds)
@@ -1963,7 +1963,6 @@ OutBuffer check_output(std::vector<std::string> plist, Args &&... args)
 {
   return (detail::check_output_impl(plist, std::forward<Args>(args)...));
 }
-
 
 /*!
  * An easy way to pipeline easy commands.

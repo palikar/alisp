@@ -181,8 +181,8 @@ ALObjectPtr Fpopen(const ALObjectPtr &obj, env::Environment *env, eval::Evaluato
     {
         auto new_id = detail::proc_registry
                         .emplace_resource(detail::open_proc(
-                          args, options, std::make_index_sequence<std::tuple_size<detail::opts>::value>()))
-                        ->id;
+                            args, options, std::make_index_sequence<std::tuple_size<detail::opts>::value>()))
+            ->id;
         env->defer_callback([id = new_id]() { detail::proc_registry.destroy_resource(id); });
         auto new_obj = resource_to_object(new_id);
         return new_obj;
@@ -457,15 +457,36 @@ ALObjectPtr Fcommunicate(const ALObjectPtr &t_obj, env::Environment *, eval::Eva
     }
 }
 
+ALObjectPtr Fpopen(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
+{
+    assert_min_size<1>(obj);
+
+    auto l  = eval->eval(obj->i(0));
+
+    AL_CHECK(assert_list(l));
+
+    std::vector<std::string> args;
+    for (auto el : *l)
+    {
+        args.push_back(eval->eval(el)->to_string());
+    }
+
+    detail::opts options{};
+    auto ret = subprocsss::Popen(args).wait()
+        return make_int(ret);
+}
+
 
 }  // namespace process
 
 ALISP_EXPORT alisp::env::ModulePtr init_process(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
+    using namespace alisp;
+    
     auto Mprocess = alisp::module_init("process");
     auto prop_ptr = Mprocess.get();
 
-    alisp::module_doc(prop_ptr,
+    module_doc(prop_ptr,
                       R"(The `process` module enables the starting and communicating with
 external processes. It is similar to the `subprocess` module of
 pyhton. The module tries, in fact, to stay close the the api and
@@ -477,25 +498,25 @@ library.
 
 )");
 
-    alisp::module_defconst(
+    module_defconst(
       prop_ptr,
       "stdout",
       process::process_stdout,
       R"(Symbol used to signify the standard output stream. It is used in some of the functions of the module. )");
 
-    alisp::module_defconst(
+    module_defconst(
       prop_ptr,
       "stderr",
       process::process_stderr,
       R"(Symbol used to signify the standard input stream. It is used in some of the functions of the module. )");
 
-    alisp::module_defconst(
+    module_defconst(
       prop_ptr,
       "pipe",
       process::process_pipe,
       R"(Symbol used to signify a link between the spawn process and the interpreter. It is used in some of the functions of the module. )");
 
-    alisp::module_defun(prop_ptr,
+    module_defun(prop_ptr,
                         "popen",
                         &process::Fpopen,
                         R"((open COMMAND_PARTS OPTIONS )
@@ -519,7 +540,7 @@ process. Possible options are:
 Return the new process as a resource object.
 )");
 
-    alisp::module_defun(prop_ptr,
+    module_defun(prop_ptr,
                         "start",
                         &process::Fstart,
                         R"((start PROCESS)
@@ -527,7 +548,7 @@ Return the new process as a resource object.
 Start a process that has been created with `open`.
 )");
 
-    alisp::module_defun(prop_ptr,
+    module_defun(prop_ptr,
                         "pid",
                         &process::Fpid,
                         R"((pid PROCESS)
@@ -535,7 +556,7 @@ Start a process that has been created with `open`.
 Return the process id of a process that has been created with `open`.
 )");
 
-    alisp::module_defun(prop_ptr,
+    module_defun(prop_ptr,
                         "wait",
                         &process::Fwait,
                         R"((wait PROCESS)
@@ -543,14 +564,14 @@ Return the process id of a process that has been created with `open`.
 Block until a process has finished its execution.
 )");
 
-    alisp::module_defun(prop_ptr,
+    module_defun(prop_ptr,
                         "poll",
                         &process::Fpoll,
                         R"((poll PROCESS)
 
 )");
 
-    alisp::module_defun(prop_ptr,
+    module_defun(prop_ptr,
                         "kill",
                         &process::Fkill,
                         R"((kill PROCESS [SIGNAL])
@@ -558,7 +579,7 @@ Block until a process has finished its execution.
 Send a signal (by default SIGKILL) to a running process.
 )");
 
-    alisp::module_defun(prop_ptr,
+    module_defun(prop_ptr,
                         "retcode",
                         &process::Fretcode,
                         R"((retcode PROCESS)
@@ -567,7 +588,7 @@ Wait for a process to finish and return its return code.
 )");
 
 
-    alisp::module_defun(prop_ptr,
+    module_defun(prop_ptr,
                         "send",
                         &process::Fsend,
                         R"((send PROCESS STRING)
@@ -575,7 +596,7 @@ Wait for a process to finish and return its return code.
 Write a string to the standard input stream of a child process.
 )");
 
-    alisp::module_defun(prop_ptr,
+    module_defun(prop_ptr,
                         "communicate",
                         &process::Fcommunicate,
                         R"((communicate PROCESS STRING)
@@ -584,7 +605,7 @@ Write a string to the standard input stream of a child process. Return
 the contents of the standard output and standard error of the process.
 )");
 
-    alisp::module_defun(prop_ptr,
+    module_defun(prop_ptr,
                         "check-output",
                         &process::Fcheck_output,
                         R"((check-output [COMMAND_PART]...)
@@ -594,7 +615,7 @@ return the contents of the standard output of the process once its
 finished.
 )");
 
-    alisp::module_defun(prop_ptr,
+    module_defun(prop_ptr,
                         "check-output-bytes",
                         &process::Fcheck_output_bytes,
                         R"((check-output [COMMAND_PART]...)
@@ -603,18 +624,16 @@ Convenience function. Execute the command with the given parts and
 return the contents of the standard output as a byte array.
 )");
 
-    //     alisp::module_defun(prop_ptr,
-    //                         "call",
-    //                         &process::Fcheck_output,
-    //                         R"((call [COMMAND_PART]...)
+        module_defun(prop_ptr,
+                            "call",
+                            &process::Fcall,
+                            R"((call [COMMAND_PART]...)
 
-    // Convenience function. Execute the command with the given parts and
-    // return the exit code of the process once its finished.
-    // )");
+    Convenience function. Execute the command with the given parts and
+    return the exit code of the process once its finished.
+    )");
 
-    // alisp::module_defun(prop_ptr, "pipeline", &process::Fcheck_output);
-
-    using namespace alisp;
+    
 
     module_signature(prop_ptr, "popen", Signature{ List{}, List{} });
     module_signature(prop_ptr, "start", Signature{ Int{} });
@@ -625,7 +644,7 @@ return the contents of the standard output as a byte array.
     module_signature(prop_ptr, "send", Signature{ Int{}, String{} });
     module_signature(prop_ptr, "check-output", Signature{ Int{} });
     module_signature(prop_ptr, "check-output-bytes", Signature{ Int{} });
-    // module_signature(prop_ptr, "call", Signature{});
+    module_signature(prop_ptr, "call", Signature{List{}});
 
     return Mprocess;
 }

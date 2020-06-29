@@ -356,27 +356,28 @@ ALObjectPtr Fcookies(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluat
 
 ALISP_EXPORT alisp::env::ModulePtr init_request(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
+    using namespace alisp;
+    
     auto Mrequest = alisp::module_init("request");
     auto req_ptr  = Mrequest.get();
 
+    module_doc(req_ptr, R"()");
 
-    alisp::module_doc(req_ptr, R"()");
+    module_defvar(req_ptr, "GET", request::type_get, R"()");
+    module_defvar(req_ptr, "POST", request::type_post, R"()");
+    module_defvar(req_ptr, "HEAD", request::type_head, R"()");
+    module_defvar(req_ptr, "DELETE", request::type_delete, R"()");
+    module_defvar(req_ptr, "PUT", request::type_put, R"()");
+    module_defvar(req_ptr, "OPTIONS", request::type_options, R"()");
 
-    alisp::module_defvar(req_ptr, "GET", request::type_get, R"()");
-    alisp::module_defvar(req_ptr, "POST", request::type_post, R"()");
-    alisp::module_defvar(req_ptr, "HEAD", request::type_head, R"()");
-    alisp::module_defvar(req_ptr, "DELETE", request::type_delete, R"()");
-    alisp::module_defvar(req_ptr, "PUT", request::type_put, R"()");
-    alisp::module_defvar(req_ptr, "OPTIONS", request::type_options, R"()");
+    module_defun(req_ptr, "request", &request::Frequest, R"()");
 
-    alisp::module_defun(req_ptr, "request", &request::Frequest, R"()");
-
-    alisp::module_defun(req_ptr, "body", &request::Fbody, R"()");
-    alisp::module_defun(req_ptr, "status-code", &request::Fstatus_code, R"()");
-    alisp::module_defun(req_ptr, "headers", &request::Fheaders, R"()");
-    alisp::module_defun(req_ptr, "url", &request::Furl, R"()");
-    alisp::module_defun(req_ptr, "elapsed", &request::Felapsed, R"()");
-    alisp::module_defun(req_ptr, "cookies", &request::Fcookies, R"()");
+    module_defun(req_ptr, "body", &request::Fbody, R"()");
+    module_defun(req_ptr, "status-code", &request::Fstatus_code, R"()");
+    module_defun(req_ptr, "headers", &request::Fheaders, R"()");
+    module_defun(req_ptr, "url", &request::Furl, R"()");
+    module_defun(req_ptr, "elapsed", &request::Felapsed, R"()");
+    module_defun(req_ptr, "cookies", &request::Fcookies, R"()");
 
     return Mrequest;
 }

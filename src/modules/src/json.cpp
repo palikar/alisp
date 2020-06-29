@@ -597,10 +597,12 @@ ALObjectPtr Fdump_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluat
 
 ALISP_EXPORT alisp::env::ModulePtr init_json(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
+    using namespace alisp;
+    
     auto Mjson    = alisp::module_init("json");
     auto json_ptr = Mjson.get();
 
-    alisp::module_doc(
+    module_doc(
       json_ptr,
       R"(The `json` module can be used to parse and handle json-formated text. It can transoform JSON to an equvalent representation through s-expressions.
 
@@ -625,17 +627,17 @@ The resulting representaion can be handeld through some of the functions that th
 )");
 
 
-    alisp::module_defvar(
+    module_defvar(
       json_ptr, "json-signal", json::json_signal, R"(Signal raised when the json parser encounters an error.)");
 
-    alisp::module_defun(json_ptr,
+    module_defun(json_ptr,
                         "json-parse",
                         &json::Fparse_json,
                         R"((json-parse STRING)
 
 Parse a json formated string and return a alist representation of the json)");
 
-    alisp::module_defun(json_ptr,
+    module_defun(json_ptr,
                         "json-dump",
                         &json::Fdump_json,
                         R"((json-dump ALIST)
@@ -643,22 +645,20 @@ Parse a json formated string and return a alist representation of the json)");
 Convert a alist to a json formated string. Return the formated string.
 )");
 
-    alisp::module_defun(json_ptr,
+    module_defun(json_ptr,
                         "load-file",
                         &json::Fload_file,
                         R"((load-file PATH)
 
 Parse the contents of a file as json and return a alist representation of the json.
 )");
-    alisp::module_defun(json_ptr,
+    module_defun(json_ptr,
                         "dump-file",
                         &json::Fdump_file,
                         R"((dump-file PATH ALIST)
 
 Save the a json formated string representation of `ALIST` in the file pointed by `PATH`.
 )");
-
-    using namespace alisp;
 
     module_signature(json_ptr, "json-parse", Signature(String{}));
     module_signature(json_ptr, "json-dump", Signature(Any{}));

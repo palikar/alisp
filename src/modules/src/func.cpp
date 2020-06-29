@@ -175,18 +175,20 @@ ALObjectPtr Fignore(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
 
 ALISP_EXPORT alisp::env::ModulePtr init_func(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
+    using namespace alisp;
+    
     auto Mfunc   = alisp::module_init("func");
     auto fun_ptr = Mfunc.get();
 
-    alisp::module_doc(fun_ptr, R"( The `func` modules provides support for working with higher order
+    module_doc(fun_ptr, R"( The `func` modules provides support for working with higher order
 functions. It aims to bring more "functional" features to alisp.
 )");
 
 
-    alisp::module_defvar(
+    module_defvar(
       fun_ptr, "_", func::placeholder_sym, R"(Can be used as a placeholder object at certain places.)");
 
-    alisp::module_defun(fun_ptr,
+    module_defun(fun_ptr,
                         "compose",
                         &func::Fcompose,
                         R"((compose [FUNCTION]...)
@@ -205,7 +207,7 @@ This measns that the last function will be evalued first and then the
 result of that will be used as input for the next function.
 )");
 
-    alisp::module_defun(fun_ptr,
+    module_defun(fun_ptr,
                         "partial",
                         &func::Fpartial,
                         R"((partial FUNCTION [ARGUMENT] ...)
@@ -226,7 +228,7 @@ takes a single argument and adds 5 to it.
 
  )");
 
-    alisp::module_defun(fun_ptr,
+    module_defun(fun_ptr,
                         "thread-last",
                         &func::Fthread_last,
                         R"((thread-last FORMS)
@@ -245,7 +247,7 @@ Example:
 
 Is equivalent to: `(+ 40 (- (/ 25 (+ 20 5))))`)");
 
-    alisp::module_defun(fun_ptr,
+    module_defun(fun_ptr,
                         "thread-first",
                         &func::Fthread_first,
                         R"((thread-first FORMS)
@@ -265,7 +267,7 @@ Example:
 Is equivalent to: `(+ (- (/ (+ 5 20) 25)) 40)` )");
 
 
-    alisp::module_defun(fun_ptr,
+    module_defun(fun_ptr,
                         "reduce",
                         &func::Freduce,
                         R"((reduce FUNCTION LIST)
@@ -280,7 +282,7 @@ update value from the list.
 ```
  )");
 
-    alisp::module_defun(fun_ptr,
+    module_defun(fun_ptr,
                         "identity",
                         &func::Fidentity,
                         R"((identity ARG)
@@ -288,15 +290,13 @@ update value from the list.
 Return ARG unchanged.
 )");
 
-    alisp::module_defun(fun_ptr,
+    module_defun(fun_ptr,
                         "ignore",
                         &func::Fignore,
                         R"((ignore [ANY]...)
 
 Return nil and ignore all of the given arguments.
 )");
-
-    using namespace alisp;
 
     module_signature(fun_ptr, "reduce", Signature(Function{}, List{}));
     module_signature(fun_ptr, "identity", Signature(Any{}));

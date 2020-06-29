@@ -207,14 +207,16 @@ ALObjectPtr Fend_request(const ALObjectPtr &t_obj, env::Environment *, eval::Eva
 
 ALISP_EXPORT alisp::env::ModulePtr init_http(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
+    using namespace alisp;
+    
     auto Mhttp    = alisp::module_init("http");
     auto http_ptr = Mhttp.get();
 
-    alisp::module_defun(http_ptr, "server", &http::Fserver, R"()");
-    alisp::module_defun(http_ptr, "get", &http::Fget, R"()");
-    alisp::module_defun(http_ptr, "post", &http::Fpost, R"()");
-    alisp::module_defun(http_ptr, "start", &http::Fstart, R"()");
-    alisp::module_defun(http_ptr, "end-request", &http::Fend_request, R"()");
+    module_defun(http_ptr, "server", &http::Fserver, R"()");
+    module_defun(http_ptr, "get", &http::Fget, R"()");
+    module_defun(http_ptr, "post", &http::Fpost, R"()");
+    module_defun(http_ptr, "start", &http::Fstart, R"()");
+    module_defun(http_ptr, "end-request", &http::Fend_request, R"()");
 
 
     return Mhttp;

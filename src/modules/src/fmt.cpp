@@ -612,10 +612,12 @@ ALObjectPtr Feprintfln(const ALObjectPtr &obj, env::Environment *, eval::Evaluat
 
 ALISP_EXPORT alisp::env::ModulePtr init_fmt(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
+    using namespace alisp;
+    
     auto Mfmt    = alisp::module_init("fmt");
     auto fmt_ptr = Mfmt.get();
 
-    alisp::module_doc(fmt_ptr, R"(The `fmt` module helps you format strings.
+    module_doc(fmt_ptr, R"(The `fmt` module helps you format strings.
 
 The formating is based on the python's [Format Specification Mini-Language](https://docs.python.org/3.4/library/string.html#formatspec)
 as well as the C++ library [FMT](https://fmt.dev/latest/syntax.html). For most the things, internally alisp uses the mentioned library, but
@@ -628,7 +630,7 @@ To note is that the `printf` and `fmt` functions in the `fmt` module use the sam
 
 )");
 
-    alisp::module_defun(fmt_ptr,
+    module_defun(fmt_ptr,
                         "fmt",
                         &fmt::Ffmt,
                         R"((fmt FORMAT_STRING [ARG]...)
@@ -641,7 +643,7 @@ given arguments.
 ```
 )");
 
-    alisp::module_defun(fmt_ptr,
+    module_defun(fmt_ptr,
                         "printf",
                         &fmt::Fprintf,
                         R"((printf FORMAT_STRING [ARG]...)
@@ -651,7 +653,7 @@ the standard output.
 
 )");
 
-    alisp::module_defun(fmt_ptr,
+    module_defun(fmt_ptr,
                         "printfln",
                         &fmt::Fprintfln,
                         R"((printf FORMAT_STRING [ARG]...)
@@ -660,7 +662,7 @@ Print the string FORMAT_STRING formated with the given arguments on
 the standard output followed by a new line.
 )");
 
-    alisp::module_defun(fmt_ptr,
+    module_defun(fmt_ptr,
                         "eprintf",
                         &fmt::Feprintf,
                         R"((eprintf FORMAT_STRING [ARG]...)
@@ -669,7 +671,7 @@ Print the string FORMAT_STRING formated with the given arguments on
 the standard error stream.
 )");
 
-    alisp::module_defun(fmt_ptr,
+    module_defun(fmt_ptr,
                         "eprintfln",
                         &fmt::Feprintfln,
                         R"((eprintfln FORMAT_STRING [ARG]...)
@@ -677,7 +679,7 @@ the standard error stream.
 Print the string FORMAT_STRING formated with the given arguments on
 the standard error stream followed by a new line.
 )");
-    using namespace alisp;
+    
 
     module_signature(fmt_ptr, "fmt", Signature(String{}, Rest{}, Any{}));
     module_signature(fmt_ptr, "printf", Signature(String{}, Rest{}, Any{}));
