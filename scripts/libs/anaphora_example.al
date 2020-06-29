@@ -20,12 +20,12 @@
 (anaphoric-let (+ 10 10)
   (println it))
 
-(dump (anaphoric-and 't it nil))
+;; (dump (anaphoric-and 't it nil))
 
-(dump (anaphoric-+ 1 10 (* it 3)))
+;; (dump (anaphoric-+ 1 10 (* it 3)))
 
-(dump (anaphoric-- 1 10 (* it 3)))
+;; (dump (anaphoric-- 1 10 (* it 3)))
 
-(dump (anaphoric-* 1 10 (* it 3)))
+;; (dump (anaphoric-* 1 10 (* it 3)))
 
-(dump (anaphoric-/ 1.0 10 (* it 3)))
+;; (dump (anaphoric-/ 1.0 10 (* it 3)))

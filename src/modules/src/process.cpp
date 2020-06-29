@@ -603,16 +603,29 @@ Convenience function. Execute the command with the given parts and
 return the contents of the standard output as a byte array.
 )");
 
-    alisp::module_defun(prop_ptr,
-                        "call",
-                        &process::Fcheck_output,
-                        R"((check-output [COMMAND_PART]...)
+    //     alisp::module_defun(prop_ptr,
+    //                         "call",
+    //                         &process::Fcheck_output,
+    //                         R"((call [COMMAND_PART]...)
 
-Convenience function. Execute the command with the given parts and
-return the exit code of the process once its finished.
-)");
+    // Convenience function. Execute the command with the given parts and
+    // return the exit code of the process once its finished.
+    // )");
 
     // alisp::module_defun(prop_ptr, "pipeline", &process::Fcheck_output);
+
+    using namespace alisp;
+
+    module_signature(prop_ptr, "popen", Signature{ List{}, List{} });
+    module_signature(prop_ptr, "start", Signature{ Int{} });
+    module_signature(prop_ptr, "pid", Signature{ Int{} });
+    module_signature(prop_ptr, "wait", Signature{ Int{} });
+    module_signature(prop_ptr, "kill", Signature{ Int{} });
+    module_signature(prop_ptr, "retcode", Signature{ Int{} });
+    module_signature(prop_ptr, "send", Signature{ Int{}, String{} });
+    module_signature(prop_ptr, "check-output", Signature{ Int{} });
+    module_signature(prop_ptr, "check-output-bytes", Signature{ Int{} });
+    // module_signature(prop_ptr, "call", Signature{});
 
     return Mprocess;
 }
