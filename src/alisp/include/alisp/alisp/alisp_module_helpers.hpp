@@ -60,8 +60,7 @@ inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_t
 }
 
 template<typename... Args>
-inline void
-  module_signature(env::Module *t_module, std::string t_name, [[maybe_unused]] const Signature<Args...> &signature)
+inline void module_signature(env::Module *t_module, std::string t_name, const Signature<Args...> &signature)
 {
 
     if (t_module->root_scope().count(t_name) == 0)
@@ -89,6 +88,11 @@ inline void module_defvar(env::Module *t_module, std::string t_name, ALObjectPtr
 #endif
     new_var->set_prop("--name--", make_string(t_name));
     new_var->set_prop("--module--", make_string(t_module->name()));
+}
+
+template<typename S> inline void module_defvar(env::Module *t_module)
+{
+    module_defvar(t_module, S::name, S::var);
 }
 
 inline void module_defconst(env::Module *t_module, std::string t_name, ALObjectPtr val, std::string t_doc = {})

@@ -341,6 +341,20 @@ Parse the contents of a file as xml and return a alist representation of the xml
 };
 
 
+struct module_doc
+{
+
+    inline static const std::string doc{ R"(The `xml` module enables the handling of XML-formated data. It
+provides functionality for parsing and dumping s-expressions as XML.
+
+Internally `xml` uses the
+[tinyxml2](https://github.com/leethomason/tinyxml2) library.
+
+)"};
+
+};
+
+
 }  // namespace xml
 
 ALISP_EXPORT alisp::env::ModulePtr init_xml(alisp::env::Environment *, alisp::eval::Evaluator *)
@@ -350,15 +364,13 @@ ALISP_EXPORT alisp::env::ModulePtr init_xml(alisp::env::Environment *, alisp::ev
     auto Mxml    = alisp::module_init("xml");
     auto xml_ptr = Mxml.get();
 
-    module_doc(xml_ptr,
-               R"(The `xml` module enables the handling of XML-formated data. It
-provides functionality for parsing and dumping s-expressions as XML.
+    module_doc(xml_ptr, xml::module_doc::doc);
 
-Internally `xml` uses the
-[tinyxml2](https://github.com/leethomason/tinyxml2) library.
-
-
-)");
+    module_defun< xml::parse_xml>(xml_ptr);
+    module_defun< xml::dump_xml>(xml_ptr);
+    module_defun< xml::load_file>(xml_ptr);
+    module_defun< xml::dump_file>(xml_ptr);
+    
 
     return Mxml;
 }

@@ -416,6 +416,67 @@ struct cookies
 };
 
 
+
+struct get_var
+{
+    inline static const std::string name = "GET";
+
+    inline static const std::string doc{R"()"};
+
+    inline static const auto var = type_get;
+};
+
+struct post_var
+{
+    inline static const std::string name = "POST";
+
+    inline static const std::string doc{R"()"};
+
+    inline static const auto var = type_post;
+};
+
+struct head_var
+{
+    inline static const std::string name = "HEAD";
+
+    inline static const std::string doc{R"()"};
+
+    inline static const auto var = type_head;
+};
+
+struct put_var
+{
+    inline static const std::string name = "PUT";
+
+    inline static const std::string doc{R"()"};
+
+    inline static const auto var = type_put;
+};
+
+struct delete_var
+{
+    inline static const std::string name = "DELETE";
+
+    inline static const std::string doc{R"()"};
+
+    inline static const auto var = type_delete;
+};
+
+struct options_var
+{
+    inline static const std::string name = "OPTIONS";
+
+    inline static const std::string doc{R"()"};
+
+    inline static const auto var = type_options;
+};
+
+struct module_doc
+{
+    inline static const std::string doc{ R"()"};
+
+};
+
 }  // namespace request
 
 ALISP_EXPORT alisp::env::ModulePtr init_request(alisp::env::Environment *, alisp::eval::Evaluator *)
@@ -425,14 +486,22 @@ ALISP_EXPORT alisp::env::ModulePtr init_request(alisp::env::Environment *, alisp
     auto Mrequest = alisp::module_init("request");
     auto req_ptr  = Mrequest.get();
 
-    module_doc(req_ptr, R"()");
+    module_doc(req_ptr, request::module_doc::doc);
 
-    module_defvar(req_ptr, "GET", request::type_get, R"()");
-    module_defvar(req_ptr, "POST", request::type_post, R"()");
-    module_defvar(req_ptr, "HEAD", request::type_head, R"()");
-    module_defvar(req_ptr, "DELETE", request::type_delete, R"()");
-    module_defvar(req_ptr, "PUT", request::type_put, R"()");
-    module_defvar(req_ptr, "OPTIONS", request::type_options, R"()");
+    module_defvar<request::get_var>(req_ptr);
+    module_defvar<request::post_var>(req_ptr);
+    module_defvar<request::head_var>(req_ptr);
+    module_defvar<request::put_var>(req_ptr);
+    module_defvar<request::delete_var>(req_ptr);
+    module_defvar<request::options_var>(req_ptr);
+
+    module_defun<request::request>(req_ptr);
+    module_defun<request::body>(req_ptr);
+    module_defun<request::status_code>(req_ptr);
+    module_defun<request::headers>(req_ptr);
+    module_defun<request::url>(req_ptr);
+    module_defun<request::elapsed>(req_ptr);
+    module_defun<request::cookies>(req_ptr);
     
     return Mrequest;
 }

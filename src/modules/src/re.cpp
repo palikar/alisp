@@ -461,16 +461,9 @@ the created regex. Optionaly, build flags can be passed through the
 };
 
 
-}  // namespace re
-
-ALISP_EXPORT alisp::env::ModulePtr init_re(alisp::env::Environment *, alisp::eval::Evaluator *)
+struct module_doc
 {
-    using namespace alisp;
-
-    auto Mre    = alisp::module_init("re");
-    auto re_ptr = Mre.get();
-
-    module_doc(re_ptr, R"(The `re` module provides support for working with regular
+    inline static const std::string doc{ R"(The `re` module provides support for working with regular
 epxression. Compiled expressions are supported and one can customized
 the compiling as well as the mathcing with the expresions through
 certain flags.
@@ -481,7 +474,20 @@ one of several standards.
 
 The symbols starting with `re-match-` modify the matching process, the
 symbols starting with `re-regex-` modify the building of a regex.
-)");
+)"};
+
+};
+
+}  // namespace re
+
+ALISP_EXPORT alisp::env::ModulePtr init_re(alisp::env::Environment *, alisp::eval::Evaluator *)
+{
+    using namespace alisp;
+
+    auto Mre    = alisp::module_init("re");
+    auto re_ptr = Mre.get();
+
+    module_doc(re_ptr, re::module_doc::doc);
 
     module_defconst(re_ptr, "re-match-default", re::reflag_default, R"(Default flag when matching a regex.)");
 

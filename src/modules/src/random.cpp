@@ -423,6 +423,21 @@ Call csrand with the given integer or with the current time if none is provided.
     }
 };
 
+struct module_doc
+{
+    inline static const std::string doc{ R"(The `random` exposes several functions that have to to with
+randomness and the generation thereof. It offers basic RNG as well as
+several higher level functions that genrate random numbers from
+specific distribution.
+
+Internally `random` uses the C++ facilities for random numbers. Currently the module uses the
+[mt19937](https://en.wikipedia.org/wiki/Mersenne_Twister) pseudorandom number generator
+providced by the standard c++ library. `random` does, however, provide access to lower level
+C-functions like crand.
+
+)"};
+
+};
 
 }  // namespace al_random
 
@@ -434,20 +449,24 @@ ALISP_EXPORT alisp::env::ModulePtr init_random(alisp::env::Environment *, alisp:
     auto Mrandom  = alisp::module_init("random");
     auto rand_ptr = Mrandom.get();
 
+    module_doc(rand_ptr, al_random::module_doc::doc);
 
-    module_doc(rand_ptr, R"(The `random` exposes several functions that have to to with
-randomness and the generation thereof. It offers basic RNG as well as
-several higher level functions that genrate random numbers from
-specific distribution.
-
-Internally `random` uses the C++ facilities for random numbers. Currently the module uses the
-[mt19937](https://en.wikipedia.org/wiki/Mersenne_Twister) pseudorandom number generator
-providced by the standard c++ library. `random` does, however, provide access to lower level
-C-functions like crand.
-
-)");
-    
-
+    module_defun<al_random::rand_int>(rand_ptr);
+    module_defun<al_random::choice>(rand_ptr);
+    module_defun<al_random::sample>(rand_ptr);
+    module_defun<al_random::uniform>(rand_ptr);
+    module_defun<al_random::exponential>(rand_ptr);
+    module_defun<al_random::gamma>(rand_ptr);
+    module_defun<al_random::gauss>(rand_ptr);
+    module_defun<al_random::lognorm>(rand_ptr);
+    module_defun<al_random::weibull>(rand_ptr);
+    module_defun<al_random::geometric>(rand_ptr);
+    module_defun<al_random::fisher>(rand_ptr);
+    module_defun<al_random::student>(rand_ptr);
+    module_defun<al_random::seed>(rand_ptr);
+    module_defun<al_random::seed_rand>(rand_ptr);
+    module_defun<al_random::crand>(rand_ptr);
+    module_defun<al_random::csrand>(rand_ptr);
 
     return Mrandom;
 }

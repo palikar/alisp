@@ -640,7 +640,6 @@ struct call
     }
 };
 
-
 }  // namespace process
 
 ALISP_EXPORT alisp::env::ModulePtr init_process(alisp::env::Environment *, alisp::eval::Evaluator *)
