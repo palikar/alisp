@@ -235,13 +235,13 @@ std::string to_string(ALObjectPtr t_xml)
 
 struct parse_xml
 {
-    inline static const std::string name{"xml-parse"};
+    inline static const std::string name{ "xml-parse" };
 
-    inline static const Signature signature{String{}};
+    inline static const Signature signature{ String{} };
 
-    inline static const std::string doc{R"((xml-parse STRING)
+    inline static const std::string doc{ R"((xml-parse STRING)
 
-Parse a xml-formated string and return a alist representation of the xml)"};
+Parse a xml-formated string and return a alist representation of the xml)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -254,13 +254,13 @@ Parse a xml-formated string and return a alist representation of the xml)"};
 
 struct dump_xml
 {
-    inline static const std::string name{"xml-dump"};
+    inline static const std::string name{ "xml-dump" };
 
-    inline static const Signature signature{Any{}};
+    inline static const Signature signature{ Any{} };
 
-    inline static const std::string doc{R"((xml-parse ALIST)
+    inline static const std::string doc{ R"((xml-parse ALIST)
 Convert a alist to a xml-formated string. Return the formated string.
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -273,14 +273,14 @@ Convert a alist to a xml-formated string. Return the formated string.
 
 struct dump_file
 {
-    inline static const std::string name{"dump-file"};
+    inline static const std::string name{ "dump-file" };
 
-    inline static const Signature signature{String{}, Any{}};
+    inline static const Signature signature{ String{}, Any{} };
 
-    inline static const std::string doc{R"((dump-file FILE ALIST)
+    inline static const std::string doc{ R"((dump-file FILE ALIST)
 
 Save the xml-formated string representation of `ALIST` in the file pointed by `PATH`.
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -310,14 +310,14 @@ Save the xml-formated string representation of `ALIST` in the file pointed by `P
 
 struct load_file
 {
-    inline static const std::string name{"load-file"};
+    inline static const std::string name{ "load-file" };
 
-    inline static const Signature signature{String{}};
+    inline static const Signature signature{ String{} };
 
-    inline static const std::string doc{R"((load-file FILE)
+    inline static const std::string doc{ R"((load-file FILE)
 
 Parse the contents of a file as xml and return a alist representation of the xml.
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -350,8 +350,7 @@ provides functionality for parsing and dumping s-expressions as XML.
 Internally `xml` uses the
 [tinyxml2](https://github.com/leethomason/tinyxml2) library.
 
-)"};
-
+)" };
 };
 
 
@@ -366,11 +365,11 @@ ALISP_EXPORT alisp::env::ModulePtr init_xml(alisp::env::Environment *, alisp::ev
 
     module_doc(xml_ptr, xml::module_doc::doc);
 
-    module_defun< xml::parse_xml>(xml_ptr);
-    module_defun< xml::dump_xml>(xml_ptr);
-    module_defun< xml::load_file>(xml_ptr);
-    module_defun< xml::dump_file>(xml_ptr);
-    
+    module_defun<xml::parse_xml>(xml_ptr);
+    module_defun<xml::dump_xml>(xml_ptr);
+    module_defun<xml::load_file>(xml_ptr);
+    module_defun<xml::dump_file>(xml_ptr);
+
 
     return Mxml;
 }

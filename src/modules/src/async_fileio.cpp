@@ -180,6 +180,12 @@ struct async_read_text
 };
 
 
+struct module_doc
+{
+
+    inline static const std::string doc{ R"()" };
+};
+
 }  // namespace async_fileio
 
 ALISP_EXPORT alisp::env::ModulePtr init_async_fileio(alisp::env::Environment *, alisp::eval::Evaluator *)
@@ -187,6 +193,8 @@ ALISP_EXPORT alisp::env::ModulePtr init_async_fileio(alisp::env::Environment *, 
     using namespace alisp;
     auto M       = alisp::module_init("async-fileio");
     auto aio_ptr = M.get();
+
+    module_doc(aio_ptr, async_fileio::module_doc::doc);
 
     module_defun<async_fileio::async_append_text>(aio_ptr);
     module_defun<async_fileio::async_write_text>(aio_ptr);

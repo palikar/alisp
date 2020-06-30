@@ -741,18 +741,11 @@ Return the bytes of encoding the string `STRING` in base32.
 };
 
 
-}  // namespace base64
-
-ALISP_EXPORT alisp::env::ModulePtr init_base64(alisp::env::Environment *, alisp::eval::Evaluator *)
+struct module_doc
 {
-    using namespace alisp;
 
-    auto Mbase64    = alisp::module_init("base64");
-    auto base64_ptr = Mbase64.get();
-
-    module_doc(
-      base64_ptr,
-      R"(The `base64` module provides several codecs for encoding byte-data -- base64, base32 and base16. There are functions that operate on strings as well as ones that take raw byte lists. The decoding functions return either a string representation of the original input or byte list that contains the pure bytes of the decoded information.
+    inline static const std::string doc{
+        R"(The `base64` module provides several codecs for encoding byte-data -- base64, base32 and base16. There are functions that operate on strings as well as ones that take raw byte lists. The decoding functions return either a string representation of the original input or byte list that contains the pure bytes of the decoded information.
 
 Example:
 ```elisp
@@ -763,8 +756,21 @@ Example:
 (mapc println (base64-decode-bytes (base64-encode-bytes '(97 98 99))))
 (mapc println (base16-decode-bytes (base16-encode-bytes '(97 98 99))))
 ```
-)");
+)"
+    };
+};
 
+
+}  // namespace base64
+
+ALISP_EXPORT alisp::env::ModulePtr init_base64(alisp::env::Environment *, alisp::eval::Evaluator *)
+{
+    using namespace alisp;
+
+    auto Mbase64    = alisp::module_init("base64");
+    auto base64_ptr = Mbase64.get();
+
+    module_doc(base64_ptr, base64::module_doc::doc);
 
     module_defun<base64::base16_decode_bytes>(base64_ptr);
     module_defun<base64::base16_encode_bytes>(base64_ptr);

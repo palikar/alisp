@@ -951,17 +951,10 @@ return its name.
     }
 };
 
-
-}  // namespace loc
-
-ALISP_EXPORT alisp::env::ModulePtr init_locale(alisp::env::Environment *, alisp::eval::Evaluator *)
+struct module_doc
 {
-    using namespace alisp;
 
-    auto Mlocale = alisp::module_init("locale");
-    auto loc_ptr = Mlocale.get();
-
-    module_doc(loc_ptr, R"(The `locale` module provides support for dealing with POSIX
+    inline static const std::string doc{ R"((The `locale` module provides support for dealing with POSIX
 locales. This allows developers to handle culture specific issues in
 an application.
 
@@ -973,7 +966,20 @@ as `en_US.utf8` or 'en_GB.utf8'. You can execute `locale -a` in a
 terminal to see all of the locales that the host system supports. A
 valid locale id is any one of the these locales.
 
-)");
+))" };
+};
+
+
+}  // namespace loc
+
+ALISP_EXPORT alisp::env::ModulePtr init_locale(alisp::env::Environment *, alisp::eval::Evaluator *)
+{
+    using namespace alisp;
+
+    auto Mlocale = alisp::module_init("locale");
+    auto loc_ptr = Mlocale.get();
+
+    module_doc(loc_ptr, loc::module_doc::doc);
 
     return Mlocale;
 }

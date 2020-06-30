@@ -39,14 +39,14 @@ static std::mt19937 rand_eng(rand_dev());
 
 struct rand_int
 {
-    inline static const std::string name{"rand-int"};
+    inline static const std::string name{ "rand-int" };
 
-    inline static const Signature signature{Int{}, Int{}};
+    inline static const Signature signature{ Int{}, Int{} };
 
-    inline static const std::string doc{R"((rand-int LOWER UPPER)
+    inline static const std::string doc{ R"((rand-int LOWER UPPER)
 
 Return a random integer in the range [LOWER, UPPER]
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -64,14 +64,14 @@ Return a random integer in the range [LOWER, UPPER]
 
 struct choice
 {
-    inline static const std::string name{"choice"};
+    inline static const std::string name{ "choice" };
 
-    inline static const Signature signature{List{}};
+    inline static const Signature signature{ List{} };
 
-    inline static const std::string doc{R"((choice LIST)
+    inline static const std::string doc{ R"((choice LIST)
 
 Return a random element from the list `LIST`.
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -87,15 +87,15 @@ Return a random element from the list `LIST`.
 
 struct sample
 {
-    inline static const std::string name{"sample"};
+    inline static const std::string name{ "sample" };
 
-    inline static const Signature signature{List{}, Int{}};
+    inline static const Signature signature{ List{}, Int{} };
 
-    inline static const std::string doc{R"((choice LIST CNT)
+    inline static const std::string doc{ R"((choice LIST CNT)
 
 Return a list with `CNT` random elements from the list `LIST`.
 
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -117,14 +117,14 @@ Return a list with `CNT` random elements from the list `LIST`.
 
 struct uniform
 {
-    inline static const std::string name{"uniform"};
+    inline static const std::string name{ "uniform" };
 
-    inline static const Signature signature{Double{}, Double{}};
+    inline static const Signature signature{ Double{}, Double{} };
 
-    inline static const std::string doc{R"((uniform A B)
+    inline static const std::string doc{ R"((uniform A B)
 
 Return a random real number from an uniform distribution of [A, B].
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -142,14 +142,14 @@ Return a random real number from an uniform distribution of [A, B].
 
 struct exponential
 {
-    inline static const std::string name{"exponential"};
+    inline static const std::string name{ "exponential" };
 
-    inline static const Signature signature{Double{}};
+    inline static const Signature signature{ Double{} };
 
-    inline static const std::string doc{R"((exponential A)
+    inline static const std::string doc{ R"((exponential A)
 
 Return a random real number from an exponential distribution with e=A
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -165,14 +165,14 @@ Return a random real number from an exponential distribution with e=A
 
 struct gamma
 {
-    inline static const std::string name{"gamma"};
+    inline static const std::string name{ "gamma" };
 
-    inline static const Signature signature{Double{}, Double{}};
+    inline static const Signature signature{ Double{}, Double{} };
 
-    inline static const std::string doc{R"((gamma A B)
+    inline static const std::string doc{ R"((gamma A B)
 
 Return a random real number from a gamma distribution with k=A, theta=B
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -190,14 +190,14 @@ Return a random real number from a gamma distribution with k=A, theta=B
 
 struct gauss
 {
-    inline static const std::string name{"gauss"};
+    inline static const std::string name{ "gauss" };
 
-    inline static const Signature signature{Double{}, Double{}};
+    inline static const Signature signature{ Double{}, Double{} };
 
-    inline static const std::string doc{R"((gauss A B)
+    inline static const std::string doc{ R"((gauss A B)
 
 Return a random real number from a gauss distribution with mean=A, std=B
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -215,14 +215,14 @@ Return a random real number from a gauss distribution with mean=A, std=B
 
 struct lognorm
 {
-    inline static const std::string name{"lognorm"};
+    inline static const std::string name{ "lognorm" };
 
-    inline static const Signature signature{Double{}};
+    inline static const Signature signature{ Double{} };
 
-    inline static const std::string doc{R"((lognorm A)
+    inline static const std::string doc{ R"((lognorm A)
 
 Return a random real number from a log-normal distribution with mean=A, std=B
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -240,14 +240,14 @@ Return a random real number from a log-normal distribution with mean=A, std=B
 
 struct weibull
 {
-    inline static const std::string name{"weibull"};
+    inline static const std::string name{ "weibull" };
 
-    inline static const Signature signature{Double{}, Double{}};
+    inline static const Signature signature{ Double{}, Double{} };
 
-    inline static const std::string doc{R"((weibull A B)
+    inline static const std::string doc{ R"((weibull A B)
 
 Return a random real number from a weibull distribution with lambda=A, k=B
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -265,14 +265,14 @@ Return a random real number from a weibull distribution with lambda=A, k=B
 
 struct geometric
 {
-    inline static const std::string name{"geometric"};
+    inline static const std::string name{ "geometric" };
 
-    inline static const Signature signature{Double{}};
+    inline static const Signature signature{ Double{} };
 
-    inline static const std::string doc{R"((geometric A)
+    inline static const std::string doc{ R"((geometric A)
 
 Return a random real number from a geometric distribution with p=A
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -288,14 +288,14 @@ Return a random real number from a geometric distribution with p=A
 
 struct fisher
 {
-    inline static const std::string name{"fisher-f"};
+    inline static const std::string name{ "fisher-f" };
 
-    inline static const Signature signature{Double{}, Double{}};
+    inline static const Signature signature{ Double{}, Double{} };
 
-    inline static const std::string doc{R"((fisher-f A B)
+    inline static const std::string doc{ R"((fisher-f A B)
 
 Return a random real number from a f-distribution distribution with m=A, n=B
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -313,14 +313,14 @@ Return a random real number from a f-distribution distribution with m=A, n=B
 
 struct student
 {
-    inline static const std::string name{"student-t"};
+    inline static const std::string name{ "student-t" };
 
-    inline static const Signature signature{Double{}};
+    inline static const Signature signature{ Double{} };
 
-    inline static const std::string doc{R"((student-t A)
+    inline static const std::string doc{ R"((student-t A)
 
 Return a random real number from a studnet-t distribution with n=A
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -336,14 +336,14 @@ Return a random real number from a studnet-t distribution with n=A
 
 struct seed
 {
-    inline static const std::string name{"seed"};
+    inline static const std::string name{ "seed" };
 
-    inline static const Signature signature{Int{}};
+    inline static const Signature signature{ Int{} };
 
-    inline static const std::string doc{R"((seed INT)
+    inline static const std::string doc{ R"((seed INT)
 
 Seed the random engine with the given integer.
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -359,14 +359,14 @@ Seed the random engine with the given integer.
 
 struct seed_rand
 {
-    inline static const std::string name{"seed-rand"};
+    inline static const std::string name{ "seed-rand" };
 
-    inline static const Signature signature{Int{}};
+    inline static const Signature signature{ Int{} };
 
-    inline static const std::string doc{R"((seed-rand)
+    inline static const std::string doc{ R"((seed-rand)
 
 Seed the random engine with random numbers from the base random device.
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
     {
@@ -380,14 +380,14 @@ Seed the random engine with random numbers from the base random device.
 
 struct crand
 {
-    inline static const std::string name{"crand"};
+    inline static const std::string name{ "crand" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"((crand)
+    inline static const std::string doc{ R"((crand)
 
 Return a random number generated by crand.
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
     {
@@ -398,14 +398,14 @@ Return a random number generated by crand.
 
 struct csrand
 {
-    inline static const std::string name{"csrand"};
+    inline static const std::string name{ "csrand" };
 
-    inline static const Signature signature{Optional{}, Int{}};
+    inline static const Signature signature{ Optional{}, Int{} };
 
-    inline static const std::string doc{R"((csrand [INT])
+    inline static const std::string doc{ R"((csrand [INT])
 
 Call csrand with the given integer or with the current time if none is provided.
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -435,8 +435,7 @@ Internally `random` uses the C++ facilities for random numbers. Currently the mo
 providced by the standard c++ library. `random` does, however, provide access to lower level
 C-functions like crand.
 
-)"};
-
+)" };
 };
 
 }  // namespace al_random

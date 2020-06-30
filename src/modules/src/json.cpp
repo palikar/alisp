@@ -644,18 +644,11 @@ Save the a json formated string representation of `ALIST` in the file pointed by
 };
 
 
-}  // namespace json
-
-ALISP_EXPORT alisp::env::ModulePtr init_json(alisp::env::Environment *, alisp::eval::Evaluator *)
+struct module_doc
 {
-    using namespace alisp;
 
-    auto Mjson    = alisp::module_init("json");
-    auto json_ptr = Mjson.get();
-
-    module_doc(
-      json_ptr,
-      R"(The `json` module can be used to parse and handle json-formated text. It can transoform JSON to an equvalent representation through s-expressions.
+    inline static const std::string doc{
+        R"(The `json` module can be used to parse and handle json-formated text. It can transoform JSON to an equvalent representation through s-expressions.
 
 The s-exp representation that this module uses for an dict-like strucure is [plist](https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node108.html). A dictonary with keys and values can be viewed as a list of values like `(:key-1 "value-1" :key-2 "value-2")`. For example, this json snippet:
 ```json
@@ -675,11 +668,32 @@ will be represented throught the following s-expressions structure.
 
 The resulting representaion can be handeld through some of the functions that the module provides.
 
-)");
+)"
+    };
+};
 
 
-    module_defvar(
-      json_ptr, "json-signal", json::json_signal, R"(Signal raised when the json parser encounters an error.)");
+struct signal_var
+{
+    inline static const std::string name = "json-signal";
+
+    inline static const std::string doc{ R"(Signal raised when the json parser encounters an error.)" };
+
+    inline static const auto var = json_signal;
+};
+
+}  // namespace json
+
+ALISP_EXPORT alisp::env::ModulePtr init_json(alisp::env::Environment *, alisp::eval::Evaluator *)
+{
+    using namespace alisp;
+
+    auto Mjson    = alisp::module_init("json");
+    auto json_ptr = Mjson.get();
+
+    module_doc(json_ptr, json::module_doc::doc);
+
+    module_defvar<json::signal_var>(json_ptr);
 
     module_defun<json::parse_json>(json_ptr);
     module_defun<json::dump_json>(json_ptr);

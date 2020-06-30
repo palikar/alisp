@@ -403,6 +403,13 @@ struct assert_byte_array
 };
 
 
+struct module_doc
+{
+
+    inline static const std::string doc{ R"()" };
+};
+
+
 }  // namespace asserts
 
 ALISP_EXPORT alisp::env::ModulePtr init_asserts(alisp::env::Environment *, alisp::eval::Evaluator *)
@@ -410,6 +417,8 @@ ALISP_EXPORT alisp::env::ModulePtr init_asserts(alisp::env::Environment *, alisp
     using namespace alisp;
     auto assert_module = alisp::module_init("asserts");
     auto ass_ptr       = assert_module.get();
+
+    module_doc(ass_ptr, asserts::module_doc::doc);
 
     module_defun<asserts::assert_numbers>(ass_ptr);
     module_defun<asserts::assert_symbol>(ass_ptr);

@@ -227,17 +227,17 @@ std::regex_constants::syntax_option_type handle_regex_flags(ALObjectPtr t_obj)
 
 struct replace
 {
-    inline static const std::string name{"re-replace"};
+    inline static const std::string name{ "re-replace" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"((re-replace [REGEX|STRING] STRING REPLACEMENT [MATCH_FLAGS])
+    inline static const std::string doc{ R"((re-replace [REGEX|STRING] STRING REPLACEMENT [MATCH_FLAGS])
 
 Try matching a part of `STRING` with the regex object or regex-string
 and replace it with `REPLACEMENT`. Return the new string.
 
 Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -272,11 +272,11 @@ Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
 
 struct match
 {
-    inline static const std::string name{"re-match"};
+    inline static const std::string name{ "re-match" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"((match [REGEX|STRING] STRING [MATCH_FLAGS])
+    inline static const std::string doc{ R"((match [REGEX|STRING] STRING [MATCH_FLAGS])
 
 Try to match the whole of string `STRING` with the given regex object
 or regex-string. Return nil if the match fails and return a list of
@@ -285,7 +285,7 @@ will be the whole match, subsequent elements will correspond to the
 matched groups.
 
 Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -318,11 +318,11 @@ Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
 
 struct search
 {
-    inline static const std::string name{"re-search"};
+    inline static const std::string name{ "re-search" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"((re-search [REGEX|STRING] STRING [MATCH_FLAGS])
+    inline static const std::string doc{ R"((re-search [REGEX|STRING] STRING [MATCH_FLAGS])
 
 Search for matching substring in `STRING` with the regex object or
 regex-string. In contrast to `re-match`, this functions does not try
@@ -330,7 +330,7 @@ to match the whole string but find a part of the string that matches
 the regex. Return a list with the resutls of the searching.
 
 Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -365,18 +365,18 @@ Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
 
 struct search_all
 {
-    inline static const std::string name{"re-search-all"};
+    inline static const std::string name{ "re-search-all" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"((re-search-all [REGEX|STRING] STRING [MATCH_FLAGS])
+    inline static const std::string doc{ R"((re-search-all [REGEX|STRING] STRING [MATCH_FLAGS])
 
 Search for all the matches of a regexc in a string. This function is
 like applying re-serach several times and finding all the matches of
 the regex in a given string. Return a list of lists that are the
 results of the individual matches.
 
-Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.)"};
+Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.)" };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -420,16 +420,16 @@ Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.)"}
 
 struct compile
 {
-    inline static const std::string name{"re-compile"};
+    inline static const std::string name{ "re-compile" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"((re-compile REGEX_STRING [BUILD_FLAGS_LIST])
+    inline static const std::string doc{ R"((re-compile REGEX_STRING [BUILD_FLAGS_LIST])
 
 Compile the regex given in the string and return a resource object to
 the created regex. Optionaly, build flags can be passed through the
 `BUILD_FLAGS_LIST` list.
-)"};
+)" };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *env, eval::Evaluator *eval)
     {
@@ -474,8 +474,7 @@ one of several standards.
 
 The symbols starting with `re-match-` modify the matching process, the
 symbols starting with `re-regex-` modify the building of a regex.
-)"};
-
+)" };
 };
 
 }  // namespace re
@@ -619,6 +618,6 @@ alternation separator in addtion to '|'.)");
     module_defun<re::replace>(re_ptr);
     module_defun<re::match>(re_ptr);
     module_defun<re::compile>(re_ptr);
-    
+
     return Mre;
 }

@@ -119,11 +119,11 @@ auto send(cpr::Session &session, size_t type)
 
 struct request
 {
-    inline static const std::string name{"request"};
+    inline static const std::string name{ "request" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -297,11 +297,11 @@ struct request
 
 struct body
 {
-    inline static const std::string name{"body"};
+    inline static const std::string name{ "body" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -317,11 +317,11 @@ struct body
 
 struct status_code
 {
-    inline static const std::string name{"status-code"};
+    inline static const std::string name{ "status-code" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -337,11 +337,11 @@ struct status_code
 
 struct headers
 {
-    inline static const std::string name{"headers"};
+    inline static const std::string name{ "headers" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -357,11 +357,11 @@ struct headers
 
 struct url
 {
-    inline static const std::string name{"url"};
+    inline static const std::string name{ "url" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -377,11 +377,11 @@ struct url
 
 struct elapsed
 {
-    inline static const std::string name{"elapsed"};
+    inline static const std::string name{ "elapsed" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -397,11 +397,11 @@ struct elapsed
 
 struct cookies
 {
-    inline static const std::string name{"cookies"};
+    inline static const std::string name{ "cookies" };
 
     inline static const Signature signature{};
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -416,12 +416,11 @@ struct cookies
 };
 
 
-
 struct get_var
 {
     inline static const std::string name = "GET";
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     inline static const auto var = type_get;
 };
@@ -430,7 +429,7 @@ struct post_var
 {
     inline static const std::string name = "POST";
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     inline static const auto var = type_post;
 };
@@ -439,7 +438,7 @@ struct head_var
 {
     inline static const std::string name = "HEAD";
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     inline static const auto var = type_head;
 };
@@ -448,7 +447,7 @@ struct put_var
 {
     inline static const std::string name = "PUT";
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     inline static const auto var = type_put;
 };
@@ -457,7 +456,7 @@ struct delete_var
 {
     inline static const std::string name = "DELETE";
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     inline static const auto var = type_delete;
 };
@@ -466,15 +465,14 @@ struct options_var
 {
     inline static const std::string name = "OPTIONS";
 
-    inline static const std::string doc{R"()"};
+    inline static const std::string doc{ R"()" };
 
     inline static const auto var = type_options;
 };
 
 struct module_doc
 {
-    inline static const std::string doc{ R"()"};
-
+    inline static const std::string doc{ R"()" };
 };
 
 }  // namespace request
@@ -502,6 +500,6 @@ ALISP_EXPORT alisp::env::ModulePtr init_request(alisp::env::Environment *, alisp
     module_defun<request::url>(req_ptr);
     module_defun<request::elapsed>(req_ptr);
     module_defun<request::cookies>(req_ptr);
-    
+
     return Mrequest;
 }

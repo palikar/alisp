@@ -306,6 +306,24 @@ Return nil and ignore all of the given arguments.
     static ALObjectPtr func(const ALObjectPtr &, env::Environment *, eval::Evaluator *) { return Qnil; }
 };
 
+struct module_doc
+{
+
+    inline static const std::string doc{ R"( The `func` modules provides support for working with higher order
+functions. It aims to bring more "functional" features to alisp.
+)" };
+};
+
+
+struct placeholder_var
+{
+    inline static const std::string name = "_";
+
+    inline static const std::string doc{ R"(Can be used as a placeholder object at certain places.)" };
+
+    inline static const auto var = placeholder_sym;
+};
+
 
 }  // namespace func
 
@@ -316,13 +334,9 @@ ALISP_EXPORT alisp::env::ModulePtr init_func(alisp::env::Environment *, alisp::e
     auto Mfunc   = alisp::module_init("func");
     auto fun_ptr = Mfunc.get();
 
-    module_doc(fun_ptr, R"( The `func` modules provides support for working with higher order
-functions. It aims to bring more "functional" features to alisp.
-)");
+    module_doc(fun_ptr, func::module_doc::doc);
 
-
-    module_defvar(fun_ptr, "_", func::placeholder_sym, R"(Can be used as a placeholder object at certain places.)");
-
+    module_defvar<func::placeholder_var>(fun_ptr);
 
     module_defun<func::compose>(fun_ptr);
     module_defun<func::partial>(fun_ptr);
