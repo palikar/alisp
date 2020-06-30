@@ -78,7 +78,6 @@ Return the string used to represent `true` according to the global locale or the
     }
 };
 
-
 struct num_false_name
 {
     inline static const std::string name{ "num-false-name" };
@@ -106,7 +105,6 @@ Return the string used to represent `false` according to the global locale or th
         return make_string(std::use_facet<std::numpunct<char>>(detail::g_defautl_loc).falsename());
     }
 };
-
 
 struct num_thousand_sep
 {
@@ -137,7 +135,6 @@ representation of real numbers according to the global locale or the
     }
 };
 
-
 struct num_decimal_point
 {
     inline static const std::string name{ "num-decimal-point" };
@@ -167,7 +164,6 @@ given.
     }
 };
 
-
 struct money_positive_sign
 {
     inline static const std::string name{ "money-positive-sign" };
@@ -195,7 +191,6 @@ accrding by the global locale or the `LOCALE` if given.
         return make_string(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).positive_sign());
     }
 };
-
 
 struct money_negative_sign
 {
@@ -225,7 +220,6 @@ accrding by the global locale or the `LOCALE` if given.
     }
 };
 
-
 struct money_symobl
 {
     inline static const std::string name{ "money-symobl" };
@@ -253,7 +247,6 @@ the global locale or the `LOCALE` if given.
         return make_string(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).curr_symbol());
     }
 };
-
 
 struct money_thousand_sep
 {
@@ -283,7 +276,6 @@ by the global locale or the `LOCALE` if given.
     }
 };
 
-
 struct money_decimal_point
 {
     inline static const std::string name{ "money-decimal-point" };
@@ -311,7 +303,6 @@ by the global locale or the `LOCALE` if given.
         return make_char(std::use_facet<std::moneypunct<char>>(detail::g_defautl_loc).decimal_point());
     }
 };
-
 
 struct put_money
 {
@@ -344,7 +335,6 @@ the global locale or `LOCALE` if given.
         return make_string(s);
     }
 };
-
 
 struct put_num
 {
@@ -382,7 +372,6 @@ the global locale or `LOCALE` if given.
         return make_string(ss.str());
     }
 };
-
 
 struct put_time
 {
@@ -431,7 +420,6 @@ the global locale or `LOCALE` if given.
     }
 };
 
-
 struct isspace
 {
     inline static const std::string name{ "isspace" };
@@ -464,7 +452,6 @@ locale or to `LOCALE` if given.
     }
 };
 
-
 struct isblank
 {
     inline static const std::string name{ "isblank" };
@@ -494,7 +481,6 @@ locale or to `LOCALE` if given.)" };
         return std::isblank(char(t), detail::g_defautl_loc) ? Qt : Qnil;
     }
 };
-
 
 struct iscntrl
 {
@@ -527,7 +513,6 @@ locale or to `LOCALE` if given.
     }
 };
 
-
 struct isupper
 {
     inline static const std::string name{ "isupper" };
@@ -558,7 +543,6 @@ locale or to `LOCALE` if given.
         return std::isupper(char(t), detail::g_defautl_loc) ? Qt : Qnil;
     }
 };
-
 
 struct islower
 {
@@ -591,7 +575,6 @@ locale or to `LOCALE` if given.
     }
 };
 
-
 struct isalpha
 {
     inline static const std::string name{ "isalpha" };
@@ -622,7 +605,6 @@ locale or to `LOCALE` if given.
         return std::isalpha(char(t), detail::g_defautl_loc) ? Qt : Qnil;
     }
 };
-
 
 struct isdigit
 {
@@ -655,7 +637,6 @@ locale or to `LOCALE` if given.
     }
 };
 
-
 struct ispunct
 {
     inline static const std::string name{ "ispunct" };
@@ -686,7 +667,6 @@ locale or to `LOCALE` if given.
         return std::ispunct(char(t), detail::g_defautl_loc) ? Qt : Qnil;
     }
 };
-
 
 struct isxdigit
 {
@@ -719,7 +699,6 @@ locale or to `LOCALE` if given.
     }
 };
 
-
 struct isalnum
 {
     inline static const std::string name{ "isalnum" };
@@ -750,7 +729,6 @@ locale or to `LOCALE` if given.
         return std::isalnum(char(t), detail::g_defautl_loc) ? Qt : Qnil;
     }
 };
-
 
 struct isprint
 {
@@ -783,7 +761,6 @@ locale or to `LOCALE` if given.
     }
 };
 
-
 struct isgraph
 {
     inline static const std::string name{ "isgraph" };
@@ -815,7 +792,6 @@ locale or to `LOCALE` if given.
     }
 };
 
-
 struct reset_locale
 {
     inline static const std::string name{ "reset-locale" };
@@ -837,7 +813,6 @@ Reset the global locate to the default locale.
     }
 };
 
-
 struct set_preffered
 {
     inline static const std::string name{ "set-preffered-locale" };
@@ -858,7 +833,6 @@ Set the global locale to the preffered (according to the host system) locale.
         return Qt;
     }
 };
-
 
 struct locale
 {
@@ -980,6 +954,37 @@ ALISP_EXPORT alisp::env::ModulePtr init_locale(alisp::env::Environment *, alisp:
     auto loc_ptr = Mlocale.get();
 
     module_doc(loc_ptr, loc::module_doc::doc);
+
+    module_defvar<loc::locale_name>(loc_ptr);
+    module_defvar<loc::set_default_locale>(loc_ptr);
+    module_defvar<loc::locale>(loc_ptr);
+    module_defvar<loc::num_true_name>(loc_ptr);
+    module_defvar<loc::num_thousand_sep>(loc_ptr);
+    module_defvar<loc::num_decimal_point>(loc_ptr);
+    module_defvar<loc::money_positive_sign>(loc_ptr);
+    module_defvar<loc::money_negative_sign>(loc_ptr);
+    module_defvar<loc::money_symobl>(loc_ptr);
+    module_defvar<loc::money_thousand_sep>(loc_ptr);
+    module_defvar<loc::money_decimal_point>(loc_ptr);
+    module_defvar<loc::put_money>(loc_ptr);
+    module_defvar<loc::put_num>(loc_ptr);
+    module_defvar<loc::put_time>(loc_ptr);
+    module_defvar<loc::isspace>(loc_ptr);
+    module_defvar<loc::isblank>(loc_ptr);
+    module_defvar<loc::iscntrl>(loc_ptr);
+    module_defvar<loc::isupper>(loc_ptr);
+    module_defvar<loc::islower>(loc_ptr);
+    module_defvar<loc::isalpha>(loc_ptr);
+    module_defvar<loc::isdigit>(loc_ptr);
+    module_defvar<loc::ispunct>(loc_ptr);
+    module_defvar<loc::isxdigit>(loc_ptr);
+    module_defvar<loc::isalnum>(loc_ptr);
+    module_defvar<loc::isprint>(loc_ptr);
+    module_defvar<loc::isgraph>(loc_ptr);
+    module_defvar<loc::reset_locale>(loc_ptr);
+    module_defvar<loc::set_preffered>(loc_ptr);
+    module_defvar<loc::locale>(loc_ptr);
+
 
     return Mlocale;
 }

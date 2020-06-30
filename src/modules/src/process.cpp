@@ -640,6 +640,22 @@ struct call
     }
 };
 
+struct module_doc
+{
+
+    inline static const std::string doc{R"(The `process` module enables the starting and communicating with
+external processes. It is similar to the `subprocess` module of
+pyhton. The module tries, in fact, to stay close the the api and
+privide similar functions for starting and communicating with external
+processes.
+
+Internaly `process` uses the [cpp-subprocess](https://github.com/arun11299/cpp-subprocess)
+library.
+
+)"};
+
+};
+
 }  // namespace process
 
 ALISP_EXPORT alisp::env::ModulePtr init_process(alisp::env::Environment *, alisp::eval::Evaluator *)
@@ -649,17 +665,7 @@ ALISP_EXPORT alisp::env::ModulePtr init_process(alisp::env::Environment *, alisp
     auto Mprocess = alisp::module_init("process");
     auto prop_ptr = Mprocess.get();
 
-    module_doc(prop_ptr,
-               R"(The `process` module enables the starting and communicating with
-external processes. It is similar to the `subprocess` module of
-pyhton. The module tries, in fact, to stay close the the api and
-privide similar functions for starting and communicating with external
-processes.
-
-Internaly `process` uses the [cpp-subprocess](https://github.com/arun11299/cpp-subprocess)
-library.
-
-)");
+    module_doc(prop_ptr, process::module_doc::doc);
 
     module_defconst(
       prop_ptr,
@@ -679,6 +685,19 @@ library.
       process::process_pipe,
       R"(Symbol used to signify a link between the spawn process and the interpreter. It is used in some of the functions of the module. )");
 
+    module_defvar<process::popen>(prop_ptr);
+    module_defvar<process::check_output>(prop_ptr);
+    module_defvar<process::check_output_bytes>(prop_ptr);
+    module_defvar<process::pid>(prop_ptr);
+    module_defvar<process::retcode>(prop_ptr);
+    module_defvar<process::wait>(prop_ptr);
+    module_defvar<process::poll>(prop_ptr);
+    module_defvar<process::start>(prop_ptr);
+    module_defvar<process::kill>(prop_ptr);
+    module_defvar<process::send>(prop_ptr);
+    module_defvar<process::communicate>(prop_ptr);
+    module_defvar<process::call>(prop_ptr);
+    module_defvar<process::module_doc>(prop_ptr);
 
     return Mprocess;
 }
