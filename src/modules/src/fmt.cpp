@@ -678,16 +678,11 @@ the standard error stream followed by a new line.
 };
 
 
-}  // namespace fmt
-
-ALISP_EXPORT alisp::env::ModulePtr init_fmt(alisp::env::Environment *, alisp::eval::Evaluator *)
+struct module_doc
 {
-    using namespace alisp;
 
-    auto Mfmt    = alisp::module_init("fmt");
-    auto fmt_ptr = Mfmt.get();
-
-    module_doc(fmt_ptr, R"(The `fmt` module helps you format strings.
+    inline static const std::string doc{
+        R"(The `fmt` module helps you format strings.
 
 The formating is based on the python's [Format Specification Mini-Language](https://docs.python.org/3.4/library/string.html#formatspec)
 as well as the C++ library [FMT](https://fmt.dev/latest/syntax.html). For most the things, internally alisp uses the mentioned library, but
@@ -698,7 +693,21 @@ In most cases you can simply use `{}` for a replacement field. For further detai
 
 To note is that the `printf` and `fmt` functions in the `fmt` module use the same syntax.
 
-)");
+)"
+    };
+};
+
+
+}  // namespace fmt
+
+ALISP_EXPORT alisp::env::ModulePtr init_fmt(alisp::env::Environment *, alisp::eval::Evaluator *)
+{
+    using namespace alisp;
+
+    auto Mfmt    = alisp::module_init("fmt");
+    auto fmt_ptr = Mfmt.get();
+
+    module_doc(fmt_ptr, fmt::module_doc::doc);
 
     module_defun<fmt::fmt>(fmt_ptr);
     module_defun<fmt::printf>(fmt_ptr);

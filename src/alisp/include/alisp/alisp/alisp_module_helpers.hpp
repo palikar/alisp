@@ -107,6 +107,11 @@ inline void module_defconst(env::Module *t_module, std::string t_name, ALObjectP
     new_var->set_prop("--name--", make_string(t_name));
 }
 
+template<typename S> inline void module_defconst(env::Module *t_module)
+{
+    module_defconst(t_module, S::name, S::var, S::doc);
+}
+
 inline void module_doc(env::Module *t_module, std::string t_doc)
 {
     module_defconst(t_module, "--doc--", make_string(t_doc));

@@ -640,10 +640,46 @@ struct call
     }
 };
 
+struct stdout_const
+{
+
+    inline static const std::string name = "stdout";
+
+    inline static const std::string doc{
+        R"(Symbol used to signify the standard output stream. It is used in some of the functions of the module. )"
+    };
+
+    inline static const auto var = process_stdout;
+};
+
+struct stderr_const
+{
+
+    inline static const std::string name = "stderr";
+
+    inline static const std::string doc{
+        R"(Symbol used to signify the standard input stream. It is used in some of the functions of the module. )"
+    };
+
+    inline static const auto var = process_stderr;
+};
+
+struct pipe_const
+{
+
+    inline static const std::string name = "pipe";
+
+    inline static const std::string doc{
+        R"(Symbol used to signify a link between the spawn process and the interpreter. It is used in some of the functions of the module. )"
+    };
+
+    inline static const auto var = process_pipe;
+};
+
 struct module_doc
 {
 
-    inline static const std::string doc{R"(The `process` module enables the starting and communicating with
+    inline static const std::string doc{ R"(The `process` module enables the starting and communicating with
 external processes. It is similar to the `subprocess` module of
 pyhton. The module tries, in fact, to stay close the the api and
 privide similar functions for starting and communicating with external
@@ -652,8 +688,7 @@ processes.
 Internaly `process` uses the [cpp-subprocess](https://github.com/arun11299/cpp-subprocess)
 library.
 
-)"};
-
+)" };
 };
 
 }  // namespace process
@@ -667,37 +702,23 @@ ALISP_EXPORT alisp::env::ModulePtr init_process(alisp::env::Environment *, alisp
 
     module_doc(prop_ptr, process::module_doc::doc);
 
-    module_defconst(
-      prop_ptr,
-      "stdout",
-      process::process_stdout,
-      R"(Symbol used to signify the standard output stream. It is used in some of the functions of the module. )");
+    module_defconst<process::stdout_const>(prop_ptr);
+    module_defconst<process::stderr_const>(prop_ptr);
+    module_defconst<process::pipe_const>(prop_ptr);
 
-    module_defconst(
-      prop_ptr,
-      "stderr",
-      process::process_stderr,
-      R"(Symbol used to signify the standard input stream. It is used in some of the functions of the module. )");
+    module_defun<process::popen>(prop_ptr);
+    module_defun<process::check_output>(prop_ptr);
+    module_defun<process::check_output_bytes>(prop_ptr);
+    module_defun<process::pid>(prop_ptr);
+    module_defun<process::retcode>(prop_ptr);
+    module_defun<process::wait>(prop_ptr);
+    module_defun<process::poll>(prop_ptr);
+    module_defun<process::start>(prop_ptr);
+    module_defun<process::kill>(prop_ptr);
+    module_defun<process::send>(prop_ptr);
+    module_defun<process::communicate>(prop_ptr);
+    module_defun<process::call>(prop_ptr);
 
-    module_defconst(
-      prop_ptr,
-      "pipe",
-      process::process_pipe,
-      R"(Symbol used to signify a link between the spawn process and the interpreter. It is used in some of the functions of the module. )");
-
-    module_defvar<process::popen>(prop_ptr);
-    module_defvar<process::check_output>(prop_ptr);
-    module_defvar<process::check_output_bytes>(prop_ptr);
-    module_defvar<process::pid>(prop_ptr);
-    module_defvar<process::retcode>(prop_ptr);
-    module_defvar<process::wait>(prop_ptr);
-    module_defvar<process::poll>(prop_ptr);
-    module_defvar<process::start>(prop_ptr);
-    module_defvar<process::kill>(prop_ptr);
-    module_defvar<process::send>(prop_ptr);
-    module_defvar<process::communicate>(prop_ptr);
-    module_defvar<process::call>(prop_ptr);
-    module_defvar<process::module_doc>(prop_ptr);
 
     return Mprocess;
 }

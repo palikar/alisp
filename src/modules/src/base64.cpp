@@ -740,7 +740,6 @@ Return the bytes of encoding the string `STRING` in base32.
     }
 };
 
-
 struct module_doc
 {
 

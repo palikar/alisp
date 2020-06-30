@@ -477,6 +477,279 @@ symbols starting with `re-regex-` modify the building of a regex.
 )" };
 };
 
+
+struct re_match_default_const
+{
+    static inline const std::string name = "re-match-default";
+
+    static inline auto var = re::reflag_default;
+
+    static inline auto doc{ R"(Default flag when matching a regex.)" };
+};
+
+struct re_match_not_bol_const
+{
+
+
+    static inline const std::string name = "re-match-not-bol";
+
+    static inline auto var = re::reflag_not_bol;
+
+    static inline std::string doc{ R"(Matching flag: The first character in [first,last) will be treated as
+if it is not at the beginning of a line (i.e. ^ will not match
+[first,first))" };
+};
+
+struct re_match_not_eol_const
+{
+    static inline const std::string name = "re-match-not-eol";
+
+    static inline auto var = re::reflag_not_eol;
+
+    static inline std::string doc{ R"(Matching flag: The last character in [first,last) will be treated as
+if it is not at the end of a line (i.e. $ will not match [last,last) )" };
+};
+
+struct re_match_not_bow_const
+{
+
+    static inline const std::string name = "re-match-not-bow";
+
+    static inline auto var = re::reflag_not_bow;
+
+    static inline std::string doc{ R"(Matching flag: \b" will not match [first,first))" };
+};
+
+struct re_match_any_const
+{
+
+
+    static inline const std::string name = "re-match-any";
+
+    static inline auto var = re::reflag_any;
+
+    static inline std::string doc{ R"(Matching flag: If more than one match is possible, then any match is
+an acceptable result )" };
+};
+
+
+struct re_match_continous_const
+{
+
+
+    static inline const std::string name = "re-match-continous";
+
+    static inline auto var = re::reflag_continous;
+
+    static inline std::string doc{ R"(Matching flag: Only match a sub-sequence that begins at first )" };
+};
+
+struct re_match_prev_avail_const
+{
+
+
+    static inline const std::string name = "re-match-prev-avail";
+
+    static inline auto var = re::reflag_prev_avail;
+
+    static inline std::string doc{ R"(Matching flag: --first is a valid iterator position. When set, causes
+match_not_bol and match_not_bow to be ignored )" };
+};
+
+struct re_match_format_default_const
+{
+
+
+    static inline const std::string name = "re-match-format-default";
+
+    static inline auto var = re::reflag_format_default;
+
+    static inline std::string doc{ R"(Matching flag: Use ECMAScript rules to construct strings in
+re-replace (syntax documentation) )" };
+};
+
+struct re_match_format_sed_const
+{
+
+
+    static inline const std::string name = "re-match-format-sed";
+
+    static inline auto var = re::reflag_format_sed;
+
+    static inline std::string doc{ R"(Matching flag: Use POSIX sed utility rules in re-replace. (syntax
+documentation) )" };
+};
+
+struct re_match_format_no_copy_const
+{
+
+
+    static inline const std::string name = "re-match-format-no-copy";
+
+    static inline auto var = re::reflag_format_no_copy;
+
+    static inline std::string doc{ R"(Matching flag: Do not copy un-matched strings to the output in
+re-replace )" };
+};
+
+struct re_match_format_first_only_const
+{
+
+
+    static inline const std::string name = "re-match-format-first-only";
+
+    static inline auto var = re::reflag_format_first_only;
+
+    static inline std::string doc{ R"(Matching flag: Only replace the first match in re-replace)" };
+};
+
+struct re_regex_icase_const
+{
+
+
+    static inline const std::string name = "re-regex-icase";
+
+    static inline auto var = re::reflag_icase;
+
+    static inline std::string doc{ R"(Build flag: Character matching should be performed without regard to case. )" };
+};
+
+struct re_regex_nosubs_const
+{
+
+
+    static inline const std::string name = "re-regex-nosubs";
+
+    static inline auto var = re::reflag_nosubs;
+
+    static inline std::string doc{ R"(Build flag: When performing matches, all marked sub-expressions
+(expr) are treated as non-marking sub-expressions (?:expr))" };
+};
+
+struct re_regex_optimize_const
+{
+
+
+    static inline const std::string name = "re-regex-optimize";
+
+    static inline auto var = re::reflag_optimize;
+
+    static inline std::string doc{ R"(Build flag: Instructs the regular expression engine to make matching
+faster, with the potential cost of making construction slower. For
+example, this might mean converting a non-deterministic FSA to a
+deterministic FSA.)" };
+};
+
+struct re_regex_collate_const
+{
+
+
+    static inline const std::string name = "re-regex-collate";
+
+    static inline auto var = re::reflag_collate;
+
+    static inline std::string doc{ R"(Build flag: Character ranges of the form "[a-b]" will be locale sensitive. )" };
+};
+
+struct re_regex_ecma_script_const
+{
+
+
+    static inline const std::string name = "re-regex-ecma_script";
+
+    static inline auto var = re::reflag_ecma_script;
+
+    static inline std::string doc{
+        R"(Build flag: Specifies that ^ shall match the beginning of a line and $ shall match the end of a line, if the ECMAScript engine is selected.)"
+    };
+};
+
+struct re_regex_basic_const
+{
+
+
+    static inline const std::string name = "re-regex-basic";
+
+    static inline auto var = re::reflag_basic;
+
+    static inline std::string doc{
+        R"(Build flag: Use the Modified [ECMAScript regular expression grammar](https://en.cppreference.com/w/cpp/regex/ecmascript))"
+    };
+};
+
+struct re_regex_extended_const
+{
+
+
+    static inline const std::string name = "re-regex-extended";
+
+    static inline auto var = re::reflag_extended;
+
+    static inline std::string doc{ R"(Build flag: Use the basic POSIX regular expression grammar)" };
+};
+
+struct re_regex_awk_const
+{
+
+
+    static inline const std::string name = "re-regex-awk";
+
+    static inline auto var = re::reflag_awk;
+
+    static inline std::string doc{ R"(Build flag: Use the regular expression grammar used by the awk
+utility in POSIX)" };
+};
+
+struct re_regex_grep_const
+{
+
+
+    static inline const std::string name = "re-regex-grep";
+
+    static inline auto var = re::reflag_grep;
+
+    static inline std::string doc{ R"(Build flag: Use the regular expression grammar used by the grep
+utility in POSIX. This is effectively the same as the basic option
+with the addition of newline '\n' as an alternation separator. )" };
+};
+
+struct re_regex_egrep_const
+{
+
+
+    static inline const std::string name = "re-regex-egrep";
+
+    static inline auto var = re::reflag_egrep;
+
+    static inline std::string doc{ R"(Build flag: Use the regular expression grammar used by the grep
+utility, with the -E option, in POSIX. This is effectively the same as
+the extended option with the addition of newline '\n' as an
+alternation separator in addtion to '|'.)" };
+};
+
+struct re_match_not_eow_const
+{
+
+
+    static inline const std::string name = "re-match-not-eow";
+
+    static inline auto var = re::reflag_not_eow;
+
+    static inline std::string doc{ R"(Matching flag: "\b" will not match [last,last) )" };
+};
+
+struct re_match_not_null_const
+{
+
+
+    static inline const std::string name = "re-match-not-null";
+
+    static inline auto var = re::reflag_not_null;
+
+    static inline std::string doc{ R"(Matching flag: Do not match empty sequences )" };
+};
+
+
 }  // namespace re
 
 ALISP_EXPORT alisp::env::ModulePtr init_re(alisp::env::Environment *, alisp::eval::Evaluator *)
@@ -488,132 +761,29 @@ ALISP_EXPORT alisp::env::ModulePtr init_re(alisp::env::Environment *, alisp::eva
 
     module_doc(re_ptr, re::module_doc::doc);
 
-    module_defconst(re_ptr, "re-match-default", re::reflag_default, R"(Default flag when matching a regex.)");
-
-    module_defconst(re_ptr,
-                    "re-match-not-bol",
-                    re::reflag_not_bol,
-                    R"(Matching flag: The first character in [first,last) will be treated as
-if it is not at the beginning of a line (i.e. ^ will not match
-[first,first))");
-
-    module_defconst(re_ptr,
-                    "re-match-not-eol",
-                    re::reflag_not_eol,
-                    R"(Matching flag: The last character in [first,last) will be treated as
-if it is not at the end of a line (i.e. $ will not match [last,last) )");
-
-    module_defconst(
-      re_ptr, "re-match-not-bow", re::reflag_not_bow, R"(Matching flag: \b" will not match [first,first))");
-
-    module_defconst(
-      re_ptr, "re-match-not-eow", re::reflag_not_eow, R"(Matching flag: "\b" will not match [last,last) )");
-
-    module_defconst(re_ptr,
-                    "re-match-any",
-                    re::reflag_any,
-                    R"(Matching flag: If more than one match is possible, then any match is
-an acceptable result )");
-
-    module_defconst(
-      re_ptr, "re-match-not-null", re::reflag_not_null, R"(Matching flag: Do not match empty sequences )");
-
-    module_defconst(re_ptr,
-                    "re-match-continous",
-                    re::reflag_continous,
-                    R"(Matching flag: Only match a sub-sequence that begins at first )");
-
-    module_defconst(re_ptr,
-                    "re-match-prev-avail",
-                    re::reflag_prev_avail,
-                    R"(Matching flag: --first is a valid iterator position. When set, causes
-match_not_bol and match_not_bow to be ignored )");
-
-    module_defconst(re_ptr,
-                    "re-match-format-default",
-                    re::reflag_format_default,
-                    R"(Matching flag: Use ECMAScript rules to construct strings in
-re-replace (syntax documentation) )");
-
-    module_defconst(re_ptr,
-                    "re-match-format-sed",
-                    re::reflag_format_sed,
-                    R"(Matching flag: Use POSIX sed utility rules in re-replace. (syntax
-documentation) )");
-
-    module_defconst(re_ptr,
-                    "re-match-format-no-copy",
-                    re::reflag_format_no_copy,
-                    R"(Matching flag: Do not copy un-matched strings to the output in
-re-replace )");
-
-    module_defconst(re_ptr,
-                    "re-match-format-first-only",
-                    re::reflag_format_first_only,
-                    R"(Matching flag: Only replace the first match in re-replace)");
-
-
-    module_defconst(re_ptr,
-                    "re-regex-icase",
-                    re::reflag_icase,
-                    R"(Build flag: Character matching should be performed without regard to case. )");
-
-    module_defconst(re_ptr,
-                    "re-regex-nosubs",
-                    re::reflag_nosubs,
-                    R"(Build flag: When performing matches, all marked sub-expressions
-(expr) are treated as non-marking sub-expressions (?:expr))");
-
-    module_defconst(re_ptr,
-                    "re-regex-optimize",
-                    re::reflag_optimize,
-                    R"(Build flag: Instructs the regular expression engine to make matching
-faster, with the potential cost of making construction slower. For
-example, this might mean converting a non-deterministic FSA to a
-deterministic FSA.)");
-
-    module_defconst(re_ptr,
-                    "re-regex-collate",
-                    re::reflag_collate,
-                    R"(Build flag: Character ranges of the form "[a-b]" will be locale sensitive. )");
-
-    module_defconst(
-      re_ptr,
-      "re-regex-ecma_script",
-      re::reflag_ecma_script,
-      R"(Build flag: Specifies that ^ shall match the beginning of a line and $ shall match the end of a line, if the ECMAScript engine is selected.)");
-
-    module_defconst(
-      re_ptr,
-      "re-regex-basic",
-      re::reflag_basic,
-      R"(Build flag: Use the Modified [ECMAScript regular expression grammar](https://en.cppreference.com/w/cpp/regex/ecmascript))");
-
-    module_defconst(re_ptr,
-                    "re-regex-extended",
-                    re::reflag_extended,
-                    R"(Build flag: Use the basic POSIX regular expression grammar)");
-
-    module_defconst(re_ptr,
-                    "re-regex-awk",
-                    re::reflag_awk,
-                    R"(Build flag: Use the regular expression grammar used by the awk
-utility in POSIX)");
-
-    module_defconst(re_ptr,
-                    "re-regex-grep",
-                    re::reflag_grep,
-                    R"(Build flag: Use the regular expression grammar used by the grep
-utility in POSIX. This is effectively the same as the basic option
-with the addition of newline '\n' as an alternation separator. )");
-
-    module_defconst(re_ptr,
-                    "re-regex-egrep",
-                    re::reflag_egrep,
-                    R"(Build flag: Use the regular expression grammar used by the grep
-utility, with the -E option, in POSIX. This is effectively the same as
-the extended option with the addition of newline '\n' as an
-alternation separator in addtion to '|'.)");
+    module_defconst<re::re_match_default_const>(re_ptr);
+    module_defconst<re::re_match_not_bol_const>(re_ptr);
+    module_defconst<re::re_match_not_eol_const>(re_ptr);
+    module_defconst<re::re_match_not_bow_const>(re_ptr);
+    module_defconst<re::re_match_any_const>(re_ptr);
+    module_defconst<re::re_match_continous_const>(re_ptr);
+    module_defconst<re::re_match_prev_avail_const>(re_ptr);
+    module_defconst<re::re_match_format_default_const>(re_ptr);
+    module_defconst<re::re_match_format_sed_const>(re_ptr);
+    module_defconst<re::re_match_format_no_copy_const>(re_ptr);
+    module_defconst<re::re_match_format_first_only_const>(re_ptr);
+    module_defconst<re::re_regex_icase_const>(re_ptr);
+    module_defconst<re::re_regex_nosubs_const>(re_ptr);
+    module_defconst<re::re_regex_optimize_const>(re_ptr);
+    module_defconst<re::re_regex_collate_const>(re_ptr);
+    module_defconst<re::re_regex_ecma_script_const>(re_ptr);
+    module_defconst<re::re_regex_basic_const>(re_ptr);
+    module_defconst<re::re_regex_extended_const>(re_ptr);
+    module_defconst<re::re_regex_awk_const>(re_ptr);
+    module_defconst<re::re_regex_grep_const>(re_ptr);
+    module_defconst<re::re_regex_egrep_const>(re_ptr);
+    module_defconst<re::re_match_not_eow_const>(re_ptr);
+    module_defconst<re::re_match_not_null_const>(re_ptr);
 
     module_defun<re::replace>(re_ptr);
     module_defun<re::match>(re_ptr);
