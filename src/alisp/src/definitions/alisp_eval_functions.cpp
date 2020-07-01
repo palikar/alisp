@@ -33,23 +33,45 @@
 namespace alisp
 {
 
-ALObjectPtr Feval_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct Seval_string
 {
-    AL_CHECK(assert_size<1>(obj));
-    auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
+    inline static const std::string name = "eval-string";
+
+    inline static const std::string doc{ R"((eval-string STRING)
+
+Execute the string `STRING` as a alisp-statement in the current
+environment.
+)" };
+
+    static ALObjectPtr Feval_string(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(obj));
+        auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
 
 
-    return eval->eval_string(str->to_string());
-}
+        return eval->eval_string(str->to_string());
+    }
+};
 
-ALObjectPtr Feval_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct Seval_file
 {
-    AL_CHECK(assert_size<1>(obj));
-    auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
+    inline static const std::string name = "eval-file";
+
+    inline static const std::string doc{ R"((eval-file FILE)
+
+Execute the file `FILE` as a alisp-script in the current
+environment. `FILE` should be a valid path
+)" };
+
+    static ALObjectPtr Feval_file(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(obj));
+        auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
 
 
-    return eval->eval_file(str->to_string());
-}
+        return eval->eval_file(str->to_string());
+    }
+};
 
 
 }  // namespace alisp

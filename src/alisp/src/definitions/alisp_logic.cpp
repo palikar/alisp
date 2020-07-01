@@ -34,37 +34,70 @@ namespace alisp
 {
 
 
-ALObjectPtr Fand(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+struct Sand
 {
-    for (auto el : *obj)
+    inline static const std::string name = "and";
+
+    inline static const std::string doc{ R"((and [[VALUE]...])
+
+Return `t` if all of the arguments evaluates to a truthy
+value. The arguments are lazily evaluated.
+)" };
+
+    static ALObjectPtr Fand(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
     {
-        if (is_falsy(evl->eval(el)))
+        for (auto el : *obj)
         {
-            return Qnil;
+            if (is_falsy(evl->eval(el)))
+            {
+                return Qnil;
+            }
         }
+        return Qt;
     }
-    return Qt;
-}
+};
 
-ALObjectPtr For(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+struct Sor
 {
-    for (auto el : *obj)
+    inline static const std::string name = "or";
+
+    inline static const std::string doc{ R"((or [[VALUE]...])
+
+Return `t` if at least one of the arguments evaluates to a truthy
+value. The arguments are lazily evaluated.
+
+)" };
+
+    static ALObjectPtr For(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
     {
-        if (is_truthy(evl->eval(el)))
+        for (auto el : *obj)
         {
-            return Qt;
+            if (is_truthy(evl->eval(el)))
+            {
+                return Qt;
+            }
         }
+        return Qnil;
     }
-    return Qnil;
-}
+};
 
-ALObjectPtr Fnot(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+struct Snot
 {
-    AL_CHECK(assert_size<1>(obj));
+    inline static const std::string name = "no";
 
-    bool sum = is_truthy(evl->eval(obj->i(0)));
-    return !sum ? Qt : Qnil;
-}
+    inline static const std::string doc{ R"((not FORM)
+
+Return `t` if FORM evaluate to a falsey value and `nil` otherwise. 
+)" };
+
+    static ALObjectPtr Fnot(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
+    {
+        AL_CHECK(assert_size<1>(obj));
+
+        bool sum = is_truthy(evl->eval(obj->i(0)));
+        return !sum ? Qt : Qnil;
+    }
+};
 
 
 }  // namespace alisp

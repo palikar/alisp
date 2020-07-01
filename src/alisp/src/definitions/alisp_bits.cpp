@@ -35,52 +35,111 @@
 namespace alisp
 {
 
-ALObjectPtr Fleftshift(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct Sleftshift
 {
-    AL_CHECK(assert_size<2>(obj));
-    auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
-    auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
-    return make_int(SHIFT_LEFT(lhs, rhs));
-}
+    inline static const std::string name = "<<";
 
-ALObjectPtr Frightshift(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<2>(obj));
-    auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
-    auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
+    inline static const std::string doc{ R"((<< VALUE1 VALUE2)
 
-    return make_int(SHIFT_RIGHT(lhs, rhs));
-}
-ALObjectPtr Fbit_or(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<2>(obj));
-    auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
-    auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
-    return make_int(BIT_OR(lhs, rhs));
-}
+Shift the bits of `VALUE` to the left `VALUE2` times.
 
-ALObjectPtr Fbit_and(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<2>(obj));
-    auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
-    auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
-    return make_int(BIT_AND(lhs, rhs));
-}
+Example:
+```elisp
+(>> 16 2)   ;  4
+```
+)" };
 
-ALObjectPtr Fbit_xor(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<2>(obj));
-    auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
-    auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
-    return make_int(BIT_XOR(lhs, rhs));
-}
+    static ALObjectPtr Fleftshift(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<2>(obj));
+        auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
+        auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
+        return make_int(SHIFT_LEFT(lhs, rhs));
+    }
+};
 
-ALObjectPtr Fbit_inv(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct Srightshift
 {
-    AL_CHECK(assert_size<1>(obj));
-    auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
-    return make_int(BIT_INV(lhs));
-}
+    inline static const std::string name = ">>";
+
+    inline static const std::string doc{ R"((>> VALUE1 VALU2)
+
+Shift the bits of `VALUE` to the right `VALUE2` times.
+
+Example:
+```elisp
+(<< 2 2)   ;  8
+```
+)" };
+
+    static ALObjectPtr Frightshift(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<2>(obj));
+        auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
+        auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
+
+        return make_int(SHIFT_RIGHT(lhs, rhs));
+    }
+};
+
+struct Sbit_or
+{
+    inline static const std::string name = "or*";
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr bit_or(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<2>(obj));
+        auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
+        auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
+        return make_int(BIT_OR(lhs, rhs));
+    }
+};
+
+struct Sbit_and
+{
+    inline static const std::string name = "and*";
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr Fbit_and(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<2>(obj));
+        auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
+        auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
+        return make_int(BIT_AND(lhs, rhs));
+    }
+};
+
+struct Sbit_xor
+{
+    inline static const std::string name = "xor*";
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr Fbit_xor(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<2>(obj));
+        auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
+        auto rhs = eval_check(eval, obj, 1, &assert_int<size_t>);
+        return make_int(BIT_XOR(lhs, rhs));
+    }
+};
+
+struct Sbit_inv
+{
+    inline static const std::string name = "inv*";
+
+    inline static const std::string doc{ R"()" };
+
+    static ALObjectPtr Fbit_inv(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(obj));
+        auto lhs = eval_check(eval, obj, 0, &assert_int<size_t>);
+        return make_int(BIT_INV(lhs));
+    }
+};
 
 
 }  // namespace alisp

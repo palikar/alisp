@@ -121,7 +121,7 @@ struct request
 {
     inline static const std::string name{ "request" };
 
-    inline static const Signature signature{String{}, List{}};
+    inline static const Signature signature{ String{}, List{} };
 
     inline static const std::string doc{ R"()" };
 
@@ -299,7 +299,7 @@ struct body
 {
     inline static const std::string name{ "body" };
 
-    inline static const Signature signature{List{}};
+    inline static const Signature signature{ List{} };
 
     inline static const std::string doc{ R"()" };
 
@@ -319,7 +319,7 @@ struct status_code
 {
     inline static const std::string name{ "status-code" };
 
-    inline static const Signature signature{List{}};
+    inline static const Signature signature{ List{} };
 
     inline static const std::string doc{ R"()" };
 
@@ -339,7 +339,7 @@ struct headers
 {
     inline static const std::string name{ "headers" };
 
-    inline static const Signature signature{List{}};
+    inline static const Signature signature{ List{} };
 
     inline static const std::string doc{ R"()" };
 
@@ -359,7 +359,7 @@ struct url
 {
     inline static const std::string name{ "url" };
 
-    inline static const Signature signature{List{}};
+    inline static const Signature signature{ List{} };
 
     inline static const std::string doc{ R"()" };
 
@@ -379,7 +379,7 @@ struct elapsed
 {
     inline static const std::string name{ "elapsed" };
 
-    inline static const Signature signature{List{}};
+    inline static const Signature signature{ List{} };
 
     inline static const std::string doc{ R"()" };
 
@@ -399,7 +399,7 @@ struct cookies
 {
     inline static const std::string name{ "cookies" };
 
-    inline static const Signature signature{List{}};
+    inline static const Signature signature{ List{} };
 
     inline static const std::string doc{ R"()" };
 

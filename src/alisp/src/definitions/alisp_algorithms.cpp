@@ -27,145 +27,241 @@ namespace alisp
 {
 
 
-ALObjectPtr Fslice(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct Sslice
 {
-    AL_CHECK(assert_min_size<2>(obj));
+    inline static const std::string name = "slice";
 
-    auto list  = eval_check(eval, obj, 0, &assert_list<size_t>);
-    auto ind_1 = eval_check(eval, obj, 1, &assert_int<size_t>);
+    inline static const std::string doc{ R"((slice LIST FROM TO)
 
-    const size_t start = static_cast<size_t>(ind_1->to_int());
+Select a subsection of the list `LIST` and return a new list with the
+elements of the subsection.
 
-    size_t end = list->children().size();
-    if (std::size(*obj) == 3)
+Example:
+```elisp
+(slice '(10 20 30  40 50 60 70 80 90) 1 5) 
+```
+)" };
+
+    static ALObjectPtr Fslice(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        auto ind_2 = eval_check(eval, obj, 2, &assert_int<size_t>);
-        end        = static_cast<size_t>(ind_2->to_int());
-    }
+        AL_CHECK(assert_min_size<2>(obj));
 
-    ALObject::list_type new_list{};
+        auto list  = eval_check(eval, obj, 0, &assert_list<size_t>);
+        auto ind_1 = eval_check(eval, obj, 1, &assert_int<size_t>);
 
-    auto &child = list->children();
-    for (auto i = start; i < end; ++i)
-    {
-        new_list.push_back(child[i]);
-    }
+        const size_t start = static_cast<size_t>(ind_1->to_int());
 
-    return make_object(new_list);
-}
-
-ALObjectPtr Fsort(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(obj));
-
-    auto list = eval_check(eval, obj, 0, &assert_list<size_t>);
-
-    std::sort(std::begin(*list), std::end(*list), [&](auto &obj_1, auto &obj_2) {
-        return obj_1->to_real() < obj_2->to_real();
-    });
-
-    return list;
-}
-
-ALObjectPtr Freverse(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(obj));
-
-    auto list = eval_check(eval, obj, 0, &assert_list<size_t>);
-
-    ALObject::list_type new_list;
-    std::reverse_copy(std::begin(*list), std::end(*list), std::back_inserter(new_list));
-
-    return make_list(new_list);
-}
-
-ALObjectPtr Fzip(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_min_size<2>(obj));
-
-    auto eval_list = eval_transform(eval, obj);
-    ALObject::list_type new_list{};
-    size_t min_size = eval_list->i(0)->children().size();
-    for (auto &l : *eval_list)
-    {
-        auto curr_size = std::size(l->children());
-        if (curr_size < min_size)
+        size_t end = list->children().size();
+        if (std::size(*obj) == 3)
         {
-            min_size = curr_size;
-        }
-    }
-
-    for (size_t i = 0; i < min_size; ++i)
-    {
-        ALObject::list_type next_tuple{};
-
-        for (auto &el : *eval_list)
-        {
-            next_tuple.push_back(el->children()[i]);
+            auto ind_2 = eval_check(eval, obj, 2, &assert_int<size_t>);
+            end        = static_cast<size_t>(ind_2->to_int());
         }
 
-        new_list.push_back(make_object(next_tuple));
-    }
+        ALObject::list_type new_list{};
 
-    return make_object(new_list);
-}
-
-ALObjectPtr Ffilter(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<2>(obj));
-
-    auto fun_obj = eval_check(eval, obj, 0, &assert_function<size_t>);
-    auto list    = eval_check(eval, obj, 1, &assert_list<size_t>);
-
-    ALObject::list_type new_list{};
-    for (auto &el : *list)
-    {
-        if (is_truthy(eval->eval_callable(fun_obj, make_list(el))))
+        auto &child = list->children();
+        for (auto i = start; i < end; ++i)
         {
-            new_list.push_back(el);
+            new_list.push_back(child[i]);
         }
+
+        return make_object(new_list);
     }
+};
 
-    return make_object(new_list);
-}
-
-ALObjectPtr Fany(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct Ssort
 {
-    AL_CHECK(assert_size<2>(obj));
+    inline static const std::string name = "sort";
 
-    auto list    = eval_check(eval, obj, 1, &assert_list<size_t>);
-    auto fun_obj = eval_check(eval, obj, 0, &assert_function<size_t>);
+    inline static const std::string doc{ R"(((sort LIST)
 
+Sort the elements of `LIST` in ascending order. This function will
+change LIST and won't generate a new object.
 
-    for (auto &el : *list)
+Example:
+```elisp
+(sort '(20 12 2 43 56 10 68 30))
+```
+))" };
+
+    static ALObjectPtr Fsort(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        if (is_truthy(eval->eval_callable(fun_obj, make_list(el))))
-        {
-            return Qt;
-        }
+        AL_CHECK(assert_size<1>(obj));
+
+        auto list = eval_check(eval, obj, 0, &assert_list<size_t>);
+
+        std::sort(std::begin(*list), std::end(*list), [&](auto &obj_1, auto &obj_2) {
+            return obj_1->to_real() < obj_2->to_real();
+        });
+
+        return list;
     }
+};
 
-    return Qnil;
-}
-
-ALObjectPtr Fall(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct Sreverse
 {
-    AL_CHECK(assert_size<2>(obj));
+    inline static const std::string name = "reverse";
 
-    auto fun_obj = eval_check(eval, obj, 0, &assert_function<size_t>);
-    auto list    = eval_check(eval, obj, 1, &assert_list<size_t>);
+    inline static const std::string doc{ R"((reverse LIST)
 
+Return a new list with the elements of LIST in revese order.
 
-    for (auto &el : *list)
+Example:
+```elisp
+(reverse '(1 2 3 4 5)) 
+```
+)" };
+
+    static ALObjectPtr Freverse(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        if (is_falsy(eval->eval_callable(fun_obj, make_list(el))))
-        {
-            return Qnil;
-        }
-    }
+        AL_CHECK(assert_size<1>(obj));
 
-    return Qt;
-}
+        auto list = eval_check(eval, obj, 0, &assert_list<size_t>);
+
+        ALObject::list_type new_list;
+        std::reverse_copy(std::begin(*list), std::end(*list), std::back_inserter(new_list));
+
+        return make_list(new_list);
+    }
+};
+
+struct Szip
+{
+    inline static const std::string name = "zip";
+
+    inline static const std::string doc{ R"((zip [[LIST] ...])
+
+Take mutliple lists and build pairs of their elements at corresponding
+positions. The pairs are put into a new list and this list is
+returned.
+)" };
+
+    static ALObjectPtr Fzip(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_min_size<2>(obj));
+
+        auto eval_list = eval_transform(eval, obj);
+        ALObject::list_type new_list{};
+        size_t min_size = eval_list->i(0)->children().size();
+        for (auto &l : *eval_list)
+        {
+            auto curr_size = std::size(l->children());
+            if (curr_size < min_size)
+            {
+                min_size = curr_size;
+            }
+        }
+
+        for (size_t i = 0; i < min_size; ++i)
+        {
+            ALObject::list_type next_tuple{};
+
+            for (auto &el : *eval_list)
+            {
+                next_tuple.push_back(el->children()[i]);
+            }
+
+            new_list.push_back(make_object(next_tuple));
+        }
+
+        return make_object(new_list);
+    }
+};
+
+struct Sfilter
+{
+    inline static const std::string name = "filter";
+
+    inline static const std::string doc{ R"((filter PREDICATE LIST)
+
+Collect the elements of `LIST` that fullfil the predicate `PREDICATE`
+and return a new list of them.
+)" };
+
+    static ALObjectPtr Ffilter(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<2>(obj));
+
+        auto fun_obj = eval_check(eval, obj, 0, &assert_function<size_t>);
+        auto list    = eval_check(eval, obj, 1, &assert_list<size_t>);
+
+        ALObject::list_type new_list{};
+        for (auto &el : *list)
+        {
+            if (is_truthy(eval->eval_callable(fun_obj, make_list(el))))
+            {
+                new_list.push_back(el);
+            }
+        }
+
+        return make_object(new_list);
+    }
+};
+
+struct Sany
+{
+    inline static const std::string name = "any";
+
+    inline static const std::string doc{ R"((reverse LIST)
+
+Return a new list with the elements of LIST in revese order.
+
+Example:
+```elisp
+(reverse '(1 2 3 4 5)) 
+```
+)" };
+
+    static ALObjectPtr Fany(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<2>(obj));
+
+        auto list    = eval_check(eval, obj, 1, &assert_list<size_t>);
+        auto fun_obj = eval_check(eval, obj, 0, &assert_function<size_t>);
+
+
+        for (auto &el : *list)
+        {
+            if (is_truthy(eval->eval_callable(fun_obj, make_list(el))))
+            {
+                return Qt;
+            }
+        }
+
+        return Qnil;
+    }
+};
+
+struct Sall
+{
+    inline static const std::string name = "all";
+
+    inline static const std::string doc{ R"((all PREDICATE LIST)
+
+Return `t` if all elements in `LIST` fulfull the predicate
+`PREDICATE`. Return `nil` otherwise.
+)" };
+
+    static ALObjectPtr Fall(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<2>(obj));
+
+        auto fun_obj = eval_check(eval, obj, 0, &assert_function<size_t>);
+        auto list    = eval_check(eval, obj, 1, &assert_list<size_t>);
+
+
+        for (auto &el : *list)
+        {
+            if (is_falsy(eval->eval_callable(fun_obj, make_list(el))))
+            {
+                return Qnil;
+            }
+        }
+
+        return Qt;
+    }
+};
 
 
 }  // namespace alisp

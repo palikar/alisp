@@ -144,7 +144,7 @@ Check if the character CHAR is a letter.
 DEFUN(char_isdigit, "char-isdigit", R"((char-isdigit CHAR)
 
 Check if the character CHAR is a digit.
-)");
+e)");
 
 
 DEFVAR(Qstrings_all,
