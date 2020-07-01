@@ -95,307 +95,497 @@ inline constexpr auto separator = "/";
 #endif
 
 
-ALObjectPtr Froot(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+struct root
 {
-    namespace fs = std::filesystem;
-    AL_CHECK(assert_size<0>(t_obj));
+    inline static const std::string name{"f-root"};
+    
+    inline static const std::string doc{R"((f-root)
 
-    try
+Return absolute root.
+)"};
+
+    
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     {
-        return make_string(fs::current_path().root_path());
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-    return Qnil;
-}
+        namespace fs = std::filesystem;
+        AL_CHECK(assert_size<0>(t_obj));
 
-ALObjectPtr Fdirectories(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace fs = std::filesystem;
-
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-
-    ALObject::list_type entries;
-
-    try
-    {
-        for (auto &entr : fs::directory_iterator(path->to_string()))
+        try
         {
-            if (!entr.is_directory())
-            {
-                continue;
-            }
-            entries.push_back(make_string(entr.path().string()));
+            return make_string(fs::current_path().root_path());
         }
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-
-    return make_object(entries);
-}
-
-ALObjectPtr Fentries(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace fs = std::filesystem;
-
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-
-    ALObject::list_type entries;
-
-    try
-    {
-        for (auto &entr : fs::directory_iterator(path->to_string()))
+        catch (fs::filesystem_error &exc)
         {
-            entries.push_back(make_string(entr.path().string()));
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
         }
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
         return Qnil;
     }
 
-    return make_object(entries);
-}
+};
 
-ALObjectPtr Fglob(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+struct directories
 {
-    namespace fs = std::filesystem;
+    inline static const std::string name{"f-directories"};
 
-    AL_CHECK(assert_min_size<2>(t_obj));
-    auto pattern = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(pattern));
+    inline static const std::string doc{R"((f-directories PATH)
 
-    if (std::size(*t_obj) > 1)
+Find all directories in `PATH`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        auto path = eval->eval(t_obj->i(1));
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
         AL_CHECK(assert_string(path));
-        return make_list(glob(path->to_string() + fs::path::preferred_separator + pattern->to_string()));
-    }
 
-    return make_list(glob(pattern->to_string()));
-}
+        ALObject::list_type entries;
 
-ALObjectPtr Ftouch(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-
-    std::fstream fs;
-    fs.open(path->to_string(), std::ios::out | std::ios::app);
-    if (!fs.is_open())
-    {
-        return Qnil;
-    }
-    fs.close();
-
-    return Qt;
-}
-
-ALObjectPtr Fexpand_user(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-
-    return make_string(expand_user(path->to_string()));
-}
-
-ALObjectPtr Fcopy(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace fs = std::filesystem;
-
-    AL_CHECK(assert_size<2>(t_obj));
-
-    auto source = eval->eval(t_obj->i(0));
-    auto target = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(source));
-    AL_CHECK(assert_string(target));
-
-    try
-    {
-        fs::copy(source->to_string(), target->to_string());
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-
-    return Qt;
-}
-
-ALObjectPtr Fmove(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace fs = std::filesystem;
-
-    AL_CHECK(assert_size<2>(t_obj));
-
-    auto source = eval->eval(t_obj->i(0));
-    auto target = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(source));
-    AL_CHECK(assert_string(target));
-
-
-    try
-    {
-        fs::rename(source->to_string(), target->to_string());
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-
-
-    return Qt;
-}
-
-ALObjectPtr Fmake_symlink(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace fs = std::filesystem;
-
-    AL_CHECK(assert_size<2>(t_obj));
-
-    auto link   = eval->eval(t_obj->i(0));
-    auto target = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(link));
-    AL_CHECK(assert_string(target));
-
-
-    try
-    {
-        fs::create_symlink(target->to_string(), link->to_string());
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-
-
-    return Qt;
-}
-
-ALObjectPtr Fdelete(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace fs = std::filesystem;
-
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-
-    try
-    {
-        if (std::size(*t_obj) > 1 and is_truthy(eval->eval(t_obj->i(1))))
+        try
         {
+            for (auto &entr : fs::directory_iterator(path->to_string()))
+            {
+                if (!entr.is_directory())
+                {
+                    continue;
+                }
+                entries.push_back(make_string(entr.path().string()));
+            }
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
 
-            bool val = fs::remove_all(path->to_string());
+        return make_object(entries);
+    }
+
+};
+
+struct entries
+{
+
+    inline static const std::string name{"f-entries"};
+
+    inline static const std::string doc{R"((f-entries PATH)
+
+Find all files and directories in `PATH`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+        ALObject::list_type entries;
+
+        try
+        {
+            for (auto &entr : fs::directory_iterator(path->to_string()))
+            {
+                entries.push_back(make_string(entr.path().string()));
+            }
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
+
+        return make_object(entries);
+    }
+
+};
+
+struct glob
+{
+
+    inline static const std::string name{"f-glob"};
+
+    inline static const std::string doc{R"((f-glob PATTERN PATH)
+
+Find `PATTERN` in `PATH`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_min_size<2>(t_obj));
+        auto pattern = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(pattern));
+
+        if (std::size(*t_obj) > 1)
+        {
+            auto path = eval->eval(t_obj->i(1));
+            AL_CHECK(assert_string(path));
+            return make_list(glob(path->to_string() + fs::path::preferred_separator + pattern->to_string()));
+        }
+
+        return make_list(glob(pattern->to_string()));
+    }
+
+};
+
+struct touch
+{
+
+    inline static const std::string name{"f-touch"};
+
+    inline static const std::string doc{R"((f-touch PATH)
+
+Update `PATH` last modification date or create if it does not exist.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+        std::fstream fs;
+        fs.open(path->to_string(), std::ios::out | std::ios::app);
+        if (!fs.is_open())
+        {
+            return Qnil;
+        }
+        fs.close();
+
+        return Qt;
+    }
+
+};
+
+struct expand_user
+{
+    inline static const std::string name{"f-expand-user"};
+
+    inline static const std::string doc{R"((f-expand-user PATH)
+
+For unix systems, expand `~` to the location of the home directory of
+the current user.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+        return make_string(expand_user(path->to_string()));
+    }
+
+};
+
+struct copy
+{
+
+    inline static const std::string name{"f-copy"};
+
+    inline static const std::string doc{R"((f-copy FROM TO)
+
+Copy file or directory `FROM` to `TO`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<2>(t_obj));
+
+        auto source = eval->eval(t_obj->i(0));
+        auto target = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(source));
+        AL_CHECK(assert_string(target));
+
+        try
+        {
+            fs::copy(source->to_string(), target->to_string());
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
+
+        return Qt;
+    }
+
+};
+
+struct move
+{
+
+    inline static const std::string name{"f-move"};
+
+    inline static const std::string doc{R"((f-move FROM TO)
+
+Move or rename `FROM` to `TO`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<2>(t_obj));
+
+        auto source = eval->eval(t_obj->i(0));
+        auto target = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(source));
+        AL_CHECK(assert_string(target));
+
+
+        try
+        {
+            fs::rename(source->to_string(), target->to_string());
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
+
+
+        return Qt;
+    }
+
+};
+
+struct make_symlink
+{
+
+    inline static const std::string name{"f-make-symlink"};
+
+    
+    inline static const std::string doc{R"((f-make-symlink SOURCE PATH)
+
+Create a symlink to `SOURCE` from `PATH`.
+)"};
+
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<2>(t_obj));
+
+        auto link   = eval->eval(t_obj->i(0));
+        auto target = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(link));
+        AL_CHECK(assert_string(target));
+
+
+        try
+        {
+            fs::create_symlink(target->to_string(), link->to_string());
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
+
+
+        return Qt;
+    }
+
+};
+
+struct Sdelete
+{
+
+    inline static const std::string name{"f-delete"};
+
+    inline static const std::string doc{R"((f-delete PATH)
+
+Delete `PATH`, which can be file or directory.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+        try
+        {
+            if (std::size(*t_obj) > 1 and is_truthy(eval->eval(t_obj->i(1))))
+            {
+
+                bool val = fs::remove_all(path->to_string());
+                return val ? Qt : Qnil;
+            }
+            else
+            {
+                bool val = fs::remove(path->to_string());
+                return val ? Qt : Qnil;
+            }
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
+    }
+
+};
+
+struct mkdir
+{
+    
+    
+    inline static const std::string name{"f-mkdir"};
+
+    inline static const std::string doc{R"((f-mkdir DIR)
+
+Create the directory `DIR`.
+)"};
+    
+    
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+        try
+        {
+            bool val = fs::create_directory(path->to_string());
             return val ? Qt : Qnil;
         }
-        else
+        catch (fs::filesystem_error &exc)
         {
-            bool val = fs::remove(path->to_string());
-            return val ? Qt : Qnil;
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
         }
     }
-    catch (fs::filesystem_error &exc)
+
+};
+
+struct with_temp_file
+{
+
+    inline static const std::string name{"f-with-temp-file"};
+
+    inline static const std::string doc{R"((f-temp-file PATH)
+
+Return a resource object ot a temporary file. The file is created and
+the object can be used for writing to the file.
+)"};
+
+    inline static const std::string doc{R"((f-with-temp-file FILE-SYM BODY)
+
+Bind `FILE-SYM` and execute the forms in `BODY`. `FILE-SYM` will point
+to a valid file resource of a temporary file.
+)"};
+    
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *env, eval::Evaluator *eval)
     {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_min_size<1>(t_obj));
+        auto sym = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_symbol(sym));
+
+        auto path = FileHelpers::temp_file_path();
+        auto id   = FileHelpers::put_file(path, std::fstream(path, std::ios::out), false, true);
+
+        env::detail::ScopePushPop scope{ *env };
+        env->put(sym, id);
+
+        auto res = eval_list(eval, t_obj, 1);
+        FileHelpers::close_file(id);
+        fs::remove(path);
+        return res;
     }
-}
 
-ALObjectPtr Fmkdir(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct temp_file_name
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
+    inline static const std::string name{"f-temp-file-name"};
 
-    try
+    inline static const std::string name{R"((f-temp-file-name PATH)
+
+Return a path to a temporary file. The file is not created but the
+path will be valid for a temporary file.
+)"};
+    
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     {
-        bool val = fs::create_directory(path->to_string());
-        return val ? Qt : Qnil;
+        AL_CHECK(assert_size<0>(t_obj));
+        return make_string(FileHelpers::temp_file_path());
     }
-    catch (fs::filesystem_error &exc)
+
+};
+
+struct temp_file
+{
+    inline static const std::string name{"f-temp-file"};
+
+    inline static const std::string doc{R"((f-temp-file PATH)
+
+Return a resource object ot a temporary file. The file is created and
+the object can be used for writing to the file.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
+        AL_CHECK(assert_size<0>(t_obj));
+        auto path = FileHelpers::temp_file_path();
+        return FileHelpers::put_file(path, std::fstream(path, std::ios::out), false, true);
     }
-}
 
-ALObjectPtr Fwith_temp_file(const ALObjectPtr &t_obj, env::Environment *env, eval::Evaluator *eval)
+};
+
+struct read_bytes
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_min_size<1>(t_obj));
-    auto sym = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_symbol(sym));
+    inline static const std::string name{"f-read-bytes"};
 
-    auto path = FileHelpers::temp_file_path();
-    auto id   = FileHelpers::put_file(path, std::fstream(path, std::ios::out), false, true);
+    inline static const std::string doc{R"((f-read-bytes PATH)
 
-    env::detail::ScopePushPop scope{ *env };
-    env->put(sym, id);
+Read binary data from `PATH`. Return the binary data as byte array.
+)"};
 
-    auto res = eval_list(eval, t_obj, 1);
-    FileHelpers::close_file(id);
-    fs::remove(path);
-    return res;
-}
-
-ALObjectPtr Ftemp_file_name(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
-{
-    AL_CHECK(assert_size<0>(t_obj));
-    return make_string(FileHelpers::temp_file_path());
-}
-
-ALObjectPtr Ftemp_file(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
-{
-    AL_CHECK(assert_size<0>(t_obj));
-    auto path = FileHelpers::temp_file_path();
-    return FileHelpers::put_file(path, std::fstream(path, std::ios::out), false, true);
-}
-
-ALObjectPtr Fread_bytes(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
     namespace fs = std::filesystem;
 
     AL_CHECK(assert_size<1>(t_obj));
@@ -434,7 +624,18 @@ ALObjectPtr Fread_bytes(const ALObjectPtr &t_obj, env::Environment *, eval::Eval
     return make_object(bytes);
 }
 
-ALObjectPtr Fread_text(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct read_text
+{
+
+    inline static const std::string name{"f-read-text"};
+    inline static const std::string doc{R"((f-read-text PATH)
+
+Read the text from the file `PATH` and return the contatns as a string.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -455,100 +656,149 @@ ALObjectPtr Fread_text(const ALObjectPtr &t_obj, env::Environment *, eval::Evalu
     return make_string(utility::load_file(path->to_string()));
 }
 
-ALObjectPtr Fwrite_text(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct write_text
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<2>(t_obj));
+    inline static const std::string name{"f-write-text"};
 
-    auto path = eval->eval(t_obj->i(0));
-    auto text = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(path));
-    AL_CHECK(assert_string(text));
+    inline static const std::string doc{R"((f-write-text PATH TEXT)
 
+Write `TEXT` to the file pointed by `PATH`. Previous content is erased.
+)"};
 
-    if (!fs::exists(path->to_string()))
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        return Qnil;
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<2>(t_obj));
+
+        auto path = eval->eval(t_obj->i(0));
+        auto text = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(path));
+        AL_CHECK(assert_string(text));
+
+
+        if (!fs::exists(path->to_string()))
+        {
+            return Qnil;
+        }
+        if (!fs::is_regular_file(path->to_string()))
+        {
+            return Qnil;
+        }
+
+        std::ofstream outfile;
+        outfile.open(path->to_string(), std::ios_base::out);
+        outfile << text->to_string();
+        outfile.close();
+
+        return Qt;
     }
-    if (!fs::is_regular_file(path->to_string()))
-    {
-        return Qnil;
-    }
 
-    std::ofstream outfile;
-    outfile.open(path->to_string(), std::ios_base::out);
-    outfile << text->to_string();
-    outfile.close();
+};
 
-    return Qt;
-}
-
-ALObjectPtr Fwrite_bytes(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+struct write_bytes
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<2>(t_obj));
+    inline static const std::string name{"f-write-bytes"};
 
-    auto path  = eval->eval(t_obj->i(0));
-    auto bytes = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(path));
-    AL_CHECK(assert_byte_array(bytes));
+    inline static const std::string doc{R"((f-write-bytes PATH BYTES)
 
-    if (!fs::exists(path->to_string()))
+Write the bytes `BYTES` to the file pointed by `PATH`. Previous content is erased.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        return Qnil;
-    }
-    if (!fs::is_regular_file(path->to_string()))
-    {
-        return Qnil;
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<2>(t_obj));
+
+        auto path  = eval->eval(t_obj->i(0));
+        auto bytes = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(path));
+        AL_CHECK(assert_byte_array(bytes));
+
+        if (!fs::exists(path->to_string()))
+        {
+            return Qnil;
+        }
+        if (!fs::is_regular_file(path->to_string()))
+        {
+            return Qnil;
+        }
+
+        std::ofstream outfile;
+        outfile.open(path->to_string(), std::ios_base::out | std::ios_base::binary);
+        if (outfile.is_open())
+        {
+            return Qnil;
+        }
+        for (auto &b : *bytes)
+        {
+            outfile.put(static_cast<char>(b->to_int()));
+        }
+        outfile.close();
+
+        return Qt;
     }
 
-    std::ofstream outfile;
-    outfile.open(path->to_string(), std::ios_base::out | std::ios_base::binary);
-    if (outfile.is_open())
-    {
-        return Qnil;
-    }
-    for (auto &b : *bytes)
-    {
-        outfile.put(static_cast<char>(b->to_int()));
-    }
-    outfile.close();
+};
 
-    return Qt;
-}
-
-ALObjectPtr Fappend_text(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+struct append_text
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<2>(t_obj));
+    inline static const std::string name{"f-append-text"};
 
-    auto path = eval->eval(t_obj->i(0));
-    auto text = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(path));
-    AL_CHECK(assert_string(text));
+    inline static const std::string doc{R"((f-append-text PATH TEXT)
 
+Append `TEXT` to the file pointed by `PATH`. This function does not
+erase the prevous contents of the file.  )"};
 
-    if (!fs::exists(path->to_string()))
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        return Qnil;
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<2>(t_obj));
+
+        auto path = eval->eval(t_obj->i(0));
+        auto text = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(path));
+        AL_CHECK(assert_string(text));
+
+
+        if (!fs::exists(path->to_string()))
+        {
+            return Qnil;
+        }
+        if (!fs::is_regular_file(path->to_string()))
+        {
+            return Qnil;
+        }
+
+        std::ofstream outfile;
+        outfile.open(path->to_string(), std::ios_base::app);
+        outfile << text->to_string();
+        outfile.close();
+
+        return Qt;
     }
-    if (!fs::is_regular_file(path->to_string()))
-    {
-        return Qnil;
-    }
 
-    std::ofstream outfile;
-    outfile.open(path->to_string(), std::ios_base::app);
-    outfile << text->to_string();
-    outfile.close();
+};
 
-    return Qt;
-}
+struct append_bytes
+{
 
-ALObjectPtr Fappend_bytes(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    inline static const std::string name{"f-append-bytes"};
+
+    inline static const std::string doc{R"((f-append-bytes PATH BYTES)
+
+Append the bytes `BYTES` to the file pointed by `PATH`. This function does not
+erase the prevous contents of the file.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -583,7 +833,19 @@ ALObjectPtr Fappend_bytes(const ALObjectPtr &t_obj, env::Environment *, eval::Ev
     return Qt;
 }
 
-ALObjectPtr Fjoin(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct join
+{
+
+    inline static const std::string name{"f-join"};
+
+    inline static const std::string doc{R"((f-join [ARGS] ...)
+
+Join `ARGS` to a single path.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -603,100 +865,170 @@ ALObjectPtr Fjoin(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
     return make_string(path.string());
 }
 
-ALObjectPtr Fsplit(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace fs = std::filesystem;
+};
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
+struct split
+{
+
+    inline static const std::string name{"f-split"};
+
+    inline static const std::string doc{R"((f-split PATH)
+
+Split `PATH` and return list containing parts.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
 
     auto parts = utility::split(path->to_string(), fs::path::preferred_separator);
 
     return make_list(parts);
 }
 
-ALObjectPtr Fexpand(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct expand
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
+    inline static const std::string name{"f-expand"};
 
-    try
+    inline static const std::string doc{R"((f-expand PATH DIR)
+
+Expand `PATH` relative to `DIR`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        const auto p = fs::absolute(path->to_string());
-        return make_string(p);
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+        try
+        {
+            const auto p = fs::absolute(path->to_string());
+            return make_string(p);
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
     }
-    catch (fs::filesystem_error &exc)
+
+};
+
+struct filename
+{
+
+    inline static const std::string name{"f-filename"};
+
+    inline static const std::string doc{R"((f-filename PATH)
+
+Return the name of `PATH`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+
+        try
+        {
+            const auto p = fs::path(path->to_string());
+            return make_string(p.filename());
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
+    }
+
+};
+
+struct dirname
+{
+
+    inline static const std::string name{"f-dirname"};
+
+    inline static const std::string doc{R"((f-dirname PATH)
+
+Return the parent directory to `PATH`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+
+        try
+        {
+            const auto p = fs::path(path->to_string());
+            return make_string(p.parent_path());
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
+    }
+
+};
+
+struct common_parent
+{
+    inline static const std::string name{"f-common-parent"};
+
+    inline static const std::string doc{R"((f-common-parent [PATHS] ...)
+
+Return the deepest common parent directory of `PATHS`.
+)"};
+    
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
         return Qnil;
     }
-}
 
-ALObjectPtr Ffilename(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct ext
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
+    inline static const std::string name{"f-ext"};
 
+inline static const std::string doc{R"((f-ext PATH)
 
-    try
-    {
-        const auto p = fs::path(path->to_string());
-        return make_string(p.filename());
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-}
+)"};
 
-ALObjectPtr Fdirname(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace fs = std::filesystem;
-
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-
-
-    try
-    {
-        const auto p = fs::path(path->to_string());
-        return make_string(p.parent_path());
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-}
-
-ALObjectPtr Fcommon_parent(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-
-    return Qnil;
-}
-
-ALObjectPtr Fext(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -719,55 +1051,91 @@ ALObjectPtr Fext(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *
     }
 }
 
-ALObjectPtr Fno_ext(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct no_ext
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
+    inline static const std::string name{"f-no-ext"};
 
-    try
+    inline static const std::string doc{R"((f-no-ext PATH)
+
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        const auto p = fs::path(path->to_string());
-        return make_string(p.stem());
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-}
+        namespace fs = std::filesystem;
 
-ALObjectPtr Fswap_ext(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+        try
+        {
+            const auto p = fs::path(path->to_string());
+            return make_string(p.stem());
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
+    }
+
+};
+
+struct swap_ext
 {
-    namespace fs = std::filesystem;
+    inline static const std::string name{"f-swap-ext"};
 
-    AL_CHECK(assert_size<2>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    auto ext  = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(path));
-    AL_CHECK(assert_string(ext));
+    inline static const std::string doc{R"((f-swap-ext PATH)
 
-    try
+Return the file extension of `PATH`. The extension, in a file name, is
+the part that follows the last ’.’, excluding version numbers and
+backup suffixes.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        const auto p = fs::path(path->to_string());
-        return make_string(p.stem().string() + "." + ext->to_string());
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-}
+        namespace fs = std::filesystem;
 
-ALObjectPtr Fbase(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+        AL_CHECK(assert_size<2>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        auto ext  = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(path));
+        AL_CHECK(assert_string(ext));
+
+        try
+        {
+            const auto p = fs::path(path->to_string());
+            return make_string(p.stem().string() + "." + ext->to_string());
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
+    }
+
+};
+
+struct base
+{
+
+    inline static const std::string name{"f-base"};
+
+    inline static const std::string doc{R"((f-base PATH)
+
+Return the name of `PATH`, excluding the extension of file.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -786,124 +1154,204 @@ ALObjectPtr Fbase(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
     return make_string(p.stem().filename());
 }
 
-ALObjectPtr Frelative(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct relative
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_min_size<2>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
+    inline static const std::string name{"f-relative"};
 
-    const auto p = fs::path(path->to_string());
+    inline static const std::string doc{R"((f-relative PATH)
 
-    try
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        if (std::size(*t_obj) > 1)
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_min_size<2>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+        const auto p = fs::path(path->to_string());
+
+        try
         {
-            auto to_path = eval->eval(t_obj->i(1));
-            AL_CHECK(assert_string(to_path));
-            return make_string(fs::relative(p, to_path->to_string()));
+            if (std::size(*t_obj) > 1)
+            {
+                auto to_path = eval->eval(t_obj->i(1));
+                AL_CHECK(assert_string(to_path));
+                return make_string(fs::relative(p, to_path->to_string()));
+            }
+            return make_string(path->to_string());
         }
-        return make_string(path->to_string());
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
     }
-    catch (fs::filesystem_error &exc)
+
+};
+
+struct short
+{
+    inline static const std::string name{"f-short"};
+
+    inline static const std::string doc{R"((f-short PATH)
+
+Return abbrev of `PATH`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
         return Qnil;
     }
-}
 
-ALObjectPtr Fshort(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct long
 {
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
 
-    return Qnil;
-}
+    inline static const std::string name{"f-long"};
 
-ALObjectPtr Flong(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    inline static const std::string doc{R"((f-long PATH)
+
+Return long version of `PATH`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+        try
+        {
+            return make_string(fs::canonical(path->to_string()));
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
+    }
+
+};
+
+struct canonical
 {
-    namespace fs = std::filesystem;
+    inline static const std::string name{"f-cannonical"};
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
+    inline static const std::string doc{R"((f-canonical PATH)
 
-    try
+Return the canonical name of `PATH`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        return make_string(fs::canonical(path->to_string()));
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-}
+        namespace fs = std::filesystem;
 
-ALObjectPtr Fcanonical(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+        try
+        {
+            return make_string(fs::canonical(path->to_string()));
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
+    }
+
+};
+
+struct full
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
+    inline static const std::string name{"f-full"};
 
-    try
+    inline static const std::string doc{R"((f-full PATH)
+
+Return absolute path to `PATH`, with ending slash.
+)"};
+    
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        return make_string(fs::canonical(path->to_string()));
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-}
+        namespace fs = std::filesystem;
 
-ALObjectPtr Ffull(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+        try
+        {
+            auto p = fs::path(path->to_string());
+            return make_string(fs::absolute(p));
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
+    }
+
+};
+
+struct exists
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
+    inline static const std::string name{"f-exists"};
 
-    try
+    inline static const std::string doc{R"((f-exists PATH)
+
+Return `t` if `PATH` exists, `nil` otherwise.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        auto p = fs::path(path->to_string());
-        return make_string(fs::absolute(p));
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-}
+        namespace fs = std::filesystem;
 
-ALObjectPtr Fexists(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+        const auto p = fs::path(path->to_string());
+        return fs::exists(p) ? Qt : Qnil;
+    }
+
+};
+
+struct direcotry
 {
-    namespace fs = std::filesystem;
+    inline static const std::string name{"f-directory"};
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-    const auto p = fs::path(path->to_string());
-    return fs::exists(p) ? Qt : Qnil;
-}
+inline static const std::string doc{R"((f-direcotry PATH)
 
-ALObjectPtr Fdirecotry(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+Return `t` if `PATH` is directory, `nil` otherwise.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -914,29 +1362,65 @@ ALObjectPtr Fdirecotry(const ALObjectPtr &t_obj, env::Environment *, eval::Evalu
     return fs::is_directory(p) ? Qt : Qnil;
 }
 
-ALObjectPtr Ffile(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct file
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-    auto p = fs::path(path->to_string());
-    return fs::is_regular_file(p) ? Qt : Qnil;
-}
+    inline static const std::string name{"f-file"};
 
-ALObjectPtr Fsymlink(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    inline static const std::string doc{R"((f-file PATH)
+
+Return `t` if `PATH` is `nil`, false otherwise.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+        auto p = fs::path(path->to_string());
+        return fs::is_regular_file(p) ? Qt : Qnil;
+    }
+
+};
+
+struct symlink
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-    auto p = fs::path(path->to_string());
-    return fs::is_symlink(p) ? Qt : Qnil;
-}
+    inline static const std::string name{"f-symlink"};
 
-ALObjectPtr Freadable(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    inline static const std::string doc{R"((f-symlink PATH)
+
+Return `t` if `PATH` is symlink, `nil` otherwise.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+        auto p = fs::path(path->to_string());
+        return fs::is_symlink(p) ? Qt : Qnil;
+    }
+
+};
+
+struct readable
+{
+
+    inline static const std::string name{"f-readable"};
+
+inline static const std::string doc{R"((f-readable PATH)
+
+Return `t` if `PATH` is readable, `nil` otherwise.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -948,53 +1432,112 @@ ALObjectPtr Freadable(const ALObjectPtr &t_obj, env::Environment *, eval::Evalua
     return (fs::status(p).permissions() & fs::perms::owner_read) != fs::perms::none ? Qt : Qnil;
 }
 
-ALObjectPtr Fwritable(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct writable
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-    auto p = fs::path(path->to_string());
+    inline static const std::string name{"f-writable"};
 
-    return (fs::status(p).permissions() & fs::perms::owner_write) != fs::perms::none ? Qt : Qnil;
-}
+    inline static const std::string doc{R"((f-writable PATH)
 
-ALObjectPtr Fexecutable(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+Return `t` if `PATH` is writable, `nil` otherwise.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+        auto p = fs::path(path->to_string());
+
+        return (fs::status(p).permissions() & fs::perms::owner_write) != fs::perms::none ? Qt : Qnil;
+    }
+
+};
+
+struct executable
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-    auto p = fs::path(path->to_string());
+    inline static const std::string name{"f-executable"};
 
-    return (fs::status(p).permissions() & fs::perms::owner_exec) != fs::perms::none ? Qt : Qnil;
-}
+    inline static const std::string doc{R"((f-executable PATH)
 
-ALObjectPtr Fabsolute(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+Return `t` if `PATH` is executable, `nil` otherwise.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+        auto p = fs::path(path->to_string());
+
+        return (fs::status(p).permissions() & fs::perms::owner_exec) != fs::perms::none ? Qt : Qnil;
+    }
+
+};
+
+struct absolute
 {
-    namespace fs = std::filesystem;
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-    auto p = fs::path(path->to_string());
-    return p.is_absolute() ? Qt : Qnil;
-}
+    inline static const std::string name{"f-absolute"};
 
-ALObjectPtr Fprelative(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    inline static const std::string doc{R"((f-absolute PATH)
+
+Return `t` if `PATH` is absolute, `nil` otherwise.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+        auto p = fs::path(path->to_string());
+        return p.is_absolute() ? Qt : Qnil;
+    }
+
+};
+
+struct prelative
 {
-    namespace fs = std::filesystem;
+    inline static const std::string name{"f-prelative"};
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-    auto p = fs::path(path->to_string());
-    return p.is_relative() ? Qt : Qnil;
-}
+    inline static const std::string doc{R"((f-prelative PATH)
 
-ALObjectPtr Fis_root(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+Return `t` if `PATH` is relative, `nil` otherwise.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+        auto p = fs::path(path->to_string());
+        return p.is_relative() ? Qt : Qnil;
+    }
+
+};
+
+struct is_root
+{
+
+    inline static const std::string name{"f-is-root"};
+
+inline static const std::string doc{R"((f-is-root PATH)
+
+Return `t` if `PATH` is root directory, `nil` otherwise.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -1005,7 +1548,19 @@ ALObjectPtr Fis_root(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluat
     return fs::equivalent(p, fs::current_path().root_path()) ? Qt : Qnil;
 }
 
-ALObjectPtr Fsame(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct same
+{
+
+    inline static const std::string name{"f-same"};
+
+inline static const std::string doc{R"((f-same PATH1 PATH2)
+
+Return `t` if `PATH1` and `PATH2` are references to same file.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -1031,7 +1586,18 @@ ALObjectPtr Fsame(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
     }
 }
 
-ALObjectPtr Fparent_of(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct parent_of
+{
+    inline static const std::string name{"f-parent-of"};
+
+    inline static const std::string doc{R"((f-parent-of PATH1 PATH2)
+
+Return t if `PATH1` is parent of `PATH2`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
 
@@ -1057,71 +1623,105 @@ ALObjectPtr Fparent_of(const ALObjectPtr &t_obj, env::Environment *, eval::Evalu
     }
 }
 
-ALObjectPtr Fchild_of(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct child_of
 {
-    namespace fs = std::filesystem;
+    inline static const std::string name{"f-child-of"};
 
-    AL_CHECK(assert_size<2>(t_obj));
-    auto path1 = eval->eval(t_obj->i(0));
-    auto path2 = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(path1));
-    AL_CHECK(assert_string(path2));
-    const auto p1 = fs::path(path1->to_string());
-    const auto p2 = fs::path(path2->to_string());
+    inline static const std::string doc{R"((f-child-of PATH1 PATH2)
 
-    try
+Return t if `PATH1` is child of `PATH2`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        return fs::equivalent(p1, p2.parent_path()) ? Qt : Qnil;
-    }
-    catch (fs::filesystem_error &exc)
-    {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
-    }
-}
+        namespace fs = std::filesystem;
 
-ALObjectPtr Fancestor_of(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace fs = std::filesystem;
+        AL_CHECK(assert_size<2>(t_obj));
+        auto path1 = eval->eval(t_obj->i(0));
+        auto path2 = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(path1));
+        AL_CHECK(assert_string(path2));
+        const auto p1 = fs::path(path1->to_string());
+        const auto p2 = fs::path(path2->to_string());
 
-    AL_CHECK(assert_size<2>(t_obj));
-    auto path1 = eval->eval(t_obj->i(0));
-    auto path2 = eval->eval(t_obj->i(1));
-    AL_CHECK(assert_string(path1));
-    AL_CHECK(assert_string(path2));
-    const auto p1 = (path1->to_string());
-    const auto p2 = (path2->to_string());
-
-    auto parts1 = utility::split(p2, fs::path::preferred_separator);
-    auto parts2 = utility::split(p1, fs::path::preferred_separator);
-
-    for (size_t i = 0; i < std::size(parts1); ++i)
-    {
-
-        if (std::size(parts2) <= i)
+        try
         {
-            return Qnil;
+            return fs::equivalent(p1, p2.parent_path()) ? Qt : Qnil;
         }
-
-        if (parts2[i] != parts1[i])
+        catch (fs::filesystem_error &exc)
         {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
             return Qnil;
         }
     }
 
-    return Qt;
-}
+};
 
-ALObjectPtr Fdescendant_of(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+struct ancestor_of
 {
-    namespace fs = std::filesystem;
+    inline static const std::string name{"f-anscestor-of"};
 
-    AL_CHECK(assert_size<2>(t_obj));
-    auto path1 = eval->eval(t_obj->i(0));
-    auto path2 = eval->eval(t_obj->i(1));
+    inline static const std::string doc{R"((f-ancestor-of PATH1 PATH2)
+
+Return `t` if `PATH1` is ancestor of `PATH2`.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<2>(t_obj));
+        auto path1 = eval->eval(t_obj->i(0));
+        auto path2 = eval->eval(t_obj->i(1));
+        AL_CHECK(assert_string(path1));
+        AL_CHECK(assert_string(path2));
+        const auto p1 = (path1->to_string());
+        const auto p2 = (path2->to_string());
+
+        auto parts1 = utility::split(p2, fs::path::preferred_separator);
+        auto parts2 = utility::split(p1, fs::path::preferred_separator);
+
+        for (size_t i = 0; i < std::size(parts1); ++i)
+        {
+
+            if (std::size(parts2) <= i)
+            {
+                return Qnil;
+            }
+
+            if (parts2[i] != parts1[i])
+            {
+                return Qnil;
+            }
+        }
+
+        return Qt;
+    }
+
+};
+
+struct descendant_of
+{
+    inline static const std::string name{"f-descendant-of"};
+
+    inline static const std::string doc{R"((f-descendant-of PATH)
+
+Return `t` if `PATH1` is desendant of `PATH2`.
+)"};
+    
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace fs = std::filesystem;
+
+        AL_CHECK(assert_size<2>(t_obj));
+        auto path1 = eval->eval(t_obj->i(0));
+auto path2 = eval->eval(t_obj->i(1));
     AL_CHECK(assert_string(path1));
     AL_CHECK(assert_string(path2));
     const auto p1 = (path1->to_string());
@@ -1147,37 +1747,77 @@ ALObjectPtr Fdescendant_of(const ALObjectPtr &t_obj, env::Environment *, eval::E
     return Qt;
 }
 
-ALObjectPtr Fhidden(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace fs = std::filesystem;
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
-    const auto p = fs::path(path->to_string());
-    return p.filename().string()[0] == '.' ? Qt : Qnil;
-}
+};
 
-ALObjectPtr Fempty(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+struct hidden
 {
-    namespace fs = std::filesystem;
-    AL_CHECK(assert_size<1>(t_obj));
-    auto path = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_string(path));
 
-    try
+    inline static const std::string name{"f-hidden"};
+
+    inline static const std::string doc{R"((f-hidden PATH)
+
+Return `t` if `PATH` is hidden, `nil` otherwise.
+)"};
+    
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    
     {
+        namespace fs = std::filesystem;
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
         const auto p = fs::path(path->to_string());
-        return fs::is_empty(p) ? Qt : Qnil;
+        return p.filename().string()[0] == '.' ? Qt : Qnil;
     }
-    catch (fs::filesystem_error &exc)
+
+};
+
+struct empty
+{
+    inline static const std::string name{"f-empty"};
+
+    inline static const std::string doc{R"((f-empty PATH)
+
+If `PATH` is a file, return `t` if the file in `PATH` is empty, `nil`
+otherwise. If `PATH` is directory, return `t` if directory has no files,
+`nil` otherwise.
+)"};
+
+    static     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        signal(
-          fileio_signal,
-          fmt::format(
-            "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
-        return Qnil;
+        namespace fs = std::filesystem;
+        AL_CHECK(assert_size<1>(t_obj));
+        auto path = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_string(path));
+
+        try
+        {
+            const auto p = fs::path(path->to_string());
+            return fs::is_empty(p) ? Qt : Qnil;
+        }
+        catch (fs::filesystem_error &exc)
+        {
+            signal(
+                fileio_signal,
+                fmt::format(
+                    "Fileio error: {}\nInvolved path(s): {} , {}", exc.what(), exc.path1().string(), exc.path2().string()));
+            return Qnil;
+        }
     }
-}
+
+};
+
+struct module_doc
+{
+
+    inline static const std::string doc{R"(The `fileio` moudule provides utilities for working with file paths,
+files, directories and some basic IO functions.
+)"};
+
+};
+
+
+
 
 }  // namespace detail
 
@@ -1187,440 +1827,9 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
     auto Mfileio = module_init("fileio");
     auto fio_ptr = Mfileio.get();
 
-    module_doc(fio_ptr,
-               R"(The `fileio` moudule provides utilities for working with file paths,
-files, directories and some basic IO functions.
-)");
+    module_doc(fio_ptr, detail::module_doc::doc);
 
-    module_defvar(fio_ptr,
-                  "f-directory-separator",
-                  make_string(detail::separator),
-                  R"(String containing the native symbol to separate directories and files
-in a path. On unix systems this is forward-slash and on Windows
-backslash.)");
-
-    module_defun(fio_ptr,
-                 "f-with-temp-file",
-                 &detail::Fwith_temp_file,
-                 R"((f-with-temp-file FILE-SYM BODY)
-
-Bind `FILE-SYM` and execute the forms in `BODY`. `FILE-SYM` will point
-to a valid file resource of a temporary file.
-)");
-
-    module_defun(fio_ptr,
-                 "f-temp-file-name",
-                 &detail::Ftemp_file_name,
-                 R"((f-temp-file-name PATH)
-
-Return a path to a temporary file. The file is not created but the
-path will be valid for a temporary file.
-)");
-
-    module_defun(fio_ptr,
-                 "f-temp-file",
-                 &detail::Ftemp_file,
-                 R"((f-temp-file PATH)
-
-Return a resource object ot a temporary file. The file is created and
-the object can be used for writing to the file.
-)");
-
-    module_defun(fio_ptr,
-                 "f-expand-user",
-                 &detail::Fexpand_user,
-                 R"((f-expand-user PATH)
-
-For unix systems, expand `~` to the location of the home directory of
-the current user.
-)");
-
-    module_defun(fio_ptr,
-                 "f-root",
-                 &detail::Froot,
-                 R"((f-root)
-
-Return absolute root.
-)");
-
-    module_defun(fio_ptr,
-                 "f-directories",
-                 &detail::Fdirectories,
-                 R"((f-directories PATH)
-
-Find all directories in `PATH`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-entries",
-                 &detail::Fentries,
-                 R"((f-entries PATH)
-
-Find all files and directories in `PATH`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-glob",
-                 &detail::Fglob,
-                 R"((f-glob PATTERN PATH)
-
-Find `PATTERN` in `PATH`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-touch",
-                 &detail::Ftouch,
-                 R"((f-touch PATH)
-
-Update `PATH` last modification date or create if it does not exist.
-)");
-
-    module_defun(fio_ptr,
-                 "f-copy",
-                 &detail::Fcopy,
-                 R"((f-copy FROM TO)
-
-Copy file or directory `FROM` to `TO`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-move",
-                 &detail::Fmove,
-                 R"((f-move FROM TO)
-
-Move or rename `FROM` to `TO`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-make-symlink",
-                 &detail::Fmake_symlink,
-                 R"((f-make-symlink SOURCE PATH)
-
-Create a symlink to `SOURCE` from `PATH`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-delete",
-                 &detail::Fdelete,
-                 R"((f-delete PATH)
-
-Delete `PATH`, which can be file or directory.
-)");
-
-    module_defun(fio_ptr,
-                 "f-mkdir",
-                 &detail::Fmkdir,
-                 R"((f-mkdir DIR)
-
-Create the directory `DIR`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-read-bytes",
-                 &detail::Fread_bytes,
-                 R"((f-read-bytes PATH)
-
-Read binary data from `PATH`. Return the binary data as byte array.
-)");
-
-    module_defun(fio_ptr,
-                 "f-read-text",
-                 &detail::Fread_text,
-                 R"((f-read-text PATH)
-
-Read the text from the file `PATH` and return the contatns as a string.
-)");
-
-    module_defun(fio_ptr,
-                 "f-write-text",
-                 &detail::Fwrite_text,
-                 R"((f-write-text PATH TEXT)
-
-Write `TEXT` to the file pointed by `PATH`. Previous content is erased.
-)");
-
-    module_defun(fio_ptr,
-                 "f-write-bytes",
-                 &detail::Fwrite_bytes,
-                 R"((f-write-bytes PATH BYTES)
-
-Write the bytes `BYTES` to the file pointed by `PATH`. Previous content is erased.
-)");
-
-    module_defun(fio_ptr,
-                 "f-append-text",
-                 &detail::Fappend_text,
-                 R"((f-append-text PATH TEXT)
-
-Append `TEXT` to the file pointed by `PATH`. This function does not
-erase the prevous contents of the file.  )");
-
-    module_defun(fio_ptr,
-                 "f-append-bytes",
-                 &detail::Fappend_bytes,
-                 R"((f-append-bytes PATH BYTES)
-
-Append the bytes `BYTES` to the file pointed by `PATH`. This function does not
-erase the prevous contents of the file.
-)");
-
-    module_defun(fio_ptr,
-                 "f-join",
-                 &detail::Fjoin,
-                 R"((f-join [ARGS] ...)
-
-Join `ARGS` to a single path.
-)");
-
-    module_defun(fio_ptr,
-                 "f-split",
-                 &detail::Fsplit,
-                 R"((f-split PATH)
-
-Split `PATH` and return list containing parts.
-)");
-
-    module_defun(fio_ptr,
-                 "f-expand",
-                 &detail::Fexpand,
-                 R"((f-expand PATH DIR)
-
-Expand `PATH` relative to `DIR`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-filename",
-                 &detail::Ffilename,
-                 R"((f-filename PATH)
-
-Return the name of `PATH`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-dirname",
-                 &detail::Fdirname,
-                 R"((f-dirname PATH)
-
-Return the parent directory to `PATH`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-common-parent",
-                 &detail::Fcommon_parent,
-                 R"((f-common-parent [PATHS] ...)
-
-Return the deepest common parent directory of `PATHS`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-ext",
-                 &detail::Fext,
-                 R"((f-ext PATH)
-
-)");
-
-    module_defun(fio_ptr,
-                 "f-no-ext",
-                 &detail::Fno_ext,
-                 R"((f-no-ext PATH)
-
-)");
-
-    module_defun(fio_ptr,
-                 "f-swap-ext",
-                 &detail::Fswap_ext,
-                 R"((f-swap-ext PATH)
-
-Return the file extension of `PATH`. The extension, in a file name, is
-the part that follows the last ’.’, excluding version numbers and
-backup suffixes.
-)");
-
-    module_defun(fio_ptr,
-                 "f-base",
-                 &detail::Fbase,
-                 R"((f-base PATH)
-
-Return the name of `PATH`, excluding the extension of file.
-)");
-
-    module_defun(fio_ptr,
-                 "f-relative",
-                 &detail::Frelative,
-                 R"((f-relative PATH)
-
-)");
-
-    module_defun(fio_ptr,
-                 "f-short",
-                 &detail::Fshort,
-                 R"((f-short PATH)
-
-Return abbrev of `PATH`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-long",
-                 &detail::Flong,
-                 R"((f-long PATH)
-
-Return long version of `PATH`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-canonical",
-                 &detail::Fcanonical,
-                 R"((f-canonical PATH)
-
-Return the canonical name of `PATH`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-full",
-                 &detail::Ffull,
-                 R"((f-full PATH)
-
-Return absolute path to `PATH`, with ending slash.
-)");
-
-    module_defun(fio_ptr,
-                 "f-exists",
-                 &detail::Fexists,
-                 R"((f-exists PATH)
-
-Return `t` if `PATH` exists, `nil` otherwise.
-)");
-
-    module_defun(fio_ptr,
-                 "f-direcotry",
-                 &detail::Fdirecotry,
-                 R"((f-direcotry PATH)
-
-Return `t` if `PATH` is directory, `nil` otherwise.
-)");
-
-    module_defun(fio_ptr,
-                 "f-file",
-                 &detail::Ffile,
-                 R"((f-file PATH)
-
-Return `t` if `PATH` is `nil`, false otherwise.
-)");
-
-    module_defun(fio_ptr,
-                 "f-symlink",
-                 &detail::Fsymlink,
-                 R"((f-symlink PATH)
-
-Return `t` if `PATH` is symlink, `nil` otherwise.
-)");
-
-    module_defun(fio_ptr,
-                 "f-readable",
-                 &detail::Freadable,
-                 R"((f-readable PATH)
-
-Return `t` if `PATH` is readable, `nil` otherwise.
-)");
-
-    module_defun(fio_ptr,
-                 "f-writable",
-                 &detail::Fwritable,
-                 R"((f-writable PATH)
-
-Return `t` if `PATH` is writable, `nil` otherwise.
-)");
-
-    module_defun(fio_ptr,
-                 "f-executable",
-                 &detail::Fexecutable,
-                 R"((f-executable PATH)
-
-Return `t` if `PATH` is executable, `nil` otherwise.
-)");
-
-    module_defun(fio_ptr,
-                 "f-absolute",
-                 &detail::Fabsolute,
-                 R"((f-absolute PATH)
-
-Return `t` if `PATH` is absolute, `nil` otherwise.
-)");
-
-    module_defun(fio_ptr,
-                 "f-prelative",
-                 &detail::Fprelative,
-                 R"((f-prelative PATH)
-
-Return `t` if `PATH` is relative, `nil` otherwise.
-)");
-
-    module_defun(fio_ptr,
-                 "f-is-root",
-                 &detail::Fis_root,
-                 R"((f-is-root PATH)
-
-Return `t` if `PATH` is root directory, `nil` otherwise.
-)");
-
-    module_defun(fio_ptr,
-                 "f-same",
-                 &detail::Fsame,
-                 R"((f-same PATH1 PATH2)
-
-Return `t` if `PATH1` and `PATH2` are references to same file.
-)");
-
-    module_defun(fio_ptr,
-                 "f-parent-of",
-                 &detail::Fparent_of,
-                 R"((f-parent-of PATH1 PATH2)
-
-Return t if `PATH1` is parent of `PATH2`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-child-of",
-                 &detail::Fchild_of,
-                 R"((f-child-of PATH1 PATH2)
-
-Return t if `PATH1` is child of `PATH2`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-ancestor-of",
-                 &detail::Fancestor_of,
-                 R"((f-ancestor-of PATH1 PATH2)
-
-Return `t` if `PATH1` is ancestor of `PATH2`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-descendant-of",
-                 &detail::Fdescendant_of,
-                 R"((f-descendant-of PATH)
-
-Return `t` if `PATH1` is desendant of `PATH2`.
-)");
-
-    module_defun(fio_ptr,
-                 "f-hidden",
-                 &detail::Fhidden,
-                 R"((f-hidden PATH)
-
-Return `t` if `PATH` is hidden, `nil` otherwise.
-)");
-
-    module_defun(fio_ptr,
-                 "f-empty",
-                 &detail::Fempty,
-                 R"((f-empty PATH)
-
-If `PATH` is a file, return `t` if the file in `PATH` is empty, `nil`
-otherwise. If `PATH` is directory, return `t` if directory has no files,
-`nil` otherwise.
-)");
-
+    
 
     return Mfileio;
 }

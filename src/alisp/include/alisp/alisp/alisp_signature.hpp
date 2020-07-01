@@ -66,7 +66,7 @@ struct Sym
 struct Real
 {
 
-    ALObjectPtr to_al() const { return Qreal; }
+    ALObjectPtr to_al() const { return Qreal_arg; }
 };
 
 struct Number

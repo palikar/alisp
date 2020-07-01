@@ -94,6 +94,15 @@ REAL_APP_FUNCTION(Fcbrt, std::cbrt);
 INT_APP_BIFUNCTION(Fgcd, std::gcd);
 INT_APP_BIFUNCTION(Flcm, std::lcm);
 
+
+struct module_doc
+{
+    inline static const std::string doc{R"(The `math` provides more complicated math functions. Often these
+function are just wrappers around the standard C++ functions.
+)"};
+    
+};
+
 }  // namespace detail
 
 env::ModulePtr init_math(env::Environment *, eval::Evaluator *)
@@ -102,11 +111,9 @@ env::ModulePtr init_math(env::Environment *, eval::Evaluator *)
     auto Mmath    = module_init("math");
     auto math_ptr = Mmath.get();
 
-    module_doc(math_ptr,
-               R"(The `math` provides more complicated math functions. Often these
-function are just wrappers around the standard C++ functions.
-)");
 
+    module_doc(math_ptr, detail::module_doc::doc);
+    
     module_defvar(math_ptr, "PI", make_double(detail::PI), R"(The value of Pi (3.14159265....))");
 
     module_defvar(math_ptr, "E", make_double(detail::E), R"(The value of E (2.71828...))");

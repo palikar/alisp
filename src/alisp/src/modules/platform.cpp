@@ -25,6 +25,13 @@ namespace alisp
 namespace detail
 {
 
+struct module_doc
+{
+    inline static const std::string doc{R"(The `platform` module exposes infomration about the Alisp
+interpreter, the underlying operating system and information about it
+as well as how the intrpterter was compiled.
+)"};
+};
 
 }  // namespace detail
 
@@ -34,11 +41,7 @@ env::ModulePtr init_platform(env::Environment *, eval::Evaluator *)
     auto Mplatform = module_init("platform");
     auto plat_ptr  = Mplatform.get();
 
-    module_doc(plat_ptr,
-               R"(The `platform` module exposes infomration about the Alisp
-interpreter, the underlying operating system and information about it
-as well as how the intrpterter was compiled.
-)");
+    module_doc(plat_ptr,detail::module_doc::doc);
 
 
     module_defvar(plat_ptr,

@@ -39,55 +39,107 @@ static constexpr int HIGH_RES_CLOCK = 3;
 static constexpr int clocks_per_sec = CLOCKS_PER_SEC;
 
 
-ALObjectPtr Ftime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+struct time
 {
-    AL_CHECK(assert_size<0>(t_obj));
-    std::time_t result = std::time(nullptr);
+    static inline const std::string name{"time"};
 
-    if (result == -1)
+    static inline const std::string doc{R"(The `time` module provides utility functions for working with time
+and dates.
+
+The module provides access to several internal clocks of the C++
+standard library.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     {
-        return Qnil;
+        AL_CHECK(assert_size<0>(t_obj));
+        std::time_t result = std::time(nullptr);
+
+        if (result == -1)
+        {
+            return Qnil;
+        }
+
+        return make_int(result);
     }
 
-    return make_int(result);
-}
+};
 
-ALObjectPtr Fclock(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+struct clock
 {
-    AL_CHECK(assert_size<0>(t_obj));
-    return make_int(std::clock());
-}
+    static inline const std::string name{"t-process-time"};
 
-ALObjectPtr Fnow(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
-{
-    namespace ch = std::chrono;
+    static inline const std::string doc{R"(((t-process-time)
 
-    AL_CHECK(assert_size<1>(t_obj));
-    auto clock = eval->eval(t_obj->i(0));
-    AL_CHECK(assert_int(clock));
+Returns the approximate processor time used by the process since the
+beginning of an implementation-defined era related to the program's
+execution. To convert result value to seconds divide it by
+`clocks-pre-second`.
+ ))"};
 
-    switch (static_cast<int>(clock->to_int()))
+static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     {
-        case SYSTEM_CLOCK: {
-            const auto time_now = al_seconds(ch::system_clock::now().time_since_epoch()).count();
-            return make_real(time_now);
-        }
-
-        case STEADY_CLOCK: {
-            const auto time_now = al_seconds(ch::steady_clock::now().time_since_epoch()).count();
-            return make_real(time_now);
-        }
-
-        case HIGH_RES_CLOCK: {
-            const auto time_now = al_seconds(ch::high_resolution_clock::now().time_since_epoch()).count();
-            return make_real(time_now);
-        }
+        AL_CHECK(assert_size<0>(t_obj));
+        return make_int(std::clock());
     }
 
-    return nullptr;
-}
+};
 
-ALObjectPtr Fnow_ns(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+struct now
+{
+    static inline const std::string name{"t-clock-time"};
+
+    static inline const std::string doc{R"((t-clock-time CLOCK)
+
+Return the current time in seconds as a real number according to the
+given clock. `CLOCK` can be:
+* system-clock
+* steady-clock
+* high-res-clock
+ )"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace ch = std::chrono;
+
+        AL_CHECK(assert_size<1>(t_obj));
+        auto clock = eval->eval(t_obj->i(0));
+        AL_CHECK(assert_int(clock));
+
+        switch (static_cast<int>(clock->to_int()))
+        {
+          case SYSTEM_CLOCK: {
+              const auto time_now = al_seconds(ch::system_clock::now().time_since_epoch()).count();
+              return make_real(time_now);
+          }
+
+          case STEADY_CLOCK: {
+              const auto time_now = al_seconds(ch::steady_clock::now().time_since_epoch()).count();
+              return make_real(time_now);
+          }
+
+          case HIGH_RES_CLOCK: {
+              const auto time_now = al_seconds(ch::high_resolution_clock::now().time_since_epoch()).count();
+              return make_real(time_now);
+          }
+        }
+
+        return nullptr;
+    }
+
+};
+
+struct now_ns
+{
+    static inline const std::string name{"t-clock-time-ns"};
+
+    static inline const std::string doc{R"(Return the current time in nanoseconds as a real number according to
+the given clock. `CLOCK` can be:
+* system-clock
+* steady-clock
+* high-res-clock)"};
+
+static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
 
@@ -113,7 +165,19 @@ ALObjectPtr Fnow_ns(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
     return nullptr;
 }
 
-ALObjectPtr Fgmtime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct gmtime
+{
+    static inline const std::string name{"t-gmtime"};
+
+    static inline const std::string doc{R"((t-gmtime TIME)
+
+Return a list of the form (seconds, minutes, hours month day, month,
+year, week day, year day, leap year) representing the time `TIME` as a GM time.
+)"};
+
+static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -132,7 +196,19 @@ ALObjectPtr Fgmtime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
                        res->tm_isdst);
 }
 
-ALObjectPtr Flocaltime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct localtime
+{
+    static inline const std::string name{"t-localtime"};
+
+    static inline const std::string doc{R"((t-localtime TIME)
+
+Return a list of the form (seconds, minutes, hours month day, month,
+year, week day, year day, leap year) representing the time `TIME` as a local time.
+)"};
+
+static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -151,7 +227,20 @@ ALObjectPtr Flocaltime(const ALObjectPtr &t_obj, env::Environment *, eval::Evalu
                        res->tm_isdst);
 }
 
-ALObjectPtr Fmktime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct mktime
+{
+    static inline const std::string name{"t-mktime"};
+
+    static inline const std::string doc{R"((t-mktime TIME-LIST)
+
+Convert a time list of the form (seconds, minutes, hours month day,
+month, year, week day, year day, leap year) to time (seconds) since
+the beginning of the epoch. The values in the time list are permitted
+to be outside their normal ranges.  )"};
+
+static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -174,7 +263,21 @@ ALObjectPtr Fmktime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
     return make_int(std::mktime(&tm));
 }
 
-ALObjectPtr Fstrftime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct strftime
+{
+    static inline const std::string name{"t-strftime"};
+
+    static inline const std::string doc{R"((t-strftime FORMAT-STRING TIME-LIST)
+
+Return the restulting string by formating `FROMAT-STRING` with the
+time list `TIME-LIST`. The ruls for formating are the same as in the
+[C++ page for the strftime function ](https://en.cppreference.com/w/cpp/chrono/c/strftime).
+The time list is of the form as by the `t-mktime` and `t-gmtime` functions.
+)"};
+
+static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_min_size<2>(t_obj));
@@ -215,7 +318,19 @@ ALObjectPtr Fstrftime(const ALObjectPtr &t_obj, env::Environment *, eval::Evalua
     return Qnil;
 }
 
-ALObjectPtr Fctime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct ctime
+{
+    static inline const std::string name{"t-ctime"};
+
+    static inline const std::string doc{R"((t-ctime [TIME])
+
+Return a textural representation of the current time. If `TIME` is
+given, use this time to construct the string.
+)"};
+
+static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_max_size<1>(t_obj));
@@ -230,7 +345,18 @@ ALObjectPtr Fctime(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
     return make_string(std::ctime(&time_t));
 }
 
-ALObjectPtr Fns(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct ns
+{
+    static inline const std::string name{"t-ns"};
+
+    static inline const std::string doc{R"((t-ns TIME)
+
+Convert `TIME` in nanoseconds to seconds as as real number.
+)"};
+
+static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -240,7 +366,18 @@ ALObjectPtr Fns(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *e
     return make_real(res);
 }
 
-ALObjectPtr Fms(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct ms
+{
+    static inline const std::string name{"t-ms"};
+
+    static inline const std::string doc{R"((t-ms TIME)
+
+Convert `TIME` in miliseconds to seconds as as real number.
+)"};
+
+static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -250,7 +387,21 @@ ALObjectPtr Fms(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *e
     return make_real(res);
 }
 
-ALObjectPtr Fs(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct s
+{
+    static inline const std::string name{"t-strftime"};
+
+    static inline const std::string doc{R"((t-strftime FORMAT-STRING TIME-LIST)
+
+Return the restulting string by formating `FROMAT-STRING` with the
+time list `TIME-LIST`. The ruls for formating are the same as in the
+[C++ page for the strftime function ](https://en.cppreference.com/w/cpp/chrono/c/strftime).
+The time list is of the form as by the `t-mktime` and `t-gmtime` functions.
+)"};
+
+static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -260,7 +411,18 @@ ALObjectPtr Fs(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *ev
     return make_real(res);
 }
 
-ALObjectPtr Fhr(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct hr
+{
+    static inline const std::string name{"t-hr"};
+
+    static inline const std::string doc{R"((t-hr TIME)
+
+Convert `TIME` in hours to seconds as as real number.
+)"};
+
+static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace ch = std::chrono;
     AL_CHECK(assert_size<1>(t_obj));
@@ -270,16 +432,41 @@ ALObjectPtr Fhr(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *e
     return make_real(res);
 }
 
-ALObjectPtr Fsleep(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+};
+
+struct sleep
 {
-    namespace ch = std::chrono;
-    AL_CHECK(assert_size<1>(t_obj));
-    auto time = eval->eval(t_obj->i(0));
+    static inline const std::string name{"t-sleep"};
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(time->to_int()));
+    static inline const std::string doc{R"((t-sleep TIME)
 
-    return Qt;
-}
+Block the current thread for `TIME` miliseconds.
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    {
+        namespace ch = std::chrono;
+        AL_CHECK(assert_size<1>(t_obj));
+        auto time = eval->eval(t_obj->i(0));
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(time->to_int()));
+
+        return Qt;
+    }
+
+};
+
+
+struct module_doc
+{
+    inline static const std::string doc{R"(The `time` module provides utility functions for working with time
+and dates.
+
+The module provides access to several internal clocks of the C++
+standard library.
+)"};
+    
+};
 
 }  // namespace details
 
@@ -288,14 +475,9 @@ env::ModulePtr init_time(env::Environment *, eval::Evaluator *)
     auto Mtime    = module_init("time");
     auto time_ptr = Mtime.get();
 
-    module_doc(time_ptr,
-               R"(The `time` module provides utility functions for working with time
-and dates.
+    module_doc(time_ptr, details::module_doc::doc);
 
-The module provides access to several internal clocks of the C++
-standard library.
-)");
-
+    
     module_defconst(time_ptr,
                     "system-clock",
                     make_int(details::SYSTEM_CLOCK),
@@ -323,138 +505,6 @@ by the implementation.
                     make_int(details::clocks_per_sec),
                     R"(Number of clock ticks per second. Clock ticks are units of time of a
 constant but system-specific length.)");
-
-
-    module_defun(time_ptr,
-                 "t-time",
-                 &details::Ftime,
-                 R"((t-time)
-
-Return the current calendar time in seconds.
-)");
-
-    module_defun(time_ptr,
-                 "t-ctime",
-                 &details::Fctime,
-                 R"((t-ctime [TIME])
-
-Return a textural representation of the current time. If `TIME` is
-given, use this time to construct the string.
-)");
-
-    module_defun(time_ptr,
-                 "t-gmtime",
-                 &details::Fgmtime,
-                 R"((t-gmtime TIME)
-
-Return a list of the form (seconds, minutes, hours month day, month,
-year, week day, year day, leap year) representing the time `TIME` as a GM time.
-)");
-
-    module_defun(time_ptr,
-                 "t-localtime",
-                 &details::Flocaltime,
-                 R"((t-localtime TIME)
-
-Return a list of the form (seconds, minutes, hours month day, month,
-year, week day, year day, leap year) representing the time `TIME` as a local time.
-)");
-
-    module_defun(time_ptr,
-                 "t-mktime",
-                 &details::Fmktime,
-                 R"((t-mktime TIME-LIST)
-
-Convert a time list of the form (seconds, minutes, hours month day,
-month, year, week day, year day, leap year) to time (seconds) since
-the beginning of the epoch. The values in the time list are permitted
-to be outside their normal ranges.  )");
-
-    module_defun(time_ptr,
-                 "t-process-time",
-                 &details::Fclock,
-                 R"((t-process-time)
-
-Returns the approximate processor time used by the process since the
-beginning of an implementation-defined era related to the program's
-execution. To convert result value to seconds divide it by
-`clocks-pre-second`.
- )");
-
-    module_defun(time_ptr,
-                 "t-strftime",
-                 &details::Fstrftime,
-                 R"((t-strftime FORMAT-STRING TIME-LIST)
-
-Return the restulting string by formating `FROMAT-STRING` with the
-time list `TIME-LIST`. The ruls for formating are the same as in the
-[C++ page for the strftime function ](https://en.cppreference.com/w/cpp/chrono/c/strftime).
-The time list is of the form as by the `t-mktime` and `t-gmtime` functions.
-)");
-
-    module_defun(time_ptr,
-                 "t-clock-time",
-                 &details::Fnow,
-                 R"((t-clock-time CLOCK)
-
-Return the current time in seconds as a real number according to the
-given clock. `CLOCK` can be:
-* system-clock
-* steady-clock
-* high-res-clock
- )");
-
-    module_defun(time_ptr,
-                 "t-clock-time-ns",
-                 &details::Fnow_ns,
-                 R"(Return the current time in nanoseconds as a real number according to
-the given clock. `CLOCK` can be:
-* system-clock
-* steady-clock
-* high-res-clock)");
-
-
-    module_defun(time_ptr,
-                 "t-ns",
-                 &details::Fns,
-                 R"((t-ns TIME)
-
-Convert `TIME` in nanoseconds to seconds as as real number.
-)");
-
-    module_defun(time_ptr,
-                 "t-ms",
-                 &details::Fms,
-                 R"((t-ms TIME)
-
-Convert `TIME` in miliseconds to seconds as as real number.
-)");
-
-    module_defun(time_ptr,
-                 "t-s",
-                 &details::Fs,
-                 R"((t-s TIME)
-
-Convert `TIME` in seconds to seconds as as real number.
-)");
-
-    module_defun(time_ptr,
-                 "t-hr",
-                 &details::Fhr,
-                 R"((t-hr TIME)
-
-Convert `TIME` in hours to seconds as as real number.
-)");
-
-
-    module_defun(time_ptr,
-                 "t-sleep",
-                 &details::Fsleep,
-                 R"((t-sleep TIME)
-
-Block the current thread for `TIME` miliseconds.
-)");
-
 
     return Mtime;
 }

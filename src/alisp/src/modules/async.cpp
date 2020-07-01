@@ -29,123 +29,177 @@ namespace alisp
 namespace detail
 {
 
-ALObjectPtr Fasync_start(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
+struct async_start
 {
-    AL_CHECK(assert_min_size<1>(obj));
-    AL_CHECK(assert_max_size<2>(obj));
+    static inline const std::string name{"async-start"};
 
-    auto action = eval->eval(obj->i(0));
-    AL_CHECK(assert_function(action));
+    static inline const std::string doc{R"()"};
 
-    auto callback = Qnil;
-    if (std::size(*obj) > 1)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
     {
-        callback = eval->eval(obj->i(1));
-        AL_CHECK(assert_function(callback));
-    }
+        AL_CHECK(assert_min_size<1>(obj));
+        AL_CHECK(assert_max_size<2>(obj));
 
-    auto res = async::dispatch<async_action>(eval->async(), std::move(action), std::move(callback));
+        auto action = eval->eval(obj->i(0));
+        AL_CHECK(assert_function(action));
 
-    if (pint(res) and eval->async().futures.belong(object_to_resource(res)))
-    {
-        env->defer_callback([eval, id = object_to_resource(res)]() { eval->async().dispose_future(id); });
-    }
-
-    return res;
-}
-
-ALObjectPtr Fasync_await(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<1>(obj));
-    auto future = eval->eval(obj->i(0));
-    AL_CHECK(assert_int(future));
-
-
-    {
-        async::Await await{ eval->async() };
-
-        eval->futures_cv.wait(eval->lock(),
-                              [&] { return is_truthy(eval->async().future(object_to_resource(future)).resolved); });
-    }
-
-    return eval->async().future(object_to_resource(future)).value;
-}
-
-ALObjectPtr Fasync_then(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_min_size<2>(obj));
-    AL_CHECK(assert_max_size<3>(obj));
-
-    auto future           = eval->eval(obj->i(0));
-    auto success_callback = eval->eval(obj->i(1));
-    AL_CHECK(assert_int(future));
-    AL_CHECK(assert_function(success_callback));
-
-    auto reject_callback = Qnil;
-    if (std::size(*obj) > 2)
-    {
-        reject_callback = eval->eval(obj->i(2));
-        if (!pfunction(reject_callback))
+        auto callback = Qnil;
+        if (std::size(*obj) > 1)
         {
-            reject_callback = Qnil;
+            callback = eval->eval(obj->i(1));
+            AL_CHECK(assert_function(callback));
         }
+
+        auto res = async::dispatch<async_action>(eval->async(), std::move(action), std::move(callback));
+
+        if (pint(res) and eval->async().futures.belong(object_to_resource(res)))
+        {
+            env->defer_callback([eval, id = object_to_resource(res)]() { eval->async().dispose_future(id); });
+        }
+
+        return res;
     }
 
-    auto &fut = eval->async().future(object_to_resource(future));
+};
 
-    if (is_truthy(fut.resolved))
+struct async_await
+{
+    static inline const std::string name{"async-await"};
+
+    static inline const std::string doc{R"((future-then FUTURE SUCCESS REJECT))"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
+        AL_CHECK(assert_size<1>(obj));
+        auto future = eval->eval(obj->i(0));
+        AL_CHECK(assert_int(future));
 
-        if (is_truthy(fut.success_state))
+
         {
-            eval->eval_callable(fut.success_callback, make_list(fut.value));
+            async::Await await{ eval->async() };
+
+            eval->futures_cv.wait(eval->lock(),
+            [&] { return is_truthy(eval->async().future(object_to_resource(future)).resolved); });
+        }
+
+        return eval->async().future(object_to_resource(future)).value;
+    }
+
+};
+
+struct async_then
+{
+    static inline const std::string name{"async-then"};
+
+    static inline const std::string doc{R"((async-ready FUTURE)
+
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_min_size<2>(obj));
+        AL_CHECK(assert_max_size<3>(obj));
+
+        auto future           = eval->eval(obj->i(0));
+        auto success_callback = eval->eval(obj->i(1));
+        AL_CHECK(assert_int(future));
+        AL_CHECK(assert_function(success_callback));
+
+        auto reject_callback = Qnil;
+        if (std::size(*obj) > 2)
+        {
+            reject_callback = eval->eval(obj->i(2));
+            if (!pfunction(reject_callback))
+            {
+                reject_callback = Qnil;
+            }
+        }
+
+        auto &fut = eval->async().future(object_to_resource(future));
+
+        if (is_truthy(fut.resolved))
+        {
+
+            if (is_truthy(fut.success_state))
+            {
+                eval->eval_callable(fut.success_callback, make_list(fut.value));
+            }
+            else
+            {
+                eval->eval_callable(fut.reject_callback, make_list(fut.value));
+            }
         }
         else
         {
-            eval->eval_callable(fut.reject_callback, make_list(fut.value));
+            fut.success_callback = success_callback;
+            fut.reject_callback  = reject_callback;
         }
+
+        return Qt;
     }
-    else
+
+};
+
+struct async_ready
+{
+    static inline const std::string name{"async-ready"};
+
+    static inline const std::string doc{R"((async-state FUTURE)
+
+)"};
+
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        fut.success_callback = success_callback;
-        fut.reject_callback  = reject_callback;
+        AL_CHECK(assert_size<1>(obj));
+
+        auto future = eval->eval(obj->i(0));
+        AL_CHECK(assert_int(future));
+
+        return eval->async().future(object_to_resource(future)).resolved;
     }
 
-    return Qt;
-}
+};
 
-ALObjectPtr Fasync_ready(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+struct async_state
 {
-    AL_CHECK(assert_size<1>(obj));
+    static inline const std::string name{"async-state"};
 
-    auto future = eval->eval(obj->i(0));
-    AL_CHECK(assert_int(future));
+    static inline const std::string doc{R"()"};
 
-    return eval->async().future(object_to_resource(future)).resolved;
-}
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<1>(obj));
 
-ALObjectPtr Fasync_state(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+        auto future = eval->eval(obj->i(0));
+        AL_CHECK(assert_int(future));
+
+        return eval->async().future(object_to_resource(future)).success_state;
+    }
+
+};
+
+struct timeout
 {
-    AL_CHECK(assert_size<1>(obj));
+    static inline const std::string name{"timeout"};
 
-    auto future = eval->eval(obj->i(0));
-    AL_CHECK(assert_int(future));
+    static inline const std::string doc{R"((async-state FUTURE)
 
-    return eval->async().future(object_to_resource(future)).success_state;
-}
+)"};
 
-ALObjectPtr Ftimeout(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-{
-    AL_CHECK(assert_size<2>(obj));
-    auto fun  = eval->eval(obj->i(0));
-    auto time = eval->eval(obj->i(1));
-    AL_CHECK(assert_int(time));
-    AL_CHECK(assert_function(fun));
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    {
+        AL_CHECK(assert_size<2>(obj));
+        auto fun  = eval->eval(obj->i(0));
+        auto time = eval->eval(obj->i(1));
+        AL_CHECK(assert_int(time));
+        AL_CHECK(assert_function(fun));
 
-    async::dispatch<set_timeout>(eval->async(), static_cast<size_t>(time->to_int()), fun);
+        async::dispatch<set_timeout>(eval->async(), static_cast<size_t>(time->to_int()), fun);
 
-    return Qt;
-}
+        return Qt;
+    }
+
+};
 
 }  // namespace detail
 
@@ -155,45 +209,6 @@ env::ModulePtr init_async(env::Environment *, eval::Evaluator *)
     auto Masync    = module_init("async");
     auto async_ptr = Masync.get();
 
-    module_defun(async_ptr,
-                 "timeout",
-                 &detail::Ftimeout,
-                 R"((set-timeout CALLBACK MILLISECONDS)
-
-Execute `CALLBACK` after `SECONDS`.
-)");
-
-    module_defun(async_ptr, "async-start", &detail::Fasync_start);
-
-    module_defun(async_ptr,
-                 "async-then",
-                 &detail::Fasync_then,
-                 R"((future-then FUTURE SUCCESS REJECT)
-
-)");
-
-    module_defun(async_ptr,
-                 "async-await",
-                 &detail::Fasync_await,
-                 R"((future-await FUTURE)
-
-Block the main thread till `FUTURE` is complete and return return the
-value of the future.
-)");
-
-    module_defun(async_ptr,
-                 "async-ready",
-                 &detail::Fasync_ready,
-                 R"((async-ready FUTURE)
-
-)");
-
-    module_defun(async_ptr,
-                 "async-state",
-                 &detail::Fasync_state,
-                 R"((async-state FUTURE)
-
-)");
 
 
     return Masync;
