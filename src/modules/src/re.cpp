@@ -229,7 +229,7 @@ struct replace
 {
     inline static const std::string name{ "re-replace" };
 
-    inline static const Signature signature{};
+    inline static const Signature signature{ Or{ String{}, Int{} }, String{}, String{}, Optional{}, List{} };
 
     inline static const std::string doc{ R"((re-replace [REGEX|STRING] STRING REPLACEMENT [MATCH_FLAGS])
 
@@ -274,7 +274,7 @@ struct match
 {
     inline static const std::string name{ "re-match" };
 
-    inline static const Signature signature{};
+    inline static const Signature signature{ Or{ String{}, Int{} }, String{}, Optional{}, List{} };
 
     inline static const std::string doc{ R"((match [REGEX|STRING] STRING [MATCH_FLAGS])
 
@@ -320,7 +320,7 @@ struct search
 {
     inline static const std::string name{ "re-search" };
 
-    inline static const Signature signature{};
+    inline static const Signature signature{ Or{ String{}, Int{} }, String{}, Optional{}, List{} };
 
     inline static const std::string doc{ R"((re-search [REGEX|STRING] STRING [MATCH_FLAGS])
 
@@ -367,7 +367,7 @@ struct search_all
 {
     inline static const std::string name{ "re-search-all" };
 
-    inline static const Signature signature{};
+    inline static const Signature signature{ Or{ String{}, Int{} }, String{}, Optional{}, List{} };
 
     inline static const std::string doc{ R"((re-search-all [REGEX|STRING] STRING [MATCH_FLAGS])
 
@@ -422,7 +422,7 @@ struct compile
 {
     inline static const std::string name{ "re-compile" };
 
-    inline static const Signature signature{};
+    inline static const Signature signature{ String{}, Optional{}, List{} };
 
     inline static const std::string doc{ R"((re-compile REGEX_STRING [BUILD_FLAGS_LIST])
 
@@ -460,7 +460,6 @@ the created regex. Optionaly, build flags can be passed through the
     }
 };
 
-
 struct module_doc
 {
     inline static const std::string doc{ R"(The `re` module provides support for working with regular
@@ -476,7 +475,6 @@ The symbols starting with `re-match-` modify the matching process, the
 symbols starting with `re-regex-` modify the building of a regex.
 )" };
 };
-
 
 struct re_match_default_const
 {
@@ -787,6 +785,8 @@ ALISP_EXPORT alisp::env::ModulePtr init_re(alisp::env::Environment *, alisp::eva
 
     module_defun<re::replace>(re_ptr);
     module_defun<re::match>(re_ptr);
+    module_defun<re::search>(re_ptr);
+    module_defun<re::search_all>(re_ptr);
     module_defun<re::compile>(re_ptr);
 
     return Mre;

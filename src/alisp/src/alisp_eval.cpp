@@ -320,7 +320,7 @@ ALObjectPtr Evaluator::apply_prime(const ALObjectPtr &func, const ALObjectPtr &a
     auto check_args = [&](const ALObjectPtr &evaled_args, const ALObjectPtr &signature) {
         size_t cnt = 1;
         handle_argument_bindings(signature, evaled_args, [&](const ALObjectPtr &param, ALObjectPtr arg) {
-            signature_assertions.at(param.get())(arg, cnt++, signature);
+            SignatureHandler::handle_signature_element(param, arg, cnt++, signature);
         });
     };
 
@@ -349,11 +349,12 @@ ALObjectPtr Evaluator::apply_prime(const ALObjectPtr &func, const ALObjectPtr &a
 
 ALObjectPtr Evaluator::eval_file(const std::string &t_file)
 {
-    AL_DEBUG("Evaluating file: "s += t_file);
+    const auto file_path = std::filesystem::absolute(t_file).string();
+    AL_DEBUG("Evaluating file: "s += file_path);
     m_current_file    = t_file;
-    auto file_content = utility::load_file(t_file);
+    auto file_content = utility::load_file(file_path);
 
-    auto parse_result = m_parser->parse(file_content, t_file);
+    auto parse_result = m_parser->parse(file_content, file_path);
 
     if (parse_result.empty())
     {

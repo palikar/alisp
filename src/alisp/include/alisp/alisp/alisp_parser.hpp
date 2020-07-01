@@ -1145,7 +1145,7 @@ template<class Environment> class ALParser : public ParserBase
         const auto end   = begin == nullptr ? nullptr : begin + input.size();
         this->position   = detail::Position(begin, end);
 
-        m_file  = std::filesystem::absolute(file_name).string();
+        m_file  = file_name;
         m_input = input;
         depth   = 0;
 

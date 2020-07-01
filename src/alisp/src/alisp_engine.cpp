@@ -40,6 +40,7 @@ LanguageEngine::LanguageEngine(std::vector<EngineSettings> t_setting,
 
 void LanguageEngine::do_eval(std::string &t_input, const std::string &t_file, bool t_print_res)
 {
+
     auto parse_result = m_parser->parse(t_input, t_file);
 
     if (check(EngineSettings::OPTIMIZATION) or utility::env_bool(ENV_VAR_OPTIMIZE))
@@ -193,7 +194,8 @@ std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_pa
         {
             auto file_content = utility::load_file(t_path);
             eval::detail::EvaluationLock lock{ m_evaluator };
-            do_eval(file_content, t_path);
+
+            do_eval(file_content, std::filesystem::absolute(t_path).string());
         }
 
         while (m_evaluator.is_async_pending())

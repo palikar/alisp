@@ -93,6 +93,10 @@ DEFSYM(Qbyte_arg, "&byte", R"()");
 DEFSYM(Qbytearray_arg, "&byte-array", R"()");
 DEFSYM(Qany_arg, "&any", R"()");
 
+DEFSYM(Qor_arg, "&or", R"()");
+DEFSYM(Qand_arg, "&or", R"()");
+DEFSYM(Qnot_arg, "&or", R"()");
+
 DEFSYM(Qoptional, "&optional", R"(Used in an argument list to signify that the next arguments are optional.)");
 
 DEFSYM(Qrest,
