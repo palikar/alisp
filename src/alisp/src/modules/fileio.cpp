@@ -1811,8 +1811,6 @@ files, directories and some basic IO functions.
 };
 
 
-
-
 }  // namespace detail
 
 env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)

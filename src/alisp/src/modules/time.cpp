@@ -457,6 +457,55 @@ Block the current thread for `TIME` miliseconds.
 };
 
 
+struct system_clock_var
+{
+
+    static inline const std::string name{"system-clock"};
+
+    static inline const std::string doc{R"(Integer representing the system-wide real time wall clock.
+)"};
+
+    static inline const auto var = make_int(details::SYSTEM_CLOCK);
+    
+
+};
+
+struct steady_clock_var
+{
+
+    static inline const std::string name{"steady-clock"};
+
+    static inline const std::string doc{R"(Integer representing a monotonic clock. The time points of this clock
+cannot decrease as physical time moves forward and the time between
+ticks of this clock is constant.
+)"};
+
+    static inline const auto var = make_int(details::STEADY_CLOCK);
+};
+
+struct hight_res_clock_var
+{
+
+    static inline const std::string name{"high-res-clock"};
+
+    static inline const std::string doc{R"(Integer representing a clock with the smallest tick period provided
+by the implementation.
+)"};
+
+    static inline const auto var = make_int(details::HIGH_RES_CLOCK);
+};
+
+struct clocks_per_sec_var
+{
+
+    static inline const std::string name{"clocks-per-second"};
+
+    static inline const std::string doc{R"(Number of clock ticks per second. Clock ticks are units of time of a
+constant but system-specific length.)"};
+
+    static inline const auto var = make_int(details::clocks_per_sec);
+};
+
 struct module_doc
 {
     inline static const std::string doc{R"(The `time` module provides utility functions for working with time
@@ -478,33 +527,7 @@ env::ModulePtr init_time(env::Environment *, eval::Evaluator *)
     module_doc(time_ptr, details::module_doc::doc);
 
     
-    module_defconst(time_ptr,
-                    "system-clock",
-                    make_int(details::SYSTEM_CLOCK),
-                    R"(Integer representing the system-wide real time wall clock.
-)");
-
-    module_defconst(time_ptr,
-                    "steady-clock",
-                    make_int(details::STEADY_CLOCK),
-                    R"(Integer representing a monotonic clock. The time points of this clock
-cannot decrease as physical time moves forward and the time between
-ticks of this clock is constant.
-)");
-
-    module_defconst(time_ptr,
-                    "high-res-clock",
-                    make_int(details::HIGH_RES_CLOCK),
-                    R"(Integer representing a clock with the smallest tick period provided
-by the implementation.
-)");
-
-
-    module_defconst(time_ptr,
-                    "clocks-pre-second",
-                    make_int(details::clocks_per_sec),
-                    R"(Number of clock ticks per second. Clock ticks are units of time of a
-constant but system-specific length.)");
+    
 
     return Mtime;
 }

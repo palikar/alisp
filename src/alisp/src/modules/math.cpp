@@ -53,46 +53,500 @@ inline double to_rad(double t_deg)
 }
 
 
-REAL_APP_PREDICATE(Fisnan, std::isnan);
-REAL_APP_PREDICATE(Fisinf, std::isinf);
+struct isnan
+{
+    inline static const std::string name{"isnan"};
 
-REAL_APP_FUNCTION(Ftodegrees, to_degrees);
-REAL_APP_FUNCTION(Ftoradians, to_rad);
+    inline static const std::string doc{R"((isnan VALUE)
 
-REAL_APP_FUNCTION(Fexp, std::exp);
-REAL_APP_FUNCTION(Fexp2, std::exp2);
-REAL_APP_FUNCTION(Fexpm1, std::expm1);
-REAL_APP_FUNCTION(Flog, std::log);
-REAL_APP_FUNCTION(Flog10, std::log10);
-REAL_APP_FUNCTION(Flog2, std::log2);
-REAL_APP_FUNCTION(Flog1p, std::log1p);
-REAL_APP_FUNCTION(Fsin, std::sin);
-REAL_APP_FUNCTION(Fcos, std::cos);
-REAL_APP_FUNCTION(Ftan, std::tan);
-REAL_APP_FUNCTION(Fasin, std::asin);
-REAL_APP_FUNCTION(Facos, std::acos);
-REAL_APP_FUNCTION(Fatan, std::atan);
-REAL_APP_FUNCTION(Fsinh, std::sinh);
-REAL_APP_FUNCTION(Fcosh, std::cosh);
-REAL_APP_FUNCTION(Ftanh, std::tanh);
-REAL_APP_FUNCTION(Fasinh, std::asinh);
-REAL_APP_FUNCTION(Facosh, std::acosh);
-REAL_APP_FUNCTION(Fceil, std::ceil);
-REAL_APP_FUNCTION(Ffloor, std::floor);
-REAL_APP_FUNCTION(Ferf, std::erf);
-REAL_APP_FUNCTION(Ferfc, std::erfc);
-REAL_APP_FUNCTION(Ftgamma, std::tgamma);
-REAL_APP_FUNCTION(Flgamma, std::lgamma);
-REAL_APP_BIFUNCTION(Fhypot, std::hypot);
-REAL_APP_BIFUNCTION(Fpow, std::pow);
-REAL_APP_BIFUNCTION(Ffdim, std::fdim);
+Return `t` if `VALUE` is not a number and `nil` otherwise.
+)"};
+
+    static REAL_APP_PREDICATE(Fisnan, std::isnan);
+};
+
+struct isinf
+{
+
+    inline static const std::string name{"isinf"};
+
+    inline static const std::string doc{R"((sin VALUE)
+
+natural logarithm (to base e) of 1 plus the given number
+)"};
+
+    inline static const std::string doc{R"((isinf VALUE)
+
+Return `t` if `VALUE` is infinity and `nil` otherwise.
+)"};
+
+    static REAL_APP_PREDICATE(Fisinf, std::isinf);
+};
 
 
-REAL_APP_FUNCTION(Fsqrt, std::sqrt);
-REAL_APP_FUNCTION(Fcbrt, std::cbrt);
+struct todegrees
+{
+    inline static const std::string name{"todegrees"};
 
-INT_APP_BIFUNCTION(Fgcd, std::gcd);
-INT_APP_BIFUNCTION(Flcm, std::lcm);
+    inline static const std::string doc{R"((todegrees VALUE)
+
+Return the `VALUE`(given in radians) in degrees.
+)"};
+
+    static REAL_APP_FUNCTION(Ftodegrees, to_degrees);
+};
+
+struct toradians
+{
+    inline static const std::string name{"toradians"};
+
+    inline static const std::string doc{R"((toradians VALUE)
+
+Return the `VALUE`(given in degrees) in radians.
+)"};
+
+    static REAL_APP_FUNCTION(Ftoradians, to_rad);
+};
+
+struct exp
+{
+    inline static const std::string name{"exp"};
+
+    inline static const std::string doc{R"((exp VALUE
+
+Compute the exponential function
+))"};
+    
+    static REAL_APP_FUNCTION(Fexp, std::exp);
+};
+
+struct exp2
+{
+    inline static const std::string name{"exp2"};
+
+    inline static const std::string doc{R"((exp2 VALUE)
+
+Compute binary exponential function
+)"};
+
+    static REAL_APP_FUNCTION(Fexp2, std::exp2);
+};
+
+struct expm1
+{
+    inline static const std::string name{"expm1"};
+
+    inline static const std::string doc{R"((expm1 VALUE)
+
+Return e raised to the given power, minus one
+)"};
+
+    static REAL_APP_FUNCTION(Fexpm1, std::expm1);
+};
+
+struct log
+{
+    inline static const std::string name{"log"};
+
+    inline static const std::string doc{R"((log VALUE)
+
+Compute natural (base e) logarithm.
+)"};
+
+    static REAL_APP_FUNCTION(Flog, std::log);
+};
+
+struct log10
+{
+    inline static const std::string name{"log10"};
+
+    inline static const std::string doc{R"((log10 VALUE)
+
+Compute common (base 10) logarithm.
+)"};
+
+    static REAL_APP_FUNCTION(Flog10, std::log10);
+};
+
+struct log2
+{
+    inline static const std::string name{"log2"};
+
+    inline static const std::string doc{R"((log2 VALUE)
+
+Base 2 logarithm of the given number.
+)"};
+
+    static REAL_APP_FUNCTION(Flog2, std::log2);
+};
+
+struct log1p
+{
+    inline static const std::string name{"log1p"};
+
+    inline static const std::string doc{R"((log1p VALUE))"};
+
+    static REAL_APP_FUNCTION(Flog1p, std::log1p);
+};
+
+struct sin
+{
+    inline static const std::string name{"sin"};
+
+    static REAL_APP_FUNCTION(Fsin, std::sin);
+};
+
+struct cos
+{
+    inline static const std::string name{"cos"};
+
+    inline static const std::string doc{R"((cos VALUE)
+
+Compute cosine.
+ )"};
+
+    static REAL_APP_FUNCTION(Fcos, std::cos);
+};
+
+struct tan
+{
+    inline static const std::string name{"tan"};
+
+    static REAL_APP_FUNCTION(Ftan, std::tan);
+};
+
+struct asin
+{
+    inline static const std::string name{"asin"};
+
+    inline static const std::string doc{R"((asin VALUE)
+
+Compute arc sine.
+)"};
+
+    static REAL_APP_FUNCTION(Fasin, std::asin);
+};
+
+struct acos
+{
+    inline static const std::string name{"acos"};
+
+    inline static const std::string doc{R"((acos VALUE)
+
+Compute arc cosine.
+)"};
+
+    static REAL_APP_FUNCTION(Facos, std::acos);
+};
+
+struct atan
+{
+    inline static const std::string name{"atan"};
+
+    inline static const std::string doc{R"((atan VALUE)
+Compute arc tangent.
+)"};
+
+    static REAL_APP_FUNCTION(Fatan, std::atan);
+};
+
+struct sinh
+{
+    inline static const std::string name{"sinh"};
+
+    inline static const std::string doc{R"((sinh VALUE)
+
+Compute hyperbolic sine.
+)"};
+
+    static REAL_APP_FUNCTION(Fsinh, std::sinh);
+};
+
+struct cosh
+{
+    inline static const std::string name{"cosh"};
+
+    inline static const std::string doc{R"((cosh VALUE)
+
+Compute hyperbolic cosine.
+)"};
+
+    static REAL_APP_FUNCTION(Fcosh, std::cosh);
+};
+
+struct tanh
+{
+    inline static const std::string name{"tanh"};
+
+    inline static const std::string doc{R"((tanh VALUE)
+
+Compute hyperbolic tangent.
+)"};
+
+    static REAL_APP_FUNCTION(Ftanh, std::tanh);
+};
+
+struct asinh
+{
+    inline static const std::string name{"asinh"};
+
+    inline static const std::string doc{R"((asinh VALUE)
+
+Compute the inverse hyperbolic sine.
+)"};
+
+    static REAL_APP_FUNCTION(Fasinh, std::asinh);
+};
+
+struct acosh
+{
+    inline static const std::string name{"acosh"};
+
+    inline static const std::string doc{R"((acosh VALUE)
+
+Compute the inverse hyperbolic cosine.
+)"};
+
+    static REAL_APP_FUNCTION(Facosh, std::acosh);
+};
+
+struct ceil
+{
+    inline static const std::string name{"ceil"};
+
+    inline static const std::string doc{R"((ceil VALUE)
+
+Return the nearest integer not less than the given value.
+)"};
+
+    static REAL_APP_FUNCTION(Fceil, std::ceil);
+};
+
+struct floor
+{
+    inline static const std::string name{"floor"};
+
+    inline static const std::string doc{R"((floor VALUE)
+
+Return the nearest integer not greater than the given value.
+)"};
+
+    static REAL_APP_FUNCTION(Ffloor, std::floor);
+};
+
+struct erf
+{
+    inline static const std::string name{"erf"};
+
+    inline static const std::string doc{R"((erf VALUE)
+
+Compute the error function.)"};
+
+    static REAL_APP_FUNCTION(Ferf, std::erf);
+};
+
+struct erfc
+{
+    inline static const std::string name{"erfc"};
+
+    inline static const std::string doc{R"((erfc VALUE)
+
+Compute the complementary error function.
+)"};
+
+    static REAL_APP_FUNCTION(Ferfc, std::erfc);
+};
+
+struct tgamma
+{
+    inline static const std::string name{"tgamma"};
+
+    inline static const std::string doc{R"((tgamma VALUE)
+
+Compute the gamma function.
+)"};
+
+    static REAL_APP_FUNCTION(Ftgamma, std::tgamma);
+};
+
+struct lgamma
+{
+    inline static const std::string name{"lgamma"};
+
+    inline static const std::string doc{R"((lgamma VALUE)
+
+Compute the natural logarithm of the gamma function.
+)"};
+
+    static REAL_APP_FUNCTION(Flgamma, std::lgamma);
+};
+
+struct hypot
+{
+    inline static const std::string name{"hypot"};
+
+    inline static const std::string doc{R"((hypot VALUE)
+
+Compute square root of the sum of the squares of two given numbers.
+)"};
+
+    static REAL_APP_BIFUNCTION(Fhypot, std::hypot);
+};
+
+struct pow
+{
+    inline static const std::string name{"pow"};
+
+    inline static const std::string doc{R"((pow VALUE)
+
+Raise a number to the given power.
+)"};
+
+    static REAL_APP_BIFUNCTION(Fpow, std::pow);
+};
+
+struct fdim
+{
+    inline static const std::string name{"fdim"};
+
+    inline static const std::string doc{R"((fdim VALUE)
+
+Compute positive difference of two floating point values.
+)"};
+
+    static REAL_APP_BIFUNCTION(Ffdim, std::fdim);
+};
+
+
+
+struct sqrt
+{
+    inline static const std::string name{"sqrt"};
+
+    inline static const std::string doc{R"((sqrt VALUE)
+
+Compute square root.
+)"};
+
+    static REAL_APP_FUNCTION(Fsqrt, std::sqrt);
+};
+
+struct cbrt
+{
+    inline static const std::string name{"cbrt"};
+
+    inline static const std::string doc{R"((cbrt VALUE)
+
+Compute cubic root.
+)"};
+
+    static REAL_APP_FUNCTION(Fcbrt, std::cbrt);
+};
+
+
+struct gcd
+{
+    inline static const std::string name{"gcd"};
+
+    inline static const std::string doc{R"((gcd VALUE)
+
+Compute greatest common denominator
+)"};
+
+    static INT_APP_BIFUNCTION(Fgcd, std::gcd);
+};
+
+struct lcm
+{
+    inline static const std::string name{"lcm"};
+
+    inline static const std::string doc{R"((lcm VALUE)
+
+Compute lowest common denominator
+)"};
+
+    static INT_APP_BIFUNCTION(Flcm, std::lcm);
+};
+
+
+struct pi_var
+{
+
+    static inline const std::string name{"PI"};
+
+    static inline const std::string doc{R"((isinf VALUE)
+
+Return `t` if `VALUE` is infinity and `nil` otherwise.
+)"};
+
+    static inline const std::string doc{R"(The value of Pi (3.14159265....))"};
+
+    static inline const auto var = make_double(details::PI);
+};
+
+struct e_var
+{
+    static inline const std::string name{"E"};
+
+    static inline const std::string doc{R"(The value of E (2.71828...))"};
+
+    static inline const auto var = make_double(details::E);
+};
+
+struct tau_var
+{
+    static inline const std::string name{"TAU"};
+
+    static inline const std::string doc{R"(The value of Tau (2xPi))"};
+
+    static inline const auto var = make_double(details::TAU);
+};
+
+struct max_int_var
+{
+    static inline const std::string name{"TAU"};
+
+    static inline const std::string doc{R"(The maximal value that an integer can take.)"};
+
+    static inline const auto var = make_double(detail::AL_MAX_INT);
+};
+
+struct min_int_var
+{
+    static inline const std::string name{"TAU"};
+
+    static inline const std::string doc{R"(The min value that an integer can take.)"};
+
+    static inline const auto var = make_double(detail::AL_MIN_INT);
+};
+
+struct inf_var
+{
+    static inline const std::string name{"TAU"};
+
+    static inline const std::string doc{R"(Value used to represent infinity)"};
+
+    static inline const auto var = make_double(detail::AL_INF_INT);
+};
+
+struct max_real_var
+{
+    static inline const std::string name{"TAU"};
+
+    static inline const std::string doc{R"(The maximal value that a real number can take.)"};
+
+    static inline const auto var = make_double(detail::AL_MAX_REAL);
+};
+
+struct min_real_var
+{
+    static inline const std::string name{"TAU"};
+
+    static inline const std::string doc{R"(The minimal value that a real number can take.)"};
+
+    static inline const auto var = make_double(detail::AL_MIN_REAL);
+};
+
 
 
 struct module_doc
@@ -113,302 +567,6 @@ env::ModulePtr init_math(env::Environment *, eval::Evaluator *)
 
 
     module_doc(math_ptr, detail::module_doc::doc);
-    
-    module_defvar(math_ptr, "PI", make_double(detail::PI), R"(The value of Pi (3.14159265....))");
-
-    module_defvar(math_ptr, "E", make_double(detail::E), R"(The value of E (2.71828...))");
-
-    module_defvar(math_ptr, "TAU", make_double(detail::TAU), R"(The value of Tau (2xPi))");
-
-
-    module_defvar(math_ptr, "max-int", make_int(detail::AL_MAX_INT), R"(The maximal value that an integer can take.)");
-
-    module_defvar(math_ptr, "min-int", make_int(detail::AL_MIN_INT), R"(The min value that an integer can take.)");
-
-    module_defvar(math_ptr, "inf-int", make_int(detail::AL_INF_INT), R"(Value used to represent infinity)");
-
-    module_defvar(
-      math_ptr, "max-real", make_real(detail::AL_MAX_REAL), R"(The maximal value that a real number can take.)");
-
-    module_defvar(
-      math_ptr, "min-real", make_real(detail::AL_MIN_REAL), R"(The minimal value that a real number can take.)");
-
-
-    module_defun(math_ptr,
-                 "isinf",
-                 &detail::Fisinf,
-                 R"((isinf VALUE)
-
-Return `t` if `VALUE` is infinity and `nil` otherwise.
-)");
-
-    module_defun(math_ptr,
-                 "isnan",
-                 &detail::Fisnan,
-                 R"((isnan VALUE)
-
-Return `t` if `VALUE` is not a number and `nil` otherwise.
-)");
-
-
-    module_defun(math_ptr,
-                 "todegrees",
-                 &detail::Ftodegrees,
-                 R"((todegrees VALUE)
-
-Return the `VALUE`(given in radians) in degrees.
-)");
-
-    module_defun(math_ptr,
-                 "toradians",
-                 &detail::Ftoradians,
-                 R"((toradians VALUE)
-
-Return the `VALUE`(given in degrees) in radians.
-)");
-
-
-    module_defun(math_ptr,
-                 "exp",
-                 &detail::Fexp,
-                 R"((exp VALUE)
-
-Compute exponential function.
-)");
-
-    module_defun(math_ptr,
-                 "exp2",
-                 &detail::Fexp2,
-                 R"((exp2 VALUE)
-
-Compute binary exponential function
-)");
-
-    module_defun(math_ptr,
-                 "expm1",
-                 &detail::Fexpm1,
-                 R"((expm1 VALUE)
-
-Return e raised to the given power, minus one
-)");
-
-    module_defun(math_ptr,
-                 "log",
-                 &detail::Flog,
-                 R"((log VALUE)
-
-Compute natural (base e) logarithm.
-)");
-
-    module_defun(math_ptr,
-                 "log10",
-                 &detail::Flog10,
-                 R"((log10 VALUE)
-
-Compute common (base 10) logarithm.
-)");
-
-    module_defun(math_ptr,
-                 "log2",
-                 &detail::Flog2,
-                 R"((log2 VALUE)
-
-Base 2 logarithm of the given number.
-)");
-
-    module_defun(math_ptr, "log1p", &detail::Flog1p, R"((log1p VALUE))");
-
-    module_defun(math_ptr,
-                 "sin",
-                 &detail::Fsin,
-                 R"((sin VALUE)
-
-natural logarithm (to base e) of 1 plus the given number
-)");
-
-    module_defun(math_ptr,
-                 "cos",
-                 &detail::Fcos,
-                 R"((cos VALUE)
-
-Compute cosine.
- )");
-
-    module_defun(math_ptr,
-                 "tan",
-                 &detail::Ftan,
-                 R"((tan VALUE)
-
-Compute tangent.
-)");
-
-    module_defun(math_ptr,
-                 "asin",
-                 &detail::Fasin,
-                 R"((asin VALUE)
-
-Compute arc sine.
-)");
-
-    module_defun(math_ptr,
-                 "acos",
-                 &detail::Facos,
-                 R"((acos VALUE)
-
-Compute arc cosine.
-)");
-
-    module_defun(math_ptr,
-                 "atan",
-                 &detail::Fatan,
-                 R"((atan VALUE)
-Compute arc tangent.
-)");
-
-    module_defun(math_ptr,
-                 "sinh",
-                 &detail::Fsinh,
-                 R"((sinh VALUE)
-
-Compute hyperbolic sine.
-)");
-
-    module_defun(math_ptr,
-                 "cosh",
-                 &detail::Fcosh,
-                 R"((cosh VALUE)
-
-Compute hyperbolic cosine.
-)");
-
-    module_defun(math_ptr,
-                 "tanh",
-                 &detail::Ftanh,
-                 R"((tanh VALUE)
-
-Compute hyperbolic tangent.
-)");
-
-    module_defun(math_ptr,
-                 "asinh",
-                 &detail::Fasinh,
-                 R"((asinh VALUE)
-
-Compute the inverse hyperbolic sine.
-)");
-
-    module_defun(math_ptr,
-                 "acosh",
-                 &detail::Facosh,
-                 R"((acosh VALUE)
-
-Compute the inverse hyperbolic cosine.
-)");
-
-    module_defun(math_ptr,
-                 "ceil",
-                 &detail::Fceil,
-                 R"((ceil VALUE)
-
-Return the nearest integer not less than the given value.
-)");
-
-    module_defun(math_ptr,
-                 "floor",
-                 &detail::Ffloor,
-                 R"((floor VALUE)
-
-Return the nearest integer not greater than the given value.
-)");
-
-    module_defun(math_ptr,
-                 "erf",
-                 &detail::Ferf,
-                 R"((erf VALUE)
-
-Compute the error function.)");
-
-    module_defun(math_ptr,
-                 "erfc",
-                 &detail::Ferfc,
-                 R"((erfc VALUE)
-
-Compute the complementary error function.
-)");
-
-    module_defun(math_ptr,
-                 "tgamma",
-                 &detail::Ftgamma,
-                 R"((tgamma VALUE)
-
-Compute the gamma function.
-)");
-
-    module_defun(math_ptr,
-                 "lgamma",
-                 &detail::Flgamma,
-                 R"((lgamma VALUE)
-
-Compute the natural logarithm of the gamma function.
-)");
-
-    module_defun(math_ptr,
-                 "fdim",
-                 &detail::Ffdim,
-                 R"((fdim VALUE)
-
-Compute positive difference of two floating point values.
-)");
-
-    module_defun(math_ptr,
-                 "pow",
-                 &detail::Fpow,
-                 R"((pow VALUE)
-
-Raise a number to the given power.
-)");
-
-    module_defun(math_ptr,
-                 "sqrt",
-                 &detail::Fsqrt,
-                 R"((sqrt VALUE)
-
-Compute square root.
-)");
-
-    module_defun(math_ptr,
-                 "cbrt",
-                 &detail::Fcbrt,
-                 R"((cbrt VALUE)
-
-Compute cubic root.
-)");
-
-    module_defun(math_ptr,
-                 "hypot",
-                 &detail::Fhypot,
-                 R"((hypot VALUE)
-
-Compute square root of the sum of the squares of two given numbers.
-)");
-
-
-    module_defun(math_ptr,
-                 "gcd",
-                 &detail::Fgcd,
-                 R"((gcd VALUE)
-
-Compute greatest common denominator
-)");
-
-    module_defun(math_ptr,
-                 "lcm",
-                 &detail::Flcm,
-                 R"((lcm VALUE)
-
-Compute lowest common denominator
-)");
-
 
     return Mmath;
 }
