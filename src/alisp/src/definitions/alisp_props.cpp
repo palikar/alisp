@@ -30,127 +30,79 @@ namespace alisp
 {
 
 
-struct Sprop_set
+ALObjectPtr Fprop_set(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "prop-set";
+    AL_CHECK(assert_size<3>(obj));
 
-    inline static const std::string doc{ R"((prop-set SYM PROPERTY VALUE)
+    auto target = eval->eval(obj->i(0));
 
-Set the property with name PROPERTY of SYM to VALUE.
-)" };
+    auto prop = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-    static ALObjectPtr Fprop_set(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<3>(obj));
+    auto &prop_name = prop->to_string();
 
-        auto target = eval->eval(obj->i(0));
+    target->set_prop(prop_name, eval->eval(obj->i(2)));
 
-        auto prop = eval_check(eval, obj, 1, &assert_string<size_t>);
+    return Qt;
+}
 
-        auto &prop_name = prop->to_string();
-
-        target->set_prop(prop_name, eval->eval(obj->i(2)));
-
-        return Qt;
-    }
-};
-
-struct Sprop_get
+ALObjectPtr Fprop_get(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "prop-get";
+    AL_CHECK(assert_size<2>(obj));
 
-    inline static const std::string doc{ R"((prop-get SYM PROPERTY)
+    auto target = eval->eval(obj->i(0));
 
-Return the property with name PROPERTY of SYM.
-)" };
+    auto prop = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-    static ALObjectPtr Fprop_get(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    auto &prop_name = prop->to_string();
+
+    if (!target->prop_exists(prop_name))
     {
-        AL_CHECK(assert_size<2>(obj));
-
-        auto target = eval->eval(obj->i(0));
-
-        auto prop = eval_check(eval, obj, 1, &assert_string<size_t>);
-
-        auto &prop_name = prop->to_string();
-
-        if (!target->prop_exists(prop_name))
-        {
-            return Qnil;
-        }
-
-        return target->get_prop(prop_name);
+        return Qnil;
     }
-};
 
-struct Sprop_exists
+    return target->get_prop(prop_name);
+}
+
+
+ALObjectPtr Fprop_exists(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "prop-exists";
+    AL_CHECK(assert_size<2>(obj));
 
-    inline static const std::string doc{ R"((prop-get SYM PROPERTY)
+    auto target = eval->eval(obj->i(0));
 
-Return `t` if SYM has the property PROPERTY and `nil` otherwise.
-)" };
+    auto prop = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-    static ALObjectPtr Fprop_exists(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<2>(obj));
+    auto &prop_name = prop->to_string();
 
-        auto target = eval->eval(obj->i(0));
+    return target->prop_exists(prop_name) ? Qt : Qnil;
+}
 
-        auto prop = eval_check(eval, obj, 1, &assert_string<size_t>);
-
-        auto &prop_name = prop->to_string();
-
-        return target->prop_exists(prop_name) ? Qt : Qnil;
-    }
-};
-
-struct Sprop_list
+ALObjectPtr Fprop_list(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "prop-list";
+    AL_CHECK(assert_size<1>(obj));
 
-    inline static const std::string doc{ R"((prop-list SYM)
-
-Return a list with all of the properties of SYM.
-)" };
-
-    static ALObjectPtr Fprop_list(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    auto target = eval->eval(obj->i(0));
+    ALObject::list_type props;
+    for (auto &[name, _] : target->props())
     {
-        AL_CHECK(assert_size<1>(obj));
-
-        auto target = eval->eval(obj->i(0));
-        ALObject::list_type props;
-        for (auto &[name, _] : target->props())
-        {
-            props.push_back(make_string(name));
-        }
-        return make_object(props);
+        props.push_back(make_string(name));
     }
-};
+    return make_object(props);
+}
 
-struct Sprop_remove
+
+ALObjectPtr Fprop_remove(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "prop-remove";
+    AL_CHECK(assert_size<2>(obj));
 
-    inline static const std::string doc{ R"((prop-remove SYM PROPERTY)
+    auto target = eval->eval(obj->i(0));
 
-Remove `PROPERTY` from the list of properties of `SYM`.
-)" };
+    auto prop = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-    static ALObjectPtr Fprop_remove(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<2>(obj));
+    const auto &prop_name = prop->to_string();
+    const auto removed    = target->props().erase(prop_name);
 
-        auto target = eval->eval(obj->i(0));
-
-        auto prop = eval_check(eval, obj, 1, &assert_string<size_t>);
-
-        const auto &prop_name = prop->to_string();
-        const auto removed    = target->props().erase(prop_name);
-
-        return removed > 0 ? Qt : Qnil;
-    }
-};
+    return removed > 0 ? Qt : Qnil;
+}
 
 }  // namespace alisp

@@ -237,9 +237,9 @@ ALObjectPtr Evaluator::eval_callable(const ALObjectPtr &callable, const ALObject
         else if (func->check_macro_flag())
         {
             env::detail::MacroCall fc{ env };
-            auto expoanded = apply_macro(func, args);
-            AL_DEBUG("Macro expansion: "s += dump(a));
-            return eval(expoanded);
+            auto expanded = apply_macro(func, args);
+            AL_DEBUG("Macro expansion: "s += dump(expanded));
+            return eval(expanded);
         }
         else
         {

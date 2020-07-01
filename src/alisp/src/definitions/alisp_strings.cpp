@@ -30,469 +30,248 @@
 namespace alisp
 {
 
-
-struct string_append
+ALObjectPtr Fstring_append(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
+    AL_CHECK(assert_size<2>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string name = "string-append";
-
-    inline static const std::string doc{ R"((string-append STRING1 STRING2)
-
-Return a new string by concatenatig `STRING1` to `STRING2`.
-)" };
-
-    static ALObjectPtr Fstring_append(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<2>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
 
-        return make_string(str_1->to_string() += str_2->to_string());
-    }
-};
+    return make_string(str_1->to_string() += str_2->to_string());
+}
 
-struct string_prepend
+ALObjectPtr Fstring_prepend(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-prepend";
+    AL_CHECK(assert_size<2>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-prepend STRING1 STRING2)
-
-Return a new string by prepending `STRING1` to `STRING2`.
-)" };
-
-    static ALObjectPtr Fstring_prepend(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<2>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
 
-        return make_string(str_2->to_string() += str_1->to_string());
-    }
-};
+    return make_string(str_2->to_string() += str_1->to_string());
+}
 
-struct string_equals
+ALObjectPtr Fstring_equals(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-equals";
+    AL_CHECK(assert_size<2>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-equals STRING1 STRING2)
-
-Return `t` if the proviced strings equal lexicographically. Return `nil` otherwise.
-)" };
-
-    static ALObjectPtr Fstring_equals(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<2>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
 
-        return str_1->to_string().compare(str_2->to_string()) == 0 ? Qt : Qnil;
-    }
-};
+    return str_1->to_string().compare(str_2->to_string()) == 0 ? Qt : Qnil;
+}
 
-struct string_less
+ALObjectPtr Fstring_less(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-less";
+    AL_CHECK(assert_size<2>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-less STRING1 STRING2))" };
-
-    static ALObjectPtr Fstring_less(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<2>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
 
-        return str_1->to_string().compare(str_2->to_string()) < 0 ? Qt : Qnil;
-    }
-};
+    return str_1->to_string().compare(str_2->to_string()) < 0 ? Qt : Qnil;
+}
 
-struct string_contains
+ALObjectPtr Fstring_contains(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-contains";
+    AL_CHECK(assert_size<2>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-contains STRING SUBSTRING)
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-Return `t` if `STRING` contains `SUBSTRING` as a substring. Return `nil` otherwise.
-)" };
 
-    static ALObjectPtr Fstring_contains(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    if (str_1->to_string().find(str_2->to_string()) != std::string::npos)
     {
-        AL_CHECK(assert_size<2>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
-
-
-        if (str_1->to_string().find(str_2->to_string()) != std::string::npos)
-        {
-            return Qt;
-        }
-        return Qnil;
+        return Qt;
     }
-};
+    return Qnil;
+}
 
-struct string_endswith
+ALObjectPtr Fstring_endswith(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-endswith";
+    AL_CHECK(assert_size<2>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-contains STRING SUFFIX)
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-Return `t` if `STRING` ends with `SUFFIX`. Return `nil` otherwise.
-)" };
 
-    static ALObjectPtr Fstring_endswith(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    if (utility::ends_with(str_1->to_string(), str_2->to_string()))
     {
-        AL_CHECK(assert_size<2>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
-
-
-        if (utility::ends_with(str_1->to_string(), str_2->to_string()))
-        {
-            return Qt;
-        }
-        return Qnil;
+        return Qt;
     }
-};
+    return Qnil;
+}
 
-struct string_startswith
+ALObjectPtr Fstring_startswith(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-startswith";
+    AL_CHECK(assert_size<2>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-contains STRING PREFIX)
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-Return `t` if `STRING` starts with `PREFIX`. Return `nil` otherwise.
-)" };
 
-    static ALObjectPtr Fstring_startswith(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    if (utility::starts_with(str_1->to_string(), str_2->to_string()))
     {
-        AL_CHECK(assert_size<2>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
-
-
-        if (utility::starts_with(str_1->to_string(), str_2->to_string()))
-        {
-            return Qt;
-        }
-        return Qnil;
+        return Qt;
     }
-};
+    return Qnil;
+}
 
-struct string_length
+ALObjectPtr Fstring_length(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-length";
+    AL_CHECK(assert_size<1>(obj));
+    auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-length STRING)
+    return make_int(std::size(str->to_string()));
+}
 
-Return the length of the provided string.
-)" };
-
-    static ALObjectPtr Fstring_length(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        return make_int(std::size(str->to_string()));
-    }
-};
-
-struct string_capitalize
+ALObjectPtr Fstring_capitalize(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-capitalize";
+    AL_CHECK(assert_size<1>(obj));
+    auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-capitalize STRING)
+    auto &s = str->to_string();
+    s[0]    = static_cast<char>(std::toupper(static_cast<size_t>(s[0])));
+    return str;
+}
 
-Capitalized the first letter of the provided string.
-)" };
-
-    static ALObjectPtr Fstring_capitalize(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        auto &s = str->to_string();
-        s[0]    = static_cast<char>(std::toupper(static_cast<size_t>(s[0])));
-        return str;
-    }
-};
-
-struct char_isalpha
+ALObjectPtr Fchar_isalpha(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "char-isalpha";
+    AL_CHECK(assert_size<1>(obj));
+    auto str = eval_check(eval, obj, 0, &assert_char<size_t>);
 
-    inline static const std::string doc{ R"((char-isalpha CHAR)
+    return std::isalpha(static_cast<int>(str->to_int())) ? Qt : Qnil;
+}
 
-Check if the character CHAR is a letter.
-)" };
-
-    static ALObjectPtr Fchar_isalpha(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        auto str = eval_check(eval, obj, 0, &assert_char<size_t>);
-
-        return std::isalpha(static_cast<int>(str->to_int())) ? Qt : Qnil;
-    }
-};
-
-struct char_isdigit
+ALObjectPtr Fchar_isdigit(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "char-isdigit";
+    AL_CHECK(assert_size<1>(obj));
+    auto str = eval_check(eval, obj, 0, &assert_char<size_t>);
 
-    inline static const std::string doc{ R"((char-isdigit CHAR)
+    return std::isdigit(static_cast<int>(str->to_int())) ? Qt : Qnil;
+}
 
-Check if the character CHAR is a digit.
-)" };
-
-    static ALObjectPtr Fchar_isdigit(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        auto str = eval_check(eval, obj, 0, &assert_char<size_t>);
-
-        return std::isdigit(static_cast<int>(str->to_int())) ? Qt : Qnil;
-    }
-};
-
-struct string_find
+ALObjectPtr Fstring_find(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-find";
+    AL_CHECK(assert_size<2>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-find STRING SUBSTRING)
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-Return the first index where `SUBSTRING` is contained in `STRINGE`.
-)" };
 
-    static ALObjectPtr Fstring_find(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    auto pos = str_1->to_string().find(str_2->to_string());
+    if (pos != std::string::npos)
     {
-        AL_CHECK(assert_size<2>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
-
-
-        auto pos = str_1->to_string().find(str_2->to_string());
-        if (pos != std::string::npos)
-        {
-            return make_int(pos);
-        }
-        return Qnil;
+        return make_int(pos);
     }
-};
+    return Qnil;
+}
 
-struct string_reverse
+ALObjectPtr Fstring_reverse(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-reverse";
-
-    inline static const std::string doc{ R"((string-reverse STRING)
-
-Rerturn a new string with the elements of STRING in reverse order
-)" };
-
-    static ALObjectPtr Fstring_reverse(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
+    AL_CHECK(assert_size<1>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
 
-        std::string copy = str_1->to_string();
-        std::reverse(copy.begin(), copy.end());
-        return make_string(copy);
-    }
-};
+    std::string copy = str_1->to_string();
+    std::reverse(copy.begin(), copy.end());
+    return make_string(copy);
+}
 
-struct string_replace
+ALObjectPtr Fstring_replace(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-replace";
+    AL_CHECK(assert_size<3>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-replace STRING SUBSTRING NEWSTRING)
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-Replace one occurrence of `SUBSTRING` in STRING with `NEWSTRING`. The
-new string is returned.
-)" };
+    auto str_3 = eval_check(eval, obj, 2, &assert_string<size_t>);
 
-    static ALObjectPtr Fstring_replace(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<3>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
+    return make_string(utility::replace(str_1->to_string(), str_2->to_string(), str_3->to_string()));
+}
 
-        auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
-
-        auto str_3 = eval_check(eval, obj, 2, &assert_string<size_t>);
-
-        return make_string(utility::replace(str_1->to_string(), str_2->to_string(), str_3->to_string()));
-    }
-};
-
-struct string_replaceall
+ALObjectPtr Fstring_replaceall(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-replaceall";
+    AL_CHECK(assert_size<3>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-replaceall STRING SUBSTRING NEWSTRING)
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-Replace all occurrences of `SUBSTRING` in STRING with `NEWSTRING`. The
-new string is returned.
-)" };
-
-    static ALObjectPtr Fstring_replaceall(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<3>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
-
-        auto str_3 = eval_check(eval, obj, 2, &assert_string<size_t>);
+    auto str_3 = eval_check(eval, obj, 2, &assert_string<size_t>);
 
 
-        return make_string(utility::replace_all(str_1->to_string(), str_2->to_string(), str_3->to_string()));
-    }
-};
+    return make_string(utility::replace_all(str_1->to_string(), str_2->to_string(), str_3->to_string()));
+}
 
-struct string_split
+ALObjectPtr Fstring_split(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-split";
+    AL_CHECK(assert_size<2>(obj));
 
-    inline static const std::string doc{ R"((string-split STRING DELIMETER)
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-Split `STRING` based on `DELIMETER` and return a list of the parts.
-)" };
+    auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
 
-    static ALObjectPtr Fstring_split(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<2>(obj));
+    return make_list(utility::split(str_1->to_string(), str_2->to_string()));
+}
 
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        auto str_2 = eval_check(eval, obj, 1, &assert_string<size_t>);
-
-        return make_list(utility::split(str_1->to_string(), str_2->to_string()));
-    }
-};
-
-struct string_substring
+ALObjectPtr Fstring_substring(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-substring";
+    AL_CHECK(assert_size<3>(obj));
+    auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"(((string-substring STRING FROM TO)
+    auto ind_1 = eval_check(eval, obj, 1, &assert_int<size_t>);
 
-Return a new string that is the subsection [`FROM`, `TO`) of `STRING`.
-))" };
+    auto ind_2 = eval_check(eval, obj, 2, &assert_int<size_t>);
 
-    static ALObjectPtr Fstring_substring(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<3>(obj));
-        auto str = eval_check(eval, obj, 0, &assert_string<size_t>);
+    return make_string(str->to_string().substr(static_cast<ALObject::string_type::size_type>(ind_1->to_int()),
+                                               static_cast<ALObject::string_type::size_type>(ind_2->to_int())));
+}
 
-        auto ind_1 = eval_check(eval, obj, 1, &assert_int<size_t>);
-
-        auto ind_2 = eval_check(eval, obj, 2, &assert_int<size_t>);
-
-        return make_string(str->to_string().substr(static_cast<ALObject::string_type::size_type>(ind_1->to_int()),
-                                                   static_cast<ALObject::string_type::size_type>(ind_2->to_int())));
-    }
-};
-
-struct string_splitlines
+ALObjectPtr Fstring_splitlines(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-splitlines";
+    AL_CHECK(assert_size<1>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-splitlines STRING)
+    return make_list(utility::split(str_1->to_string(), '\n'));
+}
 
-Split `STRING` based on `\n` and return a list of the lines.
-)" };
-
-    static ALObjectPtr Fstring_splitlines(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        return make_list(utility::split(str_1->to_string(), '\n'));
-    }
-};
-
-struct string_upper
+ALObjectPtr Fstring_upper(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-upper";
+    AL_CHECK(assert_size<1>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-upper STRING)
+    return make_string(utility::str_toupper(str_1->to_string()));
+}
 
-Capitalize every letter of `STRING`.
-)" };
-
-    static ALObjectPtr Fstring_upper(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        return make_string(utility::str_toupper(str_1->to_string()));
-    }
-};
-
-struct string_lower
+ALObjectPtr Fstring_lower(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-lower";
+    AL_CHECK(assert_size<1>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-lower STRING)
+    return make_string(utility::str_tolower(str_1->to_string()));
+}
 
-Lower every letter of `STRING`.
-)" };
-
-    static ALObjectPtr Fstring_lower(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        return make_string(utility::str_tolower(str_1->to_string()));
-    }
-};
-
-struct string_strip
+ALObjectPtr Fstring_strip(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-strip";
+    AL_CHECK(assert_size<1>(obj));
+    auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
 
-    inline static const std::string doc{ R"((string-strip STRING)
+    return make_string(utility::trim(str_1->to_string()));
+}
 
-Remove and trailing or preceding whitespace of string.
-)" };
-
-    static ALObjectPtr Fstring_strip(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        auto str_1 = eval_check(eval, obj, 0, &assert_string<size_t>);
-
-        return make_string(utility::trim(str_1->to_string()));
-    }
-};
-
-struct string_join
+ALObjectPtr Fstring_join(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "string-join";
-
-    inline static const std::string doc{ R"((string-join STRING [[STRING] ...])
-
-Concatenate the provided string to a new string.
-)" };
-
-    static ALObjectPtr Fstring_join(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    AL_CHECK(assert_min_size<1>(obj));
+    std::string new_string{ "" };
+    for (auto &t_obj : *obj)
     {
-        AL_CHECK(assert_min_size<1>(obj));
-        std::string new_string{ "" };
-        for (auto &t_obj : *obj)
-        {
-            auto e = eval->eval(t_obj);
-            AL_CHECK(assert_string(e));
-            new_string += e->to_string();
-        }
-        return make_string(new_string);
+        auto e = eval->eval(t_obj);
+        AL_CHECK(assert_string(e));
+        new_string += e->to_string();
     }
-};
+    return make_string(new_string);
+}
 
 }  // namespace alisp

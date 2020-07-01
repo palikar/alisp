@@ -33,174 +33,74 @@ namespace alisp
 {
 
 
-struct Spsym
+ALObjectPtr Fpsym(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
-    inline static const std::string name = "psym";
+    AL_CHECK(assert_size<1>(obj));
+    return psym(evl->eval(obj->i(0))) ? Qt : Qnil;
+}
 
-    inline static const std::string doc{ R"((psym FORM)
-
-Return `t` if FORM is a symbol and `nil` otherwise.
-)" };
-
-    static ALObjectPtr Fpsym(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        return psym(evl->eval(obj->i(0))) ? Qt : Qnil;
-    }
-};
-
-struct Splist
+ALObjectPtr Fplist(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
-    inline static const std::string name = "plist";
+    AL_CHECK(assert_size<1>(obj));
+    return plist(evl->eval(obj->i(0))) ? Qt : Qnil;
+}
 
-    inline static const std::string doc{ R"((plist FORM)
-
-Return `t` if FORM is a list and `nil` otherwise.
-)" };
-
-    static ALObjectPtr Fplist(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        return plist(evl->eval(obj->i(0))) ? Qt : Qnil;
-    }
-};
-
-struct Spint
+ALObjectPtr Fpint(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
-    inline static const std::string name = "pint";
+    AL_CHECK(assert_size<1>(obj));
+    return pint(evl->eval(obj->i(0))) ? Qt : Qnil;
+}
 
-    inline static const std::string doc{ R"((pint FORM)
-
-Return `t` if FORM is a integer value and `nil` otherwise.
-)" };
-
-    static ALObjectPtr Fpint(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        return pint(evl->eval(obj->i(0))) ? Qt : Qnil;
-    }
-};
-
-struct Spreal
+ALObjectPtr Fpreal(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
-    inline static const std::string name = "preal";
+    AL_CHECK(assert_size<1>(obj));
+    return preal(evl->eval(obj->i(0))) ? Qt : Qnil;
+}
 
-    inline static const std::string doc{ R"((preal FORM)
-
-Return `t` if FORM is a real value and `nil` otherwise.
-)" };
-
-    static ALObjectPtr Fpreal(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        return preal(evl->eval(obj->i(0))) ? Qt : Qnil;
-    }
-};
-
-struct Spstring
+ALObjectPtr Fpstring(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
-    inline static const std::string name = "pstring";
+    AL_CHECK(assert_size<1>(obj));
+    return pstring(evl->eval(obj->i(0))) ? Qt : Qnil;
+}
 
-    inline static const std::string doc{ R"((pstring FORM)
-
-Return `t` if FORM is a string and `nil` otherwise.
-)" };
-
-    static ALObjectPtr Fpstring(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        return pstring(evl->eval(obj->i(0))) ? Qt : Qnil;
-    }
-};
-
-struct Spfunction
+ALObjectPtr Fpfunction(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
 {
-    inline static const std::string name = "pfunction";
+    AL_CHECK(assert_size<1>(obj));
+    return pfunction(evl->eval(obj->i(0))) ? Qt : Qnil;
+}
 
-    inline static const std::string doc{ R"((pfunction FORM)
-
-Return `t` if FORM is a function and `nil` otherwise.
-)" };
-
-    static ALObjectPtr Fpfunction(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        return pfunction(evl->eval(obj->i(0))) ? Qt : Qnil;
-    }
-};
-
-struct Spfile
+ALObjectPtr Fpfile(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "pfile";
+    AL_CHECK(assert_size<1>(obj));
+    auto id = eval_check(eval, obj, 0, &assert_int<size_t>);
+    return files::files_registry.belong(object_to_resource(id)) ? Qt : Qnil;
+}
 
-    inline static const std::string doc{ R"((pfile FORM)
-
-Return `t` if FORM is a string and `nil` otherwise.
-)" };
-
-    static ALObjectPtr Fpfile(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        auto id = eval_check(eval, obj, 0, &assert_int<size_t>);
-        return files::files_registry.belong(object_to_resource(id)) ? Qt : Qnil;
-    }
-};
-
-struct Spstream
+ALObjectPtr Fpstream(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "pstream";
+    AL_CHECK(assert_size<1>(obj));
+    auto id = eval_check(eval, obj, 0, &assert_int<size_t>);
+    return al::streams_registry.belong(object_to_resource(id)) ? Qt : Qnil;
+}
 
-    inline static const std::string doc{ R"((pstream FORM)
-
-Return `t` if FORM is a string and `nil` otherwise.
-)" };
-
-    static ALObjectPtr Fpstream(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        auto id = eval_check(eval, obj, 0, &assert_int<size_t>);
-        return al::streams_registry.belong(object_to_resource(id)) ? Qt : Qnil;
-    }
-};
-
-struct Spmemory
+ALObjectPtr Fpmemory(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "pmemory";
+    AL_CHECK(assert_size<1>(obj));
+    auto id = eval_check(eval, obj, 0, &assert_int<size_t>);
+    return memory::memory_registry.belong(object_to_resource(id)) ? Qt : Qnil;
+}
 
-    inline static const std::string doc{ R"((pmemory FORM)
-
-Return `t` if FORM is a string and `nil` otherwise.
-)" };
-
-    static ALObjectPtr Fpmemory(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
-    {
-        AL_CHECK(assert_size<1>(obj));
-        auto id = eval_check(eval, obj, 0, &assert_int<size_t>);
-        return memory::memory_registry.belong(object_to_resource(id)) ? Qt : Qnil;
-    }
-};
-
-struct Spbyte
+ALObjectPtr Fpbyte(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    inline static const std::string name = "pbyte";
-
-    inline static const std::string doc{ R"((pbyte FORM)
-
-Return `t` if FORM is a string and `nil` otherwise.
-)" };
-
-    static ALObjectPtr Fpbyte(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+    AL_CHECK(assert_size<1>(obj));
+    auto ob = eval->eval(obj->i(0));
+    if (!pint(ob))
     {
-        AL_CHECK(assert_size<1>(obj));
-        auto ob = eval->eval(obj->i(0));
-        if (!pint(ob))
-        {
-            return Qnil;
-        }
-        const auto val = ob->to_int();
-        return (0 <= val and val <= 255) ? Qt : Qnil;
+        return Qnil;
     }
-};
+    const auto val = ob->to_int();
+    return (0 <= val and val <= 255) ? Qt : Qnil;
+}
 
 
 }  // namespace alisp
