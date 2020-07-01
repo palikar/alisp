@@ -221,7 +221,7 @@ Example:
 
     static ALObjectPtr Fhead(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
     {
-        return Fcar(obj, env, eval);
+        return Scar::Fcar(obj, env, eval);
     }
 };
 
@@ -243,7 +243,7 @@ Example:
 
     static ALObjectPtr Ftail(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
     {
-        return Fcons(obj, env, eval);
+        return Scons::Fcons(obj, env, eval);
     }
 };
 

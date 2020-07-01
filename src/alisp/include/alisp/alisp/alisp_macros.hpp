@@ -32,18 +32,26 @@
     inline auto var =              \
       env::Environment::g_internal_symbols.insert({ sym_name, make_symbol(sym_name, DOC) }).first->second
 
-#define DEFVAR(sym, var, sym_name, value, doc)                                                                        \
+#define DEFVAR(sym, var, sym_name, value, doc)                          \
     inline auto sym = env::Environment::g_internal_symbols.insert({ sym_name, make_symbol(sym_name) }).first->second; \
     inline auto var = env::Environment::g_prime_values.insert({ sym_name, make_doc(value, doc) }).first->second
 
 
-#define DEFUN(name, sym, doc)                                                                                   \
-    extern ALObjectPtr F##name(const ALObjectPtr &, env::Environment *, eval::Evaluator *);                     \
-    inline auto Q##name = env::Environment::g_internal_symbols.insert({ sym, make_symbol(sym) }).first->second; \
-    inline auto P##name = env::Environment::g_prime_values.insert({ sym, make_prime(&F##name, sym, doc) }).first->second
+/* #define DEFUN(name, sym, doc) */
+/*     extern ALObjectPtr F##name(const ALObjectPtr &, env::Environment *, eval::Evaluator *); */
+/*     inline auto Q##name = env::Environment::g_internal_symbols.insert({ sym, make_symbol(sym) }).first->second; */
+/*     inline auto P##name = env::Environment::g_prime_values.insert({ sym, make_prime(&F##name, sym, doc) }).first->second */
+
+/* #define DEFUN(name_arg, symmy, doccy)           \ */
+/*     struct S##name_arg;                         \ */
+/*     extern ALObjectPtr Q##name_arg; */
+
+/* #define DEFUN_STRUCT(name_arg)                                          \ */
+/*     inline auto Q##name = env::Environment::g_internal_symbols.insert({ Sname::name_arg, make_symbol(Sname::name_arg)}).first->second; \ */
+/*     inline auto P##name = env::Environment::g_prime_values.insert({ Sname::name, make_prime(Sname::Fname_arg, Sname::name, Sname::doc)}.first->second */
 
 
-#define APP_FUNCTION_(NAME, FUN, TYPE)                                                 \
+#define APP_FUNCTION_(NAME, FUN, TYPE)                                  \
     ALObjectPtr NAME(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl) \
     {                                                                                  \
         assert_size<1>(obj);                                                           \
