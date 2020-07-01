@@ -63,6 +63,12 @@ struct Sym
     ALObjectPtr to_al() const { return Qsym_arg; }
 };
 
+struct Real
+{
+
+    ALObjectPtr to_al() const { return Qreal; }
+};
+
 struct Number
 {
 
@@ -184,7 +190,7 @@ template<typename... Args> struct Signature
 
     Signature(Args... t_checks) : args(std::move(t_checks)...) {}
 
-    ALObjectPtr arglist_object() const { return do_arglist(std::make_index_sequence<cnt>()); }
+    ALObjectPtr al() const { return do_arglist(std::make_index_sequence<cnt>()); }
 
   private:
     template<size_t... I> ALObjectPtr do_arglist(std::index_sequence<I...>) const
@@ -263,6 +269,7 @@ struct SignatureHandler
           { Qlist_arg.get(), &assert_list<size_t, ALObjectPtr> },
           { Qsym_arg.get(), &assert_symbol<size_t, ALObjectPtr> },
           { Qchar_arg.get(), &assert_char<size_t, ALObjectPtr> },
+          { Qreal_arg.get(), &assert_real<size_t, ALObjectPtr> },
           { Qnumber_arg.get(), &assert_number<size_t, ALObjectPtr> },
           { Qnumbers_arg.get(), &assert_numbers<size_t, ALObjectPtr> },
           { Qfunction_arg.get(), &assert_function<size_t, ALObjectPtr> },

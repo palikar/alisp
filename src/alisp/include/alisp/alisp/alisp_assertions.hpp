@@ -81,6 +81,11 @@ template<typename... A> inline void assert_int(const ALObjectPtr &obj, A... args
     if (!obj->is_int()) throw argument_error("Object must be an integer", obj, args...);
 }
 
+template<typename... A> inline void assert_real(const ALObjectPtr &obj, A... args)
+{
+    if (!obj->is_real()) throw argument_error("Object must be an integer", obj, args...);
+}
+
 template<typename... A> inline void assert_char(const ALObjectPtr &obj, A... args)
 {
     if (!obj->is_int() and !obj->check_char_flag()) throw argument_error("Object must be a char", obj, args...);

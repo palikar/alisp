@@ -709,11 +709,11 @@ ALISP_EXPORT alisp::env::ModulePtr init_fmt(alisp::env::Environment *, alisp::ev
 
     module_doc(fmt_ptr, fmt::module_doc::doc);
 
-    module_defun<fmt::fmt>(fmt_ptr);
-    module_defun<fmt::printf>(fmt_ptr);
-    module_defun<fmt::eprintf>(fmt_ptr);
-    module_defun<fmt::printfln>(fmt_ptr);
-    module_defun<fmt::eprintfln>(fmt_ptr);
+    module_defun(fmt_ptr, fmt::fmt::name, fmt::fmt::func, fmt::fmt::doc, fmt::fmt::signature.al());
+    module_defun(fmt_ptr, fmt::printf::name, fmt::printf::func, fmt::printf::doc, fmt::printf::signature.al());
+    module_defun(fmt_ptr, fmt::eprintf::name, fmt::eprintf::func, fmt::eprintf::doc, fmt::eprintf::signature.al());
+    module_defun(fmt_ptr, fmt::printfln::name, fmt::printfln::func, fmt::printfln::doc, fmt::printfln::signature.al());
+    module_defun(fmt_ptr, fmt::eprintfln::name, fmt::eprintfln::func, fmt::eprintfln::doc, fmt::eprintfln::signature.al());
 
     return Mfmt;
 }

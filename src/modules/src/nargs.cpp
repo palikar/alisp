@@ -138,10 +138,10 @@ ALISP_EXPORT alisp::env::ModulePtr init_nargs(alisp::env::Environment *, alisp::
     auto nargs_module = module_init("nargs");
     auto ngs_ptr      = nargs_module.get();
 
-    module_defun<nargs::has>(ngs_ptr);
-    module_defun<nargs::next>(ngs_ptr);
-    module_defun<nargs::truthy>(ngs_ptr);
-    module_defun<nargs::falsey>(ngs_ptr);
+    module_defun(ngs_ptr, nargs::has::name, nargs::has::func, nargs::has::doc, nargs::has::signature.al());
+    module_defun(ngs_ptr, nargs::next::name, nargs::next::func, nargs::next::doc, nargs::next::signature.al());
+    module_defun(ngs_ptr, nargs::truthy::name, nargs::truthy::func, nargs::truthy::doc, nargs::truthy::signature.al());
+    module_defun(ngs_ptr, nargs::falsey::name, nargs::falsey::func, nargs::falsey::doc, nargs::falsey::signature.al());
 
     return nargs_module;
 }

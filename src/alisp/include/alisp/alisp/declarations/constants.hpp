@@ -84,6 +84,7 @@ DEFSYM(Qlist_arg, "&list", R"()");
 DEFSYM(Qsym_arg, "&sym", R"()");
 DEFSYM(Qchar_arg, "&char", R"()");
 DEFSYM(Qnumber_arg, "&number", R"()");
+DEFSYM(Qreal_arg, "&real", R"()");
 DEFSYM(Qnumbers_arg, "&numbers", R"()");
 DEFSYM(Qfunction_arg, "&function", R"()");
 DEFSYM(Qfile_arg, "&file", R"()");
