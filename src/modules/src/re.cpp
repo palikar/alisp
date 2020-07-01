@@ -759,34 +759,67 @@ ALISP_EXPORT alisp::env::ModulePtr init_re(alisp::env::Environment *, alisp::eva
 
     module_doc(re_ptr, re::module_doc::doc);
 
-    module_defconst(re_ptr, re::re_match_default_const::name, re::re_match_default_const::var, re::re_match_default_const::doc);
-    module_defconst(re_ptr, re::re_match_not_bol_const::name, re::re_match_not_bol_const::var, re::re_match_not_bol_const::doc);
-    module_defconst(re_ptr, re::re_match_not_eol_const::name, re::re_match_not_eol_const::var, re::re_match_not_eol_const::doc);
-    module_defconst(re_ptr, re::re_match_not_bow_const::name, re::re_match_not_bow_const::var, re::re_match_not_bow_const::doc);
+    module_defconst(
+      re_ptr, re::re_match_default_const::name, re::re_match_default_const::var, re::re_match_default_const::doc);
+    module_defconst(
+      re_ptr, re::re_match_not_bol_const::name, re::re_match_not_bol_const::var, re::re_match_not_bol_const::doc);
+    module_defconst(
+      re_ptr, re::re_match_not_eol_const::name, re::re_match_not_eol_const::var, re::re_match_not_eol_const::doc);
+    module_defconst(
+      re_ptr, re::re_match_not_bow_const::name, re::re_match_not_bow_const::var, re::re_match_not_bow_const::doc);
     module_defconst(re_ptr, re::re_match_any_const::name, re::re_match_any_const::var, re::re_match_any_const::doc);
-    module_defconst(re_ptr, re::re_match_continous_const::name, re::re_match_continous_const::var, re::re_match_continous_const::doc);
-    module_defconst(re_ptr, re::re_match_prev_avail_const::name, re::re_match_prev_avail_const::var, re::re_match_prev_avail_const::doc);
-    module_defconst(re_ptr, re::re_match_format_default_const::name, re::re_match_format_default_const::var, re::re_match_format_default_const::doc);
-    module_defconst(re_ptr, re::re_match_format_sed_const::name, re::re_match_format_sed_const::var, re::re_match_format_sed_const::doc);
-    module_defconst(re_ptr, re::re_match_format_no_copy_const::name, re::re_match_format_no_copy_const::var, re::re_match_format_no_copy_const::doc);
-    module_defconst(re_ptr, re::re_match_format_first_only_const::name, re::re_match_format_first_only_const::var, re::re_match_format_first_only_const::doc);
-    module_defconst(re_ptr, re::re_regex_icase_const::name, re::re_regex_icase_const::var, re::re_regex_icase_const::doc);
-    module_defconst(re_ptr, re::re_regex_nosubs_const::name, re::re_regex_nosubs_const::var, re::re_regex_nosubs_const::doc);
-    module_defconst(re_ptr, re::re_regex_optimize_const::name, re::re_regex_optimize_const::var, re::re_regex_optimize_const::doc);
-    module_defconst(re_ptr, re::re_regex_collate_const::name, re::re_regex_collate_const::var, re::re_regex_collate_const::doc);
-    module_defconst(re_ptr, re::re_regex_ecma_script_const::name, re::re_regex_ecma_script_const::var, re::re_regex_ecma_script_const::doc);
-    module_defconst(re_ptr, re::re_regex_basic_const::name, re::re_regex_basic_const::var, re::re_regex_basic_const::doc);
-    module_defconst(re_ptr, re::re_regex_extended_const::name, re::re_regex_extended_const::var, re::re_regex_extended_const::doc);
+    module_defconst(
+      re_ptr, re::re_match_continous_const::name, re::re_match_continous_const::var, re::re_match_continous_const::doc);
+    module_defconst(re_ptr,
+                    re::re_match_prev_avail_const::name,
+                    re::re_match_prev_avail_const::var,
+                    re::re_match_prev_avail_const::doc);
+    module_defconst(re_ptr,
+                    re::re_match_format_default_const::name,
+                    re::re_match_format_default_const::var,
+                    re::re_match_format_default_const::doc);
+    module_defconst(re_ptr,
+                    re::re_match_format_sed_const::name,
+                    re::re_match_format_sed_const::var,
+                    re::re_match_format_sed_const::doc);
+    module_defconst(re_ptr,
+                    re::re_match_format_no_copy_const::name,
+                    re::re_match_format_no_copy_const::var,
+                    re::re_match_format_no_copy_const::doc);
+    module_defconst(re_ptr,
+                    re::re_match_format_first_only_const::name,
+                    re::re_match_format_first_only_const::var,
+                    re::re_match_format_first_only_const::doc);
+    module_defconst(
+      re_ptr, re::re_regex_icase_const::name, re::re_regex_icase_const::var, re::re_regex_icase_const::doc);
+    module_defconst(
+      re_ptr, re::re_regex_nosubs_const::name, re::re_regex_nosubs_const::var, re::re_regex_nosubs_const::doc);
+    module_defconst(
+      re_ptr, re::re_regex_optimize_const::name, re::re_regex_optimize_const::var, re::re_regex_optimize_const::doc);
+    module_defconst(
+      re_ptr, re::re_regex_collate_const::name, re::re_regex_collate_const::var, re::re_regex_collate_const::doc);
+    module_defconst(re_ptr,
+                    re::re_regex_ecma_script_const::name,
+                    re::re_regex_ecma_script_const::var,
+                    re::re_regex_ecma_script_const::doc);
+    module_defconst(
+      re_ptr, re::re_regex_basic_const::name, re::re_regex_basic_const::var, re::re_regex_basic_const::doc);
+    module_defconst(
+      re_ptr, re::re_regex_extended_const::name, re::re_regex_extended_const::var, re::re_regex_extended_const::doc);
     module_defconst(re_ptr, re::re_regex_awk_const::name, re::re_regex_awk_const::var, re::re_regex_awk_const::doc);
     module_defconst(re_ptr, re::re_regex_grep_const::name, re::re_regex_grep_const::var, re::re_regex_grep_const::doc);
-    module_defconst(re_ptr, re::re_regex_egrep_const::name, re::re_regex_egrep_const::var, re::re_regex_egrep_const::doc);
-    module_defconst(re_ptr, re::re_match_not_eow_const::name, re::re_match_not_eow_const::var, re::re_match_not_eow_const::doc);
-    module_defconst(re_ptr, re::re_match_not_null_const::name, re::re_match_not_null_const::var, re::re_match_not_null_const::doc);
-    
+    module_defconst(
+      re_ptr, re::re_regex_egrep_const::name, re::re_regex_egrep_const::var, re::re_regex_egrep_const::doc);
+    module_defconst(
+      re_ptr, re::re_match_not_eow_const::name, re::re_match_not_eow_const::var, re::re_match_not_eow_const::doc);
+    module_defconst(
+      re_ptr, re::re_match_not_null_const::name, re::re_match_not_null_const::var, re::re_match_not_null_const::doc);
+
     module_defun(re_ptr, re::replace::name, re::replace::func, re::replace::doc, re::replace::signature.al());
     module_defun(re_ptr, re::match::name, re::match::func, re::match::doc, re::match::signature.al());
     module_defun(re_ptr, re::search::name, re::search::func, re::search::doc, re::search::signature.al());
-    module_defun(re_ptr, re::search_all::name, re::search_all::func, re::search_all::doc, re::search_all::signature.al());
+    module_defun(
+      re_ptr, re::search_all::name, re::search_all::func, re::search_all::doc, re::search_all::signature.al());
     module_defun(re_ptr, re::compile::name, re::compile::func, re::compile::doc, re::compile::signature.al());
 
     return Mre;

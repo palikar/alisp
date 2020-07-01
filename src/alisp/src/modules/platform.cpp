@@ -25,14 +25,133 @@ namespace alisp
 namespace detail
 {
 
+struct os_var
+{
+    static inline const std::string name{ "os" };
 
+    static inline const std::string doc{ R"(The name of the current os.
+The value can be:
+  * linux
+  * windows-32
+  * windows-64
+  * max-osx
+  * max-osx
+  * freebsd
+  * unix
+  * unknown
+)" };
+
+    static inline const auto var = make_string(ALISP_OS_NAME);
+};
+
+struct alisp_version_var
+{
+    static inline const std::string name{ "alisp-version" };
+
+    static inline const std::string doc{ R"(A string of the version of the alisp interpreter.
+)" };
+
+    static inline const auto var = make_string(alisp::BuildInfo::version());
+};
+
+struct alisp_version_major_var
+{
+    static inline const std::string name{ "alisp-version-major" };
+
+    static inline const std::string doc{ R"(The major versin of the alisp interpreter.
+)" };
+
+    static inline const auto var = make_int(alisp::BuildInfo::version_major());
+};
+
+struct alisp_version_minor_var
+{
+    static inline const std::string name{ "alisp-version-minor" };
+
+    static inline const std::string doc{ R"(The minor versin of the alisp interpreter.
+)" };
+
+    static inline const auto var = make_int(alisp::BuildInfo::version_minor());
+};
+
+struct alisp_version_patch_var
+{
+    static inline const std::string name{ "alisp-version-patch" };
+
+    static inline const std::string doc{ R"(The patch versin of the alisp interpreter.
+)" };
+
+    static inline const auto var = make_int(alisp::BuildInfo::version_patch()());
+};
+
+struct max_call_depth_var
+{
+    static inline const std::string name{ "max-call-depth" };
+
+    static inline const std::string doc{ R"(The maximum number of function calls that can be nested in one another.
+)" };
+
+    static inline const auto var = make_int(MAX_FUNCTION_CALL_DEPTH);
+};
+
+struct max_eval_depth_var
+{
+    static inline const std::string name{ "max-evaluation-depth" };
+
+    static inline const std::string doc{ R"(The maximum number of evalution nesting that the evaluator
+supports. This is the depth limit of drcptrddoind in alisp.
+)" };
+
+    static inline const auto var = make_int(MAX_EAVALUATION_DEPTH);
+};
+
+struct compiler_name_var
+{
+    static inline const std::string name{ "compiler-name" };
+
+    static inline const std::string doc{ R"(The name of the compiler with which the interpreter was compiled.
+)" };
+
+    static inline const auto var = make_int(ALISP_COMPILER_NAME);
+};
+
+struct compiler_version_var
+{
+    static inline const std::string name{ "compiler-version" };
+
+    static inline const std::string doc{
+        R"(The vesion of the compiler (in a string format) with which the interpreter was compiled.
+)"
+    };
+
+    static inline const auto var = make_string(compiler_version);
+};
+
+struct arch_doc
+{
+    static inline const std::string name{ "arch" };
+
+    static inline const std::string doc{ R"(The computer architecture that the interpreter is running on. 
+Possible
+values are:
+  * i386
+  * x86_64
+  * arm
+  * power64pc
+  * aarch64
+  * unknown
+
+ )" };
+
+    static inline const auto var = make_string(ALISP_ARCH_NAME);
+};
 
 struct module_doc
 {
-    inline static const std::string doc{R"(The `platform` module exposes infomration about the Alisp
+    inline static const std::string doc{ R"(The `platform` module exposes infomration about the Alisp
 interpreter, the underlying operating system and information about it
 as well as how the intrpterter was compiled.
-)"};
+)" };
 };
 
 }  // namespace detail
@@ -43,139 +162,7 @@ env::ModulePtr init_platform(env::Environment *, eval::Evaluator *)
     auto Mplatform = module_init("platform");
     auto plat_ptr  = Mplatform.get();
 
-    module_doc(plat_ptr,detail::module_doc::doc);
-
-
-    module_defvar(plat_ptr,
-                  "os",
-                  make_string(ALISP_OS_NAME),
-                  R"(The name of the current os.
-The value can be:
-  * linux
-  * windows-32
-  * windows-64
-  * max-osx
-  * max-osx
-  * freebsd
-  * unix
-  * unknown
-)");
-
-    module_defvar(plat_ptr,
-                  "alisp-version",
-                  make_string(alisp::BuildInfo::version()),
-                  R"(A string of the version of the alisp interpreter.
-)");
-
-    module_defvar(plat_ptr,
-                  "alisp-version-major",
-                  make_int(alisp::BuildInfo::version_major()),
-                  R"(The major versin of the alisp interpreter.
-)");
-
-    module_defvar(plat_ptr,
-                  "alisp-version-minor",
-                  make_int(alisp::BuildInfo::version_minor()),
-                  R"(The minor versin of the alisp interpreter.
-)");
-
-    module_defvar(plat_ptr,
-                  "alisp-version-patch",
-                  make_int(alisp::BuildInfo::version_patch()),
-                  R"(The patch versin of the alisp interpreter.
-)");
-
-    module_defvar(plat_ptr,
-                  "max-call-depth",
-                  make_int(MAX_FUNCTION_CALL_DEPTH),
-                  R"(The maximum number of function calls that can be nested in one another.
-)");
-
-    module_defvar(plat_ptr,
-                  "max-evaluation-depth",
-                  make_int(MAX_EAVALUATION_DEPTH),
-                  R"(The maximum number of evalution nesting that the evaluator
-supports. This is the depth limit of drcptrddoind in alisp.
-)");
-
-
-    module_defvar(plat_ptr,
-                  "compiler-name",
-                  make_string(ALISP_COMPILER_NAME),
-                  R"(The name of the compiler with which the interpreter was compiled.
-)");
-
-    module_defvar(plat_ptr,
-                  "compiler-version",
-                  make_string(compiler_version),
-                  R"(The vesion of the compiler (in a string format) with which the interpreter was compiled.
-)");
-
-
-    module_defvar(plat_ptr,
-                  "arch",
-                  make_string(ALISP_ARCH_NAME),
-                  R"(The computer architecture that the interpreter is running on. 
-Possible
-values are:
-  * i386
-  * x86_64
-  * arm
-  * power64pc
-  * aarch64
-  * unknown
-
- )");
-
-
-    module_defvar(plat_ptr,
-                  "debug-build",
-                  debug_build ? Qt : Qnil,
-                  R"(`t` if the the interpreter was compiled in debug mode.
-)");
-
-    module_defvar(plat_ptr,
-                  "build-info",
-                  make_string(get_build_info()),
-                  R"(Info string about the build of the interpreter. This gets printed out
-when the interpreter is started.
-)");
-
-
-    module_defvar(plat_ptr,
-                  "disabled-checks",
-                  al_disable_checks ? Qt : Qnil,
-                  R"(`t` if the interpreter was compiled without checks of argument types
-by functions. This includes arity checks as well some other sanity
-checks that keep the interpreter stable. Without those, you can expect
-segmentaion faults when the interpreted code is invalid. However,
-disabling checkes may or may not increase performance.
-)");
-
-    module_defvar(plat_ptr,
-                  "enabled-documentation",
-                  al_doc ? Qt : Qnil,
-                  R"(`t` if the interpreter was compiled with documentation for the
-symbols. If the documentation is enabled, the majority of the symbols
-will have `--doc--` property that is a string and contains the
-documentaion for the symbol.
-)");
-
-    module_defvar(plat_ptr,
-                  "enabled-line-trace",
-                  al_line_trace ? Qt : Qnil,
-                  R"(`t` if the interpreter was compiled with support for keeping track of
-the position in a file where the s-expressions were defined.
-)");
-
-    module_defvar(plat_ptr,
-                  "enabled-stack-trace",
-                  al_stack_trace ? Qt : Qnil,
-                  R"(`t` if the interpreter was compiled with support for keeping of the
-called functions. If stack tracing is enabled, on error the
-interpreter will print out the state of the stack at the moment of the
-error.
-)");
+    module_doc(plat_ptr, detail::module_doc::doc);
 
 
     return Mplatform;

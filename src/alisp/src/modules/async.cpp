@@ -31,9 +31,11 @@ namespace detail
 
 struct async_start
 {
-    static inline const std::string name{"async-start"};
+    static inline const std::string name{ "async-start" };
 
-    static inline const std::string doc{R"()"};
+    static inline const std::string doc{ R"()" };
+
+    static inline const Signature signature{ Function{}, Optional{}, Function{} };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
     {
@@ -59,14 +61,15 @@ struct async_start
 
         return res;
     }
-
 };
 
 struct async_await
 {
-    static inline const std::string name{"async-await"};
+    static inline const std::string name{ "async-await" };
 
-    static inline const std::string doc{R"((future-then FUTURE SUCCESS REJECT))"};
+    static inline const std::string doc{ R"((future-then FUTURE SUCCESS REJECT))" };
+
+    static inline const Signature signature{ Int{} };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -79,21 +82,22 @@ struct async_await
             async::Await await{ eval->async() };
 
             eval->futures_cv.wait(eval->lock(),
-            [&] { return is_truthy(eval->async().future(object_to_resource(future)).resolved); });
+                                  [&] { return is_truthy(eval->async().future(object_to_resource(future)).resolved); });
         }
 
         return eval->async().future(object_to_resource(future)).value;
     }
-
 };
 
 struct async_then
 {
-    static inline const std::string name{"async-then"};
+    static inline const std::string name{ "async-then" };
 
-    static inline const std::string doc{R"((async-ready FUTURE)
+    static inline const std::string doc{ R"((async-ready FUTURE)
 
-)"};
+)" };
+
+    static inline const Signature signature{ Int{}, Function{}, Optional{}, Function{} };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -137,16 +141,17 @@ struct async_then
 
         return Qt;
     }
-
 };
 
 struct async_ready
 {
-    static inline const std::string name{"async-ready"};
+    static inline const std::string name{ "async-ready" };
 
-    static inline const std::string doc{R"((async-state FUTURE)
+    static inline const std::string doc{ R"((async-state FUTURE)
 
-)"};
+)" };
+
+    static inline const Signature signature{ Int{} };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -157,14 +162,15 @@ struct async_ready
 
         return eval->async().future(object_to_resource(future)).resolved;
     }
-
 };
 
 struct async_state
 {
-    static inline const std::string name{"async-state"};
+    static inline const std::string name{ "async-state" };
 
-    static inline const std::string doc{R"()"};
+    static inline const std::string doc{ R"()" };
+
+    static inline const Signature signature{ Int{} };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -175,16 +181,17 @@ struct async_state
 
         return eval->async().future(object_to_resource(future)).success_state;
     }
-
 };
 
 struct timeout
 {
-    static inline const std::string name{"timeout"};
+    static inline const std::string name{ "timeout" };
 
-    static inline const std::string doc{R"((async-state FUTURE)
+    static inline const std::string doc{ R"((async-state FUTURE)
 
-)"};
+)" };
+
+    static inline const Signature signature{ Int{}, Function{} };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
@@ -198,7 +205,6 @@ struct timeout
 
         return Qt;
     }
-
 };
 
 }  // namespace detail
@@ -208,7 +214,6 @@ env::ModulePtr init_async(env::Environment *, eval::Evaluator *)
 
     auto Masync    = module_init("async");
     auto async_ptr = Masync.get();
-
 
 
     return Masync;

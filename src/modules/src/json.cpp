@@ -694,11 +694,18 @@ ALISP_EXPORT alisp::env::ModulePtr init_json(alisp::env::Environment *, alisp::e
     module_doc(json_ptr, json::module_doc::doc);
 
     module_defvar(json_ptr, json::signal_var::name, json::signal_var::var, json::signal_var::doc);
-    
-    module_defun(json_ptr, json::parse_json::name, json::parse_json::func, json::parse_json::doc, json::parse_json::signature.al());
-    module_defun(json_ptr, json::dump_json::name, json::dump_json::func, json::dump_json::doc, json::dump_json::signature.al());
-    module_defun(json_ptr, json::load_file::name, json::load_file::func, json::load_file::doc, json::load_file::signature.al());
-    module_defun(json_ptr, json::dump_file::name, json::dump_file::func, json::dump_file::doc, json::dump_file::signature.al());
+
+    module_defun(json_ptr,
+                 json::parse_json::name,
+                 json::parse_json::func,
+                 json::parse_json::doc,
+                 json::parse_json::signature.al());
+    module_defun(
+      json_ptr, json::dump_json::name, json::dump_json::func, json::dump_json::doc, json::dump_json::signature.al());
+    module_defun(
+      json_ptr, json::load_file::name, json::load_file::func, json::load_file::doc, json::load_file::signature.al());
+    module_defun(
+      json_ptr, json::dump_file::name, json::dump_file::func, json::dump_file::doc, json::dump_file::signature.al());
 
     return Mjson;
 }

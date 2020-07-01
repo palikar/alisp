@@ -365,10 +365,13 @@ ALISP_EXPORT alisp::env::ModulePtr init_xml(alisp::env::Environment *, alisp::ev
 
     module_doc(xml_ptr, xml::module_doc::doc);
 
-    module_defun(xml_ptr, xml::parse_xml::name, xml::parse_xml::func, xml::parse_xml::doc, xml::parse_xml::signature.al());
-    module_defun(xml_ptr, xml::dump_file::name, xml::dump_file::func, xml::dump_file::doc, xml::dump_file::signature.al());
-    module_defun(xml_ptr, xml::load_file::name, xml::load_file::func, xml::load_file::doc, xml::load_file::signature.al());
+    module_defun(
+      xml_ptr, xml::parse_xml::name, xml::parse_xml::func, xml::parse_xml::doc, xml::parse_xml::signature.al());
+    module_defun(
+      xml_ptr, xml::dump_file::name, xml::dump_file::func, xml::dump_file::doc, xml::dump_file::signature.al());
+    module_defun(
+      xml_ptr, xml::load_file::name, xml::load_file::func, xml::load_file::doc, xml::load_file::signature.al());
     module_defun(xml_ptr, xml::dump_xml::name, xml::dump_xml::func, xml::dump_xml::doc, xml::dump_xml::signature.al());
-    
+
     return Mxml;
 }

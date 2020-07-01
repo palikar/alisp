@@ -771,20 +771,68 @@ ALISP_EXPORT alisp::env::ModulePtr init_base64(alisp::env::Environment *, alisp:
 
     module_doc(base64_ptr, base64::module_doc::doc);
 
-    module_defun(base64_ptr, base64::base16_decode_bytes::name, base64::base16_decode_bytes::func, base64::base16_decode_bytes::doc, base64::base16_decode_bytes::signature.al());
-    module_defun(base64_ptr, base64::base16_encode_bytes::name, base64::base16_encode_bytes::func, base64::base16_encode_bytes::doc, base64::base16_encode_bytes::signature.al());
-    module_defun(base64_ptr, base64::base16_decode_string::name, base64::base16_decode_string::func, base64::base16_decode_string::doc, base64::base16_decode_string::signature.al());
-    module_defun(base64_ptr, base64::base16_encode_string::name, base64::base16_encode_string::func, base64::base16_encode_string::doc, base64::base16_encode_string::signature.al());
+    module_defun(base64_ptr,
+                 base64::base16_decode_bytes::name,
+                 base64::base16_decode_bytes::func,
+                 base64::base16_decode_bytes::doc,
+                 base64::base16_decode_bytes::signature.al());
+    module_defun(base64_ptr,
+                 base64::base16_encode_bytes::name,
+                 base64::base16_encode_bytes::func,
+                 base64::base16_encode_bytes::doc,
+                 base64::base16_encode_bytes::signature.al());
+    module_defun(base64_ptr,
+                 base64::base16_decode_string::name,
+                 base64::base16_decode_string::func,
+                 base64::base16_decode_string::doc,
+                 base64::base16_decode_string::signature.al());
+    module_defun(base64_ptr,
+                 base64::base16_encode_string::name,
+                 base64::base16_encode_string::func,
+                 base64::base16_encode_string::doc,
+                 base64::base16_encode_string::signature.al());
 
-    module_defun(base64_ptr, base64::base32_decode_bytes::name, base64::base32_decode_bytes::func, base64::base32_decode_bytes::doc, base64::base32_decode_bytes::signature.al());
-    module_defun(base64_ptr, base64::base32_encode_bytes::name, base64::base32_encode_bytes::func, base64::base32_encode_bytes::doc, base64::base32_encode_bytes::signature.al());
-    module_defun(base64_ptr, base64::base32_decode_string::name, base64::base32_decode_string::func, base64::base32_decode_string::doc, base64::base32_decode_string::signature.al());
-    module_defun(base64_ptr, base64::base32_encode_string::name, base64::base32_encode_string::func, base64::base32_encode_string::doc, base64::base32_encode_string::signature.al());
+    module_defun(base64_ptr,
+                 base64::base32_decode_bytes::name,
+                 base64::base32_decode_bytes::func,
+                 base64::base32_decode_bytes::doc,
+                 base64::base32_decode_bytes::signature.al());
+    module_defun(base64_ptr,
+                 base64::base32_encode_bytes::name,
+                 base64::base32_encode_bytes::func,
+                 base64::base32_encode_bytes::doc,
+                 base64::base32_encode_bytes::signature.al());
+    module_defun(base64_ptr,
+                 base64::base32_decode_string::name,
+                 base64::base32_decode_string::func,
+                 base64::base32_decode_string::doc,
+                 base64::base32_decode_string::signature.al());
+    module_defun(base64_ptr,
+                 base64::base32_encode_string::name,
+                 base64::base32_encode_string::func,
+                 base64::base32_encode_string::doc,
+                 base64::base32_encode_string::signature.al());
 
-    module_defun(base64_ptr, base64::base64_decode_bytes::name, base64::base64_decode_bytes::func, base64::base64_decode_bytes::doc, base64::base64_decode_bytes::signature.al());
-    module_defun(base64_ptr, base64::base64_encode_bytes::name, base64::base64_encode_bytes::func, base64::base64_encode_bytes::doc, base64::base64_encode_bytes::signature.al());
-    module_defun(base64_ptr, base64::base64_decode_string::name, base64::base64_decode_string::func, base64::base64_decode_string::doc, base64::base64_decode_string::signature.al());
-    module_defun(base64_ptr, base64::base64_encode_string::name, base64::base64_encode_string::func, base64::base64_encode_string::doc, base64::base64_encode_string::signature.al());
+    module_defun(base64_ptr,
+                 base64::base64_decode_bytes::name,
+                 base64::base64_decode_bytes::func,
+                 base64::base64_decode_bytes::doc,
+                 base64::base64_decode_bytes::signature.al());
+    module_defun(base64_ptr,
+                 base64::base64_encode_bytes::name,
+                 base64::base64_encode_bytes::func,
+                 base64::base64_encode_bytes::doc,
+                 base64::base64_encode_bytes::signature.al());
+    module_defun(base64_ptr,
+                 base64::base64_decode_string::name,
+                 base64::base64_decode_string::func,
+                 base64::base64_decode_string::doc,
+                 base64::base64_decode_string::signature.al());
+    module_defun(base64_ptr,
+                 base64::base64_encode_string::name,
+                 base64::base64_encode_string::func,
+                 base64::base64_encode_string::doc,
+                 base64::base64_encode_string::signature.al());
 
     return Mbase64;
 }

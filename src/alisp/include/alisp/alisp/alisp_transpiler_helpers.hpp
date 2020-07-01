@@ -31,16 +31,15 @@ namespace alisp
 {
 
 
-
 inline void module_define_function(env::Module *t_module,
-const ALObjectPtr t_sym,
-ALObjectPtr t_params,
-ALObjectPtr t_body,
-std::string t_doc = {})
+                                   const ALObjectPtr t_sym,
+                                   ALObjectPtr t_params,
+                                   ALObjectPtr t_body,
+                                   std::string t_doc = {})
 {
     auto &scope = t_module->root_scope();
     auto name   = t_sym->to_string();
-            
+
     AL_DEBUG("Defining function: "s += name);
 
     NameValidator::validate_object_name(name);
@@ -60,7 +59,7 @@ std::string t_doc = {})
 }
 
 inline void
-module_define_variable(env::Module *t_module, const ALObjectPtr t_sym, ALObjectPtr t_value, std::string t_doc = {})
+  module_define_variable(env::Module *t_module, const ALObjectPtr t_sym, ALObjectPtr t_value, std::string t_doc = {})
 {
     auto &scope = t_module->root_scope();
     auto name   = t_sym->to_string();
@@ -80,10 +79,10 @@ module_define_variable(env::Module *t_module, const ALObjectPtr t_sym, ALObjectP
 }
 
 inline void module_define_macro(env::Module *t_module,
-const ALObjectPtr t_sym,
-ALObjectPtr t_params,
-ALObjectPtr t_body,
-std::string t_doc = {})
+                                const ALObjectPtr t_sym,
+                                ALObjectPtr t_params,
+                                ALObjectPtr t_body,
+                                std::string t_doc = {})
 {
     auto &scope = t_module->root_scope();
     auto name   = t_sym->to_string();
@@ -107,4 +106,4 @@ std::string t_doc = {})
     scope.insert({ name, new_fun });
 }
 
-}
+}  // namespace alisp

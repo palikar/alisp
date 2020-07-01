@@ -492,14 +492,22 @@ ALISP_EXPORT alisp::env::ModulePtr init_request(alisp::env::Environment *, alisp
     module_defvar(req_ptr, request::put_var::name, request::put_var::var, request::put_var::doc);
     module_defvar(req_ptr, request::delete_var::name, request::delete_var::var, request::delete_var::doc);
     module_defvar(req_ptr, request::options_var::name, request::options_var::var, request::options_var::doc);
-    
-    module_defun(req_ptr, request::request::name, request::request::func, request::request::doc, request::request::signature.al());
+
+    module_defun(
+      req_ptr, request::request::name, request::request::func, request::request::doc, request::request::signature.al());
     module_defun(req_ptr, request::body::name, request::body::func, request::body::doc, request::body::signature.al());
-    module_defun(req_ptr, request::status_code::name, request::status_code::func, request::status_code::doc, request::status_code::signature.al());
-    module_defun(req_ptr, request::headers::name, request::headers::func, request::headers::doc, request::headers::signature.al());
+    module_defun(req_ptr,
+                 request::status_code::name,
+                 request::status_code::func,
+                 request::status_code::doc,
+                 request::status_code::signature.al());
+    module_defun(
+      req_ptr, request::headers::name, request::headers::func, request::headers::doc, request::headers::signature.al());
     module_defun(req_ptr, request::url::name, request::url::func, request::url::doc, request::url::signature.al());
-    module_defun(req_ptr, request::elapsed::name, request::elapsed::func, request::elapsed::doc, request::elapsed::signature.al());
-    module_defun(req_ptr, request::cookies::name, request::cookies::func, request::cookies::doc, request::cookies::signature.al());
+    module_defun(
+      req_ptr, request::elapsed::name, request::elapsed::func, request::elapsed::doc, request::elapsed::signature.al());
+    module_defun(
+      req_ptr, request::cookies::name, request::cookies::func, request::cookies::doc, request::cookies::signature.al());
 
     return Mrequest;
 }

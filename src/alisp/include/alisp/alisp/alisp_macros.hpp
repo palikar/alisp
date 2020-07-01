@@ -37,30 +37,30 @@
     inline auto var = env::Environment::g_prime_values.insert({ sym_name, make_doc(value, doc) }).first->second
 
 
-#define DEFUN_4(name, sym, signature, doc)                              \
-    extern ALObjectPtr F##name(const ALObjectPtr &, env::Environment *, eval::Evaluator *); \
-    inline auto Q##name = env::Environment::g_internal_symbols.insert({ sym, make_symbol(sym) }).first->second; \
-    inline auto P##name = env::Environment::g_prime_values.insert({ sym, make_prime(&F##name, sym, doc) }).first->second
-
-
-#define DEFUN_3(name, sym, doc)                                                                                   \
+#define DEFUN_4(name, sym, signature, doc)                                                                      \
     extern ALObjectPtr F##name(const ALObjectPtr &, env::Environment *, eval::Evaluator *);                     \
     inline auto Q##name = env::Environment::g_internal_symbols.insert({ sym, make_symbol(sym) }).first->second; \
     inline auto P##name = env::Environment::g_prime_values.insert({ sym, make_prime(&F##name, sym, doc) }).first->second
 
 
-#define GET_DEFUN(_1, _2, _3,_4, NAME,...) NAME
+#define DEFUN_3(name, sym, doc)                                                                                 \
+    extern ALObjectPtr F##name(const ALObjectPtr &, env::Environment *, eval::Evaluator *);                     \
+    inline auto Q##name = env::Environment::g_internal_symbols.insert({ sym, make_symbol(sym) }).first->second; \
+    inline auto P##name = env::Environment::g_prime_values.insert({ sym, make_prime(&F##name, sym, doc) }).first->second
+
+
+#define GET_DEFUN(_1, _2, _3, _4, NAME, ...) NAME
 #define DEFUN(...) GET_DEFUN(__VA_ARGS__, DEFUN_4, DEFUN_3)(__VA_ARGS__)
 
 
-#define APP_FUNCTION_(NAME, FUN, TYPE)                                  \
+#define APP_FUNCTION_(NAME, FUN, TYPE)                                                 \
     ALObjectPtr NAME(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *evl) \
-    {                                                                   \
-        assert_size<1>(obj);                                            \
-        auto num = evl->eval(obj->i(0));                                \
-        assert_number(num);                                             \
-        return make_##TYPE(FUN(num->to_##TYPE()));                      \
-    }                                                                   \
+    {                                                                                  \
+        assert_size<1>(obj);                                                           \
+        auto num = evl->eval(obj->i(0));                                               \
+        assert_number(num);                                                            \
+        return make_##TYPE(FUN(num->to_##TYPE()));                                     \
+    }                                                                                  \
     static_assert(true, "")
 
 

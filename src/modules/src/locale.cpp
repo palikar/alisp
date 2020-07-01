@@ -955,18 +955,56 @@ ALISP_EXPORT alisp::env::ModulePtr init_locale(alisp::env::Environment *, alisp:
 
     module_doc(loc_ptr, loc::module_doc::doc);
 
-    module_defun(loc_ptr, loc::locale_name::name, loc::locale_name::func, loc::locale_name::doc, loc::locale_name::signature.al());
-    module_defun(loc_ptr, loc::set_default_locale::name, loc::set_default_locale::func, loc::set_default_locale::doc, loc::set_default_locale::signature.al());
+    module_defun(
+      loc_ptr, loc::locale_name::name, loc::locale_name::func, loc::locale_name::doc, loc::locale_name::signature.al());
+    module_defun(loc_ptr,
+                 loc::set_default_locale::name,
+                 loc::set_default_locale::func,
+                 loc::set_default_locale::doc,
+                 loc::set_default_locale::signature.al());
     module_defun(loc_ptr, loc::locale::name, loc::locale::func, loc::locale::doc, loc::locale::signature.al());
-    module_defun(loc_ptr, loc::num_true_name::name, loc::num_true_name::func, loc::num_true_name::doc, loc::num_true_name::signature.al());
-    module_defun(loc_ptr, loc::num_thousand_sep::name, loc::num_thousand_sep::func, loc::num_thousand_sep::doc, loc::num_thousand_sep::signature.al());
-    module_defun(loc_ptr, loc::num_decimal_point::name, loc::num_decimal_point::func, loc::num_decimal_point::doc, loc::num_decimal_point::signature.al());
-    module_defun(loc_ptr, loc::money_positive_sign::name, loc::money_positive_sign::func, loc::money_positive_sign::doc, loc::money_positive_sign::signature.al());
-    module_defun(loc_ptr, loc::money_negative_sign::name, loc::money_negative_sign::func, loc::money_negative_sign::doc, loc::money_negative_sign::signature.al());
-    module_defun(loc_ptr, loc::money_symobl::name, loc::money_symobl::func, loc::money_symobl::doc, loc::money_symobl::signature.al());
-    module_defun(loc_ptr, loc::money_thousand_sep::name, loc::money_thousand_sep::func, loc::money_thousand_sep::doc, loc::money_thousand_sep::signature.al());
-    module_defun(loc_ptr, loc::money_decimal_point::name, loc::money_decimal_point::func, loc::money_decimal_point::doc, loc::money_decimal_point::signature.al());
-    module_defun(loc_ptr, loc::put_money::name, loc::put_money::func, loc::put_money::doc, loc::put_money::signature.al());
+    module_defun(loc_ptr,
+                 loc::num_true_name::name,
+                 loc::num_true_name::func,
+                 loc::num_true_name::doc,
+                 loc::num_true_name::signature.al());
+    module_defun(loc_ptr,
+                 loc::num_thousand_sep::name,
+                 loc::num_thousand_sep::func,
+                 loc::num_thousand_sep::doc,
+                 loc::num_thousand_sep::signature.al());
+    module_defun(loc_ptr,
+                 loc::num_decimal_point::name,
+                 loc::num_decimal_point::func,
+                 loc::num_decimal_point::doc,
+                 loc::num_decimal_point::signature.al());
+    module_defun(loc_ptr,
+                 loc::money_positive_sign::name,
+                 loc::money_positive_sign::func,
+                 loc::money_positive_sign::doc,
+                 loc::money_positive_sign::signature.al());
+    module_defun(loc_ptr,
+                 loc::money_negative_sign::name,
+                 loc::money_negative_sign::func,
+                 loc::money_negative_sign::doc,
+                 loc::money_negative_sign::signature.al());
+    module_defun(loc_ptr,
+                 loc::money_symobl::name,
+                 loc::money_symobl::func,
+                 loc::money_symobl::doc,
+                 loc::money_symobl::signature.al());
+    module_defun(loc_ptr,
+                 loc::money_thousand_sep::name,
+                 loc::money_thousand_sep::func,
+                 loc::money_thousand_sep::doc,
+                 loc::money_thousand_sep::signature.al());
+    module_defun(loc_ptr,
+                 loc::money_decimal_point::name,
+                 loc::money_decimal_point::func,
+                 loc::money_decimal_point::doc,
+                 loc::money_decimal_point::signature.al());
+    module_defun(
+      loc_ptr, loc::put_money::name, loc::put_money::func, loc::put_money::doc, loc::put_money::signature.al());
     module_defun(loc_ptr, loc::put_num::name, loc::put_num::func, loc::put_num::doc, loc::put_num::signature.al());
     module_defun(loc_ptr, loc::put_time::name, loc::put_time::func, loc::put_time::doc, loc::put_time::signature.al());
     module_defun(loc_ptr, loc::isspace::name, loc::isspace::func, loc::isspace::doc, loc::isspace::signature.al());
@@ -981,8 +1019,16 @@ ALISP_EXPORT alisp::env::ModulePtr init_locale(alisp::env::Environment *, alisp:
     module_defun(loc_ptr, loc::isalnum::name, loc::isalnum::func, loc::isalnum::doc, loc::isalnum::signature.al());
     module_defun(loc_ptr, loc::isprint::name, loc::isprint::func, loc::isprint::doc, loc::isprint::signature.al());
     module_defun(loc_ptr, loc::isgraph::name, loc::isgraph::func, loc::isgraph::doc, loc::isgraph::signature.al());
-    module_defun(loc_ptr, loc::reset_locale::name, loc::reset_locale::func, loc::reset_locale::doc, loc::reset_locale::signature.al());
-    module_defun(loc_ptr, loc::set_preffered::name, loc::set_preffered::func, loc::set_preffered::doc, loc::set_preffered::signature.al());
+    module_defun(loc_ptr,
+                 loc::reset_locale::name,
+                 loc::reset_locale::func,
+                 loc::reset_locale::doc,
+                 loc::reset_locale::signature.al());
+    module_defun(loc_ptr,
+                 loc::set_preffered::name,
+                 loc::set_preffered::func,
+                 loc::set_preffered::doc,
+                 loc::set_preffered::signature.al());
     module_defun(loc_ptr, loc::locale::name, loc::locale::func, loc::locale::doc, loc::locale::signature.al());
 
 

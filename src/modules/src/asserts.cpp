@@ -420,20 +420,76 @@ ALISP_EXPORT alisp::env::ModulePtr init_asserts(alisp::env::Environment *, alisp
 
     module_doc(ass_ptr, asserts::module_doc::doc);
 
-    module_defun(ass_ptr, asserts::assert_numbers::name, asserts::assert_numbers::func, asserts::assert_numbers::doc, asserts::assert_numbers::signature.al());
-    module_defun(ass_ptr, asserts::assert_symbol::name, asserts::assert_symbol::func, asserts::assert_symbol::doc, asserts::assert_symbol::signature.al());
-    module_defun(ass_ptr, asserts::assert_string::name, asserts::assert_string::func, asserts::assert_string::doc, asserts::assert_string::signature.al());
-    module_defun(ass_ptr, asserts::assert_list::name, asserts::assert_list::func, asserts::assert_list::doc, asserts::assert_list::signature.al());
-    module_defun(ass_ptr, asserts::assert_number::name, asserts::assert_number::func, asserts::assert_number::doc, asserts::assert_number::signature.al());
-    module_defun(ass_ptr, asserts::assert_int::name, asserts::assert_int::func, asserts::assert_int::doc, asserts::assert_int::signature.al());
-    module_defun(ass_ptr, asserts::assert_real::name, asserts::assert_real::func, asserts::assert_real::doc, asserts::assert_real::signature.al());
-    module_defun(ass_ptr, asserts::assert_char::name, asserts::assert_char::func, asserts::assert_char::doc, asserts::assert_char::signature.al());
-    module_defun(ass_ptr, asserts::assert_function::name, asserts::assert_function::func, asserts::assert_function::doc, asserts::assert_function::signature.al());
-    module_defun(ass_ptr, asserts::assert_non_const::name, asserts::assert_non_const::func, asserts::assert_non_const::doc, asserts::assert_non_const::signature.al());
-    module_defun(ass_ptr, asserts::assert_file::name, asserts::assert_file::func, asserts::assert_file::doc, asserts::assert_file::signature.al());
-    module_defun(ass_ptr, asserts::assert_stream::name, asserts::assert_stream::func, asserts::assert_stream::doc, asserts::assert_stream::signature.al());
-    module_defun(ass_ptr, asserts::assert_byte::name, asserts::assert_byte::func, asserts::assert_byte::doc, asserts::assert_byte::signature.al());
-    module_defun(ass_ptr, asserts::assert_byte_array::name, asserts::assert_byte_array::func, asserts::assert_byte_array::doc, asserts::assert_byte_array::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_numbers::name,
+                 asserts::assert_numbers::func,
+                 asserts::assert_numbers::doc,
+                 asserts::assert_numbers::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_symbol::name,
+                 asserts::assert_symbol::func,
+                 asserts::assert_symbol::doc,
+                 asserts::assert_symbol::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_string::name,
+                 asserts::assert_string::func,
+                 asserts::assert_string::doc,
+                 asserts::assert_string::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_list::name,
+                 asserts::assert_list::func,
+                 asserts::assert_list::doc,
+                 asserts::assert_list::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_number::name,
+                 asserts::assert_number::func,
+                 asserts::assert_number::doc,
+                 asserts::assert_number::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_int::name,
+                 asserts::assert_int::func,
+                 asserts::assert_int::doc,
+                 asserts::assert_int::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_real::name,
+                 asserts::assert_real::func,
+                 asserts::assert_real::doc,
+                 asserts::assert_real::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_char::name,
+                 asserts::assert_char::func,
+                 asserts::assert_char::doc,
+                 asserts::assert_char::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_function::name,
+                 asserts::assert_function::func,
+                 asserts::assert_function::doc,
+                 asserts::assert_function::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_non_const::name,
+                 asserts::assert_non_const::func,
+                 asserts::assert_non_const::doc,
+                 asserts::assert_non_const::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_file::name,
+                 asserts::assert_file::func,
+                 asserts::assert_file::doc,
+                 asserts::assert_file::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_stream::name,
+                 asserts::assert_stream::func,
+                 asserts::assert_stream::doc,
+                 asserts::assert_stream::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_byte::name,
+                 asserts::assert_byte::func,
+                 asserts::assert_byte::doc,
+                 asserts::assert_byte::signature.al());
+    module_defun(ass_ptr,
+                 asserts::assert_byte_array::name,
+                 asserts::assert_byte_array::func,
+                 asserts::assert_byte_array::doc,
+                 asserts::assert_byte_array::signature.al());
 
 
     return assert_module;

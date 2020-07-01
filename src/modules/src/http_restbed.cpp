@@ -100,27 +100,27 @@ ALISP_EXPORT alisp::env::ModulePtr init_http_restbed(alisp::env::Environment *, 
     module_eval(http_ptr, http::detail::language_definitons);
 
 
-    module_signature(http_ptr, "server-root", Signature(Int{}, String{}));
-    module_signature(http_ptr, "server-port", Signature(Int{}, Int{}));
-    module_signature(http_ptr, "server-address", Signature(Int{}, String{}));
-    module_signature(http_ptr, "server-default-header", Signature(Int{}, String{}, String{}));
-    module_signature(http_ptr, "server-default-headers", Signature(Int{}, List{}));
-    module_signature(http_ptr, "server-worker-limit", Signature(Int{}, Int{}));
-    module_signature(http_ptr, "server-connection-limit", Signature(Int{}, Int{}));
-    module_signature(http_ptr, "server-connection-timeout", Signature(Int{}, Int{}));
-    module_signature(http_ptr, "server-case-insensitive-uris", Signature(Int{}, Sym{}));
-    module_signature(http_ptr, "server-status-msg", Signature(Int{}, Int{}, String{}));
-    module_signature(http_ptr, "server-property", Signature(Int{}, String{}, String{}));
-    module_signature(http_ptr, "server-not-found-handler", Signature(Int{}, Function{}));
-    module_signature(http_ptr, "server-start", Signature(Int{}));
-    module_signature(http_ptr, "server-stop", Signature(Int{}));
-    module_signature(http_ptr, "server-restart", Signature(Int{}));
+    // module_signature(http_ptr, "server-root", Signature(Int{}, String{}));
+    // module_signature(http_ptr, "server-port", Signature(Int{}, Int{}));
+    // module_signature(http_ptr, "server-address", Signature(Int{}, String{}));
+    // module_signature(http_ptr, "server-default-header", Signature(Int{}, String{}, String{}));
+    // module_signature(http_ptr, "server-default-headers", Signature(Int{}, List{}));
+    // module_signature(http_ptr, "server-worker-limit", Signature(Int{}, Int{}));
+    // module_signature(http_ptr, "server-connection-limit", Signature(Int{}, Int{}));
+    // module_signature(http_ptr, "server-connection-timeout", Signature(Int{}, Int{}));
+    // module_signature(http_ptr, "server-case-insensitive-uris", Signature(Int{}, Sym{}));
+    // module_signature(http_ptr, "server-status-msg", Signature(Int{}, Int{}, String{}));
+    // module_signature(http_ptr, "server-property", Signature(Int{}, String{}, String{}));
+    // module_signature(http_ptr, "server-not-found-handler", Signature(Int{}, Function{}));
+    // module_signature(http_ptr, "server-start", Signature(Int{}));
+    // module_signature(http_ptr, "server-stop", Signature(Int{}));
+    // module_signature(http_ptr, "server-restart", Signature(Int{}));
 
-    module_signature(http_ptr, "route", Signature(Int{}, String{}));
-    module_signature(http_ptr, "route-handler", Signature(Int{}, Int{}, Function{}));
-    module_signature(http_ptr, "route-path", Signature(Int{}, Int{}, String{}));
-    module_signature(http_ptr, "route-headers", Signature(Int{}, Int{}, List{}));
-    module_signature(http_ptr, "route-header", Signature(Int{}, Int{}, String{}, String{}));
+    // module_signature(http_ptr, "route", Signature(Int{}, String{}));
+    // module_signature(http_ptr, "route-handler", Signature(Int{}, Int{}, Function{}));
+    // module_signature(http_ptr, "route-path", Signature(Int{}, Int{}, String{}));
+    // module_signature(http_ptr, "route-headers", Signature(Int{}, Int{}, List{}));
+    // module_signature(http_ptr, "route-header", Signature(Int{}, Int{}, String{}, String{}));
 
     return Mhttp;
 }

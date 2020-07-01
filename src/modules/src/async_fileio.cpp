@@ -196,9 +196,21 @@ ALISP_EXPORT alisp::env::ModulePtr init_async_fileio(alisp::env::Environment *, 
 
     module_doc(aio_ptr, async_fileio::module_doc::doc);
 
-    module_defun(aio_ptr, async_fileio::async_append_text::name, async_fileio::async_append_text::func, async_fileio::async_append_text::doc, async_fileio::async_append_text::signature.al());
-    module_defun(aio_ptr, async_fileio::async_write_text::name, async_fileio::async_write_text::func, async_fileio::async_write_text::doc, async_fileio::async_write_text::signature.al());
-    module_defun(aio_ptr, async_fileio::async_read_text::name, async_fileio::async_read_text::func, async_fileio::async_read_text::doc, async_fileio::async_read_text::signature.al());
+    module_defun(aio_ptr,
+                 async_fileio::async_append_text::name,
+                 async_fileio::async_append_text::func,
+                 async_fileio::async_append_text::doc,
+                 async_fileio::async_append_text::signature.al());
+    module_defun(aio_ptr,
+                 async_fileio::async_write_text::name,
+                 async_fileio::async_write_text::func,
+                 async_fileio::async_write_text::doc,
+                 async_fileio::async_write_text::signature.al());
+    module_defun(aio_ptr,
+                 async_fileio::async_read_text::name,
+                 async_fileio::async_read_text::func,
+                 async_fileio::async_read_text::doc,
+                 async_fileio::async_read_text::signature.al());
 
     return M;
 }

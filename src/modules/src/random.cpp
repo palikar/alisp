@@ -450,22 +450,83 @@ ALISP_EXPORT alisp::env::ModulePtr init_random(alisp::env::Environment *, alisp:
 
     module_doc(rand_ptr, al_random::module_doc::doc);
 
-    module_defun(rand_ptr, al_random::rand_int::name, al_random::rand_int::func, al_random::rand_int::doc, al_random::rand_int::signature.al());
-    module_defun(rand_ptr, al_random::choice::name, al_random::choice::func, al_random::choice::doc, al_random::choice::signature.al());
-    module_defun(rand_ptr, al_random::sample::name, al_random::sample::func, al_random::sample::doc, al_random::sample::signature.al());
-    module_defun(rand_ptr, al_random::uniform::name, al_random::uniform::func, al_random::uniform::doc, al_random::uniform::signature.al());
-    module_defun(rand_ptr, al_random::exponential::name, al_random::exponential::func, al_random::exponential::doc, al_random::exponential::signature.al());
-    module_defun(rand_ptr, al_random::gamma::name, al_random::gamma::func, al_random::gamma::doc, al_random::gamma::signature.al());
-    module_defun(rand_ptr, al_random::gauss::name, al_random::gauss::func, al_random::gauss::doc, al_random::gauss::signature.al());
-    module_defun(rand_ptr, al_random::lognorm::name, al_random::lognorm::func, al_random::lognorm::doc, al_random::lognorm::signature.al());
-    module_defun(rand_ptr, al_random::weibull::name, al_random::weibull::func, al_random::weibull::doc, al_random::weibull::signature.al());
-    module_defun(rand_ptr, al_random::geometric::name, al_random::geometric::func, al_random::geometric::doc, al_random::geometric::signature.al());
-    module_defun(rand_ptr, al_random::fisher::name, al_random::fisher::func, al_random::fisher::doc, al_random::fisher::signature.al());
-    module_defun(rand_ptr, al_random::student::name, al_random::student::func, al_random::student::doc, al_random::student::signature.al());
-    module_defun(rand_ptr, al_random::seed::name, al_random::seed::func, al_random::seed::doc, al_random::seed::signature.al());
-    module_defun(rand_ptr, al_random::seed_rand::name, al_random::seed_rand::func, al_random::seed_rand::doc, al_random::seed_rand::signature.al());
-    module_defun(rand_ptr, al_random::crand::name, al_random::crand::func, al_random::crand::doc, al_random::crand::signature.al());
-    module_defun(rand_ptr, al_random::csrand::name, al_random::csrand::func, al_random::csrand::doc, al_random::csrand::signature.al());
+    module_defun(rand_ptr,
+                 al_random::rand_int::name,
+                 al_random::rand_int::func,
+                 al_random::rand_int::doc,
+                 al_random::rand_int::signature.al());
+    module_defun(rand_ptr,
+                 al_random::choice::name,
+                 al_random::choice::func,
+                 al_random::choice::doc,
+                 al_random::choice::signature.al());
+    module_defun(rand_ptr,
+                 al_random::sample::name,
+                 al_random::sample::func,
+                 al_random::sample::doc,
+                 al_random::sample::signature.al());
+    module_defun(rand_ptr,
+                 al_random::uniform::name,
+                 al_random::uniform::func,
+                 al_random::uniform::doc,
+                 al_random::uniform::signature.al());
+    module_defun(rand_ptr,
+                 al_random::exponential::name,
+                 al_random::exponential::func,
+                 al_random::exponential::doc,
+                 al_random::exponential::signature.al());
+    module_defun(rand_ptr,
+                 al_random::gamma::name,
+                 al_random::gamma::func,
+                 al_random::gamma::doc,
+                 al_random::gamma::signature.al());
+    module_defun(rand_ptr,
+                 al_random::gauss::name,
+                 al_random::gauss::func,
+                 al_random::gauss::doc,
+                 al_random::gauss::signature.al());
+    module_defun(rand_ptr,
+                 al_random::lognorm::name,
+                 al_random::lognorm::func,
+                 al_random::lognorm::doc,
+                 al_random::lognorm::signature.al());
+    module_defun(rand_ptr,
+                 al_random::weibull::name,
+                 al_random::weibull::func,
+                 al_random::weibull::doc,
+                 al_random::weibull::signature.al());
+    module_defun(rand_ptr,
+                 al_random::geometric::name,
+                 al_random::geometric::func,
+                 al_random::geometric::doc,
+                 al_random::geometric::signature.al());
+    module_defun(rand_ptr,
+                 al_random::fisher::name,
+                 al_random::fisher::func,
+                 al_random::fisher::doc,
+                 al_random::fisher::signature.al());
+    module_defun(rand_ptr,
+                 al_random::student::name,
+                 al_random::student::func,
+                 al_random::student::doc,
+                 al_random::student::signature.al());
+    module_defun(
+      rand_ptr, al_random::seed::name, al_random::seed::func, al_random::seed::doc, al_random::seed::signature.al());
+    module_defun(rand_ptr,
+                 al_random::seed_rand::name,
+                 al_random::seed_rand::func,
+                 al_random::seed_rand::doc,
+                 al_random::seed_rand::signature.al());
+    module_defun(rand_ptr,
+                 al_random::crand::name,
+                 al_random::crand::func,
+                 al_random::crand::doc,
+                 al_random::crand::signature.al());
+    module_defun(rand_ptr,
+                 al_random::csrand::name,
+                 al_random::csrand::func,
+                 al_random::csrand::doc,
+                 al_random::csrand::signature.al());
 
     return Mrandom;
 }

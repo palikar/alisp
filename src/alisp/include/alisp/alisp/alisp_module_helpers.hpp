@@ -47,7 +47,11 @@ inline void module_eval(env::Module *t_module, ALObjectPtr t_obj)
     t_module->eval_obj(std::move(t_obj));
 }
 
-inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_type fun, std::string t_doc = {}, ALObjectPtr signature = Qnil)
+inline void module_defun(env::Module *t_module,
+                         std::string t_name,
+                         Prim::func_type fun,
+                         std::string t_doc     = {},
+                         ALObjectPtr signature = Qnil)
 {
     auto &new_fun = t_module->get_root().insert({ t_name, make_prime(fun, t_name) }).first->second;
     new_fun->set_function_flag();
@@ -58,7 +62,7 @@ inline void module_defun(env::Module *t_module, std::string t_name, Prim::func_t
     new_fun->set_prop("--name--", make_string(t_name));
     new_fun->set_prop("--module--", make_string(t_module->name()));
 
-    if(signature != Qnil)
+    if (signature != Qnil)
     {
         new_fun->set_prop("--signature--", signature);
         new_fun->set_prop("--managed--", Qt);

@@ -340,10 +340,19 @@ ALISP_EXPORT alisp::env::ModulePtr init_func(alisp::env::Environment *, alisp::e
 
     module_defun(fun_ptr, func::compose::name, func::compose::func, func::compose::doc, func::compose::signature.al());
     module_defun(fun_ptr, func::partial::name, func::partial::func, func::partial::doc, func::partial::signature.al());
-    module_defun(fun_ptr, func::thread_first::name, func::thread_first::func, func::thread_first::doc, func::thread_first::signature.al());
-    module_defun(fun_ptr, func::thread_last::name, func::thread_last::func, func::thread_last::doc, func::thread_last::signature.al());
+    module_defun(fun_ptr,
+                 func::thread_first::name,
+                 func::thread_first::func,
+                 func::thread_first::doc,
+                 func::thread_first::signature.al());
+    module_defun(fun_ptr,
+                 func::thread_last::name,
+                 func::thread_last::func,
+                 func::thread_last::doc,
+                 func::thread_last::signature.al());
     module_defun(fun_ptr, func::reduce::name, func::reduce::func, func::reduce::doc, func::reduce::signature.al());
-    module_defun(fun_ptr, func::identity::name, func::identity::func, func::identity::doc, func::identity::signature.al());
+    module_defun(
+      fun_ptr, func::identity::name, func::identity::func, func::identity::doc, func::identity::signature.al());
     module_defun(fun_ptr, func::ignore::name, func::ignore::func, func::ignore::doc, func::ignore::signature.al());
 
     return Mfunc;

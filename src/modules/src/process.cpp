@@ -705,18 +705,36 @@ ALISP_EXPORT alisp::env::ModulePtr init_process(alisp::env::Environment *, alisp
     module_defconst(prop_ptr, process::stdout_const::name, process::stdout_const::var, process::stdout_const::doc);
     module_defconst(prop_ptr, process::stderr_const::name, process::stderr_const::var, process::stderr_const::doc);
     module_defconst(prop_ptr, process::pipe_const::name, process::pipe_const::var, process::pipe_const::doc);
-    
-    module_defun(prop_ptr, process::popen::name, process::popen::func, process::popen::doc, process::popen::signature.al());
-    module_defun(prop_ptr, process::check_output::name, process::check_output::func, process::check_output::doc, process::check_output::signature.al());
-    module_defun(prop_ptr, process::check_output_bytes::name, process::check_output_bytes::func, process::check_output_bytes::doc, process::check_output_bytes::signature.al());
+
+    module_defun(
+      prop_ptr, process::popen::name, process::popen::func, process::popen::doc, process::popen::signature.al());
+    module_defun(prop_ptr,
+                 process::check_output::name,
+                 process::check_output::func,
+                 process::check_output::doc,
+                 process::check_output::signature.al());
+    module_defun(prop_ptr,
+                 process::check_output_bytes::name,
+                 process::check_output_bytes::func,
+                 process::check_output_bytes::doc,
+                 process::check_output_bytes::signature.al());
     module_defun(prop_ptr, process::pid::name, process::pid::func, process::pid::doc, process::pid::signature.al());
-    module_defun(prop_ptr, process::retcode::name, process::retcode::func, process::retcode::doc, process::retcode::signature.al());
+    module_defun(prop_ptr,
+                 process::retcode::name,
+                 process::retcode::func,
+                 process::retcode::doc,
+                 process::retcode::signature.al());
     module_defun(prop_ptr, process::wait::name, process::wait::func, process::wait::doc, process::wait::signature.al());
     module_defun(prop_ptr, process::poll::name, process::poll::func, process::poll::doc, process::poll::signature.al());
-    module_defun(prop_ptr, process::start::name, process::start::func, process::start::doc, process::start::signature.al());
+    module_defun(
+      prop_ptr, process::start::name, process::start::func, process::start::doc, process::start::signature.al());
     module_defun(prop_ptr, process::kill::name, process::kill::func, process::kill::doc, process::kill::signature.al());
     module_defun(prop_ptr, process::send::name, process::send::func, process::send::doc, process::send::signature.al());
-    module_defun(prop_ptr, process::communicate::name, process::communicate::func, process::communicate::doc, process::communicate::signature.al());
+    module_defun(prop_ptr,
+                 process::communicate::name,
+                 process::communicate::func,
+                 process::communicate::doc,
+                 process::communicate::signature.al());
     module_defun(prop_ptr, process::call::name, process::call::func, process::call::doc, process::call::signature.al());
 
 
