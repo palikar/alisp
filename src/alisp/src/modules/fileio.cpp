@@ -212,7 +212,7 @@ Find all files and directories in `PATH`.
 
 };
 
-struct glob
+struct Sglob
 {
 
     inline static const std::string name{"f-glob"};
@@ -271,7 +271,7 @@ Update `PATH` last modification date or create if it does not exist.
 
 };
 
-struct expand_user
+struct Sexpand_user
 {
     inline static const std::string name{"f-expand-user"};
 
@@ -501,12 +501,6 @@ struct with_temp_file
 
     inline static const std::string name{"f-with-temp-file"};
 
-    inline static const std::string doc{R"((f-temp-file PATH)
-
-Return a resource object ot a temporary file. The file is created and
-the object can be used for writing to the file.
-)"};
-
     inline static const std::string doc{R"((f-with-temp-file FILE-SYM BODY)
 
 Bind `FILE-SYM` and execute the forms in `BODY`. `FILE-SYM` will point
@@ -541,7 +535,7 @@ struct temp_file_name
 
     inline static const std::string name{"f-temp-file-name"};
 
-    inline static const std::string name{R"((f-temp-file-name PATH)
+    inline static const std::string doc{R"((f-temp-file-name PATH)
 
 Return a path to a temporary file. The file is not created but the
 path will be valid for a temporary file.
@@ -1197,7 +1191,7 @@ struct relative
 
 };
 
-struct short
+struct Sshort
 {
     inline static const std::string name{"f-short"};
 
@@ -1217,7 +1211,7 @@ Return abbrev of `PATH`.
 
 };
 
-struct long
+struct Slong
 {
 
     inline static const std::string name{"f-long"};
