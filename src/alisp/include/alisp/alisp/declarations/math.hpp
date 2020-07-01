@@ -21,6 +21,7 @@
 #include "alisp/alisp/alisp_macros.hpp"
 #include "alisp/alisp/alisp_factory.hpp"
 #include "alisp/alisp/alisp_env.hpp"
+#include "alisp/alisp/alisp_signature.hpp"
 
 
 namespace alisp
@@ -33,7 +34,7 @@ namespace alisp
 /* | |  | | (_| | |_| | | | */
 /* |_|  |_|\__,_|\__|_| |_| */
 
-DEFUN(plus, "+", R"((+ [[VALUE]...])
+DEFUN(plus, "+", (Signature{Rest{}, Numbers{}}), R"((+ [[VALUE]...])
 
 Retrun the sum of the values of all the provided arguments. 
 
