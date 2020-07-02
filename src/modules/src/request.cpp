@@ -136,7 +136,7 @@ struct request
 
         size_t request_type{ 0 };
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
 
             auto op = arg_eval(eval, obj, 1);
@@ -174,7 +174,7 @@ struct request
 
             if (auto [data, succ] = get_next(op, ":data"); succ)
             {
-                auto s = eval->eval(data);
+                auto s   = eval->eval(data);
                 auto dat = s->to_string();
                 cpr::priv::set_option(session, cpr::Body{ dat });
             }
@@ -241,7 +241,7 @@ struct request
 
             if (auto [params, succ] = get_next(op, ":auth"); succ)
             {
-                auto s = eval->eval(params);
+                auto s    = eval->eval(params);
                 auto name = arg_eval(eval, obj, 0);
                 auto pass = arg_eval(eval, obj, 1);
                 cpr::priv::set_option(session, cpr::Authentication{ name->to_string(), pass->to_string() });
@@ -249,7 +249,7 @@ struct request
 
             if (auto [params, succ] = get_next(op, ":digest"); succ)
             {
-                auto s = eval->eval(params);
+                auto s    = eval->eval(params);
                 auto name = arg_eval(eval, obj, 0);
                 auto pass = arg_eval(eval, obj, 1);
                 cpr::priv::set_option(session, cpr::Digest{ name->to_string(), pass->to_string() });
@@ -257,7 +257,7 @@ struct request
 
             if (auto [params, succ] = get_next(op, ":NTLM"); succ)
             {
-                auto s = eval->eval(params);
+                auto s    = eval->eval(params);
                 auto name = arg_eval(eval, obj, 0);
                 auto pass = arg_eval(eval, obj, 1);
                 cpr::priv::set_option(session, cpr::NTLM{ name->to_string(), pass->to_string() });

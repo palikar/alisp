@@ -331,8 +331,9 @@ ALObjectPtr Evaluator::apply_prime(const ALObjectPtr &func, const ALObjectPtr &a
 
     if (func->prop_exists("--signature--"))
     {
-        size_t cnt = 1;
-        handle_argument_bindings(func->get_prop("--signature--"), func_args, [&](const auto &param, auto arg) {
+        size_t cnt     = 1;
+        auto signature = func->get_prop("--signature--");
+        handle_argument_bindings(signature, func_args, [&](const auto &param, auto arg) {
             SignatureHandler::handle_signature_element(param, arg, cnt++, signature);
         });
     }

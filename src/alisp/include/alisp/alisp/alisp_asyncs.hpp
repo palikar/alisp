@@ -49,7 +49,7 @@ namespace async
 {
 
 
-struct Futurexs
+struct Future
 {
     ALObjectPtr value;
     ALObjectPtr resolved;

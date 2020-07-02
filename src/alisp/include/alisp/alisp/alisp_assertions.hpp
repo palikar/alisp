@@ -53,19 +53,22 @@ template<size_t N> inline void assert_size(const ALObjectPtr &obj)
 template<typename... A> inline void assert_min_size(const ALObjectPtr &obj, size_t N, A... args)
 {
     if (!min_list_elements(obj, N))
-        throw argument_error(fmt::format("The object must be a list with at least {} elements", std::to_string(N)), obj, args...);
+        throw argument_error(
+          fmt::format("The object must be a list with at least {} elements", std::to_string(N)), obj, args...);
 }
 
 template<typename... A> inline void assert_max_size(const ALObjectPtr &obj, size_t N, A... args)
 {
     if (!max_list_elements(obj, N))
-        throw argument_error(fmt::format("The object must be a list with maximum of {} elements", std::to_string(N)), obj, args...);
+        throw argument_error(
+          fmt::format("The object must be a list with maximum of {} elements", std::to_string(N)), obj, args...);
 }
 
 template<typename... A> inline void assert_size(const ALObjectPtr &obj, size_t N, A... args)
 {
     if (obj->length() != N)
-        throw argument_error(fmt::format("The object must be a list with {} elements", std::to_string(N)), obj, args...);
+        throw argument_error(
+          fmt::format("The object must be a list with {} elements", std::to_string(N)), obj, args...);
 }
 
 template<typename... A> inline void assert_numbers(const ALObjectPtr &obj, A... args)

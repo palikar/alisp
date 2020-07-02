@@ -41,11 +41,11 @@ namespace http
 using namespace alisp;
 
 
-ALObjectPtr Froute(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Froute(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id = arg_eval(eval, obj,  0);
+    auto id = arg_eval(eval, obj, 0);
 
-    auto route = arg_eval(eval, obj,  1);
+    auto route = arg_eval(eval, obj, 1);
 
     auto res = std::make_shared<restbed::Resource>();
     res->set_path(route->to_string());
@@ -56,13 +56,13 @@ ALObjectPtr Froute(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator
     return make_int(server.g_resources.size() - 1);
 }
 
-ALObjectPtr Froute_set_path(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Froute_set_path(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = arg_eval(eval, obj,  0);
+    const auto id = arg_eval(eval, obj, 0);
 
-    const auto route_id = arg_eval(eval, obj,  1);
+    const auto route_id = arg_eval(eval, obj, 1);
 
-    const auto route_path = arg_eval(eval, obj,  2);
+    const auto route_path = arg_eval(eval, obj, 2);
 
     auto &server = detail::server_registry[object_to_resource(id)];
     auto &res    = server.g_resources[static_cast<size_t>(route_id->to_int())];
@@ -72,13 +72,13 @@ ALObjectPtr Froute_set_path(const ALObjectPtr &t_obj, env::Environment *, eval::
     return Qt;
 }
 
-ALObjectPtr Froute_default_headers(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Froute_default_headers(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = arg_eval(eval, obj,  0);
+    const auto id = arg_eval(eval, obj, 0);
 
-    const auto route_id = arg_eval(eval, obj,  1);
+    const auto route_id = arg_eval(eval, obj, 1);
 
-    const auto headers = arg_eval(eval, obj,  2);
+    const auto headers = arg_eval(eval, obj, 2);
 
     auto &server = detail::server_registry[object_to_resource(id)];
     auto &res    = server.g_resources[static_cast<size_t>(route_id->to_int())];
@@ -92,13 +92,13 @@ ALObjectPtr Froute_default_headers(const ALObjectPtr &t_obj, env::Environment *,
     return Qt;
 }
 
-ALObjectPtr Froute_default_header(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Froute_default_header(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = arg_eval(eval, obj,  0);
+    const auto id = arg_eval(eval, obj, 0);
 
-    const auto route_id = arg_eval(eval, obj,  1);
+    const auto route_id = arg_eval(eval, obj, 1);
 
-    const auto header = arg_eval(eval, obj,  2);
+    const auto header = arg_eval(eval, obj, 2);
 
 
     auto &server = detail::server_registry[object_to_resource(id)];
@@ -109,15 +109,15 @@ ALObjectPtr Froute_default_header(const ALObjectPtr &t_obj, env::Environment *, 
     return Qt;
 }
 
-ALObjectPtr Froute_method_handler(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Froute_method_handler(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = arg_eval(eval, obj,  0);
+    const auto id = arg_eval(eval, obj, 0);
 
-    const auto route_id = arg_eval(eval, obj,  1);
+    const auto route_id = arg_eval(eval, obj, 1);
 
-    const auto method = arg_eval(eval, obj,  2);
+    const auto method = arg_eval(eval, obj, 2);
 
-    const auto handler_callback = arg_eval(eval, obj,  3);
+    const auto handler_callback = arg_eval(eval, obj, 3);
 
     auto &server = detail::server_registry[object_to_resource(id)];
     auto &res    = server.g_resources[static_cast<size_t>(route_id->to_int())];
@@ -155,13 +155,13 @@ ALObjectPtr Froute_method_handler(const ALObjectPtr &t_obj, env::Environment *, 
     return Qt;
 }
 
-ALObjectPtr Froute_error_handler(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Froute_error_handler(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = arg_eval(eval, obj,  0);
+    const auto id = arg_eval(eval, obj, 0);
 
-    const auto route_id = arg_eval(eval, obj,  1);
+    const auto route_id = arg_eval(eval, obj, 1);
 
-    const auto handler_callback = arg_eval(eval, obj,  2);
+    const auto handler_callback = arg_eval(eval, obj, 2);
 
     auto &server = detail::server_registry[object_to_resource(id)];
     auto &res    = server.g_resources[static_cast<size_t>(route_id->to_int())];

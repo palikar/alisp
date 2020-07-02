@@ -280,10 +280,7 @@ struct identity
 Return ARG unchanged.
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
-    {
-        return obj->i(0);
-    }
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *) { return obj->i(0); }
 };
 
 struct ignore

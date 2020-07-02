@@ -40,11 +40,11 @@ struct assert_numbers
             return Qt;
         }
 
-        if (auto val = arg_eval(eval, obj, 0)); are_objects_numbers(val)
+        if (auto val = arg_eval(eval, obj, 0); are_objects_numbers(val))
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -65,11 +65,11 @@ struct assert_symbol
             return Qt;
         }
 
-        if (auto val = arg_eval(eval, obj, 0)); !psym(val)
+        if (auto val = arg_eval(eval, obj, 0); !psym(val))
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -89,11 +89,11 @@ struct assert_string
         {
             return Qt;
         }
-        if (auto val = arg_eval(eval, obj, 0)); !pstring(val)
+        if (auto val = arg_eval(eval, obj, 0); !pstring(val))
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -114,11 +114,11 @@ struct assert_list
             return Qt;
         }
 
-        if (auto val = arg_eval(eval, obj, 0)); !plist(val)
+        if (auto val = arg_eval(eval, obj, 0); !plist(val))
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -138,11 +138,11 @@ struct assert_number
         {
             return Qt;
         }
-        if (auto val = arg_eval(eval, obj, 0)); !val->is_int() and !val->is_real()
+        if (auto val = arg_eval(eval, obj, 0); !val->is_int() and !val->is_real())
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -163,11 +163,11 @@ struct assert_int
             return Qt;
         }
 
-        if (auto val = arg_eval(eval, obj, 0)); !pint(val)
+        if (auto val = arg_eval(eval, obj, 0); !pint(val))
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -188,11 +188,11 @@ struct assert_real
             return Qt;
         }
 
-        if (auto val = arg_eval(eval, obj, 0)); !preal(val)
+        if (auto val = arg_eval(eval, obj, 0); !preal(val))
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -213,11 +213,11 @@ struct assert_char
             return Qt;
         }
 
-        if (auto val = arg_eval(eval, obj, 0)); !val->is_int() and !val->check_char_flag()
+        if (auto val = arg_eval(eval, obj, 0); !val->is_int() and !val->check_char_flag())
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -238,11 +238,11 @@ struct assert_function
             return Qt;
         }
 
-        if (auto val = arg_eval(eval, obj, 0)); !val->check_function_flag()
+        if (auto val = arg_eval(eval, obj, 0); !val->check_function_flag())
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -263,11 +263,11 @@ struct assert_non_const
             return Qt;
         }
 
-        if (auto val = arg_eval(eval, obj, 0)); !val->check_const_flag()
+        if (auto val = arg_eval(eval, obj, 0); !val->check_const_flag())
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -289,11 +289,11 @@ struct assert_file
         }
 
 
-        if (auto val = arg_eval(eval, obj, 0)); !files::files_registry.belong(object_to_resource(val))
+        if (auto val = arg_eval(eval, obj, 0); !files::files_registry.belong(object_to_resource(val)))
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -314,11 +314,11 @@ struct assert_stream
             return Qt;
         }
 
-        if (auto val = arg_eval(eval, obj, 0)); !al::streams_registry.belong(object_to_resource(val))
+        if (auto val = arg_eval(eval, obj, 0); !al::streams_registry.belong(object_to_resource(val)))
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -339,11 +339,11 @@ struct assert_byte
             return Qt;
         }
 
-        if (auto val = arg_eval(eval, obj, 0)); !pint(val) || !(0 <= val->to_int() and val->to_int() <= 255)
+        if (auto val = arg_eval(eval, obj, 0); !pint(val) || !(0 <= val->to_int() and val->to_int() <= 255))
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
         return Qt;
     }
@@ -369,7 +369,7 @@ struct assert_byte_array
         {
             throw signal_exception(
               env::intern("assert-signal"),
-              make_object(make_string("Assertion failed."), make_string(dump(t_obj->i(0))), make_string(dump(val))));
+              make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
         }
 
         for (auto &el : *val)
@@ -377,10 +377,9 @@ struct assert_byte_array
             auto byte = el->to_int();
             if (!(0 <= byte and byte <= 255))
             {
-                throw signal_exception(env::intern("assert-signal"),
-                                       make_object(make_string("Assertion failed."),
-                                                   make_string(dump(t_obj->i(0))),
-                                                   make_string(dump(val))));
+                throw signal_exception(
+                  env::intern("assert-signal"),
+                  make_object(make_string("Assertion failed."), make_string(dump(obj->i(0))), make_string(dump(val))));
             }
         }
 

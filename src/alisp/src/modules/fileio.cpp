@@ -107,7 +107,7 @@ Return absolute root.
     inline static const Signature signature{};
 
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+    static ALObjectPtr func(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
     {
         namespace fs = std::filesystem;
 
@@ -138,7 +138,7 @@ Find all directories in `PATH`.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -182,7 +182,7 @@ Find all files and directories in `PATH`.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -222,13 +222,13 @@ Find `PATTERN` in `PATH`.
 
     inline static const Signature signature{ String{}, String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
         auto pattern = arg_eval(eval, obj, 0);
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto path = arg_eval(eval, obj, 1);
             return make_list(glob(path->to_string() + fs::path::preferred_separator + pattern->to_string()));
@@ -250,7 +250,7 @@ Update `PATH` last modification date or create if it does not exist.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto path = arg_eval(eval, obj, 0);
 
@@ -278,7 +278,7 @@ the current user.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto path = arg_eval(eval, obj, 0);
 
@@ -298,7 +298,7 @@ Copy file or directory `FROM` to `TO`.
 
     inline static const Signature signature{ String{}, String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -335,7 +335,7 @@ Move or rename `FROM` to `TO`.
 
     inline static const Signature signature{ String{}, String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -376,7 +376,7 @@ Create a symlink to `SOURCE` from `PATH`.
     inline static const Signature signature{ String{}, String{} };
 
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -415,7 +415,7 @@ Delete `PATH`, which can be file or directory.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -423,7 +423,7 @@ Delete `PATH`, which can be file or directory.
 
         try
         {
-            if (std::size(*t_obj) > 1 and is_truthy(arg_eval(eval, obj, 1)))
+            if (std::size(*obj) > 1 and is_truthy(arg_eval(eval, obj, 1)))
             {
 
                 bool val = fs::remove_all(path->to_string());
@@ -459,7 +459,7 @@ Create the directory `DIR`.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -494,7 +494,7 @@ to a valid file resource of a temporary file.
 
     inline static const Signature signature{ String{}, Rest{}, List{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *env, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -506,7 +506,7 @@ to a valid file resource of a temporary file.
         env::detail::ScopePushPop scope{ *env };
         env->put(sym, id);
 
-        auto res = eval_list(eval, t_obj, 1);
+        auto res = eval_list(eval, obj, 1);
         FileHelpers::close_file(id);
         fs::remove(path);
         return res;
@@ -526,7 +526,7 @@ path will be valid for a temporary file.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+    static ALObjectPtr func(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
     {
         return make_string(FileHelpers::temp_file_path());
     }
@@ -544,7 +544,7 @@ the object can be used for writing to the file.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+    static ALObjectPtr func(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
     {
         auto path = FileHelpers::temp_file_path();
         return FileHelpers::put_file(path, std::fstream(path, std::ios::out), false, true);
@@ -563,7 +563,7 @@ Read binary data from `PATH`. Return the binary data as byte array.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -614,7 +614,7 @@ Read the text from the file `PATH` and return the contatns as a string.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -646,7 +646,7 @@ Write `TEXT` to the file pointed by `PATH`. Previous content is erased.
 
     inline static const Signature signature{ String{}, String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -685,7 +685,7 @@ Write the bytes `BYTES` to the file pointed by `PATH`. Previous content is erase
 
     inline static const Signature signature{ String{}, ByteArray{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -730,7 +730,7 @@ erase the prevous contents of the file.  )" };
 
     inline static const Signature signature{ String{}, String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -770,7 +770,7 @@ erase the prevous contents of the file.
 
     inline static const Signature signature{ String{}, ByteArray{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -815,17 +815,17 @@ Join `ARGS` to a single path.
 
     inline static const Signature signature{ Rest{}, List{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
-        auto paths  = eval_transform(eval, t_obj);
-        auto path_1 = paths->i(0);
+        auto paths    = eval_transform(eval, obj);
+        auto path_1   = paths->i(0);
         fs::path path = path_1->to_string();
 
-        for (size_t i = 1; i < t_obj->size(); ++i)
+        for (size_t i = 1; i < obj->size(); ++i)
         {
-            auto path_n = t_obj->i(i);
+            auto path_n = obj->i(i);
             path /= path_n->to_string();
         }
 
@@ -845,7 +845,7 @@ Split `PATH` and return list containing parts.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -869,7 +869,7 @@ Expand `PATH` relative to `DIR`.
 
     inline static const Signature signature{ String{}, String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -903,7 +903,7 @@ Return the name of `PATH`.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -938,7 +938,7 @@ Return the parent directory to `PATH`.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -972,7 +972,7 @@ Return the deepest common parent directory of `PATHS`.
 
     inline static const Signature signature{ Rest{}, String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto path = arg_eval(eval, obj, 0);
 
@@ -991,7 +991,7 @@ struct ext
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -1024,7 +1024,7 @@ struct no_ext
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -1059,7 +1059,7 @@ backup suffixes.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -1094,7 +1094,7 @@ Return the name of `PATH`, excluding the extension of file.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -1122,7 +1122,7 @@ struct relative
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -1132,7 +1132,7 @@ struct relative
 
         try
         {
-            if (std::size(*t_obj) > 1)
+            if (std::size(*obj) > 1)
             {
                 auto to_path = arg_eval(eval, obj, 1);
                 return make_string(fs::relative(p, to_path->to_string()));
@@ -1161,7 +1161,7 @@ Return abbrev of `PATH`.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto path = arg_eval(eval, obj, 0);
 
@@ -1181,7 +1181,7 @@ Return long version of `PATH`.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -1213,7 +1213,7 @@ Return the canonical name of `PATH`.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -1246,7 +1246,7 @@ Return absolute path to `PATH`, with ending slash.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
@@ -1280,11 +1280,11 @@ Return `t` if `PATH` exists, `nil` otherwise.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
-        auto path = arg_eval(eval, obj, 0);
+        auto path    = arg_eval(eval, obj, 0);
         const auto p = fs::path(path->to_string());
         return fs::exists(p) ? Qt : Qnil;
     }
@@ -1301,12 +1301,12 @@ Return `t` if `PATH` is directory, `nil` otherwise.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
         auto path = arg_eval(eval, obj, 0);
-        auto p = fs::path(path->to_string());
+        auto p    = fs::path(path->to_string());
         return fs::is_directory(p) ? Qt : Qnil;
     }
 };
@@ -1323,12 +1323,12 @@ Return `t` if `PATH` is `nil`, false otherwise.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
         auto path = arg_eval(eval, obj, 0);
-        auto p = fs::path(path->to_string());
+        auto p    = fs::path(path->to_string());
         return fs::is_regular_file(p) ? Qt : Qnil;
     }
 };
@@ -1345,12 +1345,12 @@ Return `t` if `PATH` is symlink, `nil` otherwise.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
         auto path = arg_eval(eval, obj, 0);
-        auto p = fs::path(path->to_string());
+        auto p    = fs::path(path->to_string());
         return fs::is_symlink(p) ? Qt : Qnil;
     }
 };
@@ -1367,12 +1367,12 @@ Return `t` if `PATH` is readable, `nil` otherwise.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
         auto path = arg_eval(eval, obj, 0);
-        auto p = fs::path(path->to_string());
+        auto p    = fs::path(path->to_string());
 
         return (fs::status(p).permissions() & fs::perms::owner_read) != fs::perms::none ? Qt : Qnil;
     }
@@ -1390,12 +1390,12 @@ Return `t` if `PATH` is writable, `nil` otherwise.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
         auto path = arg_eval(eval, obj, 0);
-        auto p = fs::path(path->to_string());
+        auto p    = fs::path(path->to_string());
 
         return (fs::status(p).permissions() & fs::perms::owner_write) != fs::perms::none ? Qt : Qnil;
     }
@@ -1413,12 +1413,12 @@ Return `t` if `PATH` is executable, `nil` otherwise.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
         auto path = arg_eval(eval, obj, 0);
-        auto p = fs::path(path->to_string());
+        auto p    = fs::path(path->to_string());
 
         return (fs::status(p).permissions() & fs::perms::owner_exec) != fs::perms::none ? Qt : Qnil;
     }
@@ -1436,12 +1436,12 @@ Return `t` if `PATH` is absolute, `nil` otherwise.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
         auto path = arg_eval(eval, obj, 0);
-        auto p = fs::path(path->to_string());
+        auto p    = fs::path(path->to_string());
         return p.is_absolute() ? Qt : Qnil;
     }
 };
@@ -1457,12 +1457,12 @@ Return `t` if `PATH` is relative, `nil` otherwise.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
         auto path = arg_eval(eval, obj, 0);
-        auto p = fs::path(path->to_string());
+        auto p    = fs::path(path->to_string());
         return p.is_relative() ? Qt : Qnil;
     }
 };
@@ -1479,12 +1479,12 @@ Return `t` if `PATH` is root directory, `nil` otherwise.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
         auto path = arg_eval(eval, obj, 0);
-        auto p = fs::path(path->to_string());
+        auto p    = fs::path(path->to_string());
         return fs::equivalent(p, fs::current_path().root_path()) ? Qt : Qnil;
     }
 };
@@ -1501,12 +1501,12 @@ Return `t` if `PATH1` and `PATH2` are references to same file.
 
     inline static const Signature signature{ String{}, String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
-        auto path1 = arg_eval(eval, obj, 0);
-        auto path2 = arg_eval(eval, obj, 1);
+        auto path1    = arg_eval(eval, obj, 0);
+        auto path2    = arg_eval(eval, obj, 1);
         const auto p1 = fs::path(path1->to_string());
         const auto p2 = fs::path(path2->to_string());
 
@@ -1536,12 +1536,12 @@ Return t if `PATH1` is parent of `PATH2`.
 
     inline static const Signature signature{ String{}, String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
-        auto path1 = arg_eval(eval, obj, 0);
-        auto path2 = arg_eval(eval, obj, 1);
+        auto path1    = arg_eval(eval, obj, 0);
+        auto path2    = arg_eval(eval, obj, 1);
         const auto p1 = fs::path(path1->to_string());
         const auto p2 = fs::path(path2->to_string());
 
@@ -1571,12 +1571,12 @@ Return t if `PATH1` is child of `PATH2`.
 
     inline static const Signature signature{ String{}, String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
-        auto path1 = arg_eval(eval, obj, 0);
-        auto path2 = arg_eval(eval, obj, 1);
+        auto path1    = arg_eval(eval, obj, 0);
+        auto path2    = arg_eval(eval, obj, 1);
         const auto p1 = fs::path(path1->to_string());
         const auto p2 = fs::path(path2->to_string());
 
@@ -1606,12 +1606,12 @@ Return `t` if `PATH1` is ancestor of `PATH2`.
 
     inline static const Signature signature{ String{}, String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
-        auto path1 = arg_eval(eval, obj, 0);
-        auto path2 = arg_eval(eval, obj, 1);
+        auto path1    = arg_eval(eval, obj, 0);
+        auto path2    = arg_eval(eval, obj, 1);
         const auto p1 = (path1->to_string());
         const auto p2 = (path2->to_string());
 
@@ -1648,12 +1648,12 @@ Return `t` if `PATH1` is desendant of `PATH2`.
     inline static const Signature signature{ String{}, String{} };
 
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
-        auto path1 = arg_eval(eval, obj, 0);
-        auto path2 = arg_eval(eval, obj, 1);
+        auto path1    = arg_eval(eval, obj, 0);
+        auto path2    = arg_eval(eval, obj, 1);
         const auto p1 = (path1->to_string());
         const auto p2 = (path2->to_string());
 
@@ -1690,11 +1690,11 @@ Return `t` if `PATH` is hidden, `nil` otherwise.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 
     {
         namespace fs = std::filesystem;
-        auto path = arg_eval(eval, obj, 0);
+        auto path    = arg_eval(eval, obj, 0);
         const auto p = fs::path(path->to_string());
         return p.filename().string()[0] == '.' ? Qt : Qnil;
     }
@@ -1713,10 +1713,10 @@ otherwise. If `PATH` is directory, return `t` if directory has no files,
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
-        auto path = arg_eval(eval, obj, 0);
+        auto path    = arg_eval(eval, obj, 0);
 
         try
         {
@@ -1752,6 +1752,64 @@ env::ModulePtr init_fileio(env::Environment *, eval::Evaluator *)
     auto fio_ptr = Mfileio.get();
 
     module_doc(fio_ptr, detail::module_doc::doc);
+
+
+    using namespace detail;
+
+    module_defun(fio_ptr, root::name, root::func, root::doc, root::signature.al());
+    module_defun(fio_ptr, directories::name, directories::func, directories::doc, directories::signature.al());
+    module_defun(fio_ptr, entries::name, entries::func, entries::doc, entries::signature.al());
+    module_defun(fio_ptr, Sglob::name, Sglob::func, Sglob::doc, Sglob::signature.al());
+    module_defun(fio_ptr, touch::name, touch::func, touch::doc, touch::signature.al());
+    module_defun(fio_ptr, Sexpand_user::name, Sexpand_user::func, Sexpand_user::doc, Sexpand_user::signature.al());
+    module_defun(fio_ptr, copy::name, copy::func, copy::doc, copy::signature.al());
+    module_defun(fio_ptr, move::name, move::func, move::doc, move::signature.al());
+    module_defun(fio_ptr, make_symlink::name, make_symlink::func, make_symlink::doc, make_symlink::signature.al());
+    module_defun(fio_ptr, Sdelete::name, Sdelete::func, Sdelete::doc, Sdelete::signature.al());
+    module_defun(fio_ptr, mkdir::name, mkdir::func, mkdir::doc, mkdir::signature.al());
+    module_defun(
+      fio_ptr, with_temp_file::name, with_temp_file::func, with_temp_file::doc, with_temp_file::signature.al());
+    module_defun(
+      fio_ptr, temp_file_name::name, temp_file_name::func, temp_file_name::doc, temp_file_name::signature.al());
+    module_defun(fio_ptr, temp_file::name, temp_file::func, temp_file::doc, temp_file::signature.al());
+    module_defun(fio_ptr, read_bytes::name, read_bytes::func, read_bytes::doc, read_bytes::signature.al());
+    module_defun(fio_ptr, read_text::name, read_text::func, read_text::doc, read_text::signature.al());
+    module_defun(fio_ptr, write_text::name, write_text::func, write_text::doc, write_text::signature.al());
+    module_defun(fio_ptr, write_bytes::name, write_bytes::func, write_bytes::doc, write_bytes::signature.al());
+    module_defun(fio_ptr, append_text::name, append_text::func, append_text::doc, append_text::signature.al());
+    module_defun(fio_ptr, append_bytes::name, append_bytes::func, append_bytes::doc, append_bytes::signature.al());
+    module_defun(fio_ptr, join::name, join::func, join::doc, join::signature.al());
+    module_defun(fio_ptr, split::name, split::func, split::doc, split::signature.al());
+    module_defun(fio_ptr, expand::name, expand::func, expand::doc, expand::signature.al());
+    module_defun(fio_ptr, filename::name, filename::func, filename::doc, filename::signature.al());
+    module_defun(fio_ptr, dirname::name, dirname::func, dirname::doc, dirname::signature.al());
+    module_defun(fio_ptr, common_parent::name, common_parent::func, common_parent::doc, common_parent::signature.al());
+    module_defun(fio_ptr, ext::name, ext::func, ext::doc, ext::signature.al());
+    module_defun(fio_ptr, no_ext::name, no_ext::func, no_ext::doc, no_ext::signature.al());
+    module_defun(fio_ptr, swap_ext::name, swap_ext::func, swap_ext::doc, swap_ext::signature.al());
+    module_defun(fio_ptr, base::name, base::func, base::doc, base::signature.al());
+    module_defun(fio_ptr, relative::name, relative::func, relative::doc, relative::signature.al());
+    module_defun(fio_ptr, Sshort::name, Sshort::func, Sshort::doc, Sshort::signature.al());
+    module_defun(fio_ptr, Slong::name, Slong::func, Slong::doc, Slong::signature.al());
+    module_defun(fio_ptr, canonical::name, canonical::func, canonical::doc, canonical::signature.al());
+    module_defun(fio_ptr, full::name, full::func, full::doc, full::signature.al());
+    module_defun(fio_ptr, exists::name, exists::func, exists::doc, exists::signature.al());
+    module_defun(fio_ptr, direcotry::name, direcotry::func, direcotry::doc, direcotry::signature.al());
+    module_defun(fio_ptr, file::name, file::func, file::doc, file::signature.al());
+    module_defun(fio_ptr, symlink::name, symlink::func, symlink::doc, symlink::signature.al());
+    module_defun(fio_ptr, readable::name, readable::func, readable::doc, readable::signature.al());
+    module_defun(fio_ptr, writable::name, writable::func, writable::doc, writable::signature.al());
+    module_defun(fio_ptr, executable::name, executable::func, executable::doc, executable::signature.al());
+    module_defun(fio_ptr, absolute::name, absolute::func, absolute::doc, absolute::signature.al());
+    module_defun(fio_ptr, prelative::name, prelative::func, prelative::doc, prelative::signature.al());
+    module_defun(fio_ptr, is_root::name, is_root::func, is_root::doc, is_root::signature.al());
+    module_defun(fio_ptr, same::name, same::func, same::doc, same::signature.al());
+    module_defun(fio_ptr, parent_of::name, parent_of::func, parent_of::doc, parent_of::signature.al());
+    module_defun(fio_ptr, child_of::name, child_of::func, child_of::doc, child_of::signature.al());
+    module_defun(fio_ptr, ancestor_of::name, ancestor_of::func, ancestor_of::doc, ancestor_of::signature.al());
+    module_defun(fio_ptr, descendant_of::name, descendant_of::func, descendant_of::doc, descendant_of::signature.al());
+    module_defun(fio_ptr, hidden::name, hidden::func, hidden::doc, hidden::signature.al());
+    module_defun(fio_ptr, empty::name, empty::func, empty::doc, empty::signature.al());
 
 
     return Mfileio;

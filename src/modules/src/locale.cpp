@@ -35,13 +35,13 @@ static std::locale g_defautl_loc;
 
 inline management::Registry<std::locale, 0x08> loc_registry;
 
-template<typename Facet, typename T> auto str_with_locale(const std::locale &t_loc, T &&t_obj)
+template<typename Facet, typename T> auto str_with_locale(const std::locale &t_loc, T &&obj)
 {
 
     std::stringstream ss;
     ss.imbue(t_loc);
     auto &f = std::use_facet<Facet>(t_loc);
-    f.put({ ss }, false, ss, ss.fill(), t_obj);
+    f.put({ ss }, false, ss, ss.fill(), obj);
 
     return ss.str();
 }
@@ -65,7 +65,7 @@ Return the string used to represent `true` according to the global locale or the
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        if (std::size(*t_obj) > 0)
+        if (std::size(*obj) > 0)
         {
             auto id = arg_eval(eval, obj, 0);
             return make_string(
@@ -91,7 +91,7 @@ Return the string used to represent `false` according to the global locale or th
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        if (std::size(*t_obj) > 0)
+        if (std::size(*obj) > 0)
         {
             auto id = arg_eval(eval, obj, 0);
             return make_string(
@@ -118,7 +118,7 @@ representation of real numbers according to the global locale or the
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        if (std::size(*t_obj) > 0)
+        if (std::size(*obj) > 0)
         {
             auto id = arg_eval(eval, obj, 0);
             return make_char(
@@ -145,7 +145,7 @@ given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        if (std::size(*t_obj) > 0)
+        if (std::size(*obj) > 0)
         {
             auto id = arg_eval(eval, obj, 0);
             return make_char(
@@ -171,7 +171,7 @@ accrding by the global locale or the `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        if (std::size(*t_obj) > 0)
+        if (std::size(*obj) > 0)
         {
             auto id = arg_eval(eval, obj, 0);
             return make_string(
@@ -197,7 +197,7 @@ accrding by the global locale or the `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        if (std::size(*t_obj) > 0)
+        if (std::size(*obj) > 0)
         {
             auto id = arg_eval(eval, obj, 0);
             return make_string(
@@ -223,7 +223,7 @@ the global locale or the `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        if (std::size(*t_obj) > 0)
+        if (std::size(*obj) > 0)
         {
             auto id = arg_eval(eval, obj, 0);
             return make_string(
@@ -249,7 +249,7 @@ by the global locale or the `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        if (std::size(*t_obj) > 0)
+        if (std::size(*obj) > 0)
         {
             auto id = arg_eval(eval, obj, 0);
             return make_char(
@@ -275,7 +275,7 @@ by the global locale or the `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        if (std::size(*t_obj) > 0)
+        if (std::size(*obj) > 0)
         {
             auto id = arg_eval(eval, obj, 0);
             return make_char(
@@ -300,17 +300,17 @@ the global locale or `LOCALE` if given.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        auto obj = arg_eval(eval, obj, 0);
+        auto money = arg_eval(eval, obj, 0);
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
-            auto s = detail::str_with_locale<std::money_put<char>>(detail::loc_registry[object_to_resource(id)],
-                                                                   obj->to_real());
+            auto s  = detail::str_with_locale<std::money_put<char>>(detail::loc_registry[object_to_resource(id)],
+                                                                   money->to_real());
             return make_string(s);
         }
 
-        auto s = detail::str_with_locale<std::money_put<char>>(detail::g_defautl_loc, obj->to_real());
+        auto s = detail::str_with_locale<std::money_put<char>>(detail::g_defautl_loc, money->to_real());
         return make_string(s);
     }
 };
@@ -329,13 +329,13 @@ the global locale or `LOCALE` if given.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        auto obj = arg_eval(eval, obj, 0);
+        auto num = arg_eval(eval, obj, 0);
 
         std::stringstream ss;
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
-            auto id = arg_eval(eval, obj, 1);
+            auto id = arg_eval(eval, num, 1);
             ss.imbue(detail::loc_registry[object_to_resource(id)]);
         }
         else
@@ -343,7 +343,7 @@ the global locale or `LOCALE` if given.
             ss.imbue(std::locale());
         }
 
-        std::use_facet<std::num_put<char>>(std::cout.getloc()).put({ ss }, ss, ' ', obj->to_real());
+        std::use_facet<std::num_put<char>>(std::cout.getloc()).put({ ss }, ss, ' ', num->to_real());
 
         return make_string(ss.str());
     }
@@ -364,15 +364,15 @@ the global locale or `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto time = arg_eval(eval, obj, 0);
+        auto t    = time->to_int();
 
         auto obj_fmt = arg_eval(eval, obj, 1);
-        auto fmt = obj_fmt->to_string();
+        auto fmt     = obj_fmt->to_string();
 
         std::stringstream ss;
 
-        if (std::size(*t_obj) > 2)
+        if (std::size(*obj) > 2)
         {
             auto id = arg_eval(eval, obj, 2);
             ss.imbue(detail::loc_registry[object_to_resource(id)]);
@@ -406,10 +406,10 @@ locale or to `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto symbol = arg_eval(eval, obj, 0);
+        auto t      = symbol->to_int();
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
             return std::isspace(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -434,10 +434,10 @@ locale or to `LOCALE` if given.)" };
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto symbol = arg_eval(eval, obj, 0);
+        auto t      = symbol->to_int();
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
             return std::isblank(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -462,10 +462,10 @@ locale or to `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto symbol = arg_eval(eval, obj, 0);
+        auto t      = symbol->to_int();
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
             return std::iscntrl(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -490,10 +490,10 @@ locale or to `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto symbol = arg_eval(eval, obj, 0);
+        auto t      = symbol->to_int();
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
             return std::isupper(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -518,10 +518,10 @@ locale or to `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto symbol = arg_eval(eval, obj, 0);
+        auto t      = symbol->to_int();
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
             return std::islower(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -546,10 +546,10 @@ locale or to `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto symbol = arg_eval(eval, obj, 0);
+        auto t      = symbol->to_int();
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
             return std::isalpha(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -574,10 +574,10 @@ locale or to `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto symbol = arg_eval(eval, obj, 0);
+        auto t      = symbol->to_int();
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
             return std::isdigit(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -602,10 +602,10 @@ locale or to `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto symbol = arg_eval(eval, obj, 0);
+        auto t      = symbol->to_int();
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
             return std::ispunct(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -630,10 +630,10 @@ locale or to `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto symbol = arg_eval(eval, obj, 0);
+        auto t      = symbol->to_int();
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
             return std::isxdigit(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -658,10 +658,10 @@ locale or to `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto symbol = arg_eval(eval, obj, 0);
+        auto t      = symbol->to_int();
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
             return std::isalnum(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -686,10 +686,10 @@ locale or to `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto symbol = arg_eval(eval, obj, 0);
+        auto t      = symbol->to_int();
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
             return std::isprint(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -714,10 +714,10 @@ locale or to `LOCALE` if given.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto obj = arg_eval(eval, obj, 0);
-        auto t = obj->to_int();
+        auto symbol = arg_eval(eval, obj, 0);
+        auto t      = symbol->to_int();
 
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto id = arg_eval(eval, obj, 1);
             return std::isgraph(char(t), detail::loc_registry[object_to_resource(id)]) ? Qt : Qnil;
@@ -739,7 +739,7 @@ Reset the global locate to the default locale.
 )" };
 
 
-    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
+    static ALObjectPtr func(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
     {
 
         detail::g_defautl_loc = std::locale();
@@ -759,7 +759,7 @@ Set the global locale to the preffered (according to the host system) locale.
 )" };
 
 
-    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
+    static ALObjectPtr func(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
     {
 
         detail::g_defautl_loc = std::locale{ "" };
@@ -771,7 +771,7 @@ struct locale
 {
     inline static const std::string name{ "locale" };
 
-    inline static const Signature signature{};
+    inline static const Signature signature{ String{} };
 
     inline static const std::string doc{ R"((locale ID)
 
@@ -781,18 +781,18 @@ object for it.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
     {
-        auto obj = arg_eval(eval, obj, 0);
+        auto loc_id = arg_eval(eval, obj, 0);
 
         try
         {
-            auto id = detail::loc_registry.emplace_resource(obj->to_string())->id;
+            auto id = detail::loc_registry.emplace_resource(loc_id->to_string())->id;
             env->defer_callback([id = id]() { detail::loc_registry.destroy_resource(id); });
             return resource_to_object(id);
         }
         catch (std::runtime_error &exp)
         {
             signal(loc_signal,
-                   std::string("LOCALE ERROR: Cannot consturct locale '") + obj->to_string() + "'; " + exp.what()
+                   std::string("LOCALE ERROR: Cannot consturct locale '") + loc_id->to_string() + "'; " + exp.what()
                      + "\n");
             return Qnil;
         }
@@ -803,7 +803,7 @@ struct set_default_locale
 {
     inline static const std::string name{ "set-locale" };
 
-    inline static const Signature signature{};
+    inline static const Signature signature{ Int{} };
 
     inline static const std::string doc{ R"((set-locale LOCALE)
 
@@ -813,9 +813,8 @@ Change the current global default locale to `LOCALE`.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        auto obj = arg_eval(eval, obj, 0);
-
-        auto id = object_to_resource(obj);
+        auto loc_id   = arg_eval(eval, obj, 0);
+        const auto id = object_to_resource(loc_id);
 
         if (detail::loc_registry.belong(id))
         {
@@ -842,10 +841,10 @@ return its name.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        if (std::size(*t_obj) > 0)
+        if (std::size(*obj) > 0)
         {
-            auto obj = arg_eval(eval, obj, 0);
-            return make_string(detail::loc_registry[object_to_resource(obj)].name());
+            auto loc_id = arg_eval(eval, obj, 0);
+            return make_string(detail::loc_registry[object_to_resource(loc_id)].name());
         }
 
         return make_string(detail::g_defautl_loc.name());

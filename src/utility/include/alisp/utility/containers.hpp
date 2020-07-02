@@ -25,19 +25,15 @@ namespace alisp
 {
 
 
-template<typename Key, typename Value>
-using Map = robin_hood::unordered_map<Key, Value>;
+template<typename Key, typename Value> using Map = robin_hood::unordered_map<Key, Value>;
 
 
-template<typename Key, typename Value>
-using FlatMap = robin_hood::unordered_flat_map<Key, Value>;
+template<typename Key, typename Value> using FlatMap = robin_hood::unordered_flat_map<Key, Value>;
 
-template<typename Key, typename Value>
-using NodeMap = robin_hood::unordered_node_map<Key, Value>;
+template<typename Key, typename Value> using NodeMap = robin_hood::unordered_node_map<Key, Value>;
 
 
-template<typename Value>
-using Set = robin_hood::unordered_set<Value>;
+template<typename Value> using Set = robin_hood::unordered_set<Value>;
 
 
-}
+}  // namespace alisp

@@ -44,12 +44,11 @@ Copy `SIZE` bytes of `BUFFER-SOURCE` to `BUFFER-DEST`.
 
     inline static const Signature signature{ Memory{}, Memory{}, Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto mem_source = arg_eval(eval, obj, 0);
         auto mem_target = arg_eval(eval, obj, 1);
         auto size       = arg_eval(eval, obj, 2);
-
 
 
         auto &buf_s = MemoryHelpers::get_buffer(mem_source);
@@ -75,7 +74,7 @@ Return the size of the given buffer.
 
     inline static const Signature signature{ Memory{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto mem = arg_eval(eval, obj, 0);
 
@@ -94,7 +93,7 @@ Set the value of the `BUFFER` at the given index to `VALUE`.
 
     inline static const Signature signature{ Memory{}, Int{}, Byte{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto mem  = arg_eval(eval, obj, 0);
         auto i    = arg_eval(eval, obj, 1);
@@ -116,7 +115,7 @@ Return the value of the `BUFFER` at the given index.
 
     inline static const Signature signature{ Memory{}, Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto mem = arg_eval(eval, obj, 0);
         auto i   = arg_eval(eval, obj, 1);
@@ -137,7 +136,7 @@ range [`START`, `INDEX`)
 
     inline static const Signature signature{ Memory{}, Int{}, Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto mem   = arg_eval(eval, obj, 0);
         auto start = arg_eval(eval, obj, 1);
@@ -165,7 +164,7 @@ Fill the entirety of a buffer with `VALUE`.
 
     inline static const Signature signature{ Memory{}, Byte{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto mem = arg_eval(eval, obj, 0);
         auto val = arg_eval(eval, obj, 1);
@@ -191,7 +190,7 @@ Set the contents of a `BUFFER` to the values in the given byte array.
 
     inline static const Signature signature{ Memory{}, ByteArray{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto mem   = arg_eval(eval, obj, 0);
         auto array = arg_eval(eval, obj, 1);
@@ -217,7 +216,7 @@ Return the contents of a buffer as a byte array.
 
     inline static const Signature signature{ Memory{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto mem = arg_eval(eval, obj, 0);
 
@@ -245,7 +244,7 @@ for reading and writing bytes to it.
 
     inline static const Signature signature{ Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto size = arg_eval(eval, obj, 0);
 
@@ -265,7 +264,7 @@ Deallocate `BUFFER` (resource object) and free the used memory.
     inline static const Signature signature{ Memory{} };
 
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto mem = arg_eval(eval, obj, 0);
 
@@ -291,6 +290,21 @@ env::ModulePtr init_memory(env::Environment *, eval::Evaluator *)
     auto mem_ptr = Mmemory.get();
 
     module_doc(mem_ptr, detail::module_doc::doc);
+
+    using namespace detail;
+
+    module_defun(mem_ptr, mmap::name, mmap::func, mmap::doc, mmap::signature.al());
+    module_defun(mem_ptr, get_size::name, get_size::func, get_size::doc, get_size::signature.al());
+    module_defun(mem_ptr, set_nth_byte::name, set_nth_byte::func, set_nth_byte::doc, set_nth_byte::signature.al());
+    module_defun(mem_ptr, get_nth_byte::name, get_nth_byte::func, get_nth_byte::doc, get_nth_byte::signature.al());
+    module_defun(mem_ptr, get_range::name, get_range::func, get_range::doc, get_range::signature.al());
+    module_defun(mem_ptr, fill_bytes::name, fill_bytes::func, fill_bytes::doc, fill_bytes::signature.al());
+    module_defun(mem_ptr, set_bytes::name, set_bytes::func, set_bytes::doc, set_bytes::signature.al());
+    module_defun(mem_ptr, get_bytes::name, get_bytes::func, get_bytes::doc, get_bytes::signature.al());
+    module_defun(
+      mem_ptr, allocate_buffer::name, allocate_buffer::func, allocate_buffer::doc, allocate_buffer::signature.al());
+    module_defun(
+      mem_ptr, release_buffer::name, release_buffer::func, release_buffer::doc, release_buffer::signature.al());
 
 
     return Mmemory;

@@ -48,7 +48,7 @@ auto localhost = make_string("127.0.0.1");
 ALObjectPtr Fend_request(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
 
-    auto fut = arg_eval(eval, obj,  0);
+    auto fut = arg_eval(eval, obj, 0);
     eval->async().submit_future(object_to_resource(fut->i(0)), Qt);
     return Qt;
 }

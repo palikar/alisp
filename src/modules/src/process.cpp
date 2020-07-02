@@ -127,7 +127,7 @@ Return the new process as a resource object.
 
         if (auto [size, succ] = get_next(op, ":buff-size"); succ)
         {
-            auto s = eval->eval(size);
+            auto s                             = eval->eval(size);
             std::get<detail::BUFSIZE>(options) = bufsize{ static_cast<int>(s->to_int()) };
         }
 
@@ -138,7 +138,7 @@ Return the new process as a resource object.
 
         if (auto [cwd_str, succ] = get_next(op, ":cwd"); succ)
         {
-            auto s = eval->eval(cwd_str);
+            auto s                         = eval->eval(cwd_str);
             std::get<detail::CWD>(options) = cwd{ s->to_string() };
         }
 
@@ -479,7 +479,7 @@ Send a signal (by default SIGKILL) to a running process.
 
         try
         {
-            if (std::size(*t_obj) > 1)
+            if (std::size(*obj) > 1)
             {
                 auto sig = arg_eval(eval, obj, 1);
                 detail::proc_registry[object_to_resource(pro)]->kill(static_cast<int>(sig->to_int()));
@@ -516,7 +516,7 @@ Write a string to the standard input stream of a child process.
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto pro = arg_eval(eval, obj, 0);
+        auto pro  = arg_eval(eval, obj, 0);
         auto msgs = arg_eval(eval, obj, 1);
 
         try
@@ -557,9 +557,9 @@ the contents of the standard output and standard error of the process.
         try
         {
 
-            if (std::size(*t_obj) > 1)
+            if (std::size(*obj) > 1)
             {
-                auto msgs = arg_eval(eval, obj, 1);
+                auto msgs       = arg_eval(eval, obj, 1);
                 auto s          = msgs->to_string();
                 auto [out, err] = detail::proc_registry[object_to_resource(pro)]->communicate(s.data(), s.size());
                 return make_object(make_string(std::string{ out.buf.begin(), out.buf.end() }),

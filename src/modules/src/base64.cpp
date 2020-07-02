@@ -743,6 +743,7 @@ ALISP_EXPORT alisp::env::ModulePtr init_base64(alisp::env::Environment *, alisp:
 {
     using namespace alisp;
 
+
     auto Mbase64    = alisp::module_init("base64");
     auto base64_ptr = Mbase64.get();
 

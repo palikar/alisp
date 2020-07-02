@@ -128,7 +128,6 @@ struct async_then
 
             fut.success_callback = success_callback;
             fut.reject_callback  = reject_callback;
-
         }
 
         return future;
@@ -192,6 +191,14 @@ struct timeout
     }
 };
 
+struct module_doc
+{
+
+    static inline const std::string doc{ R"((async-state FUTURE)
+
+)" };
+};
+
 }  // namespace detail
 
 env::ModulePtr init_async(env::Environment *, eval::Evaluator *)
@@ -199,6 +206,15 @@ env::ModulePtr init_async(env::Environment *, eval::Evaluator *)
 
     auto Masync    = module_init("async");
     auto async_ptr = Masync.get();
+
+    using namespace detail;
+
+    module_defun(async_ptr, async_start::name, async_start::func, async_start::doc, async_start::signature.al());
+    module_defun(async_ptr, async_await::name, async_await::func, async_await::doc, async_await::signature.al());
+    module_defun(async_ptr, async_then::name, async_then::func, async_then::doc, async_then::signature.al());
+    module_defun(async_ptr, async_ready::name, async_ready::func, async_ready::doc, async_ready::signature.al());
+    module_defun(async_ptr, async_state::name, async_state::func, async_state::doc, async_state::signature.al());
+    module_defun(async_ptr, timeout::name, timeout::func, timeout::doc, timeout::signature.al());
 
 
     return Masync;

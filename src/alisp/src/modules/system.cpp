@@ -50,7 +50,7 @@ Return the value of the environment variable `VAR` if avaialble. Return `nil` ot
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto var = arg_eval(eval, obj, 0);
         return make_string(utility::env_string(var->to_string().c_str()));
@@ -68,7 +68,7 @@ Return the `t` if the environment variable `VAR` is defined. Return `nil` otherw
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto var = arg_eval(eval, obj, 0);
 
@@ -87,7 +87,7 @@ Set the value of the environment variable `VAR` to `VALUE`
 
     inline static const Signature signature{ String{}, String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto var = arg_eval(eval, obj, 0);
         auto val = arg_eval(eval, obj, 1);
@@ -106,10 +106,7 @@ struct list_env
 
     inline static const Signature signature{};
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
-    {
-        return get_evnvars();
-    }
+    static ALObjectPtr func(const ALObjectPtr &, env::Environment *, eval::Evaluator *) { return get_evnvars(); }
 };
 
 struct chwd
@@ -123,11 +120,11 @@ Change the currnt working directory to `PATH`.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
 
-        auto path = arg_eval(eval, obj, 0);
+        auto path    = arg_eval(eval, obj, 0);
         const auto p = path->to_string();
 
         if (!fs::exists(p))
@@ -152,7 +149,7 @@ Execute the command `COMMAND` in a shell of the host system.
 
     inline static const Signature signature{ String{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto command = arg_eval(eval, obj, 0);
 
@@ -184,6 +181,14 @@ env::ModulePtr init_system(env::Environment *, eval::Evaluator *)
 
     module_doc(sys_ptr, detail::module_doc::doc);
 
+    using namespace detail;
+
+    module_defun(sys_ptr, get_env::name, get_env::func, get_env::doc, get_env::signature.al());
+    module_defun(sys_ptr, check_env::name, check_env::func, check_env::doc, check_env::signature.al());
+    module_defun(sys_ptr, set_env::name, set_env::func, set_env::doc, set_env::signature.al());
+    module_defun(sys_ptr, list_env::name, list_env::func, list_env::doc, list_env::signature.al());
+    module_defun(sys_ptr, chwd::name, chwd::func, chwd::doc, chwd::signature.al());
+    module_defun(sys_ptr, system::name, system::func, system::doc, system::signature.al());
 
     return Msystem;
 }

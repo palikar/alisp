@@ -630,6 +630,45 @@ env::ModulePtr init_math(env::Environment *, eval::Evaluator *)
 
     module_doc(math_ptr, detail::module_doc::doc);
 
+
+    using namespace detail;
+    module_defun(math_ptr, isnan::name, isnan::Fisnan, isnan::doc, isnan::signature.al());
+    module_defun(math_ptr, isinf::name, isinf::Fisinf, isinf::doc, isinf::signature.al());
+    module_defun(math_ptr, todegrees::name, todegrees::Ftodegrees, todegrees::doc, todegrees::signature.al());
+    module_defun(math_ptr, toradians::name, toradians::Ftoradians, toradians::doc, toradians::signature.al());
+    module_defun(math_ptr, exp::name, exp::Fexp, exp::doc, exp::signature.al());
+    module_defun(math_ptr, exp2::name, exp2::Fexp2, exp2::doc, exp2::signature.al());
+    module_defun(math_ptr, expm1::name, expm1::Fexpm1, expm1::doc, expm1::signature.al());
+    module_defun(math_ptr, log::name, log::Flog, log::doc, log::signature.al());
+    module_defun(math_ptr, log10::name, log10::Flog10, log10::doc, log10::signature.al());
+    module_defun(math_ptr, log2::name, log2::Flog2, log2::doc, log2::signature.al());
+    module_defun(math_ptr, log1p::name, log1p::Flog1p, log1p::doc, log1p::signature.al());
+    module_defun(math_ptr, sin::name, sin::Fsin, sin::doc, sin::signature.al());
+    module_defun(math_ptr, cos::name, cos::Fcos, cos::doc, cos::signature.al());
+    module_defun(math_ptr, tan::name, tan::Ftan, tan::doc, tan::signature.al());
+    module_defun(math_ptr, asin::name, asin::Fasin, asin::doc, asin::signature.al());
+    module_defun(math_ptr, acos::name, acos::Facos, acos::doc, acos::signature.al());
+    module_defun(math_ptr, atan::name, atan::Fatan, atan::doc, atan::signature.al());
+    module_defun(math_ptr, sinh::name, sinh::Fsinh, sinh::doc, sinh::signature.al());
+    module_defun(math_ptr, cosh::name, cosh::Fcosh, cosh::doc, cosh::signature.al());
+    module_defun(math_ptr, tanh::name, tanh::Ftanh, tanh::doc, tanh::signature.al());
+    module_defun(math_ptr, asinh::name, asinh::Fasinh, asinh::doc, asinh::signature.al());
+    module_defun(math_ptr, acosh::name, acosh::Facosh, acosh::doc, acosh::signature.al());
+    module_defun(math_ptr, ceil::name, ceil::Fceil, ceil::doc, ceil::signature.al());
+    module_defun(math_ptr, floor::name, floor::Ffloor, floor::doc, floor::signature.al());
+    module_defun(math_ptr, erf::name, erf::Ferf, erf::doc, erf::signature.al());
+    module_defun(math_ptr, erfc::name, erfc::Ferfc, erfc::doc, erfc::signature.al());
+    module_defun(math_ptr, tgamma::name, tgamma::Ftgamma, tgamma::doc, tgamma::signature.al());
+    module_defun(math_ptr, lgamma::name, lgamma::Flgamma, lgamma::doc, lgamma::signature.al());
+    module_defun(math_ptr, hypot::name, hypot::Fhypot, hypot::doc, hypot::signature.al());
+    module_defun(math_ptr, pow::name, pow::Fpow, pow::doc, pow::signature.al());
+    module_defun(math_ptr, fdim::name, fdim::Ffdim, fdim::doc, fdim::signature.al());
+    module_defun(math_ptr, sqrt::name, sqrt::Fsqrt, sqrt::doc, sqrt::signature.al());
+    module_defun(math_ptr, cbrt::name, cbrt::Fcbrt, cbrt::doc, cbrt::signature.al());
+    module_defun(math_ptr, gcd::name, gcd::Fgcd, gcd::doc, gcd::signature.al());
+    module_defun(math_ptr, lcm::name, lcm::Flcm, lcm::doc, lcm::signature.al());
+
+
     return Mmath;
 }
 

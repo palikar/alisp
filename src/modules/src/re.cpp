@@ -70,15 +70,15 @@ ALObjectPtr match_to_obj(std::smatch &t_match)
     return make_list(matches);
 }
 
-std::regex obj_to_regex(ALObjectPtr t_obj)
+std::regex obj_to_regex(ALObjectPtr obj)
 {
-    if (pstring(t_obj))
+    if (pstring(obj))
     {
-        return std::regex(t_obj->to_string());
+        return std::regex(obj->to_string());
     }
-    else if (pint(t_obj))
+    else if (pint(obj))
     {
-        auto i = object_to_resource(t_obj);
+        auto i = object_to_resource(obj);
         if (reg_registry.belong(i))
         {
             return reg_registry[i];
@@ -87,11 +87,11 @@ std::regex obj_to_regex(ALObjectPtr t_obj)
     return {};
 }
 
-std::regex_constants::match_flag_type handle_match_flags(ALObjectPtr t_obj)
+std::regex_constants::match_flag_type handle_match_flags(ALObjectPtr obj)
 {
     std::regex_constants::match_flag_type val = std::regex_constants::match_default;
 
-    for (auto &el : *t_obj)
+    for (auto &el : *obj)
     {
 
         if (eq(el, reflag_default))
@@ -162,11 +162,11 @@ std::regex_constants::match_flag_type handle_match_flags(ALObjectPtr t_obj)
     return val;
 }
 
-std::regex_constants::syntax_option_type handle_regex_flags(ALObjectPtr t_obj)
+std::regex_constants::syntax_option_type handle_regex_flags(ALObjectPtr obj)
 {
     std::regex_constants::syntax_option_type val = std::regex_constants::ECMAScript;
 
-    for (auto &el : *t_obj)
+    for (auto &el : *obj)
     {
         if (eq(el, reflag_icase))
         {
@@ -241,17 +241,17 @@ Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        auto reg = arg_eval(eval, obj, 0);
-        auto str = arg_eval(eval, obj, 1);
+        auto reg  = arg_eval(eval, obj, 0);
+        auto str  = arg_eval(eval, obj, 1);
         auto repl = arg_eval(eval, obj, 2);
 
         try
         {
             std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
-            if (std::size(*t_obj) > 3)
+            if (std::size(*obj) > 3)
             {
                 auto flags_list = arg_eval(eval, obj, 3);
-                flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+                flags           = detail::handle_match_flags(eval_transform(eval, flags_list));
             }
             auto res = std::regex_replace(str->to_string(), detail::obj_to_regex(reg), repl->to_string(), flags);
             return make_string(res);
@@ -285,15 +285,15 @@ Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
     {
         auto reg = arg_eval(eval, obj, 0);
 
-        auto str = arg_eval(eval, obj, 1);
+        auto str                                    = arg_eval(eval, obj, 1);
         std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
 
         try
         {
-            if (std::size(*t_obj) > 2)
+            if (std::size(*obj) > 2)
             {
                 auto flags_list = arg_eval(eval, obj, 2);
-                flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+                flags           = detail::handle_match_flags(eval_transform(eval, flags_list));
             }
             std::smatch match;
             auto res = std::regex_match(str->to_string(), match, detail::obj_to_regex(reg), flags);
@@ -327,16 +327,16 @@ Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
     {
         auto reg = arg_eval(eval, obj, 0);
 
-        auto str = arg_eval(eval, obj, 1);
+        auto str                                    = arg_eval(eval, obj, 1);
         std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
 
 
         try
         {
-            if (std::size(*t_obj) > 2)
+            if (std::size(*obj) > 2)
             {
                 auto flags_list = arg_eval(eval, obj, 2);
-                flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+                flags           = detail::handle_match_flags(eval_transform(eval, flags_list));
             }
             std::smatch match;
             auto res = std::regex_search(str->to_string(), match, detail::obj_to_regex(reg), flags);
@@ -376,10 +376,10 @@ Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.)" 
 
         try
         {
-            if (std::size(*t_obj) > 2)
+            if (std::size(*obj) > 2)
             {
                 auto flags_list = arg_eval(eval, obj, 2);
-                flags = detail::handle_match_flags(eval_transform(eval, flags_list));
+                flags           = detail::handle_match_flags(eval_transform(eval, flags_list));
             }
 
             auto string_expr = str->to_string();
@@ -424,10 +424,10 @@ the created regex. Optionaly, build flags can be passed through the
 
         try
         {
-            if (std::size(*t_obj) > 1)
+            if (std::size(*obj) > 1)
             {
                 auto flags_list = arg_eval(eval, obj, 1);
-                flags = detail::handle_regex_flags(flags_list);
+                flags           = detail::handle_regex_flags(flags_list);
             }
 
             auto id = detail::reg_registry.emplace_resource(reg->to_string(), flags)->id;
@@ -744,7 +744,7 @@ ALISP_EXPORT alisp::env::ModulePtr init_re(alisp::env::Environment *, alisp::eva
     module_defconst(
       re_ptr, re::re_match_default_const::name, re::re_match_default_const::var, re::re_match_default_const::doc);
     module_defconst(
-        re_ptr, re::re_match_not_bol_const::name, re::re_match_not_bol_const::var, re::re_match_not_bol_const::doc);
+      re_ptr, re::re_match_not_bol_const::name, re::re_match_not_bol_const::var, re::re_match_not_bol_const::doc);
     module_defconst(
       re_ptr, re::re_match_not_eol_const::name, re::re_match_not_eol_const::var, re::re_match_not_eol_const::doc);
     module_defconst(
@@ -767,9 +767,9 @@ ALISP_EXPORT alisp::env::ModulePtr init_re(alisp::env::Environment *, alisp::eva
     module_defconst(re_ptr,
                     re::re_match_format_no_copy_const::name,
                     re::re_match_format_no_copy_const::var,
-    re::re_match_format_no_copy_const::doc);
+                    re::re_match_format_no_copy_const::doc);
     module_defconst(re_ptr,
-    re::re_match_format_first_only_const::name,
+                    re::re_match_format_first_only_const::name,
                     re::re_match_format_first_only_const::var,
                     re::re_match_format_first_only_const::doc);
     module_defconst(

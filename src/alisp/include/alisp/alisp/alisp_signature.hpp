@@ -119,23 +119,23 @@ struct ByteArray
 
 struct Size
 {
-    size_t size;
+    ALObject::int_type size;
 
-    ALObjectPtr to_al() const { return make_list(Qsize_arg, size); }
+    ALObjectPtr to_al() const { return make_list(Qsize_arg, make_int(size)); }
 };
 
 struct MinSize
 {
-    size_t size;
+    ALObject::int_type size;
 
-    ALObjectPtr to_al() const { return make_list(Qmin_size_arg, size); }
+    ALObjectPtr to_al() const { return make_list(Qmin_size_arg, make_int(size)); }
 };
 
 struct MaxSize
 {
-    size_t size;
+    ALObject::int_type size;
 
-    ALObjectPtr to_al() const { return make_list(Qmax_size_arg, size); }
+    ALObjectPtr to_al() const { return make_list(Qmax_size_arg, make_int(size)); }
 };
 
 struct Any
@@ -216,7 +216,7 @@ template<typename... Args> struct Signature
   private:
     template<size_t... I> ALObjectPtr do_arglist(std::index_sequence<I...>) const
     {
-        auto signature = make_object(std::get<I>(args).to_al()...);
+        auto signature = make_list(std::get<I>(args).to_al()...);
         return signature;
     }
 };
@@ -274,32 +274,28 @@ struct SignatureHandler
 
     static void size_match(ALObjectPtr arg, size_t number, ALObjectPtr signature, ALObjectPtr list)
     {
-        assert_size(arg, list->i(0)->to_int(), number, signature);
+        assert_size(arg, static_cast<size_t>(list->i(0)->to_int()), number, signature);
     }
 
     static void size_min(ALObjectPtr arg, size_t number, ALObjectPtr signature, ALObjectPtr list)
     {
-        assert_min_size(arg, list->i(0)->to_int(), number, signature);
+        assert_min_size(arg, static_cast<size_t>(list->i(0)->to_int()), number, signature);
     }
 
     static void size_max(ALObjectPtr arg, size_t number, ALObjectPtr signature, ALObjectPtr list)
     {
-        assert_max_size(arg, list->i(0)->to_int(), number, signature);
+        assert_max_size(arg, static_cast<size_t>(list->i(0)->to_int()), number, signature);
     }
-    
+
 
     static inline const std::unordered_map<ALObject *,
                                            std::function<void(ALObjectPtr, size_t, ALObjectPtr, ALObjectPtr)>>
       signature_functions = {
-          { Qor_arg.get(), &signature_or },
-          { Qand_arg.get(), &signature_and },
-          { Qnot_arg.get(), &signature_not },
-          { Qmax_size_arg.get(), &size_max },
-          { Qmin_size_arg.get(), &size_min },
-          { Qsize_arg.get(), &size_match },
-          
+          { Qor_arg.get(), &signature_or },   { Qand_arg.get(), &signature_and }, { Qnot_arg.get(), &signature_not },
+          { Qmax_size_arg.get(), &size_max }, { Qmin_size_arg.get(), &size_min }, { Qsize_arg.get(), &size_match },
 
-    };
+
+      };
 
     static inline const std::unordered_map<ALObject *, std::function<void(ALObjectPtr, size_t, ALObjectPtr)>>
       signature_assertions = {

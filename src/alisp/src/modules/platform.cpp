@@ -81,7 +81,7 @@ struct alisp_version_patch_var
     static inline const std::string doc{ R"(The patch versin of the alisp interpreter.
 )" };
 
-    static inline const auto var = make_int(alisp::BuildInfo::version_patch()());
+    static inline const auto var = make_int(alisp::BuildInfo::version_patch());
 };
 
 struct max_call_depth_var
@@ -112,7 +112,7 @@ struct compiler_name_var
     static inline const std::string doc{ R"(The name of the compiler with which the interpreter was compiled.
 )" };
 
-    static inline const auto var = make_int(ALISP_COMPILER_NAME);
+    static inline const auto var = make_string(ALISP_COMPILER_NAME);
 };
 
 struct compiler_version_var
@@ -127,7 +127,7 @@ struct compiler_version_var
     static inline const auto var = make_string(compiler_version);
 };
 
-struct arch_doc
+struct arch_var
 {
     static inline const std::string name{ "arch" };
 
@@ -163,6 +163,20 @@ env::ModulePtr init_platform(env::Environment *, eval::Evaluator *)
     auto plat_ptr  = Mplatform.get();
 
     module_doc(plat_ptr, detail::module_doc::doc);
+
+    using namespace detail;
+
+
+    module_defvar(plat_ptr, os_var::name, os_var::var);
+    module_defvar(plat_ptr, arch_var::name, arch_var::var);
+    module_defvar(plat_ptr, alisp_version_var::name, alisp_version_var::var);
+    module_defvar(plat_ptr, alisp_version_major_var::name, alisp_version_major_var::var);
+    module_defvar(plat_ptr, alisp_version_minor_var::name, alisp_version_minor_var::var);
+    module_defvar(plat_ptr, alisp_version_patch_var::name, alisp_version_patch_var::var);
+    module_defvar(plat_ptr, max_call_depth_var::name, max_call_depth_var::var);
+    module_defvar(plat_ptr, max_eval_depth_var::name, max_eval_depth_var::var);
+    module_defvar(plat_ptr, compiler_name_var::name, compiler_name_var::var);
+    module_defvar(plat_ptr, compiler_version_var::name, compiler_version_var::var);
 
 
     return Mplatform;

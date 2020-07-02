@@ -25,7 +25,7 @@
 namespace alisp
 {
 
-namespace details
+namespace detail
 {
 
 namespace ch = std::chrono;
@@ -52,7 +52,7 @@ standard library.
 
     inline static const Signature signature{};
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+    static ALObjectPtr func(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
     {
         std::time_t result = std::time(nullptr);
 
@@ -79,7 +79,7 @@ execution. To convert result value to seconds divide it by
 
     inline static const Signature signature{};
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
+    static ALObjectPtr func(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
     {
         return make_int(std::clock());
     }
@@ -100,7 +100,7 @@ given clock. `CLOCK` can be:
 
     inline static const Signature signature{ Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
 
@@ -142,7 +142,7 @@ the given clock. `CLOCK` can be:
 
     inline static const Signature signature{ Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
 
@@ -179,10 +179,10 @@ year, week day, year day, leap year) representing the time `TIME` as a GM time.
 
     inline static const Signature signature{ Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        auto time = arg_eval(eval, obj, 0);
+        auto time    = arg_eval(eval, obj, 0);
         std::time_t time_t(time->to_int());
         auto res = std::gmtime(&time_t);
         return make_object(res->tm_sec,
@@ -209,10 +209,10 @@ year, week day, year day, leap year) representing the time `TIME` as a local tim
 
     inline static const Signature signature{ Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        auto time = arg_eval(eval, obj, 0);
+        auto time    = arg_eval(eval, obj, 0);
         std::time_t time_t(time->to_int());
         auto res = std::localtime(&time_t);
         return make_object(res->tm_sec,
@@ -238,11 +238,11 @@ month, year, week day, year day, leap year) to time (seconds) since
 the beginning of the epoch. The values in the time list are permitted
 to be outside their normal ranges.  )" };
 
-    inline static const Signature signature{ And{List{}, Size{9}, Numbers{}} };
+    inline static const Signature signature{ And{ List{}, Size{ 9 }, Numbers{} } };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        namespace ch = std::chrono;
+        namespace ch  = std::chrono;
         auto time_tup = arg_eval(eval, obj, 0);
 
         std::tm tm;
@@ -272,9 +272,9 @@ time list `TIME-LIST`. The ruls for formating are the same as in the
 The time list is of the form as by the `t-mktime` and `t-gmtime` functions.
 )" };
 
-    inline static const Signature signature{ String{}, And{List{}, Size{9}, Numbers{}} };
+    inline static const Signature signature{ String{}, And{ List{}, Size{ 9 }, Numbers{} } };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
 
@@ -323,10 +323,10 @@ given, use this time to construct the string.
 
     inline static const Signature signature{ Optional{}, Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        if (std::size(*t_obj) > 1)
+        if (std::size(*obj) > 1)
         {
             auto time = arg_eval(eval, obj, 0);
             std::time_t time_t(time->to_int());
@@ -348,11 +348,11 @@ Convert `TIME` in nanoseconds to seconds as as real number.
 
     inline static const Signature signature{ Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        auto time = arg_eval(eval, obj, 0);
-        auto res = ch::duration_cast<al_seconds>(ch::nanoseconds(time->to_int())).count();
+        auto time    = arg_eval(eval, obj, 0);
+        auto res     = ch::duration_cast<al_seconds>(ch::nanoseconds(time->to_int())).count();
         return make_real(res);
     }
 };
@@ -368,11 +368,11 @@ Convert `TIME` in miliseconds to seconds as as real number.
 
     inline static const Signature signature{ Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        auto time = arg_eval(eval, obj, 0);
-        auto res = ch::duration_cast<al_seconds>(ch::milliseconds(time->to_int())).count();
+        auto time    = arg_eval(eval, obj, 0);
+        auto res     = ch::duration_cast<al_seconds>(ch::milliseconds(time->to_int())).count();
         return make_real(res);
     }
 };
@@ -391,11 +391,11 @@ The time list is of the form as by the `t-mktime` and `t-gmtime` functions.
 
     inline static const Signature signature{ Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        auto time = arg_eval(eval, obj, 0);
-        auto res = ch::duration_cast<al_seconds>(ch::seconds(time->to_int())).count();
+        auto time    = arg_eval(eval, obj, 0);
+        auto res     = ch::duration_cast<al_seconds>(ch::seconds(time->to_int())).count();
         return make_real(res);
     }
 };
@@ -411,11 +411,11 @@ Convert `TIME` in hours to seconds as as real number.
 
     inline static const Signature signature{ Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        auto time = arg_eval(eval, obj, 0);
-        auto res = ch::duration_cast<al_seconds>(ch::hours(time->to_int())).count();
+        auto time    = arg_eval(eval, obj, 0);
+        auto res     = ch::duration_cast<al_seconds>(ch::hours(time->to_int())).count();
         return make_real(res);
     }
 };
@@ -431,10 +431,10 @@ Block the current thread for `TIME` miliseconds.
 
     inline static const Signature signature{ Int{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        auto time = arg_eval(eval, obj, 0);
+        auto time    = arg_eval(eval, obj, 0);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(time->to_int()));
 
@@ -451,7 +451,7 @@ struct system_clock_var
     static inline const std::string doc{ R"(Integer representing the system-wide real time wall clock.
 )" };
 
-    static inline const auto var = make_int(details::SYSTEM_CLOCK);
+    static inline const auto var = make_int(SYSTEM_CLOCK);
 };
 
 struct steady_clock_var
@@ -464,10 +464,10 @@ cannot decrease as physical time moves forward and the time between
 ticks of this clock is constant.
 )" };
 
-    static inline const auto var = make_int(details::STEADY_CLOCK);
+    static inline const auto var = make_int(STEADY_CLOCK);
 };
 
-struct hight_res_clock_var
+struct high_res_clock_var
 {
 
     static inline const std::string name{ "high-res-clock" };
@@ -476,7 +476,7 @@ struct hight_res_clock_var
 by the implementation.
 )" };
 
-    static inline const auto var = make_int(details::HIGH_RES_CLOCK);
+    static inline const auto var = make_int(HIGH_RES_CLOCK);
 };
 
 struct clocks_per_sec_var
@@ -487,7 +487,7 @@ struct clocks_per_sec_var
     static inline const std::string doc{ R"(Number of clock ticks per second. Clock ticks are units of time of a
 constant but system-specific length.)" };
 
-    static inline const auto var = make_int(details::clocks_per_sec);
+    static inline const auto var = make_int(clocks_per_sec);
 };
 
 struct module_doc
@@ -500,14 +500,37 @@ standard library.
 )" };
 };
 
-}  // namespace details
+}  // namespace detail
 
 env::ModulePtr init_time(env::Environment *, eval::Evaluator *)
 {
     auto Mtime    = module_init("time");
     auto time_ptr = Mtime.get();
 
-    module_doc(time_ptr, details::module_doc::doc);
+    module_doc(time_ptr, detail::module_doc::doc);
+
+    using namespace detail;
+
+    module_defvar(time_ptr, system_clock_var::name, system_clock_var::var);
+    module_defvar(time_ptr, steady_clock_var::name, steady_clock_var::var);
+    module_defvar(time_ptr, high_res_clock_var::name, high_res_clock_var::var);
+
+    module_defvar(time_ptr, clocks_per_sec_var::name, clocks_per_sec_var::var);
+
+    module_defun(time_ptr, time::name, time::func, time::doc, time::signature.al());
+    module_defun(time_ptr, clock::name, clock::func, clock::doc, clock::signature.al());
+    module_defun(time_ptr, now::name, now::func, now::doc, now::signature.al());
+    module_defun(time_ptr, now_ns::name, now_ns::func, now_ns::doc, now_ns::signature.al());
+    module_defun(time_ptr, gmtime::name, gmtime::func, gmtime::doc, gmtime::signature.al());
+    module_defun(time_ptr, localtime::name, localtime::func, localtime::doc, localtime::signature.al());
+    module_defun(time_ptr, mktime::name, mktime::func, mktime::doc, mktime::signature.al());
+    module_defun(time_ptr, strftime::name, strftime::func, strftime::doc, strftime::signature.al());
+    module_defun(time_ptr, ctime::name, ctime::func, ctime::doc, ctime::signature.al());
+    module_defun(time_ptr, ns::name, ns::func, ns::doc, ns::signature.al());
+    module_defun(time_ptr, ms::name, ms::func, ms::doc, ms::signature.al());
+    module_defun(time_ptr, s::name, s::func, s::doc, s::signature.al());
+    module_defun(time_ptr, hr::name, hr::func, hr::doc, hr::signature.al());
+    module_defun(time_ptr, sleep::name, sleep::func, sleep::doc, sleep::signature.al());
 
 
     return Mtime;

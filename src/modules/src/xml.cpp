@@ -140,16 +140,16 @@ ALObjectPtr xml_to_sexp(XMLDocument &t_doc)
     return res;
 }
 
-void sexp_to_node(ALObjectPtr t_obj, XMLDocument &t_doc, XMLNode *t_node, std::string t_key = {})
+void sexp_to_node(ALObjectPtr sexp, XMLDocument &t_doc, XMLNode *t_node, std::string t_key = {})
 {
 
-    if (t_obj->prop_exists("--dict--"))
+    if (sexp->prop_exists("--dict--"))
     {
 
-        for (size_t i = 0; i < t_obj->size() - 1; i += 2)
+        for (size_t i = 0; i < sexp->size() - 1; i += 2)
         {
-            auto key = utility::erase_substr(t_obj->i(i)->to_string(), ":");
-            auto obj = t_obj->i(i + 1);
+            auto key = utility::erase_substr(sexp->i(i)->to_string(), ":");
+            auto obj = sexp->i(i + 1);
 
             if (key[0] == '@')
             {
@@ -173,10 +173,10 @@ void sexp_to_node(ALObjectPtr t_obj, XMLDocument &t_doc, XMLNode *t_node, std::s
             }
         }
     }
-    else if (t_obj->prop_exists("--array--"))
+    else if (sexp->prop_exists("--array--"))
     {
 
-        for (auto &el : *t_obj)
+        for (auto &el : *sexp)
         {
 
             auto xml_element = t_node->InsertEndChild(t_doc.NewElement(t_key.c_str()));
@@ -185,16 +185,16 @@ void sexp_to_node(ALObjectPtr t_obj, XMLDocument &t_doc, XMLNode *t_node, std::s
     }
 }
 
-void sexp_to_xml(ALObjectPtr t_obj, XMLDocument &t_doc, XMLNode *t_node)
+void sexp_to_xml(ALObjectPtr sexp, XMLDocument &t_doc, XMLNode *t_node)
 {
 
-    if (t_obj->prop_exists("--dict--"))
+    if (sexp->prop_exists("--dict--"))
     {
 
-        for (size_t i = 0; i < t_obj->size() - 1; i += 2)
+        for (size_t i = 0; i < sexp->size() - 1; i += 2)
         {
-            auto key = utility::erase_substr(t_obj->i(i)->to_string(), ":");
-            auto obj = t_obj->i(i + 1);
+            auto key = utility::erase_substr(sexp->i(i)->to_string(), ":");
+            auto obj = sexp->i(i + 1);
 
             if (key[0] == '@')
             {

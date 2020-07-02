@@ -324,18 +324,18 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
 
     auto obj = t_args->i(index + 1);
 
-    auto sign = [&](auto t_obj) {
+    auto sign = [&](auto char_obj) {
         if (t_block.sign == '+')
         {
-            return t_obj->to_real() > 0 ? '+' : '-';
+            return char_obj->to_real() > 0 ? '+' : '-';
         }
         else if (t_block.sign == '-')
         {
-            return t_obj->to_real() < 0 ? '-' : '\0';
+            return char_obj->to_real() < 0 ? '-' : '\0';
         }
         else if (t_block.sign == ' ')
         {
-            return t_obj->to_real() < 0 ? '-' : ' ';
+            return char_obj->to_real() < 0 ? '-' : ' ';
         }
         else
         {

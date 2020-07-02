@@ -116,9 +116,9 @@ struct async_append_text
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto file_name    = arg_eval(eval, obj,  0);
-        auto file_content = arg_eval(eval, obj,  1);
-        auto callback     = arg_eval(eval, obj,  2);
+        auto file_name    = arg_eval(eval, obj, 0);
+        auto file_content = arg_eval(eval, obj, 1);
+        auto callback     = arg_eval(eval, obj, 2);
 
 
         return async::dispatch<detail::write_file_text>(
@@ -137,9 +137,9 @@ struct async_write_text
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto file_name    = arg_eval(eval, obj,  0);
-        auto file_content = arg_eval(eval, obj,  1);
-        auto callback     = arg_eval(eval, obj,  2);
+        auto file_name    = arg_eval(eval, obj, 0);
+        auto file_content = arg_eval(eval, obj, 1);
+        auto callback     = arg_eval(eval, obj, 2);
 
 
         return async::dispatch<detail::write_file_text>(
@@ -158,8 +158,8 @@ struct async_read_text
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        auto file_name = arg_eval(eval, obj,  0);
-        auto callback  = arg_eval(eval, obj,  1);
+        auto file_name = arg_eval(eval, obj, 0);
+        auto callback  = arg_eval(eval, obj, 1);
 
 
         auto file = file_name->to_string();
