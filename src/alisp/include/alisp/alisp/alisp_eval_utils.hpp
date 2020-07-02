@@ -200,4 +200,9 @@ inline auto eval_check(eval::Evaluator *eval, const ALObjectPtr &t_obj, size_t t
     return temp;
 }
 
+inline auto arg_eval(eval::Evaluator *eval, const ALObjectPtr &t_obj, size_t t_index)
+{
+    return (obj->prop_exists("--evaled--") ? obj->i(index) : eval_obj->eval(obj->i(index)));
+}
+
 }  // namespace alisp

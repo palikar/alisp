@@ -119,9 +119,9 @@ template<bool SSL> auto handle_request(uWS::HttpResponse<SSL> *, uWS::HttpReques
 }  // namespace detail
 
 
-ALObjectPtr Fserver(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fserver(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto port   = eval->eval(t_obj->i(0));
+    auto port   = arg_eval(eval, obj, 0);
     auto new_id = detail::server_registry.emplace_resource(us_socket_context_options_t{})->id;
 
     detail::server_registry[new_id].listen(static_cast<int>(port->to_int()), [](auto *listenSocket) {
@@ -134,11 +134,11 @@ ALObjectPtr Fserver(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluato
     return resource_to_object(new_id);
 }
 
-ALObjectPtr Fget(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fget(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id    = object_to_resource(eval->eval(t_obj->i(0)));
-    auto route = eval->eval(t_obj->i(1));
-    auto fun   = eval->eval(t_obj->i(2));
+    auto id    = object_to_resource(arg_eval(eval, obj, 0));
+    auto route = arg_eval(eval, obj, 1);
+    auto fun   = arg_eval(eval, obj, 2);
 
     detail::server_registry[id].get(route->to_string(), [fun, eval](auto *res, auto *) {
         auto result = [&] {
@@ -151,11 +151,11 @@ ALObjectPtr Fget(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *
     return Qnil;
 }
 
-ALObjectPtr Fpost(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fpost(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id    = object_to_resource(eval->eval(t_obj->i(0)));
-    auto route = eval->eval(t_obj->i(1));
-    auto fun   = eval->eval(t_obj->i(2));
+    auto id    = object_to_resource(arg_eval(eval, obj, 0));
+    auto route = arg_eval(eval, obj, 1);
+    auto fun   = arg_eval(eval, obj, 2);
 
     detail::server_registry[id].post(route->to_string(), [fun, eval](auto *res, auto *req) {
         auto future  = eval->async().new_future();
@@ -189,15 +189,15 @@ ALObjectPtr Fpost(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator 
     return Qnil;
 }
 
-ALObjectPtr Fstart(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fstart(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     eval->async().async_pending();
-    return async::dispatch<detail::server_start>(eval->async(), eval->eval(t_obj->i(0)));
+    return async::dispatch<detail::server_start>(eval->async(), arg_eval(eval, obj, 0));
 }
 
-ALObjectPtr Fend_request(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr Fend_request(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto fut = AL_EVAL(t_obj, eval, 0);
+    auto fut = arg_eval(eval, obj,  0);
     eval->async().submit_future(object_to_resource(fut), Qt);
     return Qt;
 }

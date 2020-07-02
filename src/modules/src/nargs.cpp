@@ -32,15 +32,12 @@ struct has
 
     inline static const Signature signature{ List{}, Sym{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<2>(t_obj));
 
-        auto l          = eval->eval(t_obj->i(0));
-        auto col_string = eval->eval(t_obj->i(1));
+        auto l          = arg_eval(eval, obj, 0);
+        auto col_string = arg_eval(eval, obj, 1);
 
-        AL_CHECK(assert_list(l));
-        AL_CHECK(assert_symbol(col_string));
 
         return contains(l, col_string->to_string()) ? Qt : Qnil;
     }
@@ -55,15 +52,12 @@ struct next
 
     inline static const Signature signature{ List{}, Sym{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<2>(t_obj));
 
-        auto l          = eval->eval(t_obj->i(0));
-        auto col_string = eval->eval(t_obj->i(1));
+        auto l          = arg_eval(eval, obj, 0);
+        auto col_string = arg_eval(eval, obj, 1);
 
-        AL_CHECK(assert_list(l));
-        AL_CHECK(assert_symbol(col_string));
 
         if (auto [it, succ] = get_next(l, col_string->to_string()); succ)
         {
@@ -83,15 +77,12 @@ struct truthy
 
     inline static const Signature signature{ List{}, Sym{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<2>(t_obj));
 
-        auto l          = eval->eval(t_obj->i(0));
-        auto col_string = eval->eval(t_obj->i(1));
+        auto l          = arg_eval(eval, obj, 0);
+        auto col_string = arg_eval(eval, obj, 1);
 
-        AL_CHECK(assert_list(l));
-        AL_CHECK(assert_symbol(col_string));
 
         if (auto [next, succ] = get_next(l, col_string->to_string()); succ)
         {
@@ -110,15 +101,12 @@ struct falsey
 
     inline static const Signature signature{ List{}, Sym{} };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<2>(t_obj));
 
-        auto l          = eval->eval(t_obj->i(0));
-        auto col_string = eval->eval(t_obj->i(1));
+        auto l          = arg_eval(eval, obj, 0);
+        auto col_string = arg_eval(eval, obj, 1);
 
-        AL_CHECK(assert_list(l));
-        AL_CHECK(assert_symbol(col_string));
 
         if (auto [next, succ] = get_next(l, col_string->to_string()); succ)
         {

@@ -108,11 +108,9 @@ Return the new process as a resource object.
     {
         assert_min_size<1>(obj);
 
-        auto l  = eval->eval(obj->i(0));
-        auto op = eval->eval(obj->i(1));
+        auto l  = arg_eval(eval, obj, 0);
+        auto op = arg_eval(eval, obj, 1);
 
-        AL_CHECK(assert_list(l));
-        AL_CHECK(assert_list(op));
 
         std::vector<std::string> args;
         for (auto el : *l)
@@ -130,7 +128,6 @@ Return the new process as a resource object.
         if (auto [size, succ] = get_next(op, ":buff-size"); succ)
         {
             auto s = eval->eval(size);
-            AL_CHECK(assert_int(s));
             std::get<detail::BUFSIZE>(options) = bufsize{ static_cast<int>(s->to_int()) };
         }
 
@@ -142,7 +139,6 @@ Return the new process as a resource object.
         if (auto [cwd_str, succ] = get_next(op, ":cwd"); succ)
         {
             auto s = eval->eval(cwd_str);
-            AL_CHECK(assert_string(s));
             std::get<detail::CWD>(options) = cwd{ s->to_string() };
         }
 
@@ -324,12 +320,10 @@ struct pid
 Return the process id of a process that has been created with `open`.
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto pro = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(pro));
+        auto pro = arg_eval(eval, obj, 0);
 
         return make_int(detail::proc_registry[object_to_resource(pro)]->pid());
     }
@@ -346,12 +340,10 @@ struct retcode
 Wait for a process to finish and return its return code.
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto pro = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(pro));
+        auto pro = arg_eval(eval, obj, 0);
 
         try
         {
@@ -381,12 +373,10 @@ struct wait
 Block until a process has finished its execution.
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto pro = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(pro));
+        auto pro = arg_eval(eval, obj, 0);
 
         try
         {
@@ -415,12 +405,10 @@ struct poll
 
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto pro = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(pro));
+        auto pro = arg_eval(eval, obj, 0);
 
         try
         {
@@ -450,12 +438,10 @@ struct start
 Start a process that has been created with `open`.
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto pro = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(pro));
+        auto pro = arg_eval(eval, obj, 0);
 
         try
         {
@@ -486,19 +472,16 @@ struct kill
 Send a signal (by default SIGKILL) to a running process.
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        AL_CHECK(assert_min_size<1>(t_obj));
-        auto pro = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(pro));
+        auto pro = arg_eval(eval, obj, 0);
 
         try
         {
             if (std::size(*t_obj) > 1)
             {
-                auto sig = eval->eval(t_obj->i(1));
-                AL_CHECK(assert_int(sig));
+                auto sig = arg_eval(eval, obj, 1);
                 detail::proc_registry[object_to_resource(pro)]->kill(static_cast<int>(sig->to_int()));
                 return Qt;
             }
@@ -530,14 +513,11 @@ struct send
 Write a string to the standard input stream of a child process.
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        AL_CHECK(assert_size<2>(t_obj));
-        auto pro = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(pro));
-        auto msgs = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(msgs));
+        auto pro = arg_eval(eval, obj, 0);
+        auto msgs = arg_eval(eval, obj, 1);
 
         try
         {
@@ -569,20 +549,17 @@ Write a string to the standard input stream of a child process. Return
 the contents of the standard output and standard error of the process.
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        AL_CHECK(assert_min_size<1>(t_obj));
-        auto pro = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(pro));
+        auto pro = arg_eval(eval, obj, 0);
 
         try
         {
 
             if (std::size(*t_obj) > 1)
             {
-                auto msgs = eval->eval(t_obj->i(1));
-                AL_CHECK(assert_string(msgs));
+                auto msgs = arg_eval(eval, obj, 1);
                 auto s          = msgs->to_string();
                 auto [out, err] = detail::proc_registry[object_to_resource(pro)]->communicate(s.data(), s.size());
                 return make_object(make_string(std::string{ out.buf.begin(), out.buf.end() }),
@@ -624,9 +601,8 @@ struct call
     {
         assert_min_size<1>(obj);
 
-        auto l = eval->eval(obj->i(0));
+        auto l = arg_eval(eval, obj, 0);
 
-        AL_CHECK(assert_list(l));
 
         std::vector<std::string> args;
         for (auto el : *l)

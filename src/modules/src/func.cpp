@@ -57,7 +57,6 @@ result of that will be used as input for the next function.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_min_size<2>(obj));
 
         auto fun_fin = obj->i(std::size(*obj) - 1);
         auto res     = make_object(env::intern("apply"), fun_fin, env::intern("rest--"));
@@ -98,7 +97,6 @@ takes a single argument and adds 5 to it.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_min_size<1>(obj));
 
         auto fun = obj->i(0);
 
@@ -110,7 +108,7 @@ takes a single argument and adds 5 to it.
         size_t j = 0;
         for (size_t i = 1; i < std::size(*obj); ++i)
         {
-            auto o = eval->eval(obj->i(i));
+            auto o = arg_eval(eval, obj, i);
 
             if (placeholder_sym == o)
             {
@@ -249,13 +247,10 @@ update value from the list.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_min_size<2>(obj));
 
-        auto fun = eval->eval(obj->i(0));
-        AL_CHECK(assert_function(fun));
+        auto fun = arg_eval(eval, obj, 0);
 
-        auto list = eval->eval(obj->i(1));
-        AL_CHECK(assert_list(list));
+        auto list = arg_eval(eval, obj, 1);
 
         const size_t size = std::size(*list);
 
@@ -287,7 +282,6 @@ Return ARG unchanged.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
     {
-        AL_CHECK(assert_size<1>(obj));
         return obj->i(0);
     }
 };

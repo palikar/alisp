@@ -546,8 +546,7 @@ Parse a json formated string and return a alist representation of the json)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<1>(obj);
-        auto str = eval->eval(obj->i(0));
+        auto str = arg_eval(eval, obj, 0);
         assert_string(str);
         return detail::load(str->to_string());
     }
@@ -567,8 +566,7 @@ Convert a alist to a json formated string. Return the formated string.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<1>(obj);
-        return make_string(detail::dump(eval->eval(obj->i(0))));
+        return make_string(detail::dump(arg_eval(eval, obj, 0)));
     }
 };
 
@@ -588,8 +586,7 @@ Parse the contents of a file as json and return a alist representation of the js
     {
         namespace fs = std::filesystem;
 
-        assert_size<1>(obj);
-        auto file = eval->eval(obj->i(0));
+        auto file = arg_eval(eval, obj, 0);
         assert_string(file);
 
         if (!fs::exists(file->to_string()))
@@ -621,10 +618,9 @@ Save the a json formated string representation of `ALIST` in the file pointed by
     {
         namespace fs = std::filesystem;
 
-        assert_size<2>(obj);
 
-        auto js   = eval->eval(obj->i(0));
-        auto file = eval->eval(obj->i(1));
+        auto js   = arg_eval(eval, obj, 0);
+        auto file = arg_eval(eval, obj, 1);
 
         assert_string(file);
 

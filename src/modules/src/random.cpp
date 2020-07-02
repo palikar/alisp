@@ -50,10 +50,9 @@ Return a random integer in the range [LOWER, UPPER]
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<2>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_int(a);
-        auto b = eval->eval(obj->i(1));
+        auto b = arg_eval(eval, obj, 1);
         assert_int(b);
 
         std::uniform_int_distribution<> distr(static_cast<int>(a->to_int()), static_cast<int>(b->to_int()) + 1);
@@ -75,8 +74,7 @@ Return a random element from the list `LIST`.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<1>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_list(a);
 
         std::uniform_int_distribution<> distr(0, static_cast<int>(a->size()) - 1);
@@ -99,10 +97,9 @@ Return a list with `CNT` random elements from the list `LIST`.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<2>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_list(a);
-        auto k = eval->eval(obj->i(1));
+        auto k = arg_eval(eval, obj, 1);
         assert_int(k);
         std::uniform_int_distribution<> distr(0, static_cast<int>(a->size()) - 1);
         ALObject::list_type lis;
@@ -128,10 +125,9 @@ Return a random real number from an uniform distribution of [A, B].
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<2>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_number(a);
-        auto b = eval->eval(obj->i(1));
+        auto b = arg_eval(eval, obj, 1);
         assert_number(b);
 
         std::uniform_real_distribution<> distr(a->to_real(), b->to_real());
@@ -153,8 +149,7 @@ Return a random real number from an exponential distribution with e=A
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<1>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_number(a);
 
         std::exponential_distribution<> distr(a->to_real());
@@ -176,10 +171,9 @@ Return a random real number from a gamma distribution with k=A, theta=B
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<2>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_number(a);
-        auto b = eval->eval(obj->i(1));
+        auto b = arg_eval(eval, obj, 1);
         assert_number(b);
 
         std::gamma_distribution<> distr(a->to_real(), b->to_real());
@@ -201,10 +195,9 @@ Return a random real number from a gauss distribution with mean=A, std=B
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<2>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_number(a);
-        auto b = eval->eval(obj->i(1));
+        auto b = arg_eval(eval, obj, 1);
         assert_number(b);
 
         std::normal_distribution<> distr(a->to_real(), b->to_real());
@@ -226,10 +219,9 @@ Return a random real number from a log-normal distribution with mean=A, std=B
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<2>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_number(a);
-        auto b = eval->eval(obj->i(1));
+        auto b = arg_eval(eval, obj, 1);
         assert_number(b);
 
         std::lognormal_distribution<> distr(a->to_real(), b->to_real());
@@ -251,10 +243,9 @@ Return a random real number from a weibull distribution with lambda=A, k=B
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<2>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_number(a);
-        auto b = eval->eval(obj->i(1));
+        auto b = arg_eval(eval, obj, 1);
         assert_number(b);
 
         std::weibull_distribution<> distr(a->to_real(), b->to_real());
@@ -276,8 +267,7 @@ Return a random real number from a geometric distribution with p=A
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<1>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_number(a);
 
         std::geometric_distribution<> distr(a->to_real());
@@ -299,10 +289,9 @@ Return a random real number from a f-distribution distribution with m=A, n=B
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<2>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_number(a);
-        auto b = eval->eval(obj->i(1));
+        auto b = arg_eval(eval, obj, 1);
         assert_number(b);
 
         std::fisher_f_distribution<> distr(a->to_real(), b->to_real());
@@ -324,8 +313,7 @@ Return a random real number from a studnet-t distribution with n=A
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<1>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_number(a);
 
         std::student_t_distribution<> distr(a->to_real());
@@ -347,8 +335,7 @@ Seed the random engine with the given integer.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<1>(obj);
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_int(a);
         std::seed_seq seed2{ a->to_int() };
         detail::rand_eng = std::mt19937(seed2);
@@ -370,7 +357,6 @@ Seed the random engine with random numbers from the base random device.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
     {
-        assert_size<0>(obj);
         std::seed_seq seed2{ detail::rand_dev(), detail::rand_dev(), detail::rand_dev(),
                              detail::rand_dev(), detail::rand_dev(), detail::rand_dev() };
         detail::rand_eng = std::mt19937(seed2);
@@ -391,7 +377,6 @@ Return a random number generated by crand.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *)
     {
-        assert_size<0>(obj);
         return make_int(std::rand());
     }
 };
@@ -416,7 +401,7 @@ Call csrand with the given integer or with the current time if none is provided.
             return Qt;
         }
 
-        auto a = eval->eval(obj->i(0));
+        auto a = arg_eval(eval, obj, 0);
         assert_int(a);
         std::srand(static_cast<unsigned int>(a->to_int()));
         return Qt;

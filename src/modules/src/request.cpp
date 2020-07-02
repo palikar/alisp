@@ -125,13 +125,11 @@ struct request
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
 
-        AL_CHECK(assert_min_size<1>(t_obj));
 
-        auto url = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(url));
+        auto url = arg_eval(eval, obj, 0);
 
         cpr::Session session;
         cpr::priv::set_option(session, cpr::Url{ url->to_string() });
@@ -141,8 +139,7 @@ struct request
         if (std::size(*t_obj) > 1)
         {
 
-            auto op = eval->eval(t_obj->i(1));
-            AL_CHECK(assert_list(op));
+            auto op = arg_eval(eval, obj, 1);
 
             if (auto [type, succ] = get_next(op, ":type"); succ)
             {
@@ -178,7 +175,6 @@ struct request
             if (auto [data, succ] = get_next(op, ":data"); succ)
             {
                 auto s = eval->eval(data);
-                AL_CHECK(assert_string(s));
                 auto dat = s->to_string();
                 cpr::priv::set_option(session, cpr::Body{ dat });
             }
@@ -188,7 +184,6 @@ struct request
                 auto s = eval->eval(params);
                 cpr::Parameters pars;
                 cpr::CurlHolder holder;
-                AL_CHECK(assert_list(s));
                 for (auto &par : *s)
                 {
                     auto key   = par->i(0);
@@ -202,7 +197,6 @@ struct request
             {
                 auto s = eval->eval(headers);
                 cpr::Header head;
-                AL_CHECK(assert_list(s));
                 for (auto &par : *s)
                 {
                     auto key   = par->i(0);
@@ -217,7 +211,6 @@ struct request
                 auto s = eval->eval(params);
                 cpr::Payload pay{};
                 cpr::CurlHolder holder;
-                AL_CHECK(assert_list(s));
                 for (auto &par : *s)
                 {
                     auto key   = par->i(0);
@@ -231,7 +224,6 @@ struct request
             {
                 auto s = eval->eval(params);
                 cpr::Multipart multi{};
-                AL_CHECK(assert_list(s));
                 for (auto &par : *s)
                 {
                     auto name = par->i(0);
@@ -244,34 +236,30 @@ struct request
             if (auto [params, succ] = get_next(op, ":timeout"); succ)
             {
                 auto s = eval->eval(params);
-                AL_CHECK(assert_int(s));
                 cpr::priv::set_option(session, cpr::Timeout(static_cast<std::int32_t>(s->to_int())));
             }
 
             if (auto [params, succ] = get_next(op, ":auth"); succ)
             {
                 auto s = eval->eval(params);
-                AL_CHECK(assert_list(s));
-                auto name = eval->eval(s->i(0));
-                auto pass = eval->eval(s->i(1));
+                auto name = arg_eval(eval, obj, 0);
+                auto pass = arg_eval(eval, obj, 1);
                 cpr::priv::set_option(session, cpr::Authentication{ name->to_string(), pass->to_string() });
             }
 
             if (auto [params, succ] = get_next(op, ":digest"); succ)
             {
                 auto s = eval->eval(params);
-                AL_CHECK(assert_list(s));
-                auto name = eval->eval(s->i(0));
-                auto pass = eval->eval(s->i(1));
+                auto name = arg_eval(eval, obj, 0);
+                auto pass = arg_eval(eval, obj, 1);
                 cpr::priv::set_option(session, cpr::Digest{ name->to_string(), pass->to_string() });
             }
 
             if (auto [params, succ] = get_next(op, ":NTLM"); succ)
             {
                 auto s = eval->eval(params);
-                AL_CHECK(assert_list(s));
-                auto name = eval->eval(s->i(0));
-                auto pass = eval->eval(s->i(1));
+                auto name = arg_eval(eval, obj, 0);
+                auto pass = arg_eval(eval, obj, 1);
                 cpr::priv::set_option(session, cpr::NTLM{ name->to_string(), pass->to_string() });
             }
 
@@ -280,7 +268,6 @@ struct request
                 auto s = eval->eval(params);
                 cpr::Cookies cok{};
                 cpr::CurlHolder holder;
-                AL_CHECK(assert_list(s));
                 for (auto &par : *s)
                 {
                     auto key              = par->i(0);
@@ -303,10 +290,9 @@ struct body
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto resp_list = eval->eval(t_obj->i(0));
+        auto resp_list = arg_eval(eval, obj, 0);
         if (resp_list->size() == 6)
         {
             return resp_list->i(0);
@@ -323,10 +309,9 @@ struct status_code
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto resp_list = eval->eval(t_obj->i(0));
+        auto resp_list = arg_eval(eval, obj, 0);
         if (resp_list->size() == 6)
         {
             return resp_list->i(1);
@@ -343,10 +328,9 @@ struct headers
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto resp_list = eval->eval(t_obj->i(0));
+        auto resp_list = arg_eval(eval, obj, 0);
         if (resp_list->size() == 6)
         {
             return resp_list->i(2);
@@ -363,10 +347,9 @@ struct url
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto resp_list = eval->eval(t_obj->i(0));
+        auto resp_list = arg_eval(eval, obj, 0);
         if (resp_list->size() == 6)
         {
             return resp_list->i(3);
@@ -383,10 +366,9 @@ struct elapsed
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto resp_list = eval->eval(t_obj->i(0));
+        auto resp_list = arg_eval(eval, obj, 0);
         if (resp_list->size() == 6)
         {
             return resp_list->i(4);
@@ -403,10 +385,9 @@ struct cookies
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto resp_list = eval->eval(t_obj->i(0));
+        auto resp_list = arg_eval(eval, obj, 0);
         if (resp_list->size() == 6)
         {
             return resp_list->i(5);

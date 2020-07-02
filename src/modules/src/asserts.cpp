@@ -33,15 +33,14 @@ struct assert_numbers
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
 
-        if (auto val = eval->eval(t_obj->i(0)); are_objects_numbers(val))
+        if (auto val = arg_eval(eval, obj, 0)); are_objects_numbers(val)
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -59,15 +58,14 @@ struct assert_symbol
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
 
-        if (auto val = eval->eval(t_obj->i(0)); !psym(val))
+        if (auto val = arg_eval(eval, obj, 0)); !psym(val)
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -85,14 +83,13 @@ struct assert_string
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
-        if (auto val = eval->eval(t_obj->i(0)); !pstring(val))
+        if (auto val = arg_eval(eval, obj, 0)); !pstring(val)
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -110,15 +107,14 @@ struct assert_list
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
 
-        if (auto val = eval->eval(t_obj->i(0)); !plist(val))
+        if (auto val = arg_eval(eval, obj, 0)); !plist(val)
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -136,14 +132,13 @@ struct assert_number
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
-        if (auto val = eval->eval(t_obj->i(0)); !val->is_int() and !val->is_real())
+        if (auto val = arg_eval(eval, obj, 0)); !val->is_int() and !val->is_real()
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -161,15 +156,14 @@ struct assert_int
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
 
-        if (auto val = eval->eval(t_obj->i(0)); !pint(val))
+        if (auto val = arg_eval(eval, obj, 0)); !pint(val)
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -187,15 +181,14 @@ struct assert_real
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
 
-        if (auto val = eval->eval(t_obj->i(0)); !preal(val))
+        if (auto val = arg_eval(eval, obj, 0)); !preal(val)
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -213,15 +206,14 @@ struct assert_char
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
 
-        if (auto val = eval->eval(t_obj->i(0)); !val->is_int() and !val->check_char_flag())
+        if (auto val = arg_eval(eval, obj, 0)); !val->is_int() and !val->check_char_flag()
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -239,15 +231,14 @@ struct assert_function
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
 
-        if (auto val = eval->eval(t_obj->i(0)); !val->check_function_flag())
+        if (auto val = arg_eval(eval, obj, 0)); !val->check_function_flag()
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -265,15 +256,14 @@ struct assert_non_const
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
 
-        if (auto val = eval->eval(t_obj->i(0)); !val->check_const_flag())
+        if (auto val = arg_eval(eval, obj, 0)); !val->check_const_flag()
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -291,16 +281,15 @@ struct assert_file
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
 
-        AL_CHECK(assert_size<1>(t_obj));
 
-        if (auto val = eval->eval(t_obj->i(0)); !files::files_registry.belong(object_to_resource(val)))
+        if (auto val = arg_eval(eval, obj, 0)); !files::files_registry.belong(object_to_resource(val))
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -318,15 +307,14 @@ struct assert_stream
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
 
-        if (auto val = eval->eval(t_obj->i(0)); !al::streams_registry.belong(object_to_resource(val)))
+        if (auto val = arg_eval(eval, obj, 0)); !al::streams_registry.belong(object_to_resource(val))
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -344,15 +332,14 @@ struct assert_byte
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
 
-        if (auto val = eval->eval(t_obj->i(0)); !pint(val) || !(0 <= val->to_int() and val->to_int() <= 255))
+        if (auto val = arg_eval(eval, obj, 0)); !pint(val) || !(0 <= val->to_int() and val->to_int() <= 255)
         {
             throw signal_exception(
               env::intern("assert-signal"),
@@ -370,14 +357,13 @@ struct assert_byte_array
 
     inline static const std::string doc{ R"()" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         if (is_falsy(Vdebug_mode))
         {
             return Qt;
         }
-        AL_CHECK(assert_size<1>(t_obj));
-        auto val = eval->eval(t_obj->i(0));
+        auto val = arg_eval(eval, obj, 0);
 
         if (!val->is_list())
         {

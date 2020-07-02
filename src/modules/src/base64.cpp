@@ -417,10 +417,8 @@ Return base64 encoded version of the string `STRING`.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto str = eval->eval(obj->i(0));
-        AL_CHECK(assert_string(str));
+        auto str = arg_eval(eval, obj, 0);
 
         return make_string(detail::Base64::Encode(str->to_string()));
     }
@@ -439,10 +437,8 @@ Return the bytes of encoding the string `STRING` in base64.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto list = eval->eval(obj->i(0));
-        AL_CHECK(assert_byte_array(list));
+        auto list = arg_eval(eval, obj, 0);
 
         std::vector<char> v;
         v.reserve(std::size(*list));
@@ -469,10 +465,8 @@ Decode the base64 encoded string `STRING` and return the result as string.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto str = eval->eval(obj->i(0));
-        AL_CHECK(assert_string(str));
+        auto str = arg_eval(eval, obj, 0);
         std::string out;
         auto res = detail::Base64::Decode(str->to_string(), out);
         if (res)
@@ -496,10 +490,8 @@ Decode the base64 encoded bytes `BYTES_LIST` and return the result as string.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto str = eval->eval(obj->i(0));
-        AL_CHECK(assert_string(str));
+        auto str = arg_eval(eval, obj, 0);
         std::string out;
         auto res = detail::Base64::Decode(str->to_string(), out);
         if (res)
@@ -529,10 +521,8 @@ Return base16 encoded version of the string `STRING`.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto str = eval->eval(obj->i(0));
-        AL_CHECK(assert_string(str));
+        auto str = arg_eval(eval, obj, 0);
 
         return make_string(detail::Base16::Encode(str->to_string()));
     }
@@ -551,10 +541,8 @@ Return the bytes of encoding the string `STRING` in base16.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto list = eval->eval(obj->i(0));
-        AL_CHECK(assert_byte_array(list));
+        auto list = arg_eval(eval, obj, 0);
 
         std::vector<char> v;
         v.reserve(std::size(*list));
@@ -581,10 +569,8 @@ Decode the base16 encoded string `STRING` and return the result as string.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto str = eval->eval(obj->i(0));
-        AL_CHECK(assert_string(str));
+        auto str = arg_eval(eval, obj, 0);
         std::string out;
         auto res = detail::Base16::Decode(str->to_string(), out);
         if (res)
@@ -608,10 +594,8 @@ Decode the base16 encoded bytes `BYTES_LIST` and return the result as string.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto str = eval->eval(obj->i(0));
-        AL_CHECK(assert_string(str));
+        auto str = arg_eval(eval, obj, 0);
         std::string out;
         auto res = detail::Base16::Decode(str->to_string(), out);
         if (res)
@@ -641,10 +625,8 @@ Return base32 encoded version of the string `STRING`.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto str = eval->eval(obj->i(0));
-        AL_CHECK(assert_string(str));
+        auto str = arg_eval(eval, obj, 0);
 
         return make_string(detail::Base32::Encode(str->to_string()));
     }
@@ -663,10 +645,8 @@ Decode the base32 encoded string `STRING` and return the result as string.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto str = eval->eval(obj->i(0));
-        AL_CHECK(assert_string(str));
+        auto str = arg_eval(eval, obj, 0);
         std::string out;
         auto res = detail::Base32::Decode(str->to_string(), out);
         if (res)
@@ -690,10 +670,8 @@ Decode the base32 encoded bytes `BYTES_LIST` and return the result as string.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto str = eval->eval(obj->i(0));
-        AL_CHECK(assert_string(str));
+        auto str = arg_eval(eval, obj, 0);
         std::string out;
         auto res = detail::Base32::Decode(str->to_string(), out);
         if (res)
@@ -723,9 +701,8 @@ Return the bytes of encoding the string `STRING` in base32.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<1>(obj);
 
-        auto list = eval->eval(obj->i(0));
+        auto list = arg_eval(eval, obj, 0);
         assert_byte_array(list);
 
         std::vector<char> v;

@@ -239,24 +239,18 @@ and replace it with `REPLACEMENT`. Return the new string.
 Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_max_size<4>(t_obj));
-        auto reg = eval->eval(t_obj->i(0));
-
-        auto str = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(str));
-
-        auto repl = eval->eval(t_obj->i(2));
-        AL_CHECK(assert_string(repl));
+        auto reg = arg_eval(eval, obj, 0);
+        auto str = arg_eval(eval, obj, 1);
+        auto repl = arg_eval(eval, obj, 2);
 
         try
         {
             std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
             if (std::size(*t_obj) > 3)
             {
-                auto flags_list = eval->eval(t_obj->i(3));
-                AL_CHECK(assert_list(flags_list));
+                auto flags_list = arg_eval(eval, obj, 3);
                 flags = detail::handle_match_flags(eval_transform(eval, flags_list));
             }
             auto res = std::regex_replace(str->to_string(), detail::obj_to_regex(reg), repl->to_string(), flags);
@@ -287,21 +281,18 @@ matched groups.
 Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_max_size<3>(t_obj));
-        auto reg = eval->eval(t_obj->i(0));
+        auto reg = arg_eval(eval, obj, 0);
 
-        auto str = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(str));
+        auto str = arg_eval(eval, obj, 1);
         std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
 
         try
         {
             if (std::size(*t_obj) > 2)
             {
-                auto flags_list = eval->eval(t_obj->i(2));
-                AL_CHECK(assert_list(flags_list));
+                auto flags_list = arg_eval(eval, obj, 2);
                 flags = detail::handle_match_flags(eval_transform(eval, flags_list));
             }
             std::smatch match;
@@ -332,13 +323,11 @@ the regex. Return a list with the resutls of the searching.
 Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_max_size<3>(t_obj));
-        auto reg = eval->eval(t_obj->i(0));
+        auto reg = arg_eval(eval, obj, 0);
 
-        auto str = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(str));
+        auto str = arg_eval(eval, obj, 1);
         std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
 
 
@@ -346,8 +335,7 @@ Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.
         {
             if (std::size(*t_obj) > 2)
             {
-                auto flags_list = eval->eval(t_obj->i(2));
-                AL_CHECK(assert_list(flags_list));
+                auto flags_list = arg_eval(eval, obj, 2);
                 flags = detail::handle_match_flags(eval_transform(eval, flags_list));
             }
             std::smatch match;
@@ -378,13 +366,11 @@ results of the individual matches.
 
 Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.)" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_max_size<3>(t_obj));
-        auto reg = eval->eval(t_obj->i(0));
+        auto reg = arg_eval(eval, obj, 0);
 
-        auto str = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(str));
+        auto str = arg_eval(eval, obj, 1);
 
         std::regex_constants::match_flag_type flags = std::regex_constants::match_default;
 
@@ -392,8 +378,7 @@ Optional flags for the mathing can be passed throught the `MATCH_FLAGS` list.)" 
         {
             if (std::size(*t_obj) > 2)
             {
-                auto flags_list = eval->eval(t_obj->i(2));
-                AL_CHECK(assert_list(flags_list));
+                auto flags_list = arg_eval(eval, obj, 2);
                 flags = detail::handle_match_flags(eval_transform(eval, flags_list));
             }
 
@@ -431,11 +416,9 @@ the created regex. Optionaly, build flags can be passed through the
 `BUILD_FLAGS_LIST` list.
 )" };
 
-    static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *env, eval::Evaluator *eval)
+    static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_max_size<2>(t_obj));
-        auto reg = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(reg));
+        auto reg = arg_eval(eval, obj, 0);
 
         std::regex_constants::syntax_option_type flags = std::regex_constants::ECMAScript;
 
@@ -443,8 +426,7 @@ the created regex. Optionaly, build flags can be passed through the
         {
             if (std::size(*t_obj) > 1)
             {
-                auto flags_list = eval->eval(t_obj->i(1));
-                AL_CHECK(assert_list(flags_list));
+                auto flags_list = arg_eval(eval, obj, 1);
                 flags = detail::handle_regex_flags(flags_list);
             }
 
@@ -762,7 +744,7 @@ ALISP_EXPORT alisp::env::ModulePtr init_re(alisp::env::Environment *, alisp::eva
     module_defconst(
       re_ptr, re::re_match_default_const::name, re::re_match_default_const::var, re::re_match_default_const::doc);
     module_defconst(
-      re_ptr, re::re_match_not_bol_const::name, re::re_match_not_bol_const::var, re::re_match_not_bol_const::doc);
+        re_ptr, re::re_match_not_bol_const::name, re::re_match_not_bol_const::var, re::re_match_not_bol_const::doc);
     module_defconst(
       re_ptr, re::re_match_not_eol_const::name, re::re_match_not_eol_const::var, re::re_match_not_eol_const::doc);
     module_defconst(
@@ -785,9 +767,9 @@ ALISP_EXPORT alisp::env::ModulePtr init_re(alisp::env::Environment *, alisp::eva
     module_defconst(re_ptr,
                     re::re_match_format_no_copy_const::name,
                     re::re_match_format_no_copy_const::var,
-                    re::re_match_format_no_copy_const::doc);
+    re::re_match_format_no_copy_const::doc);
     module_defconst(re_ptr,
-                    re::re_match_format_first_only_const::name,
+    re::re_match_format_first_only_const::name,
                     re::re_match_format_first_only_const::var,
                     re::re_match_format_first_only_const::doc);
     module_defconst(

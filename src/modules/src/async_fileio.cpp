@@ -115,15 +115,11 @@ struct async_append_text
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<2>(obj);
 
-        auto file_name    = AL_EVAL(obj, eval, 0);
-        auto file_content = AL_EVAL(obj, eval, 1);
-        auto callback     = AL_EVAL(obj, eval, 2);
+        auto file_name    = arg_eval(eval, obj,  0);
+        auto file_content = arg_eval(eval, obj,  1);
+        auto callback     = arg_eval(eval, obj,  2);
 
-        AL_CHECK(assert_string(file_name));
-        AL_CHECK(assert_string(file_content));
-        AL_CHECK(assert_function(callback));
 
         return async::dispatch<detail::write_file_text>(
           eval->async(), file_name->to_string(), file_content->to_string(), std::move(callback), true);
@@ -140,15 +136,11 @@ struct async_write_text
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<2>(obj);
 
-        auto file_name    = AL_EVAL(obj, eval, 0);
-        auto file_content = AL_EVAL(obj, eval, 1);
-        auto callback     = AL_EVAL(obj, eval, 2);
+        auto file_name    = arg_eval(eval, obj,  0);
+        auto file_content = arg_eval(eval, obj,  1);
+        auto callback     = arg_eval(eval, obj,  2);
 
-        AL_CHECK(assert_string(file_name));
-        AL_CHECK(assert_string(file_content));
-        AL_CHECK(assert_function(callback));
 
         return async::dispatch<detail::write_file_text>(
           eval->async(), file_name->to_string(), file_content->to_string(), std::move(callback), false);
@@ -165,13 +157,10 @@ struct async_read_text
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<2>(obj);
 
-        auto file_name = AL_EVAL(obj, eval, 0);
-        auto callback  = AL_EVAL(obj, eval, 1);
+        auto file_name = arg_eval(eval, obj,  0);
+        auto callback  = arg_eval(eval, obj,  1);
 
-        AL_CHECK(assert_string(file_name));
-        AL_CHECK(assert_function(callback));
 
         auto file = file_name->to_string();
 

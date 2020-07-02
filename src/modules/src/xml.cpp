@@ -245,8 +245,7 @@ Parse a xml-formated string and return a alist representation of the xml)" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<1>(obj);
-        auto str = eval->eval(obj->i(0));
+        auto str = arg_eval(eval, obj, 0);
         assert_string(str);
         return detail::from_string(str->to_string());
     }
@@ -264,8 +263,7 @@ Convert a alist to a xml-formated string. Return the formated string.
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_size<1>(obj);
-        auto xml = eval->eval(obj->i(0));
+        auto xml = arg_eval(eval, obj, 0);
 
         return make_string(detail::to_string(xml));
     }
@@ -286,10 +284,9 @@ Save the xml-formated string representation of `ALIST` in the file pointed by `P
     {
         namespace fs = std::filesystem;
 
-        assert_size<2>(obj);
 
-        auto xml  = eval->eval(obj->i(0));
-        auto file = eval->eval(obj->i(1));
+        auto xml  = arg_eval(eval, obj, 0);
+        auto file = arg_eval(eval, obj, 1);
 
         assert_string(file);
 
@@ -323,8 +320,7 @@ Parse the contents of a file as xml and return a alist representation of the xml
     {
         namespace fs = std::filesystem;
 
-        assert_size<1>(obj);
-        auto file = eval->eval(obj->i(0));
+        auto file = arg_eval(eval, obj, 0);
         assert_string(file);
 
         if (!fs::exists(file->to_string()))
