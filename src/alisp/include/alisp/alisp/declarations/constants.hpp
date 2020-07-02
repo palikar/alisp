@@ -94,6 +94,10 @@ DEFSYM(Qbyte_arg, "&byte", R"()");
 DEFSYM(Qbytearray_arg, "&byte-array", R"()");
 DEFSYM(Qany_arg, "&any", R"()");
 
+DEFSYM(Qsize_arg, "&size", R"()");
+DEFSYM(Qmax_size_arg, "&max-size", R"()");
+DEFSYM(Qmin_size_arg, "&min-size", R"()");
+
 DEFSYM(Qor_arg, "&or", R"()");
 DEFSYM(Qand_arg, "&or", R"()");
 DEFSYM(Qnot_arg, "&or", R"()");

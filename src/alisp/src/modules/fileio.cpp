@@ -110,7 +110,6 @@ Return absolute root.
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     {
         namespace fs = std::filesystem;
-        AL_CHECK(assert_size<0>(t_obj));
 
         try
         {
@@ -143,9 +142,7 @@ Find all directories in `PATH`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         ALObject::list_type entries;
 
@@ -189,9 +186,7 @@ Find all files and directories in `PATH`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         ALObject::list_type entries;
 
@@ -231,14 +226,11 @@ Find `PATTERN` in `PATH`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_min_size<2>(t_obj));
-        auto pattern = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(pattern));
+        auto pattern = arg_eval(eval, obj, 0);
 
         if (std::size(*t_obj) > 1)
         {
-            auto path = eval->eval(t_obj->i(1));
-            AL_CHECK(assert_string(path));
+            auto path = arg_eval(eval, obj, 1);
             return make_list(glob(path->to_string() + fs::path::preferred_separator + pattern->to_string()));
         }
 
@@ -260,9 +252,7 @@ Update `PATH` last modification date or create if it does not exist.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         std::fstream fs;
         fs.open(path->to_string(), std::ios::out | std::ios::app);
@@ -290,9 +280,7 @@ the current user.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         return make_string(expand_user(path->to_string()));
     }
@@ -314,12 +302,9 @@ Copy file or directory `FROM` to `TO`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
 
-        auto source = eval->eval(t_obj->i(0));
-        auto target = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(source));
-        AL_CHECK(assert_string(target));
+        auto source = arg_eval(eval, obj, 0);
+        auto target = arg_eval(eval, obj, 1);
 
         try
         {
@@ -354,12 +339,9 @@ Move or rename `FROM` to `TO`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
 
-        auto source = eval->eval(t_obj->i(0));
-        auto target = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(source));
-        AL_CHECK(assert_string(target));
+        auto source = arg_eval(eval, obj, 0);
+        auto target = arg_eval(eval, obj, 1);
 
 
         try
@@ -398,12 +380,9 @@ Create a symlink to `SOURCE` from `PATH`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
 
-        auto link   = eval->eval(t_obj->i(0));
-        auto target = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(link));
-        AL_CHECK(assert_string(target));
+        auto link   = arg_eval(eval, obj, 0);
+        auto target = arg_eval(eval, obj, 1);
 
 
         try
@@ -440,13 +419,11 @@ Delete `PATH`, which can be file or directory.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         try
         {
-            if (std::size(*t_obj) > 1 and is_truthy(eval->eval(t_obj->i(1))))
+            if (std::size(*t_obj) > 1 and is_truthy(arg_eval(eval, obj, 1)))
             {
 
                 bool val = fs::remove_all(path->to_string());
@@ -486,9 +463,7 @@ Create the directory `DIR`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         try
         {
@@ -523,9 +498,7 @@ to a valid file resource of a temporary file.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_min_size<1>(t_obj));
-        auto sym = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_symbol(sym));
+        auto sym = arg_eval(eval, obj, 0);
 
         auto path = FileHelpers::temp_file_path();
         auto id   = FileHelpers::put_file(path, std::fstream(path, std::ios::out), false, true);
@@ -555,7 +528,6 @@ path will be valid for a temporary file.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     {
-        AL_CHECK(assert_size<0>(t_obj));
         return make_string(FileHelpers::temp_file_path());
     }
 };
@@ -574,7 +546,6 @@ the object can be used for writing to the file.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     {
-        AL_CHECK(assert_size<0>(t_obj));
         auto path = FileHelpers::temp_file_path();
         return FileHelpers::put_file(path, std::fstream(path, std::ios::out), false, true);
     }
@@ -596,10 +567,8 @@ Read binary data from `PATH`. Return the binary data as byte array.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
 
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         if (!fs::exists(path->to_string()))
         {
@@ -649,9 +618,7 @@ Read the text from the file `PATH` and return the contatns as a string.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
 
         if (!fs::exists(path->to_string()))
@@ -683,12 +650,9 @@ Write `TEXT` to the file pointed by `PATH`. Previous content is erased.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
 
-        auto path = eval->eval(t_obj->i(0));
-        auto text = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(path));
-        AL_CHECK(assert_string(text));
+        auto path = arg_eval(eval, obj, 0);
+        auto text = arg_eval(eval, obj, 1);
 
 
         if (!fs::exists(path->to_string()))
@@ -725,12 +689,9 @@ Write the bytes `BYTES` to the file pointed by `PATH`. Previous content is erase
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
 
-        auto path  = eval->eval(t_obj->i(0));
-        auto bytes = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(path));
-        AL_CHECK(assert_byte_array(bytes));
+        auto path  = arg_eval(eval, obj, 0);
+        auto bytes = arg_eval(eval, obj, 1);
 
         if (!fs::exists(path->to_string()))
         {
@@ -773,12 +734,9 @@ erase the prevous contents of the file.  )" };
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
 
-        auto path = eval->eval(t_obj->i(0));
-        auto text = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(path));
-        AL_CHECK(assert_string(text));
+        auto path = arg_eval(eval, obj, 0);
+        auto text = arg_eval(eval, obj, 1);
 
 
         if (!fs::exists(path->to_string()))
@@ -816,12 +774,9 @@ erase the prevous contents of the file.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
 
-        auto path  = eval->eval(t_obj->i(0));
-        auto bytes = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(path));
-        AL_CHECK(assert_byte_array(bytes));
+        auto path  = arg_eval(eval, obj, 0);
+        auto bytes = arg_eval(eval, obj, 1);
 
         if (!fs::exists(path->to_string()))
         {
@@ -864,16 +819,13 @@ Join `ARGS` to a single path.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_min_size<2>(t_obj));
         auto paths  = eval_transform(eval, t_obj);
         auto path_1 = paths->i(0);
-        AL_CHECK(assert_string(path_1));
         fs::path path = path_1->to_string();
 
         for (size_t i = 1; i < t_obj->size(); ++i)
         {
             auto path_n = t_obj->i(i);
-            AL_CHECK(assert_string(path_n));
             path /= path_n->to_string();
         }
 
@@ -897,9 +849,7 @@ Split `PATH` and return list containing parts.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         auto parts = utility::split(path->to_string(), fs::path::preferred_separator);
 
@@ -923,9 +873,7 @@ Expand `PATH` relative to `DIR`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         try
         {
@@ -959,9 +907,7 @@ Return the name of `PATH`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
 
         try
@@ -996,9 +942,7 @@ Return the parent directory to `PATH`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
 
         try
@@ -1030,9 +974,7 @@ Return the deepest common parent directory of `PATHS`.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         return Qnil;
     }
@@ -1053,9 +995,7 @@ struct ext
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         try
         {
@@ -1088,9 +1028,7 @@ struct no_ext
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         try
         {
@@ -1125,11 +1063,8 @@ backup suffixes.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        auto ext  = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(path));
-        AL_CHECK(assert_string(ext));
+        auto path = arg_eval(eval, obj, 0);
+        auto ext  = arg_eval(eval, obj, 1);
 
         try
         {
@@ -1163,11 +1098,8 @@ Return the name of `PATH`, excluding the extension of file.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        auto ext  = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(path));
-        AL_CHECK(assert_string(ext));
+        auto path = arg_eval(eval, obj, 0);
+        auto ext  = arg_eval(eval, obj, 1);
 
         const auto p = fs::path(path->to_string());
         if (fs::is_directory(p))
@@ -1194,9 +1126,7 @@ struct relative
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_min_size<2>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         const auto p = fs::path(path->to_string());
 
@@ -1204,8 +1134,7 @@ struct relative
         {
             if (std::size(*t_obj) > 1)
             {
-                auto to_path = eval->eval(t_obj->i(1));
-                AL_CHECK(assert_string(to_path));
+                auto to_path = arg_eval(eval, obj, 1);
                 return make_string(fs::relative(p, to_path->to_string()));
             }
             return make_string(path->to_string());
@@ -1234,9 +1163,7 @@ Return abbrev of `PATH`.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         return Qnil;
     }
@@ -1258,9 +1185,7 @@ Return long version of `PATH`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         try
         {
@@ -1292,9 +1217,7 @@ Return the canonical name of `PATH`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         try
         {
@@ -1327,9 +1250,7 @@ Return absolute path to `PATH`, with ending slash.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         try
         {
@@ -1363,9 +1284,7 @@ Return `t` if `PATH` exists, `nil` otherwise.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
         const auto p = fs::path(path->to_string());
         return fs::exists(p) ? Qt : Qnil;
     }
@@ -1386,9 +1305,7 @@ Return `t` if `PATH` is directory, `nil` otherwise.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
         auto p = fs::path(path->to_string());
         return fs::is_directory(p) ? Qt : Qnil;
     }
@@ -1410,9 +1327,7 @@ Return `t` if `PATH` is `nil`, false otherwise.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
         auto p = fs::path(path->to_string());
         return fs::is_regular_file(p) ? Qt : Qnil;
     }
@@ -1434,9 +1349,7 @@ Return `t` if `PATH` is symlink, `nil` otherwise.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
         auto p = fs::path(path->to_string());
         return fs::is_symlink(p) ? Qt : Qnil;
     }
@@ -1458,9 +1371,7 @@ Return `t` if `PATH` is readable, `nil` otherwise.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
         auto p = fs::path(path->to_string());
 
         return (fs::status(p).permissions() & fs::perms::owner_read) != fs::perms::none ? Qt : Qnil;
@@ -1483,9 +1394,7 @@ Return `t` if `PATH` is writable, `nil` otherwise.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
         auto p = fs::path(path->to_string());
 
         return (fs::status(p).permissions() & fs::perms::owner_write) != fs::perms::none ? Qt : Qnil;
@@ -1508,9 +1417,7 @@ Return `t` if `PATH` is executable, `nil` otherwise.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
         auto p = fs::path(path->to_string());
 
         return (fs::status(p).permissions() & fs::perms::owner_exec) != fs::perms::none ? Qt : Qnil;
@@ -1533,9 +1440,7 @@ Return `t` if `PATH` is absolute, `nil` otherwise.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
         auto p = fs::path(path->to_string());
         return p.is_absolute() ? Qt : Qnil;
     }
@@ -1556,9 +1461,7 @@ Return `t` if `PATH` is relative, `nil` otherwise.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
         auto p = fs::path(path->to_string());
         return p.is_relative() ? Qt : Qnil;
     }
@@ -1580,9 +1483,7 @@ Return `t` if `PATH` is root directory, `nil` otherwise.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
         auto p = fs::path(path->to_string());
         return fs::equivalent(p, fs::current_path().root_path()) ? Qt : Qnil;
     }
@@ -1604,11 +1505,8 @@ Return `t` if `PATH1` and `PATH2` are references to same file.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
-        auto path1 = eval->eval(t_obj->i(0));
-        auto path2 = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(path1));
-        AL_CHECK(assert_string(path2));
+        auto path1 = arg_eval(eval, obj, 0);
+        auto path2 = arg_eval(eval, obj, 1);
         const auto p1 = fs::path(path1->to_string());
         const auto p2 = fs::path(path2->to_string());
 
@@ -1642,11 +1540,8 @@ Return t if `PATH1` is parent of `PATH2`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
-        auto path1 = eval->eval(t_obj->i(0));
-        auto path2 = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(path1));
-        AL_CHECK(assert_string(path2));
+        auto path1 = arg_eval(eval, obj, 0);
+        auto path2 = arg_eval(eval, obj, 1);
         const auto p1 = fs::path(path1->to_string());
         const auto p2 = fs::path(path2->to_string());
 
@@ -1680,11 +1575,8 @@ Return t if `PATH1` is child of `PATH2`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
-        auto path1 = eval->eval(t_obj->i(0));
-        auto path2 = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(path1));
-        AL_CHECK(assert_string(path2));
+        auto path1 = arg_eval(eval, obj, 0);
+        auto path2 = arg_eval(eval, obj, 1);
         const auto p1 = fs::path(path1->to_string());
         const auto p2 = fs::path(path2->to_string());
 
@@ -1718,11 +1610,8 @@ Return `t` if `PATH1` is ancestor of `PATH2`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
-        auto path1 = eval->eval(t_obj->i(0));
-        auto path2 = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(path1));
-        AL_CHECK(assert_string(path2));
+        auto path1 = arg_eval(eval, obj, 0);
+        auto path2 = arg_eval(eval, obj, 1);
         const auto p1 = (path1->to_string());
         const auto p2 = (path2->to_string());
 
@@ -1763,11 +1652,8 @@ Return `t` if `PATH1` is desendant of `PATH2`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<2>(t_obj));
-        auto path1 = eval->eval(t_obj->i(0));
-        auto path2 = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(path1));
-        AL_CHECK(assert_string(path2));
+        auto path1 = arg_eval(eval, obj, 0);
+        auto path2 = arg_eval(eval, obj, 1);
         const auto p1 = (path1->to_string());
         const auto p2 = (path2->to_string());
 
@@ -1808,9 +1694,7 @@ Return `t` if `PATH` is hidden, `nil` otherwise.
 
     {
         namespace fs = std::filesystem;
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
         const auto p = fs::path(path->to_string());
         return p.filename().string()[0] == '.' ? Qt : Qnil;
     }
@@ -1832,9 +1716,7 @@ otherwise. If `PATH` is directory, return `t` if directory has no files,
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace fs = std::filesystem;
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
 
         try
         {

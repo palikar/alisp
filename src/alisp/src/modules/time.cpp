@@ -54,7 +54,6 @@ standard library.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     {
-        AL_CHECK(assert_size<0>(t_obj));
         std::time_t result = std::time(nullptr);
 
         if (result == -1)
@@ -82,7 +81,6 @@ execution. To convert result value to seconds divide it by
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     {
-        AL_CHECK(assert_size<0>(t_obj));
         return make_int(std::clock());
     }
 };
@@ -106,9 +104,7 @@ given clock. `CLOCK` can be:
     {
         namespace ch = std::chrono;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto clock = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(clock));
+        auto clock = arg_eval(eval, obj, 0);
 
         switch (static_cast<int>(clock->to_int()))
         {
@@ -150,9 +146,7 @@ the given clock. `CLOCK` can be:
     {
         namespace ch = std::chrono;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto clock = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(clock));
+        auto clock = arg_eval(eval, obj, 0);
 
         switch (static_cast<int>(clock->to_int()))
         {
@@ -188,9 +182,7 @@ year, week day, year day, leap year) representing the time `TIME` as a GM time.
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        AL_CHECK(assert_size<1>(t_obj));
-        auto time = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(time));
+        auto time = arg_eval(eval, obj, 0);
         std::time_t time_t(time->to_int());
         auto res = std::gmtime(&time_t);
         return make_object(res->tm_sec,
@@ -220,9 +212,7 @@ year, week day, year day, leap year) representing the time `TIME` as a local tim
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        AL_CHECK(assert_size<1>(t_obj));
-        auto time = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(time));
+        auto time = arg_eval(eval, obj, 0);
         std::time_t time_t(time->to_int());
         auto res = std::localtime(&time_t);
         return make_object(res->tm_sec,
@@ -248,16 +238,12 @@ month, year, week day, year day, leap year) to time (seconds) since
 the beginning of the epoch. The values in the time list are permitted
 to be outside their normal ranges.  )" };
 
-    inline static const Signature signature{ List{} };
+    inline static const Signature signature{ And{List{}, Size{9}, Numbers{}} };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        AL_CHECK(assert_size<1>(t_obj));
-        auto time_tup = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_list(time_tup));
-        AL_CHECK(assert_size<9>(time_tup));
-        AL_CHECK(assert_numbers(time_tup));
+        auto time_tup = arg_eval(eval, obj, 0);
 
         std::tm tm;
         tm.tm_sec   = static_cast<int>(time_tup->i(0)->to_int());
@@ -286,20 +272,15 @@ time list `TIME-LIST`. The ruls for formating are the same as in the
 The time list is of the form as by the `t-mktime` and `t-gmtime` functions.
 )" };
 
-    inline static const Signature signature{ String{}, List{} };
+    inline static const Signature signature{ String{}, And{List{}, Size{9}, Numbers{}} };
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        AL_CHECK(assert_min_size<2>(t_obj));
 
-        auto time_fmt = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(time_fmt));
+        auto time_fmt = arg_eval(eval, obj, 0);
 
-        auto time_tup = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_list(time_tup));
-        AL_CHECK(assert_size<9>(time_tup));
-        AL_CHECK(assert_numbers(time_tup));
+        auto time_tup = arg_eval(eval, obj, 1);
 
         std::tm tm;
         tm.tm_sec   = static_cast<int>(time_tup->i(0)->to_int());
@@ -345,11 +326,9 @@ given, use this time to construct the string.
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        AL_CHECK(assert_max_size<1>(t_obj));
         if (std::size(*t_obj) > 1)
         {
-            auto time = eval->eval(t_obj->i(0));
-            AL_CHECK(assert_int(time));
+            auto time = arg_eval(eval, obj, 0);
             std::time_t time_t(time->to_int());
             return make_string(std::ctime(&time_t));
         }
@@ -372,9 +351,7 @@ Convert `TIME` in nanoseconds to seconds as as real number.
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        AL_CHECK(assert_size<1>(t_obj));
-        auto time = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(time));
+        auto time = arg_eval(eval, obj, 0);
         auto res = ch::duration_cast<al_seconds>(ch::nanoseconds(time->to_int())).count();
         return make_real(res);
     }
@@ -394,9 +371,7 @@ Convert `TIME` in miliseconds to seconds as as real number.
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        AL_CHECK(assert_size<1>(t_obj));
-        auto time = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(time));
+        auto time = arg_eval(eval, obj, 0);
         auto res = ch::duration_cast<al_seconds>(ch::milliseconds(time->to_int())).count();
         return make_real(res);
     }
@@ -419,9 +394,7 @@ The time list is of the form as by the `t-mktime` and `t-gmtime` functions.
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        AL_CHECK(assert_size<1>(t_obj));
-        auto time = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(time));
+        auto time = arg_eval(eval, obj, 0);
         auto res = ch::duration_cast<al_seconds>(ch::seconds(time->to_int())).count();
         return make_real(res);
     }
@@ -441,9 +414,7 @@ Convert `TIME` in hours to seconds as as real number.
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        AL_CHECK(assert_size<1>(t_obj));
-        auto time = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(time));
+        auto time = arg_eval(eval, obj, 0);
         auto res = ch::duration_cast<al_seconds>(ch::hours(time->to_int())).count();
         return make_real(res);
     }
@@ -463,8 +434,7 @@ Block the current thread for `TIME` miliseconds.
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
         namespace ch = std::chrono;
-        AL_CHECK(assert_size<1>(t_obj));
-        auto time = eval->eval(t_obj->i(0));
+        auto time = arg_eval(eval, obj, 0);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(time->to_int()));
 

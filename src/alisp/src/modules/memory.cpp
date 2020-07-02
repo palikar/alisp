@@ -46,14 +46,10 @@ Copy `SIZE` bytes of `BUFFER-SOURCE` to `BUFFER-DEST`.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<3>(t_obj));
-        auto mem_source = eval->eval(t_obj->i(0));
-        auto mem_target = eval->eval(t_obj->i(1));
-        auto size       = eval->eval(t_obj->i(2));
+        auto mem_source = arg_eval(eval, obj, 0);
+        auto mem_target = arg_eval(eval, obj, 1);
+        auto size       = arg_eval(eval, obj, 2);
 
-        AL_CHECK(assert_memory(mem_source));
-        AL_CHECK(assert_memory(mem_target));
-        AL_CHECK(assert_int(size));
 
 
         auto &buf_s = MemoryHelpers::get_buffer(mem_source);
@@ -81,9 +77,7 @@ Return the size of the given buffer.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto mem = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_memory(mem));
+        auto mem = arg_eval(eval, obj, 0);
 
         return make_int(MemoryHelpers::get_buffer(mem).m_size);
     }
@@ -102,13 +96,9 @@ Set the value of the `BUFFER` at the given index to `VALUE`.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<3>(t_obj));
-        auto mem  = eval->eval(t_obj->i(0));
-        auto i    = eval->eval(t_obj->i(1));
-        auto byte = eval->eval(t_obj->i(2));
-        AL_CHECK(assert_memory(mem));
-        AL_CHECK(assert_int(i));
-        AL_CHECK(assert_byte(byte));
+        auto mem  = arg_eval(eval, obj, 0);
+        auto i    = arg_eval(eval, obj, 1);
+        auto byte = arg_eval(eval, obj, 2);
 
         *(MemoryHelpers::get_buffer(mem).m_ptr + i->to_int()) = static_cast<unsigned char>(byte->to_int());
         return Qt;
@@ -128,11 +118,8 @@ Return the value of the `BUFFER` at the given index.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<2>(t_obj));
-        auto mem = eval->eval(t_obj->i(0));
-        auto i   = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_memory(mem));
-        AL_CHECK(assert_int(i));
+        auto mem = arg_eval(eval, obj, 0);
+        auto i   = arg_eval(eval, obj, 1);
 
         return make_int(static_cast<ALObject::int_type>(*(MemoryHelpers::get_buffer(mem).m_ptr + i->to_int())));
     }
@@ -152,13 +139,9 @@ range [`START`, `INDEX`)
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<3>(t_obj));
-        auto mem   = eval->eval(t_obj->i(0));
-        auto start = eval->eval(t_obj->i(1));
-        auto end   = eval->eval(t_obj->i(2));
-        AL_CHECK(assert_memory(mem));
-        AL_CHECK(assert_int(start));
-        AL_CHECK(assert_int(end));
+        auto mem   = arg_eval(eval, obj, 0);
+        auto start = arg_eval(eval, obj, 1);
+        auto end   = arg_eval(eval, obj, 2);
 
         ALObject::list_type bytes;
         auto &buf = MemoryHelpers::get_buffer(mem);
@@ -184,11 +167,8 @@ Fill the entirety of a buffer with `VALUE`.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<2>(t_obj));
-        auto mem = eval->eval(t_obj->i(0));
-        auto val = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_memory(mem));
-        AL_CHECK(assert_byte(val));
+        auto mem = arg_eval(eval, obj, 0);
+        auto val = arg_eval(eval, obj, 1);
 
         auto &buf = MemoryHelpers::get_buffer(mem);
         for (size_t i = 0; i < buf.m_size; ++i)
@@ -213,11 +193,8 @@ Set the contents of a `BUFFER` to the values in the given byte array.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<2>(t_obj));
-        auto mem   = eval->eval(t_obj->i(0));
-        auto array = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_memory(mem));
-        AL_CHECK(assert_byte_array(array));
+        auto mem   = arg_eval(eval, obj, 0);
+        auto array = arg_eval(eval, obj, 1);
 
         auto &buf = MemoryHelpers::get_buffer(mem);
         for (size_t i = 0; i < array->size(); ++i)
@@ -242,9 +219,7 @@ Return the contents of a buffer as a byte array.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto mem = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_memory(mem));
+        auto mem = arg_eval(eval, obj, 0);
 
         ALObject::list_type bytes;
         auto &buf = MemoryHelpers::get_buffer(mem);
@@ -272,9 +247,7 @@ for reading and writing bytes to it.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto size = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_int(size));
+        auto size = arg_eval(eval, obj, 0);
 
         return MemoryHelpers::allocate_buffer(static_cast<size_t>(size->to_int()));
     }
@@ -294,9 +267,7 @@ Deallocate `BUFFER` (resource object) and free the used memory.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto mem = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_memory(mem));
+        auto mem = arg_eval(eval, obj, 0);
 
         MemoryHelpers::release_buffer(mem);
         return Qt;

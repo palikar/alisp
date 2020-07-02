@@ -317,25 +317,11 @@ ALObjectPtr Evaluator::apply_function(const ALObjectPtr &func, const ALObjectPtr
 ALObjectPtr Evaluator::apply_prime(const ALObjectPtr &func, const ALObjectPtr &args, const ALObjectPtr &)
 {
 
-    auto check_args = [&](const ALObjectPtr &evaled_args, const ALObjectPtr &signature) {
-        size_t cnt = 1;
-        handle_argument_bindings(signature, evaled_args, [&](const ALObjectPtr &param, ALObjectPtr arg) {
-            SignatureHandler::handle_signature_element(param, arg, cnt++, signature);
-        });
-    };
-
     auto func_args = [&] {
         if (func->prop_exists("--managed--"))
         {
             auto eval_args = eval_transform(this, args);
-
             eval_args->set_prop("--evaled--", Qt);
-
-            if (func->prop_exists("--signature--"))
-            {
-                check_args(eval_args, func->get_prop("--signature--"));
-            }
-
             return eval_args;
         }
 
@@ -343,6 +329,13 @@ ALObjectPtr Evaluator::apply_prime(const ALObjectPtr &func, const ALObjectPtr &a
         return args;
     }();
 
+    if (func->prop_exists("--signature--"))
+    {
+        size_t cnt = 1;
+        handle_argument_bindings(func->get_prop("--signature--"), func_args, [&](const auto &param, auto arg) {
+            SignatureHandler::handle_signature_element(param, arg, cnt++, signature);
+        });
+    }
 
     return func->get_prime()(func_args, &env, this);
 }

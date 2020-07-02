@@ -39,17 +39,13 @@ struct async_start
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_min_size<1>(obj));
-        AL_CHECK(assert_max_size<2>(obj));
 
-        auto action = eval->eval(obj->i(0));
-        AL_CHECK(assert_function(action));
+        auto action = arg_eval(eval, obj, 0);
 
         auto callback = Qnil;
         if (std::size(*obj) > 1)
         {
-            callback = eval->eval(obj->i(1));
-            AL_CHECK(assert_function(callback));
+            callback = arg_eval(eval, obj, 1);
         }
 
         auto res = async::dispatch<async_action>(eval->async(), std::move(action), std::move(callback));
@@ -73,9 +69,7 @@ struct async_await
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
-        auto future = eval->eval(obj->i(0));
-        AL_CHECK(assert_int(future));
+        auto future = arg_eval(eval, obj, 0);
 
 
         {
@@ -101,18 +95,14 @@ struct async_then
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_min_size<2>(obj));
-        AL_CHECK(assert_max_size<3>(obj));
 
-        auto future           = eval->eval(obj->i(0));
-        auto success_callback = eval->eval(obj->i(1));
-        AL_CHECK(assert_int(future));
-        AL_CHECK(assert_function(success_callback));
+        auto future           = arg_eval(eval, obj, 0);
+        auto success_callback = arg_eval(eval, obj, 1);
 
         auto reject_callback = Qnil;
         if (std::size(*obj) > 2)
         {
-            reject_callback = eval->eval(obj->i(2));
+            reject_callback = arg_eval(eval, obj, 2);
             if (!pfunction(reject_callback))
             {
                 reject_callback = Qnil;
@@ -135,11 +125,13 @@ struct async_then
         }
         else
         {
+
             fut.success_callback = success_callback;
             fut.reject_callback  = reject_callback;
+
         }
 
-        return Qt;
+        return future;
     }
 };
 
@@ -155,10 +147,8 @@ struct async_ready
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto future = eval->eval(obj->i(0));
-        AL_CHECK(assert_int(future));
+        auto future = arg_eval(eval, obj, 0);
 
         return eval->async().future(object_to_resource(future)).resolved;
     }
@@ -174,10 +164,8 @@ struct async_state
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(obj));
 
-        auto future = eval->eval(obj->i(0));
-        AL_CHECK(assert_int(future));
+        auto future = arg_eval(eval, obj, 0);
 
         return eval->async().future(object_to_resource(future)).success_state;
     }
@@ -195,11 +183,8 @@ struct timeout
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<2>(obj));
-        auto fun  = eval->eval(obj->i(0));
-        auto time = eval->eval(obj->i(1));
-        AL_CHECK(assert_int(time));
-        AL_CHECK(assert_function(fun));
+        auto fun  = arg_eval(eval, obj, 0);
+        auto time = arg_eval(eval, obj, 1);
 
         async::dispatch<set_timeout>(eval->async(), static_cast<size_t>(time->to_int()), fun);
 

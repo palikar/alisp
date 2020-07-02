@@ -52,9 +52,7 @@ Return the value of the environment variable `VAR` if avaialble. Return `nil` ot
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto var = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(var));
+        auto var = arg_eval(eval, obj, 0);
         return make_string(utility::env_string(var->to_string().c_str()));
     }
 };
@@ -72,9 +70,7 @@ Return the `t` if the environment variable `VAR` is defined. Return `nil` otherw
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto var = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(var));
+        auto var = arg_eval(eval, obj, 0);
 
         return utility::env_bool(var->to_string().c_str()) ? Qt : Qnil;
     }
@@ -93,11 +89,8 @@ Set the value of the environment variable `VAR` to `VALUE`
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<2>(t_obj));
-        auto var = eval->eval(t_obj->i(0));
-        auto val = eval->eval(t_obj->i(1));
-        AL_CHECK(assert_string(var));
-        AL_CHECK(assert_string(val));
+        auto var = arg_eval(eval, obj, 0);
+        auto val = arg_eval(eval, obj, 1);
 
         utility::env_set(var->to_string(), val->to_string());
 
@@ -115,7 +108,6 @@ struct list_env
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *)
     {
-        AL_CHECK(assert_size<0>(t_obj));
         return get_evnvars();
     }
 };
@@ -135,9 +127,7 @@ Change the currnt working directory to `PATH`.
     {
         namespace fs = std::filesystem;
 
-        AL_CHECK(assert_size<1>(t_obj));
-        auto path = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(path));
+        auto path = arg_eval(eval, obj, 0);
         const auto p = path->to_string();
 
         if (!fs::exists(p))
@@ -164,9 +154,7 @@ Execute the command `COMMAND` in a shell of the host system.
 
     static ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
     {
-        AL_CHECK(assert_size<1>(t_obj));
-        auto command = eval->eval(t_obj->i(0));
-        AL_CHECK(assert_string(command));
+        auto command = arg_eval(eval, obj, 0);
 
         if (::system(command->to_string().c_str()))
         {

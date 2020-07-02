@@ -55,11 +55,9 @@ ALObjectPtr Fserver(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
 
 ALObjectPtr Fserver_port(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    auto id = arg_eval(eval, obj,  0);
 
-    auto port = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_int(port));
+    auto port = arg_eval(eval, obj,  1);
 
     detail::server_registry[object_to_resource(id)].g_settings->set_port(static_cast<uint16_t>(port->to_int()));
 
@@ -68,11 +66,9 @@ ALObjectPtr Fserver_port(const ALObjectPtr &t_obj, env::Environment *, eval::Eva
 
 ALObjectPtr Fserver_root(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    auto id = arg_eval(eval, obj,  0);
 
-    auto root = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_string(root));
+    auto root = arg_eval(eval, obj,  1);
 
     detail::server_registry[object_to_resource(id)].g_settings->set_root(root->to_string());
 
@@ -81,11 +77,9 @@ ALObjectPtr Fserver_root(const ALObjectPtr &t_obj, env::Environment *, eval::Eva
 
 ALObjectPtr Fserver_address(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    auto id = arg_eval(eval, obj,  0);
 
-    auto address = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_string(address));
+    auto address = arg_eval(eval, obj,  1);
 
     auto address_string = address->to_string();
     if (address_string.compare("localhost") == 0)
@@ -100,14 +94,11 @@ ALObjectPtr Fserver_address(const ALObjectPtr &t_obj, env::Environment *, eval::
 
 ALObjectPtr Fserver_default_header(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    auto id = arg_eval(eval, obj,  0);
 
-    auto header = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_string(header));
+    auto header = arg_eval(eval, obj,  1);
 
-    auto value = AL_EVAL(t_obj, eval, 2);
-    AL_CHECK(assert_string(value));
+    auto value = arg_eval(eval, obj,  2);
 
     detail::server_registry[object_to_resource(id)].g_settings->set_default_header(header->to_string(),
                                                                                    value->to_string());
@@ -117,18 +108,14 @@ ALObjectPtr Fserver_default_header(const ALObjectPtr &t_obj, env::Environment *,
 
 ALObjectPtr Fserver_default_headers(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    const auto id = arg_eval(eval, obj,  0);
 
-    const auto headers = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_list(headers));
+    const auto headers = arg_eval(eval, obj,  1);
 
     auto &server = detail::server_registry[object_to_resource(id)];
 
     for (auto &header : *headers)
     {
-        AL_CHECK(assert_string(header->i(0)));
-        AL_CHECK(assert_string(header->i(1)));
 
         server.g_settings->set_default_header(header->i(0)->to_string(), header->i(1)->to_string());
     }
@@ -138,11 +125,9 @@ ALObjectPtr Fserver_default_headers(const ALObjectPtr &t_obj, env::Environment *
 
 ALObjectPtr Fserver_worker_limit(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    const auto id = arg_eval(eval, obj,  0);
 
-    const auto limit = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_int(limit));
+    const auto limit = arg_eval(eval, obj,  1);
 
     auto &server = detail::server_registry[object_to_resource(id)];
 
@@ -153,11 +138,9 @@ ALObjectPtr Fserver_worker_limit(const ALObjectPtr &t_obj, env::Environment *, e
 
 ALObjectPtr Fserver_connection_limit(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = (AL_EVAL(t_obj, eval, 0));
-    AL_CHECK(assert_int(id));
+    const auto id = (arg_eval(eval, obj,  0));
 
-    const auto limit = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_int(limit));
+    const auto limit = arg_eval(eval, obj,  1);
 
     auto &server = detail::server_registry[object_to_resource(id)];
 
@@ -168,10 +151,9 @@ ALObjectPtr Fserver_connection_limit(const ALObjectPtr &t_obj, env::Environment 
 
 ALObjectPtr Fserver_ci_uris(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    const auto id = arg_eval(eval, obj,  0);
 
-    const auto value = AL_EVAL(t_obj, eval, 1);
+    const auto value = arg_eval(eval, obj,  1);
 
     auto &server = detail::server_registry[object_to_resource(id)];
 
@@ -182,11 +164,9 @@ ALObjectPtr Fserver_ci_uris(const ALObjectPtr &t_obj, env::Environment *, eval::
 
 ALObjectPtr Fserver_connection_timeout(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    const auto id = arg_eval(eval, obj,  0);
 
-    const auto value = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_int(value));
+    const auto value = arg_eval(eval, obj,  1);
 
     auto &server = detail::server_registry[object_to_resource(id)];
 
@@ -197,14 +177,11 @@ ALObjectPtr Fserver_connection_timeout(const ALObjectPtr &t_obj, env::Environmen
 
 ALObjectPtr Fserver_status_msg(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    const auto id = arg_eval(eval, obj,  0);
 
-    const auto status = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_int(status));
+    const auto status = arg_eval(eval, obj,  1);
 
-    const auto msg = AL_EVAL(t_obj, eval, 2);
-    AL_CHECK(assert_string(msg));
+    const auto msg = arg_eval(eval, obj,  2);
 
     auto &server = detail::server_registry[object_to_resource(id)];
 
@@ -215,14 +192,11 @@ ALObjectPtr Fserver_status_msg(const ALObjectPtr &t_obj, env::Environment *, eva
 
 ALObjectPtr Fserver_property(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    const auto id = arg_eval(eval, obj,  0);
 
-    const auto name = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_string(name));
+    const auto name = arg_eval(eval, obj,  1);
 
-    const auto value = AL_EVAL(t_obj, eval, 2);
-    AL_CHECK(assert_string(value));
+    const auto value = arg_eval(eval, obj,  2);
 
     auto &server = detail::server_registry[object_to_resource(id)];
 
@@ -233,11 +207,9 @@ ALObjectPtr Fserver_property(const ALObjectPtr &t_obj, env::Environment *, eval:
 
 ALObjectPtr Fserver_not_found_handler(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    const auto id = arg_eval(eval, obj,  0);
 
-    const auto handler_callback = AL_EVAL(t_obj, eval, 1);
-    AL_CHECK(assert_function(handler_callback));
+    const auto handler_callback = arg_eval(eval, obj,  1);
 
     auto &server = detail::server_registry[object_to_resource(id)];
 
@@ -276,8 +248,7 @@ ALObjectPtr Fserver_not_found_handler(const ALObjectPtr &t_obj, env::Environment
 
 ALObjectPtr Fserver_start(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    auto id = arg_eval(eval, obj,  0);
 
     eval->async().async_pending();
     return async::dispatch<detail::server_start>(eval->async(), id);
@@ -285,8 +256,7 @@ ALObjectPtr Fserver_start(const ALObjectPtr &t_obj, env::Environment *, eval::Ev
 
 ALObjectPtr Fserver_stop(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    auto id = arg_eval(eval, obj,  0);
 
     eval->async().async_pending();
     return async::dispatch<detail::server_stop>(eval->async(), id);
@@ -294,8 +264,7 @@ ALObjectPtr Fserver_stop(const ALObjectPtr &t_obj, env::Environment *, eval::Eva
 
 ALObjectPtr Fserver_restart(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id = AL_EVAL(t_obj, eval, 0);
-    AL_CHECK(assert_int(id));
+    auto id = arg_eval(eval, obj,  0);
 
     eval->async().async_pending();
     return async::dispatch<detail::server_restart>(eval->async(), id);
