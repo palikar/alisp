@@ -62,6 +62,9 @@ struct Future
 
     // c++ space things
     std::function<void(ALObjectPtr)> internal{};
+
+    //
+    uint32_t next_in_line{ 0 };
 };
 
 class AsyncS;

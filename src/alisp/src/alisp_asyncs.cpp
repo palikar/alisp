@@ -292,12 +292,31 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
 
     m_eval->futures_cv.notify_all();
 
-    if (pfunction(fut.success_callback))
+    if (t_good and pfunction(fut.success_callback))
     {
-        submit_callback(fut.success_callback, make_list(t_value));
-    }
+        submit_callback(fut.success_callback, make_list(t_value), [&, next = fut.next_in_line](auto res) {
+            if (next > 0)
+            {
 
-    if (pfunction(fut.reject_callback))
+                if (pint(res) and futures.belong(object_to_resource(res)))
+                {
+                    auto other = object_to_resource(res);
+
+                    futures[other].value            = futures[next].value;
+                    futures[other].success_state    = futures[next].resolved;
+                    futures[other].success_callback = futures[next].success_callback;
+                    futures[other].reject_callback  = futures[next].reject_callback;
+                    futures[other].internal         = futures[next].internal;
+                    futures[other].next_in_line     = futures[next].next_in_line;
+
+
+                    return;
+                }
+                submit_future(next, res);
+            }
+        });
+    }
+    else if (!t_good and pfunction(fut.reject_callback))
     {
         submit_callback(fut.reject_callback, make_list(t_value));
     }

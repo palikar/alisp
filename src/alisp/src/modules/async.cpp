@@ -87,9 +87,7 @@ struct async_then
 {
     static inline const std::string name{ "async-then" };
 
-    static inline const std::string doc{ R"((async-ready FUTURE)
-
-)" };
+    static inline const std::string doc{ R"((async-ready FUTURE))" };
 
     static inline const Signature signature{ Int{}, Function{}, Optional{}, Function{} };
 
@@ -128,6 +126,8 @@ struct async_then
 
             fut.success_callback = success_callback;
             fut.reject_callback  = reject_callback;
+            fut.next_in_line     = eval->async().new_future();
+            return make_int(fut.next_in_line);
         }
 
         return future;
