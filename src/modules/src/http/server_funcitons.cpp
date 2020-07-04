@@ -249,24 +249,18 @@ ALObjectPtr Fserver_not_found_handler(const ALObjectPtr &obj, env::Environment *
 ALObjectPtr Fserver_start(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = arg_eval(eval, obj, 0);
-
-    eval->async().async_pending();
     return async::dispatch<detail::server_start>(eval->async(), id);
 }
 
 ALObjectPtr Fserver_stop(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = arg_eval(eval, obj, 0);
-
-    eval->async().async_pending();
     return async::dispatch<detail::server_stop>(eval->async(), id);
 }
 
 ALObjectPtr Fserver_restart(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = arg_eval(eval, obj, 0);
-
-    eval->async().async_pending();
     return async::dispatch<detail::server_restart>(eval->async(), id);
 }
 

@@ -137,7 +137,9 @@ class LanguageEngine
         return vec;
     }
 
-    const auto get_modules() const { return m_environment.get_modules(); }
+    auto get_modules() const { return m_environment.get_modules(); }
+
+    void set_executable(std::string path);
 };
 
 

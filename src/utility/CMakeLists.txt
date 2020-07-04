@@ -6,6 +6,12 @@ add_library(alisp_util
     ./src/env.cpp
     )
 
+if(MSV)
+    target_sources(alisp_util PRIVATE ./src/windows/system.cpp)
+else()
+    target_sources(alisp_util PRIVATE ./src/linux/system.cpp)
+endif(MSV)
+
 
 target_include_directories(alisp_util
     PUBLIC include

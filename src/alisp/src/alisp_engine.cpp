@@ -120,6 +120,8 @@ void LanguageEngine::init_system()
     }
 
     Vdebug_mode = check(EngineSettings::DISABLE_DEBUG_MODE) or utility::env_bool(ENV_VAR_NODEBUG) ? Qnil : Qt;
+
+    set_executable(utility::System::executable());
 }
 
 std::pair<bool, int> LanguageEngine::handle_exceptions() const noexcept
@@ -241,6 +243,11 @@ void LanguageEngine::interactive()
 {
     Vmodpaths->children().push_back(make_string(utility::env_string("PWD")));
     m_evaluator.set_interactive_flag();
+}
+
+void LanguageEngine::set_executable(std::string path)
+{
+    Val_executable->set(std::filesystem::absolute(path).string());
 }
 
 }  // namespace alisp

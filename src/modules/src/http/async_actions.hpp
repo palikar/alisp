@@ -44,12 +44,12 @@ struct server_start
             auto id      = object_to_resource(g_id);
             auto &server = detail::server_registry[id];
 
-
             for (auto &resource : server.g_resources)
             {
                 server.g_server->publish(resource);
             }
 
+            async->async_pending();
             server.g_server->start(server.g_settings);
             async->async_reset_pending();
         });
@@ -76,12 +76,6 @@ struct server_stop
             auto id      = object_to_resource(g_id);
             auto &server = detail::server_registry[id];
 
-
-            for (auto &resource : server.g_resources)
-            {
-                server.g_server->publish(resource);
-            }
-
             server.g_server->stop();
             async->async_reset_pending();
         });
@@ -104,18 +98,10 @@ struct server_restart
     ALObjectPtr operator()(async::AsyncS *async) const
     {
 
-        auto thread = std::thread([g_id = g_id, async = async]() {
+        auto thread = std::thread([g_id = g_id]() {
             auto id      = object_to_resource(g_id);
             auto &server = detail::server_registry[id];
-
-
-            for (auto &resource : server.g_resources)
-            {
-                server.g_server->publish(resource);
-            }
-
             server.g_server->restart();
-            async->async_reset_pending();
         });
 
         thread.detach();

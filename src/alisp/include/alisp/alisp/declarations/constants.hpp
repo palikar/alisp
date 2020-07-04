@@ -59,6 +59,14 @@ DEFVAR(Qlicense,
        make_string(AL_LICENSE),
        R"(A short string signifying the licence for the Alisp interpreter.)");
 
+
+DEFVAR(Qal_executable,
+       Val_executable,
+       "--exec--",
+       make_string(""),
+       R"(Path to the current alisp interpreter exectuable)");
+
+
 DEFVAR(
   Qdebug_mode,
   Vdebug_mode,
