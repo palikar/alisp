@@ -135,6 +135,8 @@ class AsyncS
     mutable std::mutex callback_queue_mutex;
     mutable std::mutex future_mutex;
 
+    std::atomic_uint_fast32_t m_pending_futues{ 0 };
+
 
 #ifndef MULTI_THREAD_EVENT_LOOP
 

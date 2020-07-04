@@ -51,7 +51,8 @@ inline void module_defun(env::Module *t_module,
                          std::string t_name,
                          Prim::func_type fun,
                          std::string t_doc     = {},
-                         ALObjectPtr signature = Qnil)
+                         ALObjectPtr signature = Qnil,
+                         bool managed          = true)
 {
     auto &new_fun = t_module->get_root().insert({ t_name, make_prime(fun, t_name) }).first->second;
     new_fun->set_function_flag();
@@ -65,6 +66,10 @@ inline void module_defun(env::Module *t_module,
     if (signature != Qnil)
     {
         new_fun->set_prop("--signature--", signature);
+    }
+
+    if (managed)
+    {
         new_fun->set_prop("--managed--", Qt);
     }
 }
