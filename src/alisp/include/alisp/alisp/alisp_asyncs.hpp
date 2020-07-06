@@ -222,6 +222,7 @@ template<typename T, typename... Args> auto dispatch(AsyncS &async, Args &&... a
     else
     {
         T event_object{ std::forward<decltype(args)>(args)... };
+        async.async_pending();
         return event_object(&async);
     }
 }

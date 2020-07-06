@@ -7,8 +7,7 @@ AL_STRINGIFY(
 
 
 
-             ;; Low level routing
-
+             
              (defun http--route-get (serv rout callback)
                (route-handler serv rout "GET" callback))
 
@@ -26,8 +25,6 @@ AL_STRINGIFY(
 
 
 
-             ;; user friendly routing 
-
              (defun route-post (serv index callback)
                ([serv] http--route-post index
                 (lambda (req res)
@@ -42,8 +39,6 @@ AL_STRINGIFY(
 
 
 
-
-             ;; Response handling
 
              (defun set-content (res cont)
                (push res :content)
@@ -64,9 +59,13 @@ AL_STRINGIFY(
                (push res `(,name ,value)))
 
 
+             (defun send-file (res file &rest rest)
+               (push res :file)
+               (push res `(,file ,@rest))
+               (request-end res))
 
 
-             ;; Request handling
+
 
              (defun body (req)
                ([req] nth 1))
@@ -99,8 +98,6 @@ AL_STRINGIFY(
                ([req] nth 19))
 
 
-             ;; Headers
-
              (defun has-header (req name)
                (dolist (header (headers req))
                  (when (equal name ([header] nth 0))
@@ -114,8 +111,6 @@ AL_STRINGIFY(
                (return nil))
 
 
-
-             ;; Query parameters
 
              (defun has-query-parameter (req name)
                (dolist (parameter (query-parameters req))
@@ -131,8 +126,6 @@ AL_STRINGIFY(
 
 
 
-
-             ;; Path parameters
 
              (defun has-path-parameter (req name)
                (dolist (parameter (path-parameters req))

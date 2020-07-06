@@ -70,6 +70,10 @@ ALISP_EXPORT alisp::env::ModulePtr init_http_restbed(alisp::env::Environment *, 
 
     module_defun(http_ptr, "server-root", &http::Fserver_root, R"()");
     module_defun(http_ptr, "server-port", &http::Fserver_port, R"()");
+    module_defun(http_ptr, "server-static-root", &http::Fserver_static_root, R"()");
+    module_defun(http_ptr, "server-static-route", &http::Fserver_static_route, R"()");
+    module_defun(http_ptr, "server-templates-root", &http::Fserver_templates_root, R"()");
+
     module_defun(http_ptr, "server-address", &http::Fserver_address, R"()");
     module_defun(http_ptr, "server-default-header", &http::Fserver_default_header, R"()");
     module_defun(http_ptr, "server-default-headers", &http::Fserver_default_headers, R"()");

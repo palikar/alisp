@@ -119,32 +119,32 @@ ALObjectPtr Froute_method_handler(const ALObjectPtr &obj, env::Environment *, ev
 
     const auto handler_callback = arg_eval(eval, obj, 3);
 
-    auto s_id = object_to_resource(id);
+    auto s_id    = object_to_resource(id);
     auto &server = detail::server_registry[s_id];
     auto &res    = server.g_resources[static_cast<size_t>(route_id->to_int())];
 
     res->set_method_handler(
-        method->to_string(), [eval, handler_callback, s_id](const std::shared_ptr<restbed::Session> session) {
-            const auto request = session->get_request();
+      method->to_string(), [eval, handler_callback, s_id](const std::shared_ptr<restbed::Session> session) {
+          const auto request = session->get_request();
 
           const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
 
           session->fetch(content_length,
-          [eval, handler_callback, request, s_id](const std::shared_ptr<restbed::Session> fetched_session,
-          const restbed::Bytes &) {
+                         [eval, handler_callback, request, s_id](
+                           const std::shared_ptr<restbed::Session> fetched_session, const restbed::Bytes &) {
                              auto req_obj = detail::handle_request(*request.get());
                              auto res_obj = make_list();
 
                              auto future = eval->async().new_future(
-                                 [fetched_session, request, res_obj, req_obj, s_id](auto future_result) {
-                                     if (is_falsy(future_result))
-                                     {
-                                         return;
-                                     }
+                               [fetched_session, request, res_obj, req_obj, s_id](auto future_result) {
+                                   if (is_falsy(future_result))
+                                   {
+                                       return;
+                                   }
 
-                                     restbed::Response response{};
-                                     detail::handle_response(s_id, response, std::move(res_obj));
-                                     fetched_session->close(response);
+                                   restbed::Response response{};
+                                   detail::handle_response(s_id, response, std::move(res_obj));
+                                   fetched_session->close(response);
                                });
 
                              res_obj->children().push_back(resource_to_object(future));
@@ -164,21 +164,21 @@ ALObjectPtr Froute_error_handler(const ALObjectPtr &obj, env::Environment *, eva
 
     const auto handler_callback = arg_eval(eval, obj, 2);
 
-    auto s_id = object_to_resource(id);
+    auto s_id    = object_to_resource(id);
     auto &server = detail::server_registry[s_id];
     auto &res    = server.g_resources[static_cast<size_t>(route_id->to_int())];
 
     res->set_error_handler([eval, handler_callback, s_id](const int code,
-                                                    const std::exception &exc,
-                                                    const std::shared_ptr<restbed::Session> session) {
+                                                          const std::exception &exc,
+                                                          const std::shared_ptr<restbed::Session> session) {
         const auto request = session->get_request();
 
         const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
 
         session->fetch(content_length,
-        [eval, handler_callback, request, code, exc, s_id](
-            const std::shared_ptr<restbed::Session> fetched_session, const restbed::Bytes &) {
-            auto req_obj = detail::handle_request(*request.get());
+                       [eval, handler_callback, request, code, exc, s_id](
+                         const std::shared_ptr<restbed::Session> fetched_session, const restbed::Bytes &) {
+                           auto req_obj = detail::handle_request(*request.get());
                            auto res_obj = make_list();
 
                            req_obj->children().push_back(make_string(":code"));
@@ -186,8 +186,8 @@ ALObjectPtr Froute_error_handler(const ALObjectPtr &obj, env::Environment *, eva
                            req_obj->children().push_back(make_string(":what"));
                            req_obj->children().push_back(make_string(exc.what()));
 
-                           auto future =
-                             eval->async().new_future([fetched_session, request, res_obj, req_obj](auto future_result) {
+                           auto future = eval->async().new_future(
+                             [fetched_session, request, res_obj, req_obj, s_id](auto future_result) {
                                  if (is_falsy(future_result))
                                  {
                                      return;

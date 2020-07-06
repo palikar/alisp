@@ -50,6 +50,8 @@ ALObjectPtr Fserver(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
     server.g_settings = std::make_unique<restbed::Settings>();
     server.g_server   = std::make_unique<restbed::Service>();
 
+    server.g_settings->set_default_header("Server", "ALR");
+
     return resource_to_object(new_id);
 }
 
@@ -72,6 +74,56 @@ ALObjectPtr Fserver_root(const ALObjectPtr &obj, env::Environment *, eval::Evalu
 
     detail::server_registry[object_to_resource(id)].g_settings->set_root(root->to_string());
 
+    return Qt;
+}
+
+ALObjectPtr Fserver_static_root(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+{
+    auto id                                                     = arg_eval(eval, obj, 0);
+    auto root                                                   = arg_eval(eval, obj, 1);
+    detail::server_registry[object_to_resource(id)].static_root = root->to_string();
+    return Qt;
+}
+
+ALObjectPtr Fserver_static_route(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+{
+    auto id   = arg_eval(eval, obj, 0);
+    auto path = arg_eval(eval, obj, 1);
+
+    auto server_id = object_to_resource(id);
+    auto &server   = detail::server_registry[server_id];
+
+    auto res = std::make_shared<restbed::Resource>();
+    res->set_path(path->to_string() + "/.*");
+    res->set_method_handler("GET", [eval](const std::shared_ptr<restbed::Session> session) {
+        const auto request          = session->get_request();
+        const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
+
+        session->fetch(
+          content_length,
+          [eval, request](const std::shared_ptr<restbed::Session> fetched_session, const restbed::Bytes &) {
+              restbed::Response response{};
+
+              response.set_body("nothing");
+
+              std::cout << request->get_path() << "\n";
+
+              fetched_session->close(response);
+          });
+    });
+
+
+    server.g_resources.push_back(std::move(res));
+
+
+    return Qt;
+}
+
+ALObjectPtr Fserver_templates_root(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+{
+    auto id                                                        = arg_eval(eval, obj, 0);
+    auto root                                                      = arg_eval(eval, obj, 1);
+    detail::server_registry[object_to_resource(id)].templates_root = root->to_string();
     return Qt;
 }
 
@@ -211,38 +263,39 @@ ALObjectPtr Fserver_not_found_handler(const ALObjectPtr &obj, env::Environment *
 
     const auto handler_callback = arg_eval(eval, obj, 1);
 
-    auto s_id = object_to_resource(id);
+    auto s_id    = object_to_resource(id);
     auto &server = detail::server_registry[s_id];
 
 
-    server.g_server->set_not_found_handler([eval, handler_callback, s_id](const std::shared_ptr<restbed::Session> session) {
-        const auto request = session->get_request();
+    server.g_server->set_not_found_handler(
+      [eval, handler_callback, s_id](const std::shared_ptr<restbed::Session> session) {
+          const auto request = session->get_request();
 
-        const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
+          const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
 
-        session->fetch(content_length,
-        [eval, handler_callback, request, s_id](const std::shared_ptr<restbed::Session> fetched_session,
-        const restbed::Bytes &) {
-                           auto req_obj = detail::handle_request(*request.get());
-                           auto res_obj = make_list();
+          session->fetch(content_length,
+                         [eval, handler_callback, request, s_id](
+                           const std::shared_ptr<restbed::Session> fetched_session, const restbed::Bytes &) {
+                             auto req_obj = detail::handle_request(*request.get());
+                             auto res_obj = make_list();
 
-                           auto future =
-                               eval->async().new_future([fetched_session, request, res_obj, req_obj, s_id](auto future_result) {
+                             auto future = eval->async().new_future(
+                               [fetched_session, request, res_obj, req_obj, s_id](auto future_result) {
                                    if (is_falsy(future_result))
                                    {
-                                     return;
-                                 }
+                                       return;
+                                   }
 
-                                 restbed::Response response{};
-                                 detail::handle_response(s_id, response, std::move(res_obj));
-                                 fetched_session->close(response);
-                             });
+                                   restbed::Response response{};
+                                   detail::handle_response(s_id, response, std::move(res_obj));
+                                   fetched_session->close(response);
+                               });
 
-                           res_obj->children().push_back(resource_to_object(future));
+                             res_obj->children().push_back(resource_to_object(future));
 
-                           eval->async().submit_callback(handler_callback, make_list(req_obj, res_obj));
-                       });
-    });
+                             eval->async().submit_callback(handler_callback, make_list(req_obj, res_obj));
+                         });
+      });
 
     return Qt;
 }

@@ -31,6 +31,8 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <stdio.h>
+#include <time.h>
 
 #include <fmt/format.h>
 
@@ -45,16 +47,42 @@ using namespace alisp;
 namespace detail
 {
 
+inline std::string gat_date()
+{
+    char buf[1024];
+    time_t now   = time(0);
+    struct tm tm = *gmtime(&now);
+    strftime(buf, sizeof(buf), "%a, %d %b %Y %H:%M:%S %Z", &tm);
+    return { buf };
+}
+
 struct Server
 {
     std::unique_ptr<restbed::Service> g_server;
     std::shared_ptr<restbed::Settings> g_settings;
     std::vector<std::shared_ptr<restbed::Resource>> g_resources;
 
-    std::string static_root{""};
-    std::string templates_root{""};
+    std::string static_root{ "" };
+    std::string templates_root{ "" };
 
-    std::unordered_map<std::string, std::string> mimes{{"", ""}};
+    std::unordered_map<std::string, std::string> mimes{
+        { ".txt", "text/plain" },
+        { ".html", "text/html" },
+        { ".htm", "text/html" },
+        { ".css", "text/css" },
+        { ".jpeg", "image/jpg" },
+        { ".jpg", "image/jpg" },
+        { ".png", "image/png" },
+        { ".gif", "image/gif" },
+        { ".svg", "image/svg+xml" },
+        { ".ico", "image/x-icon" },
+        { ".json", "application/json" },
+        { ".pdf", "application/pdf" },
+        { ".js", "application/javascript" },
+        { ".wasm", "application/wasm" },
+        { ".xml", "application/xml" },
+        { ".xhtml", "application/xhtml+xml" },
+    };
 };
 
 inline management::Registry<Server, 0x08> server_registry;
@@ -114,104 +142,106 @@ inline ALObjectPtr handle_request(const restbed::Request &request)
     return make_list(list);
 }
 
-inline void add_cookie(Server& server, restbed::Response &response, const ALObjectPtr &t_cookie)
+inline void add_cookie(Server &, restbed::Response &response, const ALObjectPtr &t_cookie)
 {
     std::string cookie_expr = fmt::format("{}=\"{}\"", t_cookie->i(0)->to_string(), t_cookie->i(1)->to_string());
     // expires
 
     // max age
-    if (auto [age, succ] = get_next(op, ":lifetime-s"); succ)
+    if (auto [age, succ] = get_next(t_cookie, ":lifetime-s"); succ)
     {
         cookie_expr += fmt::format("; Max-Age={}", age->to_int());
     }
 
     // domain
-    if (auto [domain, succ] = get_next(op, ":domain"); succ)
+    if (auto [domain, succ] = get_next(t_cookie, ":domain"); succ)
     {
         cookie_expr += fmt::format("; Domain={}", domain->to_string());
     }
 
     // path
-    if (auto [path, succ] = get_next(op, ":path"); succ)
+    if (auto [path, succ] = get_next(t_cookie, ":path"); succ)
     {
         cookie_expr += fmt::format("; Path={}", path->to_string());
     }
 
     // secure
-    if (contains(op, ":https-only"))
+    if (contains(t_cookie, ":https-only"))
     {
         cookie_expr += "; Secure";
     }
-    
+
     // HttpOnly
-    if (contains(op, ":https-only"))
+    if (contains(t_cookie, ":https-only"))
     {
         cookie_expr += "; HttpOnly";
     }
-    
+
     response.set_header("Set-Cookie", cookie_expr);
 }
 
-inline void add_file(Server& server, restbed::Response &response, const ALObjectPtr &t_file)
+inline void add_file(Server &server, restbed::Response &response, const ALObjectPtr &t_file)
 {
     namespace fs = std::filesystem;
-    
-    fs::path path{t_file->i(0)->to_string()};
+
+    fs::path path{ t_file->i(0)->to_string() };
+
+    if (path.is_relative())
+    {
+        if (contains(t_file, ":static"))
+        {
+            path = server.static_root / path;
+        }
+        else
+        {
+            path = server.templates_root / path;
+        }
+    }
 
     if (!(fs::exists(path) and fs::is_regular_file(path)))
     {
         return;
     }
-    
-    if (path.is_relative())
-    {
-        if (contains(t_file, ":staic"))
-        {
-            path = server.static_root / path;
-        } else {
-            path = server.templates_root / path;
-        }
-        
-    }
 
-    // use cache here
     std::string content = utility::load_file(path);
+
+    response.set_header("Content-Length", std::to_string(std::size(content)));
     response.set_body(std::move(content));
 
-    //deduce mime type
-    if(path.has_extension())
+    // deduce mime type
+    if (path.has_extension())
     {
         auto ext = path.extension();
-        if (server.mimes.count(ext) > 0) {
+        if (server.mimes.count(ext) > 0)
+        {
             response.set_header("Content-Type", server.mimes.at(ext));
         }
     }
-    
 }
 
-inline void render_file(Server& server, restbed::Response &response, const ALObjectPtr &t_params)
+inline void render_file(Server &server, restbed::Response &response, const ALObjectPtr &t_params)
 {
     namespace fs = std::filesystem;
-    
-    fs::path path{t_file->i(0)->to_string()};
+
+    fs::path path{ t_params->i(0)->to_string() };
     if (path.is_relative())
     {
         path = server.templates_root / path;
     }
 
     // use cache here
-    //render here
+    // render here
     std::string content = utility::load_file(path);
     response.set_body(std::move(content));
     response.set_header("Content-Type", "text/html");
-
-    
 }
 
 inline void handle_response(uint32_t s_id, restbed::Response &response, const ALObjectPtr &t_al_response)
 {
-    auto& server = server_registry[id];
-        
+    auto &server = server_registry[s_id];
+
+    std::cout << dump(t_al_response) << "\n";
+
     for (size_t i = 1; i < std::size(*t_al_response); ++i)
     {
 
@@ -255,17 +285,28 @@ inline void handle_response(uint32_t s_id, restbed::Response &response, const AL
         if (sym_name(t_al_response->i(i), ":redirect") and pstring(t_al_response->i(i + 1)))
         {
 
-            response.set_header("Location", fmt::fomrat("{}", t_al_response->i(i + 1)->to_string()));
+            response.set_header("Location", fmt::format("{}", t_al_response->i(i + 1)->to_string()));
             response.set_status_code(301);
             ++i;
         }
     }
+
+    response.set_header("Date", gat_date());
+
+
+    response.set_header("Cache-Control", "no-store");
 }
 
 }  // namespace detail
 
 
 extern ALObjectPtr Fserver(const ALObjectPtr &, env::Environment *, eval::Evaluator *);
+
+extern ALObjectPtr Fserver_static_root(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval);
+
+extern ALObjectPtr Fserver_static_route(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval);
+
+extern ALObjectPtr Fserver_templates_root(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval);
 
 extern ALObjectPtr Fserver_port(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 

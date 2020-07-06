@@ -48,7 +48,6 @@ struct server_start
             {
                 server.g_server->publish(resource);
             }
-
             async->async_pending();
             server.g_server->start(server.g_settings);
             async->async_reset_pending();
@@ -95,7 +94,7 @@ struct server_restart
 
     server_restart(ALObjectPtr id) : g_id(std::move(id)) {}
 
-    ALObjectPtr operator()(async::AsyncS *async) const
+    ALObjectPtr operator()(async::AsyncS *) const
     {
 
         auto thread = std::thread([g_id = g_id]() {
