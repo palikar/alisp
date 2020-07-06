@@ -554,6 +554,7 @@ namespace restbed
             }
             else
             {
+                
                 if ( socket not_eq nullptr and socket->is_open( ) )
                 {
                     socket->close( );

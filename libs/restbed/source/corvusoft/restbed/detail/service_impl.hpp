@@ -153,9 +153,9 @@ namespace restbed
 #endif
                 std::shared_ptr< asio::ip::tcp::acceptor > m_acceptor;
                 
-                std::map< std::string, std::string > m_resource_paths;
+            std::map< std::string, std::string > m_resource_paths;
                 
-                std::map< std::string, std::shared_ptr< const Resource > > m_resource_routes;
+            std::map< std::string, std::shared_ptr< const Resource > > m_resource_routes;
                 
                 std::function< void ( void ) > m_ready_handler;
                 
