@@ -500,7 +500,7 @@ static std::string handle_format_block(FmtBlock &t_block, int &t_i, ALObjectPtr 
         else if (t_block.align == '^')
         {
             auto s = std::string(static_cast<size_t>(t_block.width) / 2 - base_str.size(), fill);
-            return (s += base_str) += s;
+            return (s + base_str) + s;
         }
     }
 
