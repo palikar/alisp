@@ -39,23 +39,23 @@ struct async_start
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *eval)
     {
-
         auto action = arg_eval(eval, obj, 0);
 
-        auto callback = Qnil;
+        auto future_id = eval->async().new_future();
+        auto &future   = eval->async().futures[future_id];
+
         if (std::size(*obj) > 1)
         {
-            callback = arg_eval(eval, obj, 1);
+            future.success_callback = arg_eval(eval, obj, 1);
         }
 
-        auto res = async::dispatch<async_action>(eval->async(), std::move(action), std::move(callback));
+        eval->async().submit_callback(action, nullptr, [&async = eval->async(), future = future_id](auto value) {
+            async.submit_future(future, value);
+        });
 
-        if (pint(res) and eval->async().futures.belong(object_to_resource(res)))
-        {
-            env->defer_callback([eval, id = object_to_resource(res)]() { eval->async().dispose_future(id); });
-        }
+        env->defer_callback([eval, id = future_id]() { eval->async().dispose_future(id); });
 
-        return res;
+        return resource_to_object(future_id);
     }
 };
 

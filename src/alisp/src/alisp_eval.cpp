@@ -331,10 +331,22 @@ ALObjectPtr Evaluator::apply_prime(const ALObjectPtr &func, const ALObjectPtr &a
 
     if (func->prop_exists("--signature--"))
     {
-        size_t cnt     = 1;
-        auto signature = func->get_prop("--signature--");
+        size_t cnt                                     = 1;
+        ALObject::list_type::difference_type opt_index = -1;
+        auto signature                                 = func->get_prop("--signature--");
+        auto opt_it                                    = std::find(signature->begin(), signature->end(), Qoptional);
+
+        if (opt_it != std::end(*signature))
+        {
+            opt_index = std::distance(signature->begin(), opt_it);
+        }
+
         handle_argument_bindings(signature, func_args, [&](const auto &param, auto arg) {
-            SignatureHandler::handle_signature_element(param, arg, cnt++, signature);
+            if (opt_index != -1 and static_cast<ALObject::list_type::difference_type>(cnt) > opt_index + 1
+                and arg != Qnil)
+            {
+                SignatureHandler::handle_signature_element(param, arg, cnt++, signature);
+            }
         });
     }
 
@@ -418,8 +430,8 @@ void Evaluator::dispatch_callbacks()
         {
             internal(res);
         }
+        m_async.spin_loop();
     }
-    m_async.spin_loop();
 }
 
 void Evaluator::check_status()

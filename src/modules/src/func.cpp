@@ -158,8 +158,6 @@ Is equivalent to: `(+ (- (/ (+ 5 20) 25)) 40)` )" };
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
-        assert_min_size<2>(obj);
-
         auto first = obj->i(0);
 
         const size_t size = std::size(*obj);
@@ -167,6 +165,7 @@ Is equivalent to: `(+ (- (/ (+ 5 20) 25)) 40)` )" };
         for (size_t i = 1; i < size; ++i)
         {
             auto next_ls = obj->i(i);
+
             ALObject::list_type l;
             l.push_back(next_ls->i(0));
             l.push_back(first);
@@ -325,26 +324,20 @@ ALISP_EXPORT alisp::env::ModulePtr init_func(alisp::env::Environment *, alisp::e
     auto Mfunc   = alisp::module_init("func");
     auto fun_ptr = Mfunc.get();
 
+
     module_doc(fun_ptr, func::module_doc::doc);
+    using namespace func;
 
-    module_defvar(fun_ptr, func::placeholder_var::name, func::placeholder_var::var, func::placeholder_var::doc);
+    module_defvar(fun_ptr, placeholder_var::name, placeholder_var::var, placeholder_var::doc);
 
-    module_defun(fun_ptr, func::compose::name, func::compose::func, func::compose::doc, func::compose::signature.al());
-    module_defun(fun_ptr, func::partial::name, func::partial::func, func::partial::doc, func::partial::signature.al());
-    module_defun(fun_ptr,
-                 func::thread_first::name,
-                 func::thread_first::func,
-                 func::thread_first::doc,
-                 func::thread_first::signature.al());
-    module_defun(fun_ptr,
-                 func::thread_last::name,
-                 func::thread_last::func,
-                 func::thread_last::doc,
-                 func::thread_last::signature.al());
-    module_defun(fun_ptr, func::reduce::name, func::reduce::func, func::reduce::doc, func::reduce::signature.al());
+    module_defun(fun_ptr, compose::name, compose::func, compose::doc, compose::signature.al());
+    module_defun(fun_ptr, partial::name, partial::func, partial::doc, partial::signature.al());
     module_defun(
-      fun_ptr, func::identity::name, func::identity::func, func::identity::doc, func::identity::signature.al());
-    module_defun(fun_ptr, func::ignore::name, func::ignore::func, func::ignore::doc, func::ignore::signature.al());
+      fun_ptr, thread_first::name, thread_first::func, thread_first::doc, thread_first::signature.al(), false);
+    module_defun(fun_ptr, thread_last::name, thread_last::func, thread_last::doc, thread_last::signature.al(), false);
+    module_defun(fun_ptr, reduce::name, reduce::func, reduce::doc, reduce::signature.al());
+    module_defun(fun_ptr, identity::name, identity::func, identity::doc, identity::signature.al());
+    module_defun(fun_ptr, ignore::name, ignore::func, ignore::doc, ignore::signature.al());
 
     return Mfunc;
 }

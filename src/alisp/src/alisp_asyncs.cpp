@@ -74,7 +74,6 @@ void AsyncS::event_loop()
     AL_BIT_ON(m_flags, INIT_FLAG);
     while (AL_BIT_CHECK(m_flags, RUNNING_FLAG))
     {
-
         event_loop_cv.wait(el_lock);
 
         if (!AL_BIT_CHECK(m_flags, RUNNING_FLAG))
@@ -103,7 +102,7 @@ void AsyncS::event_loop()
         }
 
         if (m_callback_queue.empty() and m_event_queue.empty() and m_asyncs == 0 and !m_eval->is_interactive()
-            and !AL_BIT_CHECK(m_flags, AWAIT_FLAG) and !AL_BIT_CHECK(m_flags, UR_FLAG))
+            and !AL_BIT_CHECK(m_flags, AWAIT_FLAG) and !AL_BIT_CHECK(m_flags, UR_FLAG) and m_pending_futues == 0)
         {
             AL_BIT_OFF(m_flags, RUNNING_FLAG);
             m_eval->reset_async_flag();
@@ -199,8 +198,6 @@ void AsyncS::submit_event(event_type t_callback)
     {
         init();
     }
-
-
     {
 
 #ifndef MULTI_THREAD_EVENT_LOOP
@@ -208,8 +205,6 @@ void AsyncS::submit_event(event_type t_callback)
 #else
         std::lock_guard<std::mutex> guard{ event_queue_mutex };
 #endif
-
-
         m_event_queue.push(std::move(t_callback));
 
         m_eval->set_async_flag();
@@ -246,16 +241,9 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::functi
     {
         {
             std::lock_guard<std::mutex> guard(callback_queue_mutex);
-            if (args == nullptr)
-            {
-                m_callback_queue.push({ function, make_list(), internal });
-            }
-            else
-            {
-                m_callback_queue.push({ function, args });
-            }
+            m_callback_queue.push({ function, args == nullptr ? make_list() : args, internal });
         }
-
+        m_eval->set_async_flag();
         m_eval->callback_cv.notify_all();
         spin_loop();
     }
@@ -271,6 +259,9 @@ uint32_t AsyncS::new_future(std::function<void(ALObjectPtr)> t_calback)
 
     std::lock_guard<std::mutex> lock(future_mutex);
     const auto id = futures.emplace_resource(Qnil, Qnil, Qnil, Qnil, Qnil, t_calback)->id;
+
+    m_eval->set_async_flag();
+    ++m_pending_futues;
 
     return id;
 }
@@ -300,19 +291,19 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
 
                 if (pint(res) and futures.belong(object_to_resource(res)))
                 {
-                    auto other = object_to_resource(res);
-
+                    auto other                      = object_to_resource(res);
                     futures[other].value            = futures[next].value;
                     futures[other].success_state    = futures[next].resolved;
                     futures[other].success_callback = futures[next].success_callback;
                     futures[other].reject_callback  = futures[next].reject_callback;
                     futures[other].internal         = futures[next].internal;
                     futures[other].next_in_line     = futures[next].next_in_line;
-
-
+                    --m_pending_futues;
                     return;
                 }
+
                 submit_future(next, res);
+                spin_loop();
             }
         });
     }
@@ -325,6 +316,10 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
     {
         fut.internal(fut.value);
     }
+
+    --m_pending_futues;
+
+    spin_loop();
 }
 
 void AsyncS::dispose_future(uint32_t t_id)
@@ -354,7 +349,7 @@ ALObjectPtr AsyncS::future_resolved(uint32_t t_id)
 void AsyncS::spin_loop()
 {
 #ifndef MULTI_THREAD_EVENT_LOOP
-    event_loop_cv.notify_one();
+    event_loop_cv.notify_all();
 #else
     pool_cv.notify_all();
 #endif
