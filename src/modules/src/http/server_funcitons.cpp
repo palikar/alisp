@@ -211,29 +211,30 @@ ALObjectPtr Fserver_not_found_handler(const ALObjectPtr &obj, env::Environment *
 
     const auto handler_callback = arg_eval(eval, obj, 1);
 
-    auto &server = detail::server_registry[object_to_resource(id)];
+    auto s_id = object_to_resource(id);
+    auto &server = detail::server_registry[s_id];
 
 
-    server.g_server->set_not_found_handler([eval, handler_callback](const std::shared_ptr<restbed::Session> session) {
+    server.g_server->set_not_found_handler([eval, handler_callback, s_id](const std::shared_ptr<restbed::Session> session) {
         const auto request = session->get_request();
 
         const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
 
         session->fetch(content_length,
-                       [eval, handler_callback, request](const std::shared_ptr<restbed::Session> fetched_session,
-                                                         const restbed::Bytes &) {
+        [eval, handler_callback, request, s_id](const std::shared_ptr<restbed::Session> fetched_session,
+        const restbed::Bytes &) {
                            auto req_obj = detail::handle_request(*request.get());
                            auto res_obj = make_list();
 
                            auto future =
-                             eval->async().new_future([fetched_session, request, res_obj, req_obj](auto future_result) {
-                                 if (is_falsy(future_result))
-                                 {
+                               eval->async().new_future([fetched_session, request, res_obj, req_obj, s_id](auto future_result) {
+                                   if (is_falsy(future_result))
+                                   {
                                      return;
                                  }
 
                                  restbed::Response response{};
-                                 detail::handle_response(*request.get(), response, std::move(res_obj));
+                                 detail::handle_response(s_id, response, std::move(res_obj));
                                  fetched_session->close(response);
                              });
 
