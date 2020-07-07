@@ -94,7 +94,7 @@ ALObjectPtr Fserver_static_route(const ALObjectPtr &obj, env::Environment *, eva
     auto &server   = detail::server_registry[server_id];
 
     auto res = std::make_shared<restbed::Resource>();
-    res->set_path(path->to_string() + "/.*");
+    res->set_path(path->to_string() + "/{path: TO_END}");
     res->set_method_handler("GET", [eval](const std::shared_ptr<restbed::Session> session) {
         const auto request          = session->get_request();
         const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
