@@ -142,7 +142,25 @@ inline ALObjectPtr handle_request(const restbed::Request &request)
     return make_list(list);
 }
 
-inline void add_cookie(Server &, restbed::Response &response, const ALObjectPtr &t_cookie)
+inline void attach_file(Server &server, const std::filesystem::path &path, restbed::Response &response)
+{
+    // use some cache thing here
+    std::string content = utility::load_file(path);
+    response.set_header("Content-Length", std::to_string(std::size(content)));
+    response.set_body(std::move(content));
+
+    // deduce mime type
+    if (path.has_extension())
+    {
+        auto ext = path.extension();
+        if (server.mimes.count(ext) > 0)
+        {
+            response.set_header("Content-Type", server.mimes.at(ext));
+        }
+    }
+}
+
+inline void handle_cookie(Server &, restbed::Response &response, const ALObjectPtr &t_cookie)
 {
     std::string cookie_expr = fmt::format("{}=\"{}\"", t_cookie->i(0)->to_string(), t_cookie->i(1)->to_string());
     // expires
@@ -180,7 +198,7 @@ inline void add_cookie(Server &, restbed::Response &response, const ALObjectPtr 
     response.set_header("Set-Cookie", cookie_expr);
 }
 
-inline void add_file(Server &server, restbed::Response &response, const ALObjectPtr &t_file)
+inline void handle_file(Server &server, restbed::Response &response, const ALObjectPtr &t_file)
 {
     namespace fs = std::filesystem;
 
@@ -203,20 +221,7 @@ inline void add_file(Server &server, restbed::Response &response, const ALObject
         return;
     }
 
-    std::string content = utility::load_file(path);
-
-    response.set_header("Content-Length", std::to_string(std::size(content)));
-    response.set_body(std::move(content));
-
-    // deduce mime type
-    if (path.has_extension())
-    {
-        auto ext = path.extension();
-        if (server.mimes.count(ext) > 0)
-        {
-            response.set_header("Content-Type", server.mimes.at(ext));
-        }
-    }
+    attach_file(server, path, response);
 }
 
 inline void render_file(Server &server, restbed::Response &response, const ALObjectPtr &t_params)
@@ -266,13 +271,13 @@ inline void handle_response(uint32_t s_id, restbed::Response &response, const AL
 
         if (sym_name(t_al_response->i(i), ":cookie") and plist(t_al_response->i(i + 1)))
         {
-            add_cookie(server, response, t_al_response->i(i + 1));
+            handle_cookie(server, response, t_al_response->i(i + 1));
             ++i;
         }
 
         if (sym_name(t_al_response->i(i), ":file") and plist(t_al_response->i(i + 1)))
         {
-            add_file(server, response, t_al_response->i(i + 1));
+            handle_file(server, response, t_al_response->i(i + 1));
             ++i;
         }
 

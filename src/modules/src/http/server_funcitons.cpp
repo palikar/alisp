@@ -87,26 +87,38 @@ ALObjectPtr Fserver_static_root(const ALObjectPtr &obj, env::Environment *, eval
 
 ALObjectPtr Fserver_static_route(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    auto id   = arg_eval(eval, obj, 0);
-    auto path = arg_eval(eval, obj, 1);
+    namespace fs = std::filesystem;
+    auto id      = arg_eval(eval, obj, 0);
+    auto path    = arg_eval(eval, obj, 1);
 
     auto server_id = object_to_resource(id);
     auto &server   = detail::server_registry[server_id];
 
     auto res = std::make_shared<restbed::Resource>();
     res->set_path(path->to_string() + "/{path: TO_END}");
-    res->set_method_handler("GET", [eval](const std::shared_ptr<restbed::Session> session) {
+    res->set_method_handler("GET", [&server, eval, path](const std::shared_ptr<restbed::Session> session) {
         const auto request          = session->get_request();
         const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
 
         session->fetch(
           content_length,
-          [eval, request](const std::shared_ptr<restbed::Session> fetched_session, const restbed::Bytes &) {
+          [&server, request, path](const std::shared_ptr<restbed::Session> fetched_session, const restbed::Bytes &) {
               restbed::Response response{};
 
-              response.set_body("nothing");
+              const std::string file_path{ utility::trim(
+                utility::replace(request->get_path(), path->to_string() + "/", "")) };
+              const fs::path full_path = fs::canonical(fs::absolute(fs::path{ server.static_root } / file_path));
 
-              std::cout << request->get_path() << "\n";
+              if (fs::exists(full_path) and fs::is_regular_file(full_path))
+              {
+                  std::cout << full_path << "\n";
+                  attach_file(server, full_path, response);
+              }
+              else
+              {
+                  response.set_body("<h4>Not found</h4>");
+              }
+
 
               fetched_session->close(response);
           });

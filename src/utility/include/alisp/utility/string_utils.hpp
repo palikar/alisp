@@ -105,9 +105,9 @@ inline std::string &str_tolower(std::string &s)
     return s;
 }
 
-inline std::string trim(const std::string &str)
+inline std::string trim(const std::string &str, char symbol = ' ')
 {
-    size_t first = str.find_first_not_of(' ');
+    size_t first = str.find_first_not_of(symbol);
     if (std::string::npos == first)
     {
         return str;
