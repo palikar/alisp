@@ -96,32 +96,33 @@ ALObjectPtr Fserver_static_route(const ALObjectPtr &obj, env::Environment *, eva
 
     auto res = std::make_shared<restbed::Resource>();
     res->set_path(path->to_string() + "/{path: TO_END}");
-    res->set_method_handler("GET", [&server, eval, path](const std::shared_ptr<restbed::Session> session) {
+    res->set_method_handler("GET", [&server, eval, path, server_id](const std::shared_ptr<restbed::Session> session) {
         const auto request          = session->get_request();
         const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
 
-        session->fetch(
-          content_length,
-          [&server, request, path](const std::shared_ptr<restbed::Session> fetched_session, const restbed::Bytes &) {
-              restbed::Response response{};
+        session->fetch(content_length,
+                       [&server, request, path, eval, server_id](
+                         const std::shared_ptr<restbed::Session> fetched_session, const restbed::Bytes &) {
+                           const std::string file_path{ utility::trim(
+                             utility::replace(request->get_path(), path->to_string() + "/", "")) };
+                           const fs::path full_path =
+                             fs::canonical(fs::absolute(fs::path{ server.static_root } / file_path));
 
-              const std::string file_path{ utility::trim(
-                utility::replace(request->get_path(), path->to_string() + "/", "")) };
-              const fs::path full_path = fs::canonical(fs::absolute(fs::path{ server.static_root } / file_path));
-
-              if (fs::exists(full_path) and fs::is_regular_file(full_path))
-              {
-                  std::cout << full_path << "\n";
-                  attach_file(server, full_path, response);
-              }
-              else
-              {
-                  response.set_body("<h4>Not found</h4>");
-              }
-
-
-              fetched_session->close(response);
-          });
+                           if (fs::exists(full_path) and fs::is_regular_file(full_path))
+                           {
+                               AL_DEBUG("Serving static file:"s += full_path.string());
+                               restbed::Response response{};
+                               attach_file(server, full_path, response);
+                               detail::send_response(server_id, response, request, fetched_session);
+                           }
+                           else
+                           {
+                               AL_DEBUG("File not found: "s += full_path.string());
+                               auto req_obj = detail::handle_request(*request.get());
+                               detail::callback_response(
+                                 server.not_found_handler, req_obj, server_id, eval, fetched_session, request);
+                           }
+                       });
     });
 
 
@@ -271,41 +272,23 @@ ALObjectPtr Fserver_property(const ALObjectPtr &obj, env::Environment *, eval::E
 
 ALObjectPtr Fserver_not_found_handler(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = arg_eval(eval, obj, 0);
-
+    const auto id               = arg_eval(eval, obj, 0);
     const auto handler_callback = arg_eval(eval, obj, 1);
 
     auto s_id    = object_to_resource(id);
     auto &server = detail::server_registry[s_id];
 
+    server.not_found_handler = handler_callback;
 
     server.g_server->set_not_found_handler(
       [eval, handler_callback, s_id](const std::shared_ptr<restbed::Session> session) {
-          const auto request = session->get_request();
-
+          const auto request          = session->get_request();
           const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
-
           session->fetch(content_length,
                          [eval, handler_callback, request, s_id](
                            const std::shared_ptr<restbed::Session> fetched_session, const restbed::Bytes &) {
                              auto req_obj = detail::handle_request(*request.get());
-                             auto res_obj = make_list();
-
-                             auto future = eval->async().new_future(
-                               [fetched_session, request, res_obj, req_obj, s_id](auto future_result) {
-                                   if (is_falsy(future_result))
-                                   {
-                                       return;
-                                   }
-
-                                   restbed::Response response{};
-                                   detail::handle_response(s_id, response, std::move(res_obj));
-                                   fetched_session->close(response);
-                               });
-
-                             res_obj->children().push_back(resource_to_object(future));
-
-                             eval->async().submit_callback(handler_callback, make_list(req_obj, res_obj));
+                             detail::callback_response(handler_callback, req_obj, s_id, eval, fetched_session, request);
                          });
       });
 

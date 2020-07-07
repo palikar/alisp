@@ -111,12 +111,9 @@ ALObjectPtr Froute_default_header(const ALObjectPtr &obj, env::Environment *, ev
 
 ALObjectPtr Froute_method_handler(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = arg_eval(eval, obj, 0);
-
-    const auto route_id = arg_eval(eval, obj, 1);
-
-    const auto method = arg_eval(eval, obj, 2);
-
+    const auto id               = arg_eval(eval, obj, 0);
+    const auto route_id         = arg_eval(eval, obj, 1);
+    const auto method           = arg_eval(eval, obj, 2);
     const auto handler_callback = arg_eval(eval, obj, 3);
 
     auto s_id    = object_to_resource(id);
@@ -125,31 +122,13 @@ ALObjectPtr Froute_method_handler(const ALObjectPtr &obj, env::Environment *, ev
 
     res->set_method_handler(
       method->to_string(), [eval, handler_callback, s_id](const std::shared_ptr<restbed::Session> session) {
-          const auto request = session->get_request();
-
+          const auto request          = session->get_request();
           const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
-
           session->fetch(content_length,
                          [eval, handler_callback, request, s_id](
                            const std::shared_ptr<restbed::Session> fetched_session, const restbed::Bytes &) {
                              auto req_obj = detail::handle_request(*request.get());
-                             auto res_obj = make_list();
-
-                             auto future = eval->async().new_future(
-                               [fetched_session, request, res_obj, req_obj, s_id](auto future_result) {
-                                   if (is_falsy(future_result))
-                                   {
-                                       return;
-                                   }
-
-                                   restbed::Response response{};
-                                   detail::handle_response(s_id, response, std::move(res_obj));
-                                   fetched_session->close(response);
-                               });
-
-                             res_obj->children().push_back(resource_to_object(future));
-
-                             eval->async().submit_callback(handler_callback, make_list(req_obj, res_obj));
+                             detail::callback_response(handler_callback, req_obj, s_id, eval, fetched_session, request);
                          });
       });
 
@@ -158,10 +137,8 @@ ALObjectPtr Froute_method_handler(const ALObjectPtr &obj, env::Environment *, ev
 
 ALObjectPtr Froute_error_handler(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
-    const auto id = arg_eval(eval, obj, 0);
-
-    const auto route_id = arg_eval(eval, obj, 1);
-
+    const auto id               = arg_eval(eval, obj, 0);
+    const auto route_id         = arg_eval(eval, obj, 1);
     const auto handler_callback = arg_eval(eval, obj, 2);
 
     auto s_id    = object_to_resource(id);
@@ -171,36 +148,19 @@ ALObjectPtr Froute_error_handler(const ALObjectPtr &obj, env::Environment *, eva
     res->set_error_handler([eval, handler_callback, s_id](const int code,
                                                           const std::exception &exc,
                                                           const std::shared_ptr<restbed::Session> session) {
-        const auto request = session->get_request();
-
+        const auto request          = session->get_request();
         const size_t content_length = request->get_header("Content-Length", size_t{ 0 });
-
         session->fetch(content_length,
                        [eval, handler_callback, request, code, exc, s_id](
                          const std::shared_ptr<restbed::Session> fetched_session, const restbed::Bytes &) {
                            auto req_obj = detail::handle_request(*request.get());
-                           auto res_obj = make_list();
 
                            req_obj->children().push_back(make_string(":code"));
                            req_obj->children().push_back(make_int(code));
                            req_obj->children().push_back(make_string(":what"));
                            req_obj->children().push_back(make_string(exc.what()));
 
-                           auto future = eval->async().new_future(
-                             [fetched_session, request, res_obj, req_obj, s_id](auto future_result) {
-                                 if (is_falsy(future_result))
-                                 {
-                                     return;
-                                 }
-
-                                 restbed::Response response{};
-                                 detail::handle_response(s_id, response, std::move(res_obj));
-                                 fetched_session->close(response);
-                             });
-
-                           res_obj->children().push_back(resource_to_object(future));
-
-                           eval->async().submit_callback(handler_callback, make_list(req_obj, res_obj));
+                           detail::callback_response(handler_callback, req_obj, s_id, eval, fetched_session, request);
                        });
     });
 

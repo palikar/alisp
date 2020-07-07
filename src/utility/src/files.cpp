@@ -128,4 +128,24 @@ void dump_file(const std::string &t_filename, const std::string &t_content, bool
     outfile.close();
 }
 
+std::vector<unsigned char> load_file_binary(const std::string &t_filename)
+{
+    std::ifstream infile(t_filename, std::ios::in | std::ios::ate | std::ios::binary);
+    if (!infile.is_open())
+    {
+        return {};
+    }
+
+    infile.unsetf(std::ios::skipws);
+
+    infile.seekg(0, std::ios::end);
+    auto size = infile.tellg();
+    infile.seekg(0, std::ios::beg);
+
+    std::vector<unsigned char> vec;
+    vec.reserve(static_cast<size_t>(size));
+    vec.insert(vec.begin(), std::istream_iterator<unsigned char>(infile), std::istream_iterator<unsigned char>());
+    return vec;
+}
+
 }  // namespace alisp::utility

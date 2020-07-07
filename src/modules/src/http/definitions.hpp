@@ -65,27 +65,47 @@ struct Server
     std::string static_root{ "" };
     std::string templates_root{ "" };
 
-    std::unordered_map<std::string, std::string> mimes{
-        { ".txt", "text/plain" },
-        { ".html", "text/html" },
-        { ".htm", "text/html" },
-        { ".css", "text/css" },
-        { ".jpeg", "image/jpg" },
-        { ".jpg", "image/jpg" },
-        { ".png", "image/png" },
-        { ".gif", "image/gif" },
-        { ".svg", "image/svg+xml" },
-        { ".ico", "image/x-icon" },
-        { ".json", "application/json" },
-        { ".pdf", "application/pdf" },
-        { ".js", "application/javascript" },
-        { ".wasm", "application/wasm" },
-        { ".xml", "application/xml" },
-        { ".xhtml", "application/xhtml+xml" },
+    std::unordered_map<std::string, std::pair<std::string, bool>> mimes{
+        { ".txt", { "text/plain", false } },
+        { ".html", { "text/html", false } },
+        { ".htm", { "text/html", false } },
+        { ".css", { "text/css", false } },
+        { ".jpeg", { "image/jpg", true } },
+        { ".jpg", { "image/jpg", true } },
+        { ".png", { "image/png", true } },
+        { ".gif", { "image/gif", true } },
+        { ".svg", { "image/svg+xml", false } },
+        { ".ico", { "image/x-icon", true } },
+        { ".json", { "application/json", false } },
+        { ".pdf", { "application/pdf", true } },
+        { ".js", { "application/javascript", false } },
+        { ".wasm", { "application/wasm", true } },
+        { ".xml", { "application/xml", false } },
+        { ".xhtml", { "application/xhtml+xml", false } },
     };
+
+    ALObjectPtr not_found_handler;
 };
 
 inline management::Registry<Server, 0x08> server_registry;
+
+inline void send_response(uint32_t,
+                          restbed::Response &response,
+                          const std::shared_ptr<const restbed::Request> request,
+                          const std::shared_ptr<restbed::Session> session)
+{
+
+    if (request->get_header("Connection", "close").compare("keep-alive") == 0)
+    {
+        response.set_header("Connection", "keep-alive");
+        session->yield(response);
+    }
+    else
+    {
+        response.set_header("Connection", "close");
+        session->close(response);
+    }
+}
 
 inline ALObjectPtr handle_request(const restbed::Request &request)
 {
@@ -142,21 +162,39 @@ inline ALObjectPtr handle_request(const restbed::Request &request)
     return make_list(list);
 }
 
+inline void default_headers(restbed::Response &response)
+{
+    response.set_header("Date", gat_date());
+}
+
 inline void attach_file(Server &server, const std::filesystem::path &path, restbed::Response &response)
 {
-    // use some cache thing here
-    std::string content = utility::load_file(path);
-    response.set_header("Content-Length", std::to_string(std::size(content)));
-    response.set_body(std::move(content));
-
+    bool binary = false;
     // deduce mime type
     if (path.has_extension())
     {
         auto ext = path.extension();
         if (server.mimes.count(ext) > 0)
         {
-            response.set_header("Content-Type", server.mimes.at(ext));
+            std::string content_type;
+            std::tie(content_type, binary) = server.mimes.at(ext);
+            response.set_header("Content-Type", std::move(content_type));
         }
+    }
+
+    // use some cache thing here
+
+    if (!binary)
+    {
+        std::string content = utility::load_file(path);
+        response.set_header("Content-Length", std::to_string(std::size(content)));
+        response.set_body(std::move(content));
+    }
+    else
+    {
+        std::vector<unsigned char> content = utility::load_file_binary(path);
+        response.set_header("Content-Length", std::to_string(std::size(content)));
+        response.set_body(std::move(content));
     }
 }
 
@@ -244,8 +282,8 @@ inline void render_file(Server &server, restbed::Response &response, const ALObj
 inline void handle_response(uint32_t s_id, restbed::Response &response, const ALObjectPtr &t_al_response)
 {
     auto &server = server_registry[s_id];
+    AL_DEBUG("Handling response:"s += dump(t_al_response));
 
-    std::cout << dump(t_al_response) << "\n";
 
     for (size_t i = 1; i < std::size(*t_al_response); ++i)
     {
@@ -296,10 +334,36 @@ inline void handle_response(uint32_t s_id, restbed::Response &response, const AL
         }
     }
 
-    response.set_header("Date", gat_date());
-
+    default_headers(response);
 
     response.set_header("Cache-Control", "no-store");
+}
+
+
+inline void callback_response(ALObjectPtr callback,
+                              ALObjectPtr req_obj,
+                              uint32_t s_id,
+                              eval::Evaluator *eval,
+                              const std::shared_ptr<restbed::Session> session,
+                              const std::shared_ptr<const restbed::Request> request)
+{
+
+    auto res_obj = make_list();
+    auto future  = eval->async().new_future([session, res_obj, req_obj, s_id, request](auto future_result) {
+        if (is_falsy(future_result))
+        {
+            restbed::Response response{};
+            session->close(response);
+            return;
+        }
+        restbed::Response response{};
+        detail::handle_response(s_id, response, std::move(res_obj));
+
+        send_response(s_id, response, request, session);
+    });
+
+    res_obj->children().push_back(resource_to_object(future));
+    eval->async().submit_callback(callback, make_list(req_obj, res_obj));
 }
 
 }  // namespace detail
