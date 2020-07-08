@@ -35,8 +35,8 @@
 #include <time.h>
 
 #include <fmt/format.h>
-
 #include <restbed>
+#include <inja.hpp>
 
 
 namespace http
@@ -85,6 +85,8 @@ struct Server
     };
 
     ALObjectPtr not_found_handler;
+
+    inja::Environment template_env;
 };
 
 inline management::Registry<Server, 0x08> server_registry;
