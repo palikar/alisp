@@ -86,6 +86,7 @@ struct Server
 
     ALObjectPtr not_found_handler;
 
+    std::unordered_map<std::string, inja::Template> templates;
     inja::Environment template_env;
 };
 
@@ -366,6 +367,30 @@ inline void callback_response(ALObjectPtr callback,
 
     res_obj->children().push_back(resource_to_object(future));
     eval->async().submit_callback(callback, make_list(req_obj, res_obj));
+}
+
+
+inline void setup_template_env(Server &server)
+{
+    namespace fs = std::filesystem;
+
+    if (!fs::is_directory(server.templates_root))
+    {
+        return;
+    }
+
+    for (auto entry : fs::recursive_directory_iterator(server.templates_root))
+    {
+        if (!fs::is_regular_file(entry))
+        {
+            continue;
+        }
+
+        auto file  = entry.path().string();
+        auto name  = utility::trim(utility::replace_all(file, fs::path(server.templates_root), ""), '/');
+        auto &temp = server.templates.insert({ name, server.template_env.parse_template(file) }).first->second;
+        server.template_env.include_template(name, temp);
+    }
 }
 
 }  // namespace detail
