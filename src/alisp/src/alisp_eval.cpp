@@ -58,7 +58,7 @@ Evaluator::Evaluator(env::Environment &env_, parser::ParserBase *t_parser, bool 
 
 Evaluator::~Evaluator()
 {
-    m_async.end();
+    m_async.dispose();
 }
 
 void Evaluator::put_argument(const ALObjectPtr &param, ALObjectPtr arg)
