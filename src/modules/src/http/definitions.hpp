@@ -28,6 +28,8 @@
 #include "alisp/alisp/alisp_eval.hpp"
 #include "alisp/utility.hpp"
 
+#include "./json_render.hpp"
+
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -101,7 +103,8 @@ inline void send_response(uint32_t,
     if (request->get_header("Connection", "close").compare("keep-alive") == 0)
     {
         response.set_header("Connection", "keep-alive");
-        session->yield(response);
+        // session->yield(response);
+        session->close(response);
     }
     else
     {
@@ -265,20 +268,30 @@ inline void handle_file(Server &server, restbed::Response &response, const ALObj
     attach_file(server, path, response);
 }
 
+
 inline void render_file(Server &server, restbed::Response &response, const ALObjectPtr &t_params)
 {
     namespace fs = std::filesystem;
+    std::string template_name{ t_params->i(0)->to_string() };
 
-    fs::path path{ t_params->i(0)->to_string() };
-    if (path.is_relative())
-    {
-        path = server.templates_root / path;
-    }
+    auto json = json_render(t_params->i(1));
 
-    // use cache here
-    // render here
-    std::string content = utility::load_file(path);
-    response.set_body(std::move(content));
+    auto result = [&] {
+        if (server.templates.count(template_name) > 0)
+        {
+            return server.template_env.render(server.templates.at(template_name), json);
+        }
+
+        if (auto p = fs::path{ template_name }; p.is_absolute() and fs::is_regular_file(p))
+        {
+            return server.template_env.render_file(fs::absolute(p), json);
+        }
+
+        return std::string{ "" };
+    }();
+
+    response.set_status_code(200);
+    response.set_body(result);
     response.set_header("Content-Type", "text/html");
 }
 
@@ -286,7 +299,6 @@ inline void handle_response(uint32_t s_id, restbed::Response &response, const AL
 {
     auto &server = server_registry[s_id];
     AL_DEBUG("Handling response:"s += dump(t_al_response));
-
 
     for (size_t i = 1; i < std::size(*t_al_response); ++i)
     {
@@ -338,7 +350,6 @@ inline void handle_response(uint32_t s_id, restbed::Response &response, const AL
     }
 
     default_headers(response);
-
     response.set_header("Cache-Control", "no-store");
 }
 
@@ -390,6 +401,8 @@ inline void setup_template_env(Server &server)
         auto name  = utility::trim(utility::replace_all(file, fs::path(server.templates_root), ""), '/');
         auto &temp = server.templates.insert({ name, server.template_env.parse_template(file) }).first->second;
         server.template_env.include_template(name, temp);
+        server.template_env.set_trim_blocks(true);
+        server.template_env.set_lstrip_blocks(true);
     }
 }
 
