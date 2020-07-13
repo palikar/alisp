@@ -43,26 +43,26 @@ AL_STRINGIFY(
              (defun set-content (res cont)
                (push res :content)
                (push res cont))
-
+             
              (defun set-status-code (res code)
                (push res :code)
                (push res code))
-
 
              (defun set-header (res name value)
                (push res :header)
                (push res `(,name ,value)))
 
-
              (defun set-cookie (res name value)
                (push res :cookie)
                (push res `(,name ,value)))
 
-
              (defun send-file (res file &rest rest)
                (push res :file)
-               (push res `(,file ,@rest))
-               (request-end res))
+               (push res `(,file ,@rest)))
+
+             (defun render-template (res template &optional data)
+               (push res :render)
+               (push res `(,template ,data)))
 
 
 
