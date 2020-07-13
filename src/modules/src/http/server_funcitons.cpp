@@ -138,7 +138,7 @@ ALObjectPtr Fserver_templates_root(const ALObjectPtr &obj, env::Environment *, e
     auto root             = arg_eval(eval, obj, 1);
     auto &server          = detail::server_registry[object_to_resource(id)];
     server.templates_root = root->to_string();
-    detail::setup_template_env(server);
+    server.setup_template_env();
     return Qt;
 }
 

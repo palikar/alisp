@@ -25,6 +25,8 @@
 #include "alisp/alisp/alisp_eval.hpp"
 
 #include "http/definitions.hpp"
+#include "http/response_handling.hpp"
+#include "http/request_handling.hpp"
 #include "http/async_actions.hpp"
 #include "http/language_space.hpp"
 
