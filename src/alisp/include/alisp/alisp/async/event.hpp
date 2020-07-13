@@ -22,6 +22,7 @@
 #include "alisp/alisp/declarations/constants.hpp"
 
 #include <functional>
+#include <atomic>
 #include <memory>
 #include <utility>
 
@@ -56,6 +57,18 @@ struct EventObject
 
     Future *future;
 
+    template<class T> EventObject(T t) { ptr_ = std::make_unique<WrappingCallback<T>>(std::move(t)); }
+
+    ALObjectPtr operator()(AsyncS *async) const { return ptr_->call(async); }
+};
+
+struct ActionObject
+{
+    std::unique_ptr<AbstractCallback> ptr_;
+
+    std::atomic<bool> valid;
+    std::atomic<bool> executing;
+    
     template<class T> EventObject(T t) { ptr_ = std::make_unique<WrappingCallback<T>>(std::move(t)); }
 
     ALObjectPtr operator()(AsyncS *async) const { return ptr_->call(async); }

@@ -62,6 +62,97 @@ void AsyncS::init()
     }
 }
 
+void AsyncS::check_exit_condition()
+{
+
+    if (!m_callback_queue.empty())
+    {
+        return;
+    }
+
+    if (! m_event_queue.empty())
+    {
+        return;
+    }
+
+    if (m_asyncs != 0)
+    {
+        return;
+    }
+
+    if( !m_eval->is_interactive())
+    {
+        return;
+    }
+    
+    if(AL_BIT_CHECK(m_flags, AWAIT_FLAG))
+    {
+        return;
+    }
+
+    if (AL_BIT_CHECK(m_flags, UR_FLAG))
+    {
+        return;
+    }
+
+    if (Future::m_pending_futures != 0)
+    {
+        return;
+    }
+
+
+    AL_BIT_OFF(m_flags, RUNNING_FLAG);
+    m_eval->reset_async_flag();
+    m_eval->callback_cv.notify_all();
+
+}
+
+void AsyncS::handle_timers()
+{
+    std::lock_guard<std::mutex> guard{ timers_mutex };
+    auto it = m_timers.begin();
+    while(it != m_timers.end())
+    {
+
+        if(it->time < m_now)
+        {
+            submit_callback(it->callback, nullptr, it->internal_callback);
+
+            if (is_falsey(it->periodic))
+            {
+                it = m_timers.erase(it);
+                continue;
+            }
+
+        }
+        
+        ++it;
+    }
+}
+
+void AsyncS::handle_actions()
+{
+    
+    auto it = m_actions_queue.begin();    
+    while(it != m_actions_queue.end())
+    {
+        
+        if(it->valid and !it->executing)
+        {
+            m_thread_pool.sumbit([&, action = *it](){
+                
+                action.executing = true;
+                action(this);
+                action.executing = false;
+            });
+            
+        }
+        
+        ++it;
+    }
+
+}
+
 #ifndef MULTI_THREAD_EVENT_LOOP
 
 void AsyncS::event_loop()
@@ -72,14 +163,20 @@ void AsyncS::event_loop()
     AL_BIT_ON(m_flags, INIT_FLAG);
     while (AL_BIT_CHECK(m_flags, RUNNING_FLAG))
     {
+        
+        event_loop_cv.wait_for(el_lock, 10ms);
 
-        event_loop_cv.wait(el_lock);
+        m_now = Timer::now();
+
+        m_thread_pool.submit([&](){
+            handle_timers();
+        });
 
         if (!AL_BIT_CHECK(m_flags, RUNNING_FLAG))
         {
             return;
         }
-
+        
         while (!m_event_queue.empty())
         {
             execute_event(std::move(m_event_queue.front()));
@@ -87,27 +184,22 @@ void AsyncS::event_loop()
             m_event_queue.pop();
         }
 
-        if (!m_callback_queue.empty() and AL_BIT_CHECK(m_flags, AWAIT_FLAG))
-        {
-            execute_callback(std::move(m_callback_queue.front()));
-            m_callback_queue.pop();
-            continue;
-        }
+        handle_actions();
 
         if (!m_callback_queue.empty())
         {
+            if (AL_BIT_CHECK(m_flags, AWAIT_FLAG))
+            {
+                execute_callback(std::move(m_callback_queue.front()));
+                m_callback_queue.pop();
+                continue;
+            }
             m_eval->callback_cv.notify_all();
             continue;
         }
 
-        if (m_callback_queue.empty() and m_event_queue.empty() and m_asyncs == 0 and !m_eval->is_interactive()
-        and !AL_BIT_CHECK(m_flags, AWAIT_FLAG) and !AL_BIT_CHECK(m_flags, UR_FLAG) and Future::m_pending_futures == 0)
-        {
-            AL_BIT_OFF(m_flags, RUNNING_FLAG);
-            m_eval->reset_async_flag();
-            m_eval->callback_cv.notify_all();
-            return;
-        }
+        check_exit_condition();
+
     }
 }
 
@@ -307,6 +399,17 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
     {
         fut.internal(fut.value);
     }
+}
+
+void AsyncS::submit_timer(Timer::time_point time, ALObjectPtr function, ALObjectPtr periodic, al_callback internal)
+{
+    if (!AL_BIT_CHECK(m_flags, INIT_FLAG))
+    {
+        init();
+    }
+
+    std::lock_guard<std::mutex> guard{ timers_mutex };
+    m_timers.push_back({time + m_now, function, internal, periodic});
 }
 
 

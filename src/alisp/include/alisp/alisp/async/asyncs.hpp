@@ -39,6 +39,7 @@
 #include <memory>
 #include <utility>
 #include <queue>
+#include <chrono>
 
 
 namespace alisp
@@ -52,6 +53,20 @@ class Evaluator;
 namespace async
 {
 
+struct Timer
+{
+    using time_point = std::chrono::time_point<std::chrono::high_resolution_clock>;
+
+    static time_point now()
+    {
+        return std::chrono::high_resolution_clock::now();
+    }
+    
+    time_point time;
+    ALObjectPtr callback;
+    al_callback internal_callback{};
+    ALObjectPtr periodic{Qnil};
+};
 
 class AsyncS
 {
@@ -59,6 +74,7 @@ class AsyncS
     static constexpr size_t POOL_SIZE = 3;
     using callback_type               = detail::CallbackObject;
     using event_type                  = detail::EventObject;
+    using action_type                 = detail::ActionObject;
 
     static constexpr std::uint32_t RUNNING_FLAG     = 0x0001;
     static constexpr std::uint32_t EL_SPINNING_FLAG = 0x0002;
@@ -70,38 +86,48 @@ class AsyncS
     eval::Evaluator *m_eval;
 
     std::queue<event_type> m_event_queue;
+    mutable std::mutex event_queue_mutex;
+    
     std::queue<callback_type> m_callback_queue;
-    std::thread m_event_loop;
-    std::atomic_uint32_t m_flags;
-
-    std::atomic_int m_asyncs{ 0 };
-
     mutable std::mutex callback_queue_mutex;
 
-#ifndef MULTI_THREAD_EVENT_LOOP
+    std::vector<action_type> m_action_queue;
+    mutable std::mutex action_queue_mutex;
+    
+    std::atomic_uint32_t m_flags;
+    std::atomic_int m_asyncs{ 0 };
 
+    Timer::time_point m_now;
+    std::vector<Timer> m_timers;
+    mutable std::mutex timers_mutex;
+
+    thread_pool::ThreadPool m_thread_pool;
+
+#ifndef MULTI_THREAD_EVENT_LOOP
+    std::thread m_event_loop;    
     mutable std::mutex event_loop_mutex;
     mutable std::condition_variable event_loop_cv;
-
     void event_loop();
 #else
-
     std::thread pool[POOL_SIZE];
-
     mutable std::mutex pool_mutex;
     mutable std::condition_variable pool_cv;
-    mutable std::mutex event_queue_mutex;
-
     void event_loop_thread();
 #endif
 
-    thread_pool::ThreadPool m_thread_pool;
+
 
     void execute_event(event_type call);
 
     void execute_callback(callback_type call);
 
     void init();
+
+    void check_exit_condition();
+
+    void handle_timers();
+
+    void handle_actions();
 
   public:
     AsyncS(eval::Evaluator *t_eval, bool defer_init = false);
@@ -114,6 +140,8 @@ class AsyncS
     void submit_callback(ALObjectPtr function, ALObjectPtr args = nullptr, al_callback internal = {});
 
     void submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good = true);
+
+    void submit_timer(Timer::time_point time, ALObjectPtr function, ALObjectPtr periodic, al_callback internal = {});
     
     
     void async_pending();
