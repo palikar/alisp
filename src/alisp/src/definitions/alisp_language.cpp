@@ -244,21 +244,7 @@ ALObjectPtr Fimport(const ALObjectPtr &obj, env::Environment *env, eval::Evaluat
         }
     }
 
-    if (env->module_loaded(module_name))
-    {
-
-        env->alias_module(module_name, import_as);
-
-        if (import_all)
-        {
-            env->import_root_scope(module_name, env->current_module());
-        }
-
-        return Qt;
-    }
-
-    // check if this is a built in module
-    if (env->load_builtin_module(module_name, eval))
+    if (env->module_loaded(module_name) or env->load_builtin_module(module_name, eval))
     {
 
         env->alias_module(module_name, import_as);
