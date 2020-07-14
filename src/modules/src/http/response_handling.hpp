@@ -266,7 +266,7 @@ inline void callback_response(ALObjectPtr callback, ALObjectPtr req_obj, uint32_
 {
 
     auto res_obj = make_list();
-    auto future  = eval->async().new_future([session, res_obj, req_obj, s_id, request](auto future_result) {
+    auto future  = async::Future::new_future([session, res_obj, req_obj, s_id, request](auto future_result) {
 
         if (is_falsy(future_result))
         {

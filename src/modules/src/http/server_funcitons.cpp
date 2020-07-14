@@ -28,6 +28,8 @@
 #include "http/definitions.hpp"
 #include "http/async_actions.hpp"
 #include "http/language_space.hpp"
+#include "http/response_handling.hpp"
+#include "http/request_handling.hpp"
 
 
 #include <memory>
@@ -112,7 +114,7 @@ ALObjectPtr Fserver_static_route(const ALObjectPtr &obj, env::Environment *, eva
                            {
                                AL_DEBUG("Serving static file:"s += full_path.string());
                                restbed::Response response{};
-                               attach_file(server, full_path, response);
+                               detail::attach_file(server, full_path, response);
                                detail::send_response(server_id, response, request, fetched_session);
                            }
                            else
