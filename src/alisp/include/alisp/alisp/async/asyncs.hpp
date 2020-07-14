@@ -91,7 +91,7 @@ class AsyncS
     std::queue<callback_type> m_callback_queue;
     mutable std::mutex callback_queue_mutex;
 
-    std::vector<action_type> m_action_queue;
+    std::vector<action_type> m_actions_queue;
     mutable std::mutex action_queue_mutex;
     
     std::atomic_uint32_t m_flags;

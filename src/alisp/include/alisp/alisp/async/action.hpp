@@ -23,6 +23,8 @@
 #include "alisp/alisp/declarations/constants.hpp"
 #include "alisp/alisp/alisp_object.hpp"
 
+#include "alisp/alisp/async/future.hpp"
+
 namespace alisp
 {
 
@@ -41,14 +43,14 @@ struct async_action
     {
     }
 
-    ALObjectPtr future(async::AsyncS *async)
+    ALObjectPtr future(async::AsyncS*)
     {
         if (pfunction(g_callback))
         {
             return Qt;
         }
 
-        g_future = async->new_future();
+        g_future = async::Future::new_future();
         return resource_to_object(g_future);
     }
 

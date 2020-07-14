@@ -88,6 +88,7 @@ add_library(alisp_language
     src/async/asyncs.cpp
     src/async/await.cpp
     src/async/thread_pool.cpp
+    src/async/future.cpp
 
     src/definitions/alisp_eval_functions.cpp
     src/definitions/alisp_stream_functions.cpp

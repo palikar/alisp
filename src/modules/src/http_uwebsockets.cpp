@@ -158,7 +158,7 @@ ALObjectPtr Fpost(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *e
     auto fun   = arg_eval(eval, obj, 2);
 
     detail::server_registry[id].post(route->to_string(), [fun, eval](auto *res, auto *req) {
-        auto future  = eval->async().new_future();
+        auto future  = async::Future::new_future();
         auto req_obj = detail::handle_request(res, req);
         auto res_obj = make_list(resource_to_object(future));
 
@@ -168,11 +168,11 @@ ALObjectPtr Fpost(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *e
 
             {
 
-                if (!is_truthy(eval->async().future(future).resolved))
+                if (!is_truthy(async::Future::future(future).resolved))
                 {
                     async::Await await{ eval->async() };
                     eval->futures_cv.wait(eval->lock(),
-                                          [&] { return is_truthy(eval->async().future(future).resolved); });
+                    [&] { return is_truthy(async::Future::future(future).resolved); });
                 }
             }
 

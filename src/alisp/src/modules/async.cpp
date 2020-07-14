@@ -41,8 +41,8 @@ struct async_start
     {
         auto action = arg_eval(eval, obj, 0);
 
-        auto future_id = eval->async().new_future();
-        auto &future   = eval->async().futures[future_id];
+        auto future_id = async::Future::new_future();
+        auto &future   = async::Future::future(future_id);
 
         if (std::size(*obj) > 1)
         {
@@ -53,7 +53,7 @@ struct async_start
             async.submit_future(future, value);
         });
 
-        env->defer_callback([eval, id = future_id]() { eval->async().dispose_future(id); });
+        env->defer_callback([id = future_id]() { async::Future::dispose_future(id); });
 
         return resource_to_object(future_id);
     }
@@ -76,10 +76,10 @@ struct async_await
             async::Await await{ eval->async() };
 
             eval->futures_cv.wait(eval->lock(),
-                                  [&] { return is_truthy(eval->async().future(object_to_resource(future)).resolved); });
+            [&] { return is_truthy(async::Future::future(object_to_resource(future)).resolved); });
         }
 
-        return eval->async().future(object_to_resource(future)).value;
+        return async::Future::future(object_to_resource(future)).value;
     }
 };
 
@@ -107,7 +107,7 @@ struct async_then
             }
         }
 
-        auto &fut = eval->async().future(object_to_resource(future));
+        auto &fut = async::Future::future(object_to_resource(future));
 
         if (is_truthy(fut.resolved))
         {
@@ -126,7 +126,7 @@ struct async_then
 
             fut.success_callback = success_callback;
             fut.reject_callback  = reject_callback;
-            fut.next_in_line     = eval->async().new_future();
+            fut.next_in_line     = async::Future::new_future();
             return make_int(fut.next_in_line);
         }
 
@@ -149,7 +149,7 @@ struct async_ready
 
         auto future = arg_eval(eval, obj, 0);
 
-        return eval->async().future(object_to_resource(future)).resolved;
+        return async::Future::future(object_to_resource(future)).resolved;
     }
 };
 
@@ -166,7 +166,7 @@ struct async_state
 
         auto future = arg_eval(eval, obj, 0);
 
-        return eval->async().future(object_to_resource(future)).success_state;
+        return async::Future::future(object_to_resource(future)).success_state;
     }
 };
 

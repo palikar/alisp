@@ -118,7 +118,7 @@ void AsyncS::handle_timers()
         {
             submit_callback(it->callback, nullptr, it->internal_callback);
 
-            if (is_falsey(it->periodic))
+            if (is_falsy(it->periodic))
             {
                 it = m_timers.erase(it);
                 continue;
@@ -132,18 +132,18 @@ void AsyncS::handle_timers()
 
 void AsyncS::handle_actions()
 {
-    
+
     auto it = m_actions_queue.begin();    
     while(it != m_actions_queue.end())
     {
         
         if(it->valid and !it->executing)
         {
-            m_thread_pool.sumbit([&, action = *it](){
+            m_thread_pool.submit([&, action = it](){
                 
-                action.executing = true;
-                action(this);
-                action.executing = false;
+                action->executing = true;
+                action->operator()(this);
+                action->executing = false;
             });
             
         }
@@ -409,7 +409,7 @@ void AsyncS::submit_timer(Timer::time_point time, ALObjectPtr function, ALObject
     }
 
     std::lock_guard<std::mutex> guard{ timers_mutex };
-    m_timers.push_back({time + m_now, function, internal, periodic});
+    m_timers.push_back({time + m_now.time_since_epoch(), function, internal, periodic});
 }
 
 

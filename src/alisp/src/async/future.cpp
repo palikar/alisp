@@ -72,7 +72,7 @@ void Future::merge(uint32_t t_next, uint32_t t_current)
     future_registry[t_next].reject_callback  = future_registry[t_current].reject_callback;
     future_registry[t_next].internal         = future_registry[t_current].internal;
     future_registry[t_next].next_in_line     = future_registry[t_current].next_in_line;
-    Future::dispose_future(next);
+    Future::dispose_future(t_next);
 }
 
 Future &Future::future(uint32_t t_id)
