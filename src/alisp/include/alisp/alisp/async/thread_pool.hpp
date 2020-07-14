@@ -34,44 +34,40 @@
 #include <functional>
 #include <condition_variable>
 
-namespace alisp::async::thread_pool {
+namespace alisp::async::thread_pool
+{
 
 
-class Semaphore {
+class Semaphore
+{
   public:
     Semaphore(std::uint32_t value);
-    Semaphore(const Semaphore&) = delete;
-    const Semaphore& operator=(const Semaphore&) = delete;
-    ~Semaphore() = default;
+    Semaphore(const Semaphore &) = delete;
+    const Semaphore &operator=(const Semaphore &) = delete;
+    ~Semaphore()                                  = default;
 
-    std::uint32_t value() const {
-        return value_;
-    }
+    std::uint32_t value() const { return value_; }
 
     void wait();
     void post();
 
   private:
-    
     std::mutex mutex_;
     std::condition_variable condition_;
     std::uint32_t value_;
 };
 
-class ThreadPool {
+class ThreadPool
+{
   public:
-
     ThreadPool(std::uint32_t num_threads);
-    ThreadPool(const ThreadPool&) = delete;
-    const ThreadPool& operator=(const ThreadPool&) = delete;
+    ThreadPool(const ThreadPool &) = delete;
+    const ThreadPool &operator=(const ThreadPool &) = delete;
     ~ThreadPool();
 
-    size_t num_threads() const {
-        return threads_.size();
-    }
+    size_t num_threads() const { return threads_.size(); }
 
-    template<typename T, typename... Ts>
-    void submit(T&& routine, Ts&&... params)
+    template<typename T, typename... Ts> void submit(T &&routine, Ts &&... params)
     {
 
         auto task = [func = std::forward<T>(routine), args = std::make_tuple(std::forward<Ts>(params)...)]() {
@@ -84,13 +80,10 @@ class ThreadPool {
 
         queue_sem_.post();
         active_sem_.post();
-
     }
-    
-  private:
-    
 
-    static void worker_thread(ThreadPool* thread_pool);
+  private:
+    static void worker_thread(ThreadPool *thread_pool);
 
     std::vector<std::thread> threads_;
 
@@ -102,4 +95,4 @@ class ThreadPool {
     std::atomic<bool> terminate_;
 };
 
-}
+}  // namespace alisp::async::thread_pool

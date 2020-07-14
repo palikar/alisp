@@ -172,7 +172,7 @@ ALObjectPtr Fpost(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *e
                 {
                     async::Await await{ eval->async() };
                     eval->futures_cv.wait(eval->lock(),
-                    [&] { return is_truthy(async::Future::future(future).resolved); });
+                                          [&] { return is_truthy(async::Future::future(future).resolved); });
                 }
             }
 

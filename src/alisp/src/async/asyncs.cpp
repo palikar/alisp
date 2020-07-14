@@ -26,11 +26,10 @@
 #include <chrono>
 
 
-
 namespace alisp::async
 {
 
-AsyncS::AsyncS(eval::Evaluator *t_eval, bool defer_init) : m_eval(t_eval), m_flags(0), m_thread_pool{2}
+AsyncS::AsyncS(eval::Evaluator *t_eval, bool defer_init) : m_eval(t_eval), m_flags(0), m_thread_pool{ 2 }
 {
     AL_BIT_OFF(m_flags, INIT_FLAG);
 
@@ -70,7 +69,7 @@ void AsyncS::check_exit_condition()
         return;
     }
 
-    if (! m_event_queue.empty())
+    if (!m_event_queue.empty())
     {
         return;
     }
@@ -80,12 +79,12 @@ void AsyncS::check_exit_condition()
         return;
     }
 
-    if( !m_eval->is_interactive())
+    if (!m_eval->is_interactive())
     {
         return;
     }
-    
-    if(AL_BIT_CHECK(m_flags, AWAIT_FLAG))
+
+    if (AL_BIT_CHECK(m_flags, AWAIT_FLAG))
     {
         return;
     }
@@ -104,17 +103,16 @@ void AsyncS::check_exit_condition()
     AL_BIT_OFF(m_flags, RUNNING_FLAG);
     m_eval->reset_async_flag();
     m_eval->callback_cv.notify_all();
-
 }
 
 void AsyncS::handle_timers()
 {
     std::lock_guard<std::mutex> guard{ timers_mutex };
     auto it = m_timers.begin();
-    while(it != m_timers.end())
+    while (it != m_timers.end())
     {
 
-        if(it->time < m_now)
+        if (it->time < m_now)
         {
             submit_callback(it->callback, nullptr, it->internal_callback);
 
@@ -123,9 +121,8 @@ void AsyncS::handle_timers()
                 it = m_timers.erase(it);
                 continue;
             }
-
         }
-        
+
         ++it;
     }
 }
@@ -133,24 +130,21 @@ void AsyncS::handle_timers()
 void AsyncS::handle_actions()
 {
 
-    auto it = m_actions_queue.begin();    
-    while(it != m_actions_queue.end())
+    auto it = m_actions_queue.begin();
+    while (it != m_actions_queue.end())
     {
-        
-        if(it->valid and !it->executing)
+
+        if (it->valid and !it->executing)
         {
-            m_thread_pool.submit([&, action = it](){
-                
+            m_thread_pool.submit([&, action = it]() {
                 action->executing = true;
                 action->operator()(this);
                 action->executing = false;
             });
-            
         }
-        
+
         ++it;
     }
-
 }
 
 #ifndef MULTI_THREAD_EVENT_LOOP
@@ -163,20 +157,18 @@ void AsyncS::event_loop()
     AL_BIT_ON(m_flags, INIT_FLAG);
     while (AL_BIT_CHECK(m_flags, RUNNING_FLAG))
     {
-        
+
         event_loop_cv.wait_for(el_lock, 10ms);
 
         m_now = Timer::now();
 
-        m_thread_pool.submit([&](){
-            handle_timers();
-        });
+        m_thread_pool.submit([&]() { handle_timers(); });
 
         if (!AL_BIT_CHECK(m_flags, RUNNING_FLAG))
         {
             return;
         }
-        
+
         while (!m_event_queue.empty())
         {
             execute_event(std::move(m_event_queue.front()));
@@ -199,7 +191,6 @@ void AsyncS::event_loop()
         }
 
         check_exit_condition();
-
     }
 }
 
@@ -292,7 +283,6 @@ void AsyncS::spin_loop()
 }
 
 
-
 void AsyncS::submit_event(event_type t_callback)
 {
 
@@ -356,7 +346,7 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
     {
         init();
     }
-    
+
     std::lock_guard<std::mutex> lock(Future::future_mutex);
 
     if (!future_registry.belong(t_id))
@@ -380,7 +370,7 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
 
                 if (pint(res) and future_registry.belong(object_to_resource(res)))
                 {
-                    auto other                      = object_to_resource(res);
+                    auto other = object_to_resource(res);
                     Future::merge(other, next);
                     return;
                 }
@@ -409,7 +399,7 @@ void AsyncS::submit_timer(Timer::time_point time, ALObjectPtr function, ALObject
     }
 
     std::lock_guard<std::mutex> guard{ timers_mutex };
-    m_timers.push_back({time + m_now.time_since_epoch(), function, internal, periodic});
+    m_timers.push_back({ time + m_now.time_since_epoch(), function, internal, periodic });
 }
 
 
@@ -464,4 +454,4 @@ void AsyncS::dispose()
 }
 
 
-}
+}  // namespace alisp::async

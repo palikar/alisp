@@ -59,7 +59,7 @@ struct Future
     // c++ space things
     std::function<void(ALObjectPtr)> internal{};
 
-    uint32_t next_in_line{0};
+    uint32_t next_in_line{ 0 };
 
     inline static std::mutex future_mutex{};
 
@@ -74,13 +74,10 @@ struct Future
     static ALObjectPtr future_resolved(uint32_t t_id);
 
     static void merge(uint32_t t_next, uint32_t t_current);
-    
 };
 
 
 inline management::Registry<Future, 0x05> future_registry{};
-
-
 
 
 }  // namespace async

@@ -52,7 +52,10 @@ namespace detail
 {
 
 
-inline void send_response(uint32_t, restbed::Response &response, const std::shared_ptr<const restbed::Request> request, const std::shared_ptr<restbed::Session> session)
+inline void send_response(uint32_t,
+                          restbed::Response &response,
+                          const std::shared_ptr<const restbed::Request> request,
+                          const std::shared_ptr<restbed::Session> session)
 {
 
     if (request->get_header("Connection", "close").compare("keep-alive") == 0)
@@ -177,7 +180,6 @@ inline void render_file(Server &server, restbed::Response &response, const ALObj
     auto json = json_render(t_params->i(1));
 
     auto result = [&] {
-
         if (server.templates.count(template_name) > 0)
         {
             return server.template_env.render(server.templates.at(template_name), json);
@@ -207,7 +209,7 @@ inline void handle_response(uint32_t s_id, restbed::Response &response, const AL
 
 
         // Lower level response handling
-        
+
         if (sym_name(t_al_response->i(i), ":code") and pint(t_al_response->i(i + 1)))
         {
             response.set_status_code(static_cast<int>(t_al_response->i(i + 1)->to_int()));
@@ -232,7 +234,7 @@ inline void handle_response(uint32_t s_id, restbed::Response &response, const AL
             response.set_header("Content-Length", std::to_string(std::size(content)));
             response.set_body(std::move(content));
             ++i;
-        } 
+        }
 
 
         // Higher level response handling
@@ -254,27 +256,29 @@ inline void handle_response(uint32_t s_id, restbed::Response &response, const AL
             response.set_status_code(301);
             ++i;
         }
-
-        
     }
 
     default_headers(response);
     response.set_header("Cache-Control", "no-store");
 }
 
-inline void callback_response(ALObjectPtr callback, ALObjectPtr req_obj, uint32_t s_id, eval::Evaluator *eval, const std::shared_ptr<restbed::Session> session, const std::shared_ptr<const restbed::Request> request)
+inline void callback_response(ALObjectPtr callback,
+                              ALObjectPtr req_obj,
+                              uint32_t s_id,
+                              eval::Evaluator *eval,
+                              const std::shared_ptr<restbed::Session> session,
+                              const std::shared_ptr<const restbed::Request> request)
 {
 
     auto res_obj = make_list();
     auto future  = async::Future::new_future([session, res_obj, req_obj, s_id, request](auto future_result) {
-
         if (is_falsy(future_result))
         {
             restbed::Response response{};
             session->close(response);
             return;
         }
-        
+
         restbed::Response response{};
         detail::handle_response(s_id, response, std::move(res_obj));
 
@@ -286,6 +290,6 @@ inline void callback_response(ALObjectPtr callback, ALObjectPtr req_obj, uint32_
 }
 
 
-}
+}  // namespace detail
 
-}
+}  // namespace http

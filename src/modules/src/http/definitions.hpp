@@ -83,7 +83,7 @@ struct Server
     std::unordered_map<std::string, inja::Template> templates;
     inja::Environment template_env;
 
-    
+
     inline void setup_template_env()
     {
         namespace fs = std::filesystem;
@@ -107,7 +107,7 @@ struct Server
             template_env.set_trim_blocks(true);
             template_env.set_lstrip_blocks(true);
         }
-}
+    }
 };
 
 inline management::Registry<Server, 0x08> server_registry;

@@ -26,25 +26,29 @@
 
 #include "alisp/alisp/async/thread_pool.hpp"
 
-namespace alisp::async::thread_pool {
+namespace alisp::async::thread_pool
+{
 
-Semaphore::Semaphore(std::uint32_t value)
-    : value_(value) {
+Semaphore::Semaphore(std::uint32_t value) : value_(value)
+{
 }
 
-void Semaphore::post() {
+void Semaphore::post()
+{
     std::unique_lock<std::mutex> lock(mutex_);
     ++value_;
     condition_.notify_one();
 }
 
-void Semaphore::wait() {
+void Semaphore::wait()
+{
     std::unique_lock<std::mutex> lock(mutex_);
-    condition_.wait(lock, [&](){ return value_; });
+    condition_.wait(lock, [&]() { return value_; });
     --value_;
 }
 
-ThreadPool::ThreadPool(std::uint32_t num_threads) : queue_sem_{1}, active_sem_{0} {
+ThreadPool::ThreadPool(std::uint32_t num_threads) : queue_sem_{ 1 }, active_sem_{ 0 }
+{
 
     terminate_ = false;
     for (std::uint32_t i = 0; i < num_threads; ++i)
@@ -53,23 +57,29 @@ ThreadPool::ThreadPool(std::uint32_t num_threads) : queue_sem_{1}, active_sem_{0
     }
 }
 
-ThreadPool::~ThreadPool() {
+ThreadPool::~ThreadPool()
+{
 
     terminate_ = true;
-    for (std::uint32_t i = 0; i < threads_.size(); ++i) {
+    for (std::uint32_t i = 0; i < threads_.size(); ++i)
+    {
         active_sem_.post();
     }
-    for (auto& it: threads_) {
+    for (auto &it : threads_)
+    {
         it.join();
     }
 }
 
-void ThreadPool::worker_thread(ThreadPool* thread_pool) {
+void ThreadPool::worker_thread(ThreadPool *thread_pool)
+{
 
-    while (true) {
+    while (true)
+    {
         thread_pool->active_sem_.wait();
 
-        if (thread_pool->terminate_) {
+        if (thread_pool->terminate_)
+        {
             break;
         }
 
@@ -80,7 +90,8 @@ void ThreadPool::worker_thread(ThreadPool* thread_pool) {
 
         thread_pool->queue_sem_.post();
 
-        if (thread_pool->terminate_) {
+        if (thread_pool->terminate_)
+        {
             break;
         }
 
@@ -88,4 +99,4 @@ void ThreadPool::worker_thread(ThreadPool* thread_pool) {
     }
 }
 
-}
+}  // namespace alisp::async::thread_pool

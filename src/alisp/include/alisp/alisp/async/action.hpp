@@ -43,7 +43,7 @@ struct async_action
     {
     }
 
-    ALObjectPtr future(async::AsyncS*)
+    ALObjectPtr future(async::AsyncS *)
     {
         if (pfunction(g_callback))
         {

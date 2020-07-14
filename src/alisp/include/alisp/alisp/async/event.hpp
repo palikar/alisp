@@ -68,7 +68,7 @@ struct ActionObject
 
     std::atomic<bool> valid;
     std::atomic<bool> executing;
-    
+
     template<class T> ActionObject(T t) { ptr_ = std::make_unique<WrappingCallback<T>>(std::move(t)); }
 
     ALObjectPtr operator()(AsyncS *async) const { return ptr_->call(async); }
@@ -84,4 +84,4 @@ struct CallbackObject
 
 }  // namespace detail
 
-}
+}  // namespace alisp::async

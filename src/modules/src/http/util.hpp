@@ -36,6 +36,6 @@ inline std::string gat_date()
     return { buf };
 }
 
-}
+}  // namespace detail
 
-}
+}  // namespace http

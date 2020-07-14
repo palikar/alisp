@@ -75,8 +75,8 @@ struct async_await
         {
             async::Await await{ eval->async() };
 
-            eval->futures_cv.wait(eval->lock(),
-            [&] { return is_truthy(async::Future::future(object_to_resource(future)).resolved); });
+            eval->futures_cv.wait(
+              eval->lock(), [&] { return is_truthy(async::Future::future(object_to_resource(future)).resolved); });
         }
 
         return async::Future::future(object_to_resource(future)).value;

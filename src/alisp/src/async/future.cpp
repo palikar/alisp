@@ -26,13 +26,12 @@
 #include <chrono>
 
 
-
 namespace alisp::async
 {
 
 uint32_t Future::new_future(al_callback t_calback)
 {
-    
+
     std::lock_guard<std::mutex> lock(Future::future_mutex);
     const auto id = future_registry.emplace_resource(Qnil, Qnil, Qnil, Qnil, Qnil, t_calback)->id;
     ++m_pending_futures;
@@ -81,4 +80,4 @@ Future &Future::future(uint32_t t_id)
 }
 
 
-}
+}  // namespace alisp::async

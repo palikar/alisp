@@ -57,15 +57,12 @@ struct Timer
 {
     using time_point = std::chrono::time_point<std::chrono::high_resolution_clock>;
 
-    static time_point now()
-    {
-        return std::chrono::high_resolution_clock::now();
-    }
-    
+    static time_point now() { return std::chrono::high_resolution_clock::now(); }
+
     time_point time;
     ALObjectPtr callback;
     al_callback internal_callback{};
-    ALObjectPtr periodic{Qnil};
+    ALObjectPtr periodic{ Qnil };
 };
 
 class AsyncS
@@ -87,13 +84,13 @@ class AsyncS
 
     std::queue<event_type> m_event_queue;
     mutable std::mutex event_queue_mutex;
-    
+
     std::queue<callback_type> m_callback_queue;
     mutable std::mutex callback_queue_mutex;
 
     std::vector<action_type> m_actions_queue;
     mutable std::mutex action_queue_mutex;
-    
+
     std::atomic_uint32_t m_flags;
     std::atomic_int m_asyncs{ 0 };
 
@@ -104,7 +101,7 @@ class AsyncS
     thread_pool::ThreadPool m_thread_pool;
 
 #ifndef MULTI_THREAD_EVENT_LOOP
-    std::thread m_event_loop;    
+    std::thread m_event_loop;
     mutable std::mutex event_loop_mutex;
     mutable std::condition_variable event_loop_cv;
     void event_loop();
@@ -114,7 +111,6 @@ class AsyncS
     mutable std::condition_variable pool_cv;
     void event_loop_thread();
 #endif
-
 
 
     void execute_event(event_type call);
@@ -142,8 +138,8 @@ class AsyncS
     void submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good = true);
 
     void submit_timer(Timer::time_point time, ALObjectPtr function, ALObjectPtr periodic, al_callback internal = {});
-    
-    
+
+
     void async_pending();
 
     void async_reset_pending();

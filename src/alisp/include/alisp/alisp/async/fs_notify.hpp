@@ -38,27 +38,16 @@ namespace alisp::async
 {
 
 
-
 struct FSNotify
 {
     ALObjectPtr callback;
 
 
-
-    bool init()
-    {
-        
-    }
-
-    
-    ALObjectPtr operator()(AsyncS *async)
-    {
+    bool init() {}
 
 
-        return false;
-    }
-    
+    ALObjectPtr operator()(AsyncS *async) { return false; }
 };
 
 
-}
+}  // namespace alisp::async

@@ -108,6 +108,6 @@ inline ALObjectPtr handle_request(const restbed::Request &request)
 }
 
 
-}
+}  // namespace detail
 
-}
+}  // namespace http
