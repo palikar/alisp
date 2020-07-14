@@ -437,6 +437,7 @@ ALObjectPtr Flambda(const ALObjectPtr &obj, env::Environment *env, eval::Evaluat
     auto new_lambda = make_object(obj->i(0), splice(obj, 1));
     new_lambda->set_function_flag();
     new_lambda->set_prop("--name--", make_string("lambda"));
+    new_lambda->set_prop("--module--", make_string(env->current_module()));
 
     ALObject::list_type closure_list;
     for (const auto &scope : env->stack().current_frame())

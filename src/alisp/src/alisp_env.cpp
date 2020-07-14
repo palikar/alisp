@@ -473,7 +473,7 @@ namespace detail
 {
 
 
-FunctionCall::FunctionCall(Environment &t_env, ALObjectPtr t_func) : m_env(t_env)
+FunctionCall::FunctionCall(Environment &t_env, ALObjectPtr t_func, ALObjectPtr) : m_env(t_env)
 {
     m_env.call_function();
 
@@ -486,7 +486,7 @@ FunctionCall::FunctionCall(Environment &t_env, ALObjectPtr t_func) : m_env(t_env
         }
     }
 
-    if (t_func->prop_exists("--module--"))
+    if (ALISP_LIKELY(t_func->prop_exists("--module--")))
     {
         auto func_module = t_func->get_prop("--module--")->to_string();
         if (m_env.current_module().compare(func_module) != 0)

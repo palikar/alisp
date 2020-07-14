@@ -364,7 +364,7 @@ struct CallTracer
 struct FunctionCall
 {
   public:
-    explicit FunctionCall(Environment &t_env, ALObjectPtr t_func);
+    explicit FunctionCall(Environment &t_env, ALObjectPtr t_func, ALObjectPtr tail_call = nullptr);
     ~FunctionCall();
 
     ALISP_RAII_OBJECT(FunctionCall);

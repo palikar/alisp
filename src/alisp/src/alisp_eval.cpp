@@ -254,6 +254,7 @@ ALObjectPtr Evaluator::eval_callable(const ALObjectPtr &callable, const ALObject
                     return args;
                 }
             }();
+
             env::detail::FunctionCall fc{ env, func };
             return apply_function(func, eval_args);
         }
