@@ -53,10 +53,6 @@ void Future::dispose_future(uint32_t t_id)
 
 void Future::resolve(uint32_t t_id)
 {
-    if (!future_registry.belong(t_id))
-    {
-        return;
-    }
 
     if (!is_truthy(future_registry[t_id].resolved))
     {
@@ -80,6 +76,13 @@ ALObjectPtr Future::future_resolved(uint32_t t_id)
 
 void Future::merge(uint32_t t_next, uint32_t t_current)
 {
+    std::lock_guard<std::mutex> lock(Future::future_mutex);
+
+    if (!future_registry.belong(t_next) or !future_registry.belong(t_current))
+    {
+        return;
+    }
+
     future_registry[t_next].value            = future_registry[t_current].value;
     future_registry[t_next].success_state    = future_registry[t_current].resolved;
     future_registry[t_next].success_callback = future_registry[t_current].success_callback;
@@ -87,7 +90,8 @@ void Future::merge(uint32_t t_next, uint32_t t_current)
     future_registry[t_next].internal         = future_registry[t_current].internal;
     future_registry[t_next].next_in_line     = future_registry[t_current].next_in_line;
 
-    Future::dispose_future(t_current);
+    --m_pending_futures;
+    future_registry.destroy_resource(t_current);
 }
 
 Future &Future::future(uint32_t t_id)

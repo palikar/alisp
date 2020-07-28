@@ -49,11 +49,12 @@ struct async_start
             future.success_callback = arg_eval(eval, obj, 1);
         }
 
-        eval->async().submit_callback(action, nullptr, [&async = eval->async(), future = future_id](auto value) {
-            async.submit_future(future, value);
-        });
+        eval->async().submit_callback(
+          action, nullptr, [&async = eval->async(), future = future_id, env = env](auto value) {
+              async.submit_future(future, value);
+              env->defer_callback([id = future]() { async::Future::dispose_future(id); });
+          });
 
-        env->defer_callback([id = future_id]() { async::Future::dispose_future(id); });
 
         return resource_to_object(future_id);
     }
@@ -87,7 +88,7 @@ struct async_then
 {
     static inline const std::string name{ "async-then" };
 
-    static inline const std::string doc{ R"((async-ready FUTURE))" };
+    static inline const std::string doc{ R"((async-ready FUTURE FUNCTION [FUNCTION]))" };
 
     static inline const Signature signature{ Int{}, Function{}, Optional{}, Function{} };
 

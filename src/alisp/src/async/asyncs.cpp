@@ -287,17 +287,15 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
 
     Future::resolve(t_id);
 
-    m_eval->futures_cv.notify_all();
-
     if (t_good and pfunction(fut.success_callback))
     {
         submit_callback(fut.success_callback, make_list(t_value), [&, next = fut.next_in_line](auto res) {
             if (next > 0)
             {
 
-                if (pint(res) and future_registry.belong(object_to_resource(res)))
+                auto other = object_to_resource(res);
+                if (pint(res) and future_registry.belong(other))
                 {
-                    auto other = object_to_resource(res);
                     Future::merge(other, next);
                     return;
                 }
@@ -316,6 +314,8 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
     {
         fut.internal(fut.value);
     }
+
+    m_eval->futures_cv.notify_all();
 
     init();
 }
