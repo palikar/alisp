@@ -292,14 +292,16 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
         submit_callback(fut.success_callback, make_list(t_value), [&, next = fut.next_in_line](auto res) {
             if (next > 0)
             {
-
-                auto other = object_to_resource(res);
-                if (pint(res) and future_registry.belong(other))
+                if (pint(res))
                 {
-                    Future::merge(other, next);
-                    return;
+                    if (auto other = object_to_resource(res); future_registry.belong(other))
+                    {
+                        Future::merge(other, next);
+                        return;
+                    }
                 }
-
+                
+                
                 submit_future(next, res);
                 spin_loop();
             }
