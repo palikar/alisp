@@ -124,7 +124,7 @@ void AsyncS::handle_timers()
 
         ++it;
     }
-    // spin_loop();
+    spin_loop();
 }
 
 void AsyncS::handle_actions()
@@ -156,12 +156,11 @@ void AsyncS::event_loop()
     AL_BIT_ON(m_flags, RUNNING_FLAG);
     while (AL_BIT_CHECK(m_flags, RUNNING_FLAG))
     {
-        event_loop_cv.wait_for(el_lock, 10ms);
+        event_loop_cv.wait(el_lock);
 
         m_now = Timer::now();
 
-        handle_timers();
-        // m_thread_pool.submit([&]() { handle_timers(); });
+        m_thread_pool.submit([&]() { handle_timers(); });
 
         if (!AL_BIT_CHECK(m_flags, RUNNING_FLAG))
         {
