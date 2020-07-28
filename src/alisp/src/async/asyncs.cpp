@@ -42,6 +42,11 @@ AsyncS::AsyncS(eval::Evaluator *t_eval, bool defer_init) : m_eval(t_eval), m_fla
 void AsyncS::init()
 {
 
+    if (AL_BIT_CHECK(m_flags, INIT_FLAG))
+    {
+        return;
+    }
+
     AL_BIT_ON(m_flags, RUNNING_FLAG);
     m_event_loop = std::thread(&AsyncS::event_loop, this);
     while (!AL_BIT_CHECK(m_flags, INIT_FLAG))
@@ -124,7 +129,6 @@ void AsyncS::handle_timers()
 
         ++it;
     }
-    spin_loop();
 }
 
 void AsyncS::handle_actions()
@@ -154,13 +158,12 @@ void AsyncS::event_loop()
     std::unique_lock<std::mutex> el_lock{ event_loop_mutex, std::defer_lock };
     AL_BIT_ON(m_flags, INIT_FLAG);
     AL_BIT_ON(m_flags, RUNNING_FLAG);
+    event_loop_cv.wait(el_lock);
     while (AL_BIT_CHECK(m_flags, RUNNING_FLAG))
     {
-        event_loop_cv.wait(el_lock);
-
         m_now = Timer::now();
 
-        m_thread_pool.submit([&]() { handle_timers(); });
+        handle_timers();
 
         if (!AL_BIT_CHECK(m_flags, RUNNING_FLAG))
         {
@@ -189,6 +192,8 @@ void AsyncS::event_loop()
         }
 
         check_exit_condition();
+
+        event_loop_cv.wait_for(el_lock, 1ms);
     }
 }
 
@@ -226,45 +231,27 @@ void AsyncS::execute_callback(callback_type call)
 
 void AsyncS::spin_loop()
 {
-#ifndef MULTI_THREAD_EVENT_LOOP
     event_loop_cv.notify_one();
-#else
-    pool_cv.notify_all();
-#endif
 }
 
 void AsyncS::submit_event(event_type t_callback)
 {
 
-    if (!AL_BIT_CHECK(m_flags, INIT_FLAG))
-    {
-        init();
-    }
-
     {
 
-#ifndef MULTI_THREAD_EVENT_LOOP
         std::lock_guard<std::mutex> guard{ event_loop_mutex };
-#else
-        std::lock_guard<std::mutex> guard{ event_queue_mutex };
-#endif
-
 
         m_event_queue.push(std::move(t_callback));
 
         m_eval->set_async_flag();
     }
 
+    init();
     spin_loop();
 }
 
 void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::function<void(ALObjectPtr)> internal)
 {
-
-    if (!AL_BIT_CHECK(m_flags, INIT_FLAG))
-    {
-        init();
-    }
 
     if (m_eval->is_interactive() or AL_BIT_CHECK(m_flags, AWAIT_FLAG))
     {
@@ -287,14 +274,11 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::functi
         m_eval->callback_cv.notify_all();
         spin_loop();
     }
+    init();
 }
 
 void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
 {
-    if (!AL_BIT_CHECK(m_flags, INIT_FLAG))
-    {
-        init();
-    }
 
     std::lock_guard<std::mutex> lock(Future::future_mutex);
 
@@ -338,18 +322,18 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
     {
         fut.internal(fut.value);
     }
+
+    init();
 }
 
-void AsyncS::submit_timer(Timer::time_point time, ALObjectPtr function, ALObjectPtr periodic, al_callback internal)
+void AsyncS::submit_timer(Timer::time_duration time, ALObjectPtr function, ALObjectPtr periodic, al_callback internal)
 {
-    if (!AL_BIT_CHECK(m_flags, INIT_FLAG))
-    {
-        init();
-    }
     m_eval->set_async_flag();
     std::lock_guard<std::mutex> guard{ timers_mutex };
-    m_timers.push_back({ time + m_now.time_since_epoch(), function, internal, periodic });
     ++m_pending_timers;
+    m_timers.push_back({ time + Timer::now(), time, function, internal, periodic });
+
+    init();
     spin_loop();
 }
 

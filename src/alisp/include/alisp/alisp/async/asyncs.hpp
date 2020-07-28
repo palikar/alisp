@@ -57,9 +57,13 @@ struct Timer
 {
     using time_point = std::chrono::time_point<std::chrono::high_resolution_clock>;
 
+    using time_duration = std::chrono::milliseconds;
+
     static time_point now() { return std::chrono::high_resolution_clock::now(); }
 
+
     time_point time;
+    time_duration duration;
     ALObjectPtr callback;
     al_callback internal_callback{};
     ALObjectPtr periodic{ Qnil };
@@ -130,7 +134,7 @@ class AsyncS
 
     void submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good = true);
 
-    void submit_timer(Timer::time_point time, ALObjectPtr function, ALObjectPtr periodic, al_callback internal = {});
+    void submit_timer(Timer::time_duration time, ALObjectPtr function, ALObjectPtr periodic, al_callback internal = {});
 
 
     void async_pending();
