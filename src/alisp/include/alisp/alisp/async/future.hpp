@@ -67,6 +67,8 @@ struct Future
 
     static uint32_t new_future(al_callback t_calback = {});
 
+    static void resolve(uint32_t t_id);
+
     static void dispose_future(uint32_t t_id);
 
     static Future &future(uint32_t t_id);

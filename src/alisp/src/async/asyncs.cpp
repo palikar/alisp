@@ -87,6 +87,7 @@ void AsyncS::check_exit_condition()
         return;
     }
 
+
     {
         std::lock_guard<std::mutex> guard{ Future::future_mutex };
         if (Future::m_pending_futures != 0)
@@ -102,6 +103,7 @@ void AsyncS::check_exit_condition()
             return;
         }
     }
+
 
     AL_BIT_OFF(m_flags, RUNNING_FLAG);
     m_eval->reset_async_flag();
@@ -238,11 +240,8 @@ void AsyncS::submit_event(event_type t_callback)
 {
 
     {
-
         std::lock_guard<std::mutex> guard{ event_loop_mutex };
-
         m_event_queue.push(std::move(t_callback));
-
         m_eval->set_async_flag();
     }
 
@@ -259,22 +258,15 @@ void AsyncS::submit_callback(ALObjectPtr function, ALObjectPtr args, std::functi
     }
     else
     {
+        m_eval->set_async_flag();
         {
             std::lock_guard<std::mutex> guard(callback_queue_mutex);
-            if (args == nullptr)
-            {
-                m_callback_queue.push({ function, make_list(), internal });
-            }
-            else
-            {
-                m_callback_queue.push({ function, args });
-            }
+            m_callback_queue.push({ function, args == nullptr ? make_list() : args, internal });
         }
-
         m_eval->callback_cv.notify_all();
+        init();
         spin_loop();
     }
-    init();
 }
 
 void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
@@ -292,6 +284,8 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
     fut.value         = t_value;
     fut.success_state = t_good ? Qt : Qnil;
     fut.resolved      = Qt;
+
+    Future::resolve(t_id);
 
     m_eval->futures_cv.notify_all();
 

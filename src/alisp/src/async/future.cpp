@@ -47,8 +47,23 @@ void Future::dispose_future(uint32_t t_id)
         return;
     }
 
-    --m_pending_futures;
+    Future::resolve(t_id);
     future_registry.destroy_resource(t_id);
+}
+
+void Future::resolve(uint32_t t_id)
+{
+    if (!future_registry.belong(t_id))
+    {
+        return;
+    }
+
+    if (!is_truthy(future_registry[t_id].resolved))
+    {
+        return;
+    }
+
+    --m_pending_futures;
 }
 
 ALObjectPtr Future::future_resolved(uint32_t t_id)
@@ -71,7 +86,8 @@ void Future::merge(uint32_t t_next, uint32_t t_current)
     future_registry[t_next].reject_callback  = future_registry[t_current].reject_callback;
     future_registry[t_next].internal         = future_registry[t_current].internal;
     future_registry[t_next].next_in_line     = future_registry[t_current].next_in_line;
-    Future::dispose_future(t_next);
+
+    Future::dispose_future(t_current);
 }
 
 Future &Future::future(uint32_t t_id)
