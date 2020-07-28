@@ -185,7 +185,8 @@ struct timeout
         auto fun  = arg_eval(eval, obj, 0);
         auto time = arg_eval(eval, obj, 1);
 
-        async::dispatch<set_timeout>(eval->async(), static_cast<size_t>(time->to_int()), fun);
+        auto time_point = async::Timer::now() + std::chrono::milliseconds(time->to_int());
+        eval->async().submit_timer(time_point, fun, Qnil);
 
         return Qt;
     }

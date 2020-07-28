@@ -43,19 +43,7 @@ void AsyncS::init()
 {
 
     AL_BIT_ON(m_flags, RUNNING_FLAG);
-
-#ifndef MULTI_THREAD_EVENT_LOOP
     m_event_loop = std::thread(&AsyncS::event_loop, this);
-
-#else
-    std::thread pool[POOL_SIZE];
-    for (size_t i = 0; i < POOL_SIZE; ++i)
-    {
-        pool[i] = std::thread(&AsyncS::event_loop_thread, this);
-        // pool[i].detach();
-    }
-#endif
-
     while (!AL_BIT_CHECK(m_flags, INIT_FLAG))
     {
     }
@@ -79,7 +67,7 @@ void AsyncS::check_exit_condition()
         return;
     }
 
-    if (!m_eval->is_interactive())
+    if (m_eval->is_interactive())
     {
         return;
     }
@@ -94,11 +82,21 @@ void AsyncS::check_exit_condition()
         return;
     }
 
-    if (Future::m_pending_futures != 0)
     {
-        return;
+        std::lock_guard<std::mutex> guard{ Future::future_mutex };
+        if (Future::m_pending_futures != 0)
+        {
+            return;
+        }
     }
 
+    {
+        std::lock_guard<std::mutex> guard{ timers_mutex };
+        if (m_pending_timers != 0)
+        {
+            return;
+        }
+    }
 
     AL_BIT_OFF(m_flags, RUNNING_FLAG);
     m_eval->reset_async_flag();
@@ -111,20 +109,22 @@ void AsyncS::handle_timers()
     auto it = m_timers.begin();
     while (it != m_timers.end())
     {
-
         if (it->time < m_now)
         {
+
             submit_callback(it->callback, nullptr, it->internal_callback);
 
             if (is_falsy(it->periodic))
             {
                 it = m_timers.erase(it);
+                --m_pending_timers;
                 continue;
             }
         }
 
         ++it;
     }
+    // spin_loop();
 }
 
 void AsyncS::handle_actions()
@@ -147,22 +147,21 @@ void AsyncS::handle_actions()
     }
 }
 
-#ifndef MULTI_THREAD_EVENT_LOOP
-
 void AsyncS::event_loop()
 {
 
     using namespace std::chrono_literals;
     std::unique_lock<std::mutex> el_lock{ event_loop_mutex, std::defer_lock };
     AL_BIT_ON(m_flags, INIT_FLAG);
+    AL_BIT_ON(m_flags, RUNNING_FLAG);
     while (AL_BIT_CHECK(m_flags, RUNNING_FLAG))
     {
-
         event_loop_cv.wait_for(el_lock, 10ms);
 
         m_now = Timer::now();
 
-        m_thread_pool.submit([&]() { handle_timers(); });
+        handle_timers();
+        // m_thread_pool.submit([&]() { handle_timers(); });
 
         if (!AL_BIT_CHECK(m_flags, RUNNING_FLAG))
         {
@@ -193,53 +192,6 @@ void AsyncS::event_loop()
         check_exit_condition();
     }
 }
-
-#else
-
-void AsyncS::event_loop_thread()
-{
-    using namespace std::chrono_literals;
-    std::unique_lock<std::mutex> th_lock(pool_mutex);
-
-    while (AL_BIT_CHECK(m_flags, RUNNING_FLAG))
-    {
-        pool_cv.wait(th_lock);
-
-        if (!AL_BIT_CHECK(m_flags, RUNNING_FLAG))
-        {
-            break;
-        }
-
-        std::unique_lock<std::mutex> lock{ event_queue_mutex };
-        if (!m_event_queue.empty())
-        {
-            auto call = std::move(m_event_queue.front());
-            m_event_queue.pop();
-            lock.unlock();
-
-            ++m_asyncs;
-            execute_event(std::move(call));
-        }
-        else
-        {
-            lock.unlock();
-        }
-
-
-        if (AL_BIT_CHECK(m_flags, RUNNING_FLAG) and m_callback_queue.empty() and m_event_queue.empty() and m_asyncs == 0
-            and !m_eval->is_interactive())
-        {
-
-            AL_BIT_OFF(m_flags, RUNNING_FLAG);
-            m_eval->reset_async_flag();
-            pool_cv.notify_all();
-            m_eval->callback_cv.notify_all();
-            break;
-        }
-    }
-}
-
-#endif
 
 void AsyncS::execute_event(event_type call)
 {
@@ -282,7 +234,6 @@ void AsyncS::spin_loop()
 #endif
 }
 
-
 void AsyncS::submit_event(event_type t_callback)
 {
 
@@ -290,7 +241,6 @@ void AsyncS::submit_event(event_type t_callback)
     {
         init();
     }
-
 
     {
 
@@ -397,11 +347,12 @@ void AsyncS::submit_timer(Timer::time_point time, ALObjectPtr function, ALObject
     {
         init();
     }
-
+    m_eval->set_async_flag();
     std::lock_guard<std::mutex> guard{ timers_mutex };
     m_timers.push_back({ time + m_now.time_since_epoch(), function, internal, periodic });
+    ++m_pending_timers;
+    spin_loop();
 }
-
 
 void AsyncS::async_pending()
 {

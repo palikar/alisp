@@ -4,7 +4,6 @@ add_executable(alisp_modules_test
     base64_test.cpp
     fmt_test.cpp
     func_test.cpp
-    http_test.cpp
     json_test.cpp
     locale_test.cpp
     process_test.cpp
@@ -15,7 +14,6 @@ add_executable(alisp_modules_test
     ../src/base64.cpp
     ../src/fmt.cpp
     ../src/func.cpp
-    ../src/http.cpp
     ../src/json.cpp
     ../src/locale.cpp
     ../src/process.cpp

@@ -17,8 +17,3 @@
 
 (assert (async-state fut))
 (assert (async-ready fut))
-
-
-
-
-

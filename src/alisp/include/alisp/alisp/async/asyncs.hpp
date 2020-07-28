@@ -97,21 +97,14 @@ class AsyncS
     Timer::time_point m_now;
     std::vector<Timer> m_timers;
     mutable std::mutex timers_mutex;
+    mutable size_t m_pending_timers{ 0 };
 
     thread_pool::ThreadPool m_thread_pool;
 
-#ifndef MULTI_THREAD_EVENT_LOOP
     std::thread m_event_loop;
     mutable std::mutex event_loop_mutex;
     mutable std::condition_variable event_loop_cv;
     void event_loop();
-#else
-    std::thread pool[POOL_SIZE];
-    mutable std::mutex pool_mutex;
-    mutable std::condition_variable pool_cv;
-    void event_loop_thread();
-#endif
-
 
     void execute_event(event_type call);
 
