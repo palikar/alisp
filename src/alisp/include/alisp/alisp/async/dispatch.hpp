@@ -40,12 +40,12 @@ template<typename T, typename... Args> auto dispatch(AsyncS &async, Args &&... a
         if constexpr (T::has_future)
         {
             auto fut = event_object.future(&async);
-            async.submit_event(detail::EventObject{ std::move(event_object) });
+            async.submit_work(AsyncS::work_type{ std::move(event_object) });
             return fut;
         }
         else
         {
-            async.submit_event(detail::EventObject{ std::move(event_object) });
+            async.submit_work(AsyncS::work_type{ std::move(event_object) });
             return Qt;
         }
     }

@@ -51,13 +51,13 @@ template<class T> struct WrappingCallback : AbstractCallback
     ALObjectPtr call(AsyncS *async) const override { return cb_(async); }
 };
 
-struct EventObject
+struct WorkObject
 {
     std::unique_ptr<AbstractCallback> ptr_;
 
     Future *future;
 
-    template<class T> EventObject(T t) { ptr_ = std::make_unique<WrappingCallback<T>>(std::move(t)); }
+    template<class T> WorkObject(T t) { ptr_ = std::make_unique<WrappingCallback<T>>(std::move(t)); }
 
     ALObjectPtr operator()(AsyncS *async) const { return ptr_->call(async); }
 };

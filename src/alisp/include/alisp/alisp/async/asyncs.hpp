@@ -74,7 +74,7 @@ class AsyncS
   public:
     static constexpr size_t POOL_SIZE = 3;
     using callback_type               = detail::CallbackObject;
-    using event_type                  = detail::EventObject;
+    using work_type                   = detail::WorkObject;
     using action_type                 = detail::ActionObject;
 
     static constexpr std::uint32_t RUNNING_FLAG     = 0x0001;
@@ -86,8 +86,7 @@ class AsyncS
   private:
     eval::Evaluator *m_eval;
 
-    std::queue<event_type> m_event_queue;
-    mutable std::mutex event_queue_mutex;
+    std::queue<work_type> m_work_queue;
 
     std::queue<callback_type> m_callback_queue;
     mutable std::mutex callback_queue_mutex;
@@ -110,7 +109,7 @@ class AsyncS
     mutable std::condition_variable event_loop_cv;
     void event_loop();
 
-    void execute_event(event_type call);
+    void execute_work(work_type call);
 
     void execute_callback(callback_type call);
 
@@ -128,7 +127,9 @@ class AsyncS
     void spin_loop();
 
 
-    void submit_event(event_type t_event);
+    void submit_work(work_type t_event);
+
+    void submit_action(action_type t_event);
 
     void submit_callback(ALObjectPtr function, ALObjectPtr args = nullptr, al_callback internal = {});
 

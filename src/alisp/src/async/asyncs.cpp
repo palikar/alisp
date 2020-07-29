@@ -62,7 +62,7 @@ void AsyncS::check_exit_condition()
         return;
     }
 
-    if (!m_event_queue.empty())
+    if (!m_work_queue.empty())
     {
         return;
     }
@@ -172,11 +172,11 @@ void AsyncS::event_loop()
             return;
         }
 
-        while (!m_event_queue.empty())
+        while (!m_work_queue.empty())
         {
-            execute_event(std::move(m_event_queue.front()));
+            execute_work(std::move(m_work_queue.front()));
             ++m_asyncs;
-            m_event_queue.pop();
+            m_work_queue.pop();
         }
 
         handle_actions();
@@ -199,7 +199,7 @@ void AsyncS::event_loop()
     }
 }
 
-void AsyncS::execute_event(event_type call)
+void AsyncS::execute_work(work_type call)
 {
 
     std::thread tr([&, call = std::move(call)] {
@@ -236,12 +236,24 @@ void AsyncS::spin_loop()
     event_loop_cv.notify_one();
 }
 
-void AsyncS::submit_event(event_type t_callback)
+void AsyncS::submit_work(work_type t_callback)
 {
 
     {
         std::lock_guard<std::mutex> guard{ event_loop_mutex };
-        m_event_queue.push(std::move(t_callback));
+        m_work_queue.push(std::move(t_callback));
+        m_eval->set_async_flag();
+    }
+
+    init();
+    spin_loop();
+}
+
+void AsyncS::submit_action(action_type t_event)
+{
+    {
+        std::lock_guard<std::mutex> guard{ event_loop_mutex };
+        m_actions_queue.push(std::move(t_event));
         m_eval->set_async_flag();
     }
 

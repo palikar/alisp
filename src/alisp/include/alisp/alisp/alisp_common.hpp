@@ -159,7 +159,7 @@ class ALObject : public std::conditional_t<USING_SHARED, std::enable_shared_from
     {
         set_temp_flag();
     }
-
+    
     ALObjectType type() const { return m_type; }
     bool is_int() const { return m_type == ALObjectType::INT_VALUE; }
     bool is_string() const { return m_type == ALObjectType::STRING_VALUE; }

@@ -34,8 +34,6 @@
 #include "alisp/utility/macros.hpp"
 #include "alisp/utility/hash.hpp"
 
-#include "alisp/alisp/async/timing.hpp"
-
 namespace alisp
 {
 
@@ -735,7 +733,7 @@ ALObjectPtr Flet(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator 
         }
     }
 
-
+    
     for (auto [ob, cell] : cells)
     {
         env->put(ob, cell);

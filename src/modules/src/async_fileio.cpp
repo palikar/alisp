@@ -20,7 +20,6 @@
 #include "alisp/alisp/alisp_asyncs.hpp"
 #include "alisp/alisp/alisp_eval.hpp"
 
-#include "alisp/alisp/async/timing.hpp"
 #include "alisp/alisp/async/action.hpp"
 #include "alisp/config.hpp"
 #include "alisp/utility.hpp"
