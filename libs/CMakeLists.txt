@@ -76,6 +76,13 @@ target_link_libraries(uwebsockets INTERFACE usockets)
 target_include_directories(uwebsockets INTERFACE ./uWebSockets/)
 
 
-set(BUILD_SSL ON)
-set(BUILD_TESTS OFF)
-add_subdirectory(restbed)
+
+find_package(asio QUIET)
+if(DEFINED ${asio_INCLUDE})
+    set(WITH_RESTBED ON)
+    set(BUILD_SSL ON)
+    set(BUILD_TESTS OFF)
+    add_subdirectory(restbed)
+else()
+    set(WITH_RESTBED OFF)
+endif()

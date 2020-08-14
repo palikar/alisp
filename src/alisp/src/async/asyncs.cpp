@@ -253,7 +253,7 @@ void AsyncS::submit_action(action_type t_event)
 {
     {
         std::lock_guard<std::mutex> guard{ event_loop_mutex };
-        m_actions_queue.push(std::move(t_event));
+        m_actions_queue.push_back(std::move(t_event));
         m_eval->set_async_flag();
     }
 

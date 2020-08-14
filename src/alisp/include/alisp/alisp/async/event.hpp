@@ -66,8 +66,8 @@ struct ActionObject
 {
     std::unique_ptr<AbstractCallback> ptr_;
 
-    std::atomic<bool> valid;
-    std::atomic<bool> executing;
+    bool valid;
+    bool executing;
 
     template<class T> ActionObject(T t) { ptr_ = std::make_unique<WrappingCallback<T>>(std::move(t)); }
 

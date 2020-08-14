@@ -45,11 +45,14 @@ add_dynmodule(alisp_module_asserts asserts src/asserts.cpp)
 add_dynmodule(alisp_module_http http src/http_uwebsockets.cpp)
 target_link_libraries(alisp_module_http PUBLIC uwebsockets alisp_management)
 
-add_dynmodule(alisp_module_http_restbed http-restbed
-    ./src/http_restbed.cpp
-    ./src/http/server_funcitons.cpp
-    ./src/http/route_functions.cpp)
-target_link_libraries(alisp_module_http_restbed PUBLIC alisp_management restbed-static)
+if(WITH_RESTBED)
+    add_dynmodule(alisp_module_http_restbed http-restbed
+        ./src/http_restbed.cpp
+        ./src/http/server_funcitons.cpp
+        ./src/http/route_functions.cpp)
+
+    target_link_libraries(alisp_module_http_restbed PUBLIC alisp_management restbed-static)
+endif()
 
 if(${CMAKE_VERSION} VERSION_GREATER "3.16.0")
     add_dynmodule(alisp_module_request request src/request.cpp)
