@@ -42,7 +42,7 @@ namespace http
 using namespace alisp;
 
 
-ALObjectPtr Froute(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr route::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = arg_eval(eval, obj, 0);
 
@@ -57,7 +57,7 @@ ALObjectPtr Froute(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *
     return make_int(server.g_resources.size() - 1);
 }
 
-ALObjectPtr Froute_set_path(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr route_set_path::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id = arg_eval(eval, obj, 0);
 
@@ -73,7 +73,7 @@ ALObjectPtr Froute_set_path(const ALObjectPtr &obj, env::Environment *, eval::Ev
     return Qt;
 }
 
-ALObjectPtr Froute_default_headers(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr route_default_headers::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id = arg_eval(eval, obj, 0);
 
@@ -93,7 +93,7 @@ ALObjectPtr Froute_default_headers(const ALObjectPtr &obj, env::Environment *, e
     return Qt;
 }
 
-ALObjectPtr Froute_default_header(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr route_default_header::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id = arg_eval(eval, obj, 0);
 
@@ -110,7 +110,7 @@ ALObjectPtr Froute_default_header(const ALObjectPtr &obj, env::Environment *, ev
     return Qt;
 }
 
-ALObjectPtr Froute_method_handler(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr route_method_handler::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id               = arg_eval(eval, obj, 0);
     const auto route_id         = arg_eval(eval, obj, 1);
@@ -136,7 +136,7 @@ ALObjectPtr Froute_method_handler(const ALObjectPtr &obj, env::Environment *, ev
     return Qt;
 }
 
-ALObjectPtr Froute_error_handler(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr route_error_handler::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id               = arg_eval(eval, obj, 0);
     const auto route_id         = arg_eval(eval, obj, 1);

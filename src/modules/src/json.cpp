@@ -134,15 +134,7 @@ struct JSONParser
 
     static bool isspace(const char c) noexcept
     {
-#ifdef CHAISCRIPT_MSVC
-        // MSVC warns on these line in some circumstances
-#pragma warning(push)
-#pragma warning(disable : 6330)
-#endif
         return ::isspace(c) != 0;
-#ifdef CHAISCRIPT_MSVC
-#pragma warning(pop)
-#endif
     }
 
     static void consume_ws(const std::string &str, size_t &offset)

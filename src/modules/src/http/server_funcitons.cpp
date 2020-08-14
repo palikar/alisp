@@ -42,7 +42,7 @@ namespace http
 
 using namespace alisp;
 
-ALObjectPtr Fserver(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
+ALObjectPtr server::func(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
 {
     auto new_id = detail::server_registry.emplace_resource()->id;
 
@@ -56,7 +56,7 @@ ALObjectPtr Fserver(const ALObjectPtr &, env::Environment *, eval::Evaluator *)
     return resource_to_object(new_id);
 }
 
-ALObjectPtr Fserver_port(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_port::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = arg_eval(eval, obj, 0);
 
@@ -67,7 +67,7 @@ ALObjectPtr Fserver_port(const ALObjectPtr &obj, env::Environment *, eval::Evalu
     return Qt;
 }
 
-ALObjectPtr Fserver_root(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_root::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = arg_eval(eval, obj, 0);
 
@@ -78,7 +78,7 @@ ALObjectPtr Fserver_root(const ALObjectPtr &obj, env::Environment *, eval::Evalu
     return Qt;
 }
 
-ALObjectPtr Fserver_static_root(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_static_root::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id                                                     = arg_eval(eval, obj, 0);
     auto root                                                   = arg_eval(eval, obj, 1);
@@ -86,7 +86,7 @@ ALObjectPtr Fserver_static_root(const ALObjectPtr &obj, env::Environment *, eval
     return Qt;
 }
 
-ALObjectPtr Fserver_static_route(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_static_route::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     namespace fs = std::filesystem;
     auto id      = arg_eval(eval, obj, 0);
@@ -133,7 +133,7 @@ ALObjectPtr Fserver_static_route(const ALObjectPtr &obj, env::Environment *, eva
     return Qt;
 }
 
-ALObjectPtr Fserver_templates_root(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_templates_root::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id               = arg_eval(eval, obj, 0);
     auto root             = arg_eval(eval, obj, 1);
@@ -143,7 +143,7 @@ ALObjectPtr Fserver_templates_root(const ALObjectPtr &obj, env::Environment *, e
     return Qt;
 }
 
-ALObjectPtr Fserver_address(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_address::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = arg_eval(eval, obj, 0);
 
@@ -160,7 +160,7 @@ ALObjectPtr Fserver_address(const ALObjectPtr &obj, env::Environment *, eval::Ev
     return Qt;
 }
 
-ALObjectPtr Fserver_default_header(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_default_header::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = arg_eval(eval, obj, 0);
 
@@ -174,7 +174,7 @@ ALObjectPtr Fserver_default_header(const ALObjectPtr &obj, env::Environment *, e
     return Qt;
 }
 
-ALObjectPtr Fserver_default_headers(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_default_headers::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id = arg_eval(eval, obj, 0);
 
@@ -191,7 +191,7 @@ ALObjectPtr Fserver_default_headers(const ALObjectPtr &obj, env::Environment *, 
     return Qt;
 }
 
-ALObjectPtr Fserver_worker_limit(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_worker_limit::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id = arg_eval(eval, obj, 0);
 
@@ -204,7 +204,7 @@ ALObjectPtr Fserver_worker_limit(const ALObjectPtr &obj, env::Environment *, eva
     return Qt;
 }
 
-ALObjectPtr Fserver_connection_limit(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_connection_limit::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id = (arg_eval(eval, obj, 0));
 
@@ -217,7 +217,7 @@ ALObjectPtr Fserver_connection_limit(const ALObjectPtr &obj, env::Environment *,
     return Qt;
 }
 
-ALObjectPtr Fserver_ci_uris(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_ci_uris::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id = arg_eval(eval, obj, 0);
 
@@ -230,7 +230,7 @@ ALObjectPtr Fserver_ci_uris(const ALObjectPtr &obj, env::Environment *, eval::Ev
     return Qt;
 }
 
-ALObjectPtr Fserver_connection_timeout(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_connection_timeout::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id = arg_eval(eval, obj, 0);
 
@@ -243,7 +243,7 @@ ALObjectPtr Fserver_connection_timeout(const ALObjectPtr &obj, env::Environment 
     return Qt;
 }
 
-ALObjectPtr Fserver_status_msg(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_status_msg::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id = arg_eval(eval, obj, 0);
 
@@ -258,7 +258,7 @@ ALObjectPtr Fserver_status_msg(const ALObjectPtr &obj, env::Environment *, eval:
     return Qt;
 }
 
-ALObjectPtr Fserver_property(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_property::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id = arg_eval(eval, obj, 0);
 
@@ -273,7 +273,7 @@ ALObjectPtr Fserver_property(const ALObjectPtr &obj, env::Environment *, eval::E
     return Qt;
 }
 
-ALObjectPtr Fserver_not_found_handler(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_not_found_handler::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     const auto id               = arg_eval(eval, obj, 0);
     const auto handler_callback = arg_eval(eval, obj, 1);
@@ -298,19 +298,19 @@ ALObjectPtr Fserver_not_found_handler(const ALObjectPtr &obj, env::Environment *
     return Qt;
 }
 
-ALObjectPtr Fserver_start(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_start::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = arg_eval(eval, obj, 0);
     return async::dispatch<detail::server_start>(eval->async(), id);
 }
 
-ALObjectPtr Fserver_stop(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_stop::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = arg_eval(eval, obj, 0);
     return async::dispatch<detail::server_stop>(eval->async(), id);
 }
 
-ALObjectPtr Fserver_restart(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
+ALObjectPtr server_restart::func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
 {
     auto id = arg_eval(eval, obj, 0);
     return async::dispatch<detail::server_restart>(eval->async(), id);

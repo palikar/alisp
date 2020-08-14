@@ -58,72 +58,40 @@ ALObjectPtr Fend_request(const ALObjectPtr &obj, env::Environment *, eval::Evalu
 ALISP_EXPORT alisp::env::ModulePtr init_http_restbed(alisp::env::Environment *, alisp::eval::Evaluator *)
 {
     using namespace alisp;
+    using namespace http;
 
     auto Mhttp    = module_init("http-restbed");
     auto http_ptr = Mhttp.get();
+    
+    module_defvar(http_ptr, "localhost", localhost, R"()");
 
-    alisp::module_defvar(http_ptr, "localhost", http::localhost, R"()");
+    module_defun(http_ptr, server::name, &server::func, server::doc, server::signature);
+    module_defun(http_ptr, server_static_root::name, &server_static_root::func, server_static_root::doc, server_static_root::signature);
+    module_defun(http_ptr, server_static_route::name, &server_static_route::func, server_static_route::doc, server_static_route::signature);
+    module_defun(http_ptr, server_templates_root::name, &server_templates_root::func, server_templates_root::doc, server_templates_root::signature);
+    module_defun(http_ptr, server_port::name, &server_port::func, server_port::doc, server_port::signature);
+    module_defun(http_ptr, server_root::name, &server_root::func, server_root::doc, server_root::signature);
+    module_defun(http_ptr, server_address::name, &server_address::func, server_address::doc, server_address::signature);
+    module_defun(http_ptr, server_default_header::name, &server_default_header::func, server_default_header::doc, server_default_header::signature);
+    module_defun(http_ptr, server_default_headers::name, &server_default_headers::func, server_default_headers::doc, server_default_headers::signature);
+    module_defun(http_ptr, server_worker_limit::name, &server_worker_limit::func, server_worker_limit::doc, server_worker_limit::signature);
+    module_defun(http_ptr, server_connection_limit::name, &server_connection_limit::func, server_connection_limit::doc, server_connection_limit::signature);
+    module_defun(http_ptr, server_ci_uris::name, &server_ci_uris::func, server_ci_uris::doc, server_ci_uris::signature);
+    module_defun(http_ptr, server_connection_timeout::name, &server_connection_timeout::func, server_connection_timeout::doc, server_connection_timeout::signature);
+    module_defun(http_ptr, server_status_msg::name, &server_status_msg::func, server_status_msg::doc, server_status_msg::signature);
+    module_defun(http_ptr, server_property::name, &server_property::func, server_property::doc, server_property::signature);
+    module_defun(http_ptr, server_not_found_handler::name, &server_not_found_handler::func, server_not_found_handler::doc, server_not_found_handler::signature);
+    module_defun(http_ptr, server_start::name, &server_start::func, server_start::doc, server_start::signature);
+    module_defun(http_ptr, server_stop::name, &server_stop::func, server_stop::doc, server_stop::signature);
+    module_defun(http_ptr, server_restart::name, &server_restart::func, server_restart::doc, server_restart::signature);
+    module_defun(http_ptr, route::name, &route::func, route::doc, route::signature);
+    module_defun(http_ptr, route_set_path::name, &route_set_path::func, route_set_path::doc, route_set_path::signature);
+    module_defun(http_ptr, route_default_headers::name, &route_default_headers::func, route_default_headers::doc, route_default_headers::signature);
+    module_defun(http_ptr, route_default_header::name, &route_default_header::func, route_default_header::doc, route_default_header::signature);
+    module_defun(http_ptr, route_method_handler::name, &route_method_handler::func, route_method_handler::doc, route_method_handler::signature);
+    module_defun(http_ptr, server::name, &server::func, server::doc, server::signature);
 
-    // server config
-    module_defun(http_ptr, "server", &http::Fserver, R"()");
-
-    module_defun(http_ptr, "server-root", &http::Fserver_root, R"()");
-    module_defun(http_ptr, "server-port", &http::Fserver_port, R"()");
-    module_defun(http_ptr, "server-static-root", &http::Fserver_static_root, R"()");
-    module_defun(http_ptr, "server-static-route", &http::Fserver_static_route, R"()");
-    module_defun(http_ptr, "server-templates-root", &http::Fserver_templates_root, R"()");
-
-    module_defun(http_ptr, "server-address", &http::Fserver_address, R"()");
-    module_defun(http_ptr, "server-default-header", &http::Fserver_default_header, R"()");
-    module_defun(http_ptr, "server-default-headers", &http::Fserver_default_headers, R"()");
-    module_defun(http_ptr, "server-worker-limit", &http::Fserver_worker_limit, R"()");
-    module_defun(http_ptr, "server-connection-limit", &http::Fserver_connection_limit, R"()");
-    module_defun(http_ptr, "server-connection-timeout", &http::Fserver_connection_timeout, R"()");
-    module_defun(http_ptr, "server-case-insensitive-uris", &http::Fserver_ci_uris, R"()");
-    module_defun(http_ptr, "server-status-msg", &http::Fserver_status_msg, R"()");
-    module_defun(http_ptr, "server-property", &http::Fserver_property, R"()");
-    module_defun(http_ptr, "server-not-found-handler", &http::Fserver_not_found_handler, R"()");
-
-    // server operations
-    module_defun(http_ptr, "server-start", &http::Fserver_start, R"()");
-    module_defun(http_ptr, "server-stop", &http::Fserver_stop, R"()");
-    module_defun(http_ptr, "server-restart", &http::Fserver_restart, R"()");
-
-    // route config
-    module_defun(http_ptr, "route", &http::Froute, R"()");
-    module_defun(http_ptr, "route-handler", &http::Froute_method_handler, R"()");
-    module_defun(http_ptr, "route-path", &http::Froute_set_path, R"()");
-    module_defun(http_ptr, "route-headers", &http::Froute_default_headers, R"()");
-    module_defun(http_ptr, "route-header", &http::Froute_default_header, R"()");
-
-    // request operations
-    module_defun(http_ptr, "request-end", &http::Fend_request, R"()");
-
-    // language space
-    module_eval(http_ptr, http::detail::language_definitons);
-
-
-    // module_signature(http_ptr, "server-root", Signature(Int{}, String{}));
-    // module_signature(http_ptr, "server-port", Signature(Int{}, Int{}));
-    // module_signature(http_ptr, "server-address", Signature(Int{}, String{}));
-    // module_signature(http_ptr, "server-default-header", Signature(Int{}, String{}, String{}));
-    // module_signature(http_ptr, "server-default-headers", Signature(Int{}, List{}));
-    // module_signature(http_ptr, "server-worker-limit", Signature(Int{}, Int{}));
-    // module_signature(http_ptr, "server-connection-limit", Signature(Int{}, Int{}));
-    // module_signature(http_ptr, "server-connection-timeout", Signature(Int{}, Int{}));
-    // module_signature(http_ptr, "server-case-insensitive-uris", Signature(Int{}, Sym{}));
-    // module_signature(http_ptr, "server-status-msg", Signature(Int{}, Int{}, String{}));
-    // module_signature(http_ptr, "server-property", Signature(Int{}, String{}, String{}));
-    // module_signature(http_ptr, "server-not-found-handler", Signature(Int{}, Function{}));
-    // module_signature(http_ptr, "server-start", Signature(Int{}));
-    // module_signature(http_ptr, "server-stop", Signature(Int{}));
-    // module_signature(http_ptr, "server-restart", Signature(Int{}));
-
-    // module_signature(http_ptr, "route", Signature(Int{}, String{}));
-    // module_signature(http_ptr, "route-handler", Signature(Int{}, Int{}, Function{}));
-    // module_signature(http_ptr, "route-path", Signature(Int{}, Int{}, String{}));
-    // module_signature(http_ptr, "route-headers", Signature(Int{}, Int{}, List{}));
-    // module_signature(http_ptr, "route-header", Signature(Int{}, Int{}, String{}, String{}));
+    module_eval(http_ptr, detail::language_definitons);
 
     return Mhttp;
 }
