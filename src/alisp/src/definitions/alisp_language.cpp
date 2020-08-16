@@ -710,8 +710,14 @@ ALObjectPtr Fprogn2(const ALObjectPtr &obj, env::Environment *, eval::Evaluator 
 ALObjectPtr Flet(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator *evl)
 {
     AL_CHECK(assert_min_size<1>(obj));
-    AL_CHECK(assert_list(obj->i(0)));
 
+    if (psym(obj->i(0)) && obj->size() == 2)
+    {
+        env->put(obj->i(0), evl->eval(obj->i(1)));
+        return Qt;
+    }
+
+    AL_CHECK(assert_list(obj->i(0)));
     auto varlist = obj->i(0);
 
     std::vector<std::pair<ALObjectPtr, ALObjectPtr>> cells;
