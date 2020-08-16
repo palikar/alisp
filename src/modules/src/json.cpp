@@ -132,10 +132,7 @@ static std::string json_escape(const std::string &str)
 struct JSONParser
 {
 
-    static bool isspace(const char c) noexcept
-    {
-        return ::isspace(c) != 0;
-    }
+    static bool isspace(const char c) noexcept { return ::isspace(c) != 0; }
 
     static void consume_ws(const std::string &str, size_t &offset)
     {

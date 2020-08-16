@@ -733,7 +733,7 @@ ALObjectPtr Flet(const ALObjectPtr &obj, env::Environment *env, eval::Evaluator 
         }
     }
 
-    
+
     for (auto [ob, cell] : cells)
     {
         env->put(ob, cell);

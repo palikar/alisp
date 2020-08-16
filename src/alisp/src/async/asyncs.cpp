@@ -312,8 +312,8 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
                         return;
                     }
                 }
-                
-                
+
+
                 submit_future(next, res);
                 spin_loop();
             }

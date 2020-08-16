@@ -122,9 +122,8 @@ struct server
     inline static const Signature signature{};
 
     inline static const std::string doc{ R"()" };
-    
+
     ALObjectPtr func(const ALObjectPtr &, env::Environment *, eval::Evaluator *);
-    
 };
 
 struct server_static_root
@@ -132,216 +131,198 @@ struct server_static_root
 
     inline static const std::string name{ "server-static-root" };
 
-    inline static const Signature signature{Int{}, String{}};
+    inline static const Signature signature{ Int{}, String{} };
 
     inline static const std::string doc{ R"()" };
 
     ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval);
-
 };
 
 struct server_static_route
 {
     inline static const std::string name{ "server-static-route" };
 
-    inline static const Signature signature{Int{}, String{}};
+    inline static const Signature signature{ Int{}, String{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_templates_root
 {
     inline static const std::string name{ "server-templates-root" };
 
-    inline static const Signature signature{Int{}, String{}};
+    inline static const Signature signature{ Int{}, String{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_port
 {
     inline static const std::string name{ "server-port" };
 
-    inline static const Signature signature{Int{}, Int{}};
+    inline static const Signature signature{ Int{}, Int{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_root
 {
     inline static const std::string name{ "server-root" };
 
-    inline static const Signature signature{Int{}, String{}};
+    inline static const Signature signature{ Int{}, String{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_address
 {
     inline static const std::string name{ "server-address" };
 
-    inline static const Signature signature{Int{}, String{}};
+    inline static const Signature signature{ Int{}, String{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_default_header
 {
     inline static const std::string name{ "server-default-header" };
 
-    inline static const Signature signature{Int{}, String{}, String{}};
+    inline static const Signature signature{ Int{}, String{}, String{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_default_headers
 {
     inline static const std::string name{ "server-default-headers" };
 
-    inline static const Signature signature{Int{}, List{}};
+    inline static const Signature signature{ Int{}, List{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_worker_limit
 {
     inline static const std::string name{ "server-worker-limit" };
 
-    inline static const Signature signature{Int{}, Int{}};
+    inline static const Signature signature{ Int{}, Int{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_connection_limit
 {
     inline static const std::string name{ "server-connection-limit" };
 
-    inline static const Signature signature{Int{}, Int{}};
+    inline static const Signature signature{ Int{}, Int{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_ci_uris
 {
     inline static const std::string name{ "server-ci-uris" };
 
-    inline static const Signature signature{Int{}, Any{}};
+    inline static const Signature signature{ Int{}, Any{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_connection_timeout
 {
     inline static const std::string name{ "server-connection-timeout" };
 
-    inline static const Signature signature{Int{}, Int{}};
+    inline static const Signature signature{ Int{}, Int{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_status_msg
 {
     inline static const std::string name{ "server-status-msg" };
 
-    inline static const Signature signature{Int{}, String{}};
+    inline static const Signature signature{ Int{}, String{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_property
 {
     inline static const std::string name{ "server-property" };
 
-    inline static const Signature signature{Int{}, String{}, String{}};
+    inline static const Signature signature{ Int{}, String{}, String{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_not_found_handler
 {
     inline static const std::string name{ "server-not-found-handler" };
 
-    inline static const Signature signature{Int{}, Function{}};
+    inline static const Signature signature{ Int{}, Function{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_start
 {
     inline static const std::string name{ "server-start" };
 
-    inline static const Signature signature{Int{}};
+    inline static const Signature signature{ Int{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_stop
 {
     inline static const std::string name{ "server-stop" };
 
-    inline static const Signature signature{Int{}};
+    inline static const Signature signature{ Int{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct server_restart
 {
     inline static const std::string name{ "server-restart" };
 
-    inline static const Signature signature{Int{}};
+    inline static const Signature signature{ Int{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 
@@ -349,74 +330,67 @@ struct route
 {
     inline static const std::string name{ "route" };
 
-    inline static const Signature signature{Int{}};
+    inline static const Signature signature{ Int{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct route_set_path
 {
     inline static const std::string name{ "route-set-path" };
 
-    inline static const Signature signature{Int{}, Int{}, String{}};
+    inline static const Signature signature{ Int{}, Int{}, String{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct route_default_headers
 {
     inline static const std::string name{ "route-default-headers" };
 
-    inline static const Signature signature{Int{}, Int{}, List{}};
+    inline static const Signature signature{ Int{}, Int{}, List{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct route_default_header
 {
     inline static const std::string name{ "route-default-header" };
 
-    inline static const Signature signature{Int{}, Int{}, String{}, String{}};
+    inline static const Signature signature{ Int{}, Int{}, String{}, String{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct route_method_handler
 {
     inline static const std::string name{ "route-method-handler" };
 
-    inline static const Signature signature{Int{}, Int{}, Function{}};
+    inline static const Signature signature{ Int{}, Int{}, Function{} };
 
     inline static const std::string doc{ R"()" };
-    
-    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 
+    ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
 };
 
 struct route_error_handler
 {
     inline static const std::string name{ "route-error-handler" };
 
-    inline static const Signature signature{Int{}, Int{}, Function{}};
+    inline static const Signature signature{ Int{}, Int{}, Function{} };
 
     inline static const std::string doc{ R"()" };
-    
+
     ALObjectPtr func(const ALObjectPtr &t_obj, env::Environment *, eval::Evaluator *eval);
-
 };
-
 
 
 }  // namespace http
