@@ -389,7 +389,7 @@ template<class Environment> class ALParser : public ParserBase
         string_type hex_matches;
 
         explicit StringParser(string_type &t_str) : m_str(t_str) {}
-
+        
 
         void process_hex()
         {
@@ -549,6 +549,7 @@ template<class Environment> class ALParser : public ParserBase
 
             if (is_escaped)
             {
+                
 
                 is_escaped = false;
                 if (is_octal_char)
@@ -583,6 +584,7 @@ template<class Environment> class ALParser : public ParserBase
                     case 'a': m_str.push_back('\a'); return true;
                     case 'b': m_str.push_back('\b'); return true;
                     case 'f': m_str.push_back('\f'); return true;
+                    case 't': m_str.push_back('\t'); return true;
                     case 'n': m_str.push_back('\n'); return true;
                     case 'r': m_str.push_back('\r'); return true;
                     case 't': m_str.push_back('\t'); return true;
@@ -918,7 +920,7 @@ template<class Environment> class ALParser : public ParserBase
             PARSE_ERROR("Expected \'?\'");
         }
         ++position;
-
+        
         if (check_char('\\'))
         {
             ++position;
@@ -937,8 +939,22 @@ template<class Environment> class ALParser : public ParserBase
                 case 'd': ++position; return make_char(static_cast<ALObject::int_type>(127));
                 case 's': ++position; return make_char(static_cast<ALObject::int_type>(' '));
                 case '\\': ++position; return make_char(static_cast<ALObject::int_type>('\\'));
-                default: PARSE_ERROR("Unknown escape sequence \'?\'");
+              default: {
+
+                  std::string str{};
+                  StringParser parser{str};
+                  parser.is_escaped = true;
+                  while(!str.is_empty)
+                  {
+                      parser.parse(*position);
+                      ++position;
+                  }
+
+                  return make_char(static_cast<ALObject::int_type>(str[0]));
+                  // PARSE_ERROR("Unknown escape sequence \'?\'");
+              }
             }
+
         }
         else
         {
