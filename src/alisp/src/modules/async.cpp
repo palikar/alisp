@@ -70,13 +70,13 @@ struct async_await
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto future = arg_eval(eval, obj, 0);
-
+        using namespace std::chrono_literals;
 
         {
             async::Await await{ eval->async() };
 
             eval->futures_cv.wait(
-              eval->lock(), [&] { return is_truthy(async::Future::future(object_to_resource(future)).resolved); });
+                eval->lock(), [&] { return is_truthy(async::Future::future(object_to_resource(future)).resolved); });
         }
 
         return async::Future::future(object_to_resource(future)).value;
@@ -111,7 +111,7 @@ struct async_then
 
         if (is_truthy(fut.resolved))
         {
-
+ 
             if (is_truthy(fut.success_state))
             {
                 eval->eval_callable(fut.success_callback, make_list(fut.value));
@@ -178,15 +178,20 @@ struct timeout
 
 )" };
 
-    static inline const Signature signature{ Int{}, Function{} };
+    static inline const Signature signature{ Int{}, Function{}, Optional{}, Any{}};
 
     static ALObjectPtr func(const ALObjectPtr &obj, env::Environment *, eval::Evaluator *eval)
     {
         auto fun  = arg_eval(eval, obj, 0);
         auto time = arg_eval(eval, obj, 1);
 
+        if (std::size(*obj) > 2) {
+            auto periodic = arg_eval(eval, obj, 2);
+            eval->async().submit_timer(async::Timer::time_duration{ time->to_int() }, fun, is_truthy(periodic) ? Qt : Qnil);
+            return Qt;
+        }
+        
         eval->async().submit_timer(async::Timer::time_duration{ time->to_int() }, fun, Qnil);
-
         return Qt;
     }
 };

@@ -92,11 +92,11 @@ class AsyncS
     mutable std::mutex callback_queue_mutex;
 
     std::vector<action_type> m_actions_queue;
+
     mutable std::mutex action_queue_mutex;
 
     std::atomic_uint32_t m_flags;
     std::atomic_int m_asyncs{ 0 };
-
     Timer::time_point m_now;
     std::vector<Timer> m_timers;
     mutable std::mutex timers_mutex;
@@ -120,6 +120,8 @@ class AsyncS
     void handle_timers();
 
     void handle_actions();
+
+    void handle_work();
 
   public:
     AsyncS(eval::Evaluator *t_eval, bool defer_init = false);
@@ -154,7 +156,6 @@ class AsyncS
 
     void dispose();
 };
-
 
 class Await
 {

@@ -116,7 +116,7 @@ void AsyncS::handle_timers()
     auto it = m_timers.begin();
     while (it != m_timers.end())
     {
-        if (it->time < m_now)
+        if (it->time <= m_now)
         {
 
             submit_callback(it->callback, nullptr, it->internal_callback);
@@ -127,6 +127,8 @@ void AsyncS::handle_timers()
                 --m_pending_timers;
                 continue;
             }
+
+            it->time += it->duration;
         }
 
         ++it;
@@ -153,6 +155,18 @@ void AsyncS::handle_actions()
     }
 }
 
+void AsyncS::handle_work()
+{
+    
+    while (!m_work_queue.empty())
+    {
+        execute_work(std::move(m_work_queue.front()));
+        ++m_asyncs;
+        m_work_queue.pop();
+    }
+
+}
+
 void AsyncS::event_loop()
 {
 
@@ -163,21 +177,16 @@ void AsyncS::event_loop()
     event_loop_cv.wait(el_lock);
     while (AL_BIT_CHECK(m_flags, RUNNING_FLAG))
     {
-        m_now = Timer::now();
-
-        handle_timers();
-
         if (!AL_BIT_CHECK(m_flags, RUNNING_FLAG))
         {
             return;
         }
 
-        while (!m_work_queue.empty())
-        {
-            execute_work(std::move(m_work_queue.front()));
-            ++m_asyncs;
-            m_work_queue.pop();
-        }
+        m_now = Timer::now();
+
+        handle_timers();
+
+        handle_work();
 
         handle_actions();
 
@@ -202,14 +211,22 @@ void AsyncS::event_loop()
 void AsyncS::execute_work(work_type call)
 {
 
-    std::thread tr([&, call = std::move(call)] {
+    // @Clean up
+    // std::thread tr([&, call = std::move(call)] {
+    //     call(this);
+    //     --m_asyncs;
+    //     m_eval->callback_cv.notify_all();
+    //     spin_loop();
+    // });
+    // tr.detach();
+
+    m_thread_pool.submit([&]() {
         call(this);
         --m_asyncs;
         m_eval->callback_cv.notify_all();
         spin_loop();
     });
 
-    tr.detach();
 }
 
 void AsyncS::execute_callback(callback_type call)
@@ -309,11 +326,12 @@ void AsyncS::submit_future(uint32_t t_id, ALObjectPtr t_value, bool t_good)
                     if (auto other = object_to_resource(res); future_registry.belong(other))
                     {
                         Future::merge(other, next);
+                        m_eval->futures_cv.notify_all();
                         return;
                     }
                 }
 
-
+                
                 submit_future(next, res);
                 spin_loop();
             }
