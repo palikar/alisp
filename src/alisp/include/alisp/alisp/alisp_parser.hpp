@@ -587,7 +587,6 @@ template<class Environment> class ALParser : public ParserBase
                     case 't': m_str.push_back('\t'); return true;
                     case 'n': m_str.push_back('\n'); return true;
                     case 'r': m_str.push_back('\r'); return true;
-                    case 't': m_str.push_back('\t'); return true;
                     case 'v': m_str.push_back('\v'); return true;
                     default: return false;
                 }
@@ -920,41 +919,41 @@ template<class Environment> class ALParser : public ParserBase
             PARSE_ERROR("Expected \'?\'");
         }
         ++position;
-        
+
         if (check_char('\\'))
         {
             ++position;
             switch (*position)
             {
-                case '\'': ++position; return make_char(static_cast<ALObject::int_type>('\''));
-                case '\"': ++position; return make_char(static_cast<ALObject::int_type>('\"'));
-                case 'a': ++position; return make_char(static_cast<ALObject::int_type>('\a'));
-                case 'b': ++position; return make_char(static_cast<ALObject::int_type>('\b'));
-                case 't': ++position; return make_char(static_cast<ALObject::int_type>('\t'));
-                case 'n': ++position; return make_char(static_cast<ALObject::int_type>('\n'));
-                case 'v': ++position; return make_char(static_cast<ALObject::int_type>('\v'));
-                case 'f': ++position; return make_char(static_cast<ALObject::int_type>('\f'));
-                case 'r': ++position; return make_char(static_cast<ALObject::int_type>('\r'));
-                case 'e': ++position; return make_char(static_cast<ALObject::int_type>(27));
-                case 'd': ++position; return make_char(static_cast<ALObject::int_type>(127));
-                case 's': ++position; return make_char(static_cast<ALObject::int_type>(' '));
-                case '\\': ++position; return make_char(static_cast<ALObject::int_type>('\\'));
+              case '\'': ++position; return make_char(static_cast<ALObject::int_type>('\''));
+              case '\"': ++position; return make_char(static_cast<ALObject::int_type>('\"'));
+              case 'a': ++position; return make_char(static_cast<ALObject::int_type>('\a'));
+              case 'b': ++position; return make_char(static_cast<ALObject::int_type>('\b'));
+              case 't': ++position; return make_char(static_cast<ALObject::int_type>('\t'));
+              case 'n': ++position; return make_char(static_cast<ALObject::int_type>('\n'));
+              case 'v': ++position; return make_char(static_cast<ALObject::int_type>('\v'));
+              case 'f': ++position; return make_char(static_cast<ALObject::int_type>('\f'));
+              case 'r': ++position; return make_char(static_cast<ALObject::int_type>('\r'));
+              case 'e': ++position; return make_char(static_cast<ALObject::int_type>(27));
+              case 'd': ++position; return make_char(static_cast<ALObject::int_type>(127));
+              case 's': ++position; return make_char(static_cast<ALObject::int_type>(' '));
+              case '\\': ++position; return make_char(static_cast<ALObject::int_type>('\\'));
               default: {
-
                   std::string str{};
-                  StringParser parser{str};
+                  StringParser<std::string> parser{str};
                   parser.is_escaped = true;
-                  while(!str.is_empty)
+                  
+                  while(str.empty())
                   {
-                      parser.parse(*position);
+                      if (parser.parse(*position)) {
+                          PARSE_ERROR("Unknown escape sequence \'?\'");
+                      }
                       ++position;
                   }
-
+                  
                   return make_char(static_cast<ALObject::int_type>(str[0]));
-                  // PARSE_ERROR("Unknown escape sequence \'?\'");
               }
             }
-
         }
         else
         {
