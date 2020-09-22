@@ -125,6 +125,8 @@ class Evaluator
     friend detail::EvalDepthTrack;
     friend detail::CatchTrack;
     friend detail::EvaluationLock;
+
+    friend async::AsyncS;
 };
 
 namespace detail

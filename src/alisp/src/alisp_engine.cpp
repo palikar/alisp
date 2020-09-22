@@ -185,6 +185,8 @@ std::pair<bool, int> LanguageEngine::eval_statement(std::string &command, bool e
 
 std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_path, bool insert_mod_path)
 {
+    using namespace std::chrono_literals;
+        
     AL_DEBUG("Evaluating file: "s += t_path);
     m_evaluator.set_current_file(t_path);
     m_evaluator.reset_evaluation_flag();
@@ -204,7 +206,6 @@ std::pair<bool, int> LanguageEngine::eval_file(const std::filesystem::path &t_pa
         {
             m_evaluator.async().spin_loop();
             m_evaluator.callback_cv.wait(m_evaluator.lock());
-
             if (!m_evaluator.is_interactive())
             {
                 m_evaluator.dispatch_callbacks();

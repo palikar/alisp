@@ -61,7 +61,7 @@ struct Future
 
     uint32_t next_in_line{ 0 };
 
-    inline static std::mutex future_mutex{};
+    inline static std::recursive_mutex future_mutex{};
 
     static inline std::atomic_uint_fast32_t m_pending_futures{ 0 };
 

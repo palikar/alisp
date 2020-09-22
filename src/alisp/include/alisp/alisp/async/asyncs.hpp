@@ -150,11 +150,13 @@ class AsyncS
 
     inline std::uint32_t status_flags() { return m_flags; }
 
-    inline void start_await() { AL_BIT_ON(m_flags, AWAIT_FLAG); }
+    void start_await();
 
-    inline void end_await() { AL_BIT_OFF(m_flags, AWAIT_FLAG); }
+    void end_await();
 
     void dispose();
+
+    friend eval::Evaluator;
 };
 
 class Await

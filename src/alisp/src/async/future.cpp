@@ -32,7 +32,7 @@ namespace alisp::async
 uint32_t Future::new_future(al_callback t_calback)
 {
 
-    std::lock_guard<std::mutex> lock(Future::future_mutex);
+    std::lock_guard lock(Future::future_mutex);
     const auto id = future_registry.emplace_resource(Qnil, Qnil, Qnil, Qnil, Qnil, t_calback)->id;
     ++m_pending_futures;
     return id;
@@ -40,7 +40,7 @@ uint32_t Future::new_future(al_callback t_calback)
 
 void Future::dispose_future(uint32_t t_id)
 {
-    std::lock_guard<std::mutex> lock(Future::future_mutex);
+    std::lock_guard lock(Future::future_mutex);
 
     if (!future_registry.belong(t_id))
     {
@@ -64,7 +64,7 @@ void Future::resolve(uint32_t t_id)
 
 ALObjectPtr Future::future_resolved(uint32_t t_id)
 {
-    std::lock_guard<std::mutex> lock(Future::future_mutex);
+    std::lock_guard lock(Future::future_mutex);
 
     if (!future_registry.belong(t_id))
     {
@@ -76,7 +76,7 @@ ALObjectPtr Future::future_resolved(uint32_t t_id)
 
 void Future::merge(uint32_t t_next, uint32_t t_current)
 {
-    std::lock_guard<std::mutex> lock(Future::future_mutex);
+    std::lock_guard lock(Future::future_mutex);
 
     if (!future_registry.belong(t_next) or !future_registry.belong(t_current))
     {

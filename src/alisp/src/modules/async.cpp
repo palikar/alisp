@@ -51,7 +51,7 @@ struct async_start
         eval->async().submit_callback(
           action, nullptr, [&async = eval->async(), future = future_id, env = env](auto value) {
               async.submit_future(future, value);
-              env->defer_callback([id = future]() { async::Future::dispose_future(id); });
+              // env->defer_callback([id = future]() { async::Future::dispose_future(id); });
           });
 
 
@@ -71,6 +71,11 @@ struct async_await
     {
         auto future = arg_eval(eval, obj, 0);
         using namespace std::chrono_literals;
+
+        if (is_truthy(async::Future::future(object_to_resource(future)).resolved))
+        {
+            return async::Future::future(object_to_resource(future)).value;
+        }
 
         {
             async::Await await{ eval->async() };
